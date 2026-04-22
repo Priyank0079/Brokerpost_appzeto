@@ -23,13 +23,15 @@ const Layout = ({ children }) => {
       )}
       
       <div className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ease-in-out ${!isHomePage ? (isCollapsed ? 'lg:ml-20' : 'lg:ml-72') : ''}`}>
-        <Navbar 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          isCollapsed={isCollapsed} 
-          toggleCollapse={() => setIsCollapsed(!isCollapsed)}
-        />
+        {!isHomePage && (
+          <Navbar 
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+            isCollapsed={isCollapsed} 
+            toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          />
+        )}
         
-        <main className={`flex-1 p-4 md:p-6 lg:p-10 animate-fade-in max-w-[1600px] mx-auto w-full ${isHomePage ? 'px-0 md:px-0 lg:px-0' : ''}`}>
+        <main className={`flex-1 ${isHomePage ? 'p-0' : 'p-4 md:p-6 lg:p-10'} animate-fade-in max-w-[1600px] mx-auto w-full`}>
           {children}
         </main>
 
