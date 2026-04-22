@@ -6,6 +6,7 @@ import Brokers from '../pages/Brokers';
 import Listings from '../pages/Listings';
 import Groups from '../pages/Groups';
 import Subscriptions from '../pages/Subscriptions';
+import CarouselManagement from '../pages/CarouselManagement';
 import Payments from '../pages/Payments';
 import Settings from '../pages/Settings';
 import Reports from '../pages/Reports';
@@ -16,6 +17,7 @@ const AdminRoutes = () => {
     <AdminLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/carousel" element={<CarouselManagement />} />
         <Route path="/brokers" element={<Brokers />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/groups" element={<Groups />} />

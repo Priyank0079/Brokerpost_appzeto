@@ -71,13 +71,13 @@ const PostInventoryForm = ({ onSuccess }) => {
               <button 
                 key={v}
                 onClick={() => { setFormData({...formData, vertical: v}); nextStep(); }}
-                className={`p-8 border-2 rounded-3xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.vertical === v ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
+                className={`p-6 sm:p-8 border-2 rounded-3xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.vertical === v ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
               >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all ${formData.vertical === v ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' : 'bg-white text-slate-400 group-hover:text-primary-600 shadow-sm'}`}>
-                  {v === 'Residential' ? <Home size={28} /> : <Warehouse size={28} />}
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 transition-all ${formData.vertical === v ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' : 'bg-white text-slate-400 group-hover:text-primary-600 shadow-sm'}`}>
+                  {v === 'Residential' ? <Home className="w-6 h-6 sm:w-7 sm:h-7" /> : <Warehouse className="w-6 h-6 sm:w-7 sm:h-7" />}
                 </div>
-                <h4 className="text-xl font-black text-slate-900 leading-tight">{v}</h4>
-                <p className="text-sm font-medium text-slate-500 mt-2">Professional {v.toLowerCase()} network access.</p>
+                <h4 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{v}</h4>
+                <p className="text-xs sm:text-sm font-medium text-slate-500 mt-2">Professional {v.toLowerCase()} network access.</p>
               </button>
             ))}
           </div>
@@ -198,7 +198,7 @@ const PostInventoryForm = ({ onSuccess }) => {
             </div>
 
             {formData.images.length > 0 && (
-              <div className="grid grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 {formData.images.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100">
                     <img src={img} className="w-full h-full object-cover" />
@@ -222,7 +222,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                <h4 className="text-xl font-black text-slate-900 tracking-tight">Listing Review</h4>
                <Badge variant="primary" className="px-4 py-1.5 font-black uppercase tracking-widest text-[10px]">Ready to Submit</Badge>
             </div>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-6">
                 <div className="space-y-1">
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vertical</p>
                    <p className="font-bold text-slate-900">{formData.vertical || 'Not selected'}</p>
@@ -231,7 +231,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Listing Category</p>
                    <p className="font-bold text-primary-600">{formData.listingType || 'Not selected'}</p>
                 </div>
-                <div className="space-y-1 col-span-2">
+                <div className="space-y-1 sm:col-span-2">
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Heading</p>
                    <p className="font-bold text-slate-900 text-lg">{formData.title || 'No title provided'}</p>
                 </div>
@@ -254,18 +254,20 @@ const PostInventoryForm = ({ onSuccess }) => {
   return (
     <div className="space-y-10">
       {/* Visual Step Indicator (Clickable) */}
-      <div className="flex justify-between items-center px-4 relative">
-        <div className="absolute top-[15px] left-8 right-8 h-[2px] bg-slate-100" />
+      <div className="flex justify-between items-center px-2 sm:px-4 relative">
+        <div className="absolute top-[12px] sm:top-[15px] left-6 right-6 sm:left-8 sm:right-8 h-[2px] bg-slate-100" />
         {steps.map((s, i) => (
           <button 
             key={i} 
             onClick={() => setStep(i + 1)}
-            className="relative z-10 flex flex-col items-center gap-3 group outline-none"
+            className="relative z-10 flex flex-col items-center gap-2 sm:gap-3 group outline-none"
           >
-            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-500 scale-90 group-hover:scale-100 ${step > i + 1 ? 'bg-emerald-500 text-white' : step === i + 1 ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/30 ring-4 ring-primary-50' : 'bg-white border-2 border-slate-50 text-slate-300 group-hover:border-primary-200 group-hover:text-primary-600'}`}>
-              {step > i + 1 ? <Check size={18} /> : s.icon}
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 ${step > i + 1 ? 'bg-emerald-500 text-white' : step === i + 1 ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/30 ring-4 ring-primary-50' : 'bg-white border-2 border-slate-50 text-slate-300 group-hover:border-primary-200 group-hover:text-primary-600'}`}>
+              {step > i + 1 ? <Check className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : React.cloneElement(s.icon, { className: "w-4 h-4 sm:w-5 sm:h-5" })}
             </div>
-            <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${step >= i + 1 ? 'text-primary-600' : 'text-slate-300 group-hover:text-slate-500'}`}>{s.title}</span>
+            <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-tight sm:tracking-widest transition-all ${step === i + 1 ? 'opacity-100 scale-100' : 'opacity-0 sm:opacity-100 scale-50 sm:scale-100 hidden sm:block'} ${step >= i + 1 ? 'text-primary-600' : 'text-slate-300 group-hover:text-slate-500'}`}>
+              {s.title}
+            </span>
           </button>
         ))}
       </div>
@@ -292,7 +294,7 @@ const PostInventoryForm = ({ onSuccess }) => {
           variant="ghost" 
           onClick={prevStep} 
           disabled={step === 1}
-          className="font-black text-slate-400 uppercase tracking-widest text-[11px] hover:bg-slate-50 px-8 py-4 transition-all"
+          className="font-black text-slate-400 uppercase tracking-widest text-[10px] sm:text-[11px] hover:bg-slate-50 px-4 sm:px-8 py-3 sm:py-4 transition-all"
           leftIcon={<ChevronLeft size={18} />}
         >
           Previous
@@ -302,16 +304,16 @@ const PostInventoryForm = ({ onSuccess }) => {
           <Button 
             onClick={() => { alert('Post Distributed Successfully!'); onSuccess(); }} 
             variant="primary" 
-            className="px-12 py-4 font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary-600/20 scale-105"
+            className="px-6 sm:px-12 py-3 sm:py-4 font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-2xl shadow-primary-600/20 scale-105"
           >
-            Broadcast Posting
+            Broadcast
           </Button>
         ) : (
           <Button 
             onClick={nextStep} 
             variant="primary" 
             rightIcon={<ChevronRight size={18} />}
-            className="px-12 py-4 font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary-600/10"
+            className="px-6 sm:px-12 py-3 sm:py-4 font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-xl shadow-primary-600/10"
           >
             Continue
           </Button>

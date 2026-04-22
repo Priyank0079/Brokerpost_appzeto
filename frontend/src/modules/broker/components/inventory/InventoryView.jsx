@@ -5,12 +5,17 @@ import Badge from '../ui/Badge';
 import Modal from '../ui/Modal';
 import PostInventoryForm from './PostInventoryForm';
 import Table, { TableRow, TableCell } from '../ui/Table';
-import { Search, Filter, Plus, ChevronDown, Download, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Search, Filter, Plus, ChevronDown, Download, SlidersHorizontal, RotateCcw, MapPin as MapPinIcon, LayoutGrid, List } from 'lucide-react';
 import { listings } from '../../data/listings';
+import { Link, useNavigate } from 'react-router-dom';
+import PropertyCard from '../common/PropertyCard';
 
-const InventoryView = ({ title = "Inventory" }) => {
+const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' }) => {
+  const navigate = useNavigate();
+  // View states
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   // Filter States
-  const [vertical, setVertical] = useState('Residential');
+  const [vertical, setVertical] = useState(defaultVertical);
   const [flow, setFlow] = useState('Availability');
   const [transaction, setTransaction] = useState('Sale');
   const [propertyType, setPropertyType] = useState('All');
@@ -38,7 +43,7 @@ const InventoryView = ({ title = "Inventory" }) => {
   }, [vertical, flow, transaction, propertyType, searchTerm, statusFilter]);
 
   const resetFilters = () => {
-    setVertical('Residential');
+    setVertical(defaultVertical);
     setFlow('Availability');
     setTransaction('Sale');
     setPropertyType('All');
@@ -54,14 +59,32 @@ const InventoryView = ({ title = "Inventory" }) => {
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
           <p className="text-slate-500 font-medium mt-1">Found {filteredData.length} records matching your criteria.</p>
         </div>
-        <Button 
-          variant="primary" 
-          leftIcon={<Plus size={18} />} 
-          className="shadow-xl shadow-primary-600/20 py-3.5 px-6 font-bold"
-          onClick={() => setIsPostModalOpen(true)}
-        >
-          Add {vertical} {transaction}
-        </Button>
+        <div className="flex items-center gap-3">
+          <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
+             <button 
+               onClick={() => setViewMode('grid')}
+               className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+               title="Grid View"
+             >
+                <LayoutGrid size={20} />
+             </button>
+             <button 
+               onClick={() => setViewMode('table')}
+               className={`p-2 rounded-lg transition-all ${viewMode === 'table' ? 'bg-white text-primary-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+               title="Table View"
+             >
+                <List size={20} />
+             </button>
+          </div>
+          <Button 
+            variant="primary" 
+            leftIcon={<Plus size={18} />} 
+            className="shadow-xl shadow-primary-600/20 py-3.5 px-6 font-bold"
+            onClick={() => setIsPostModalOpen(true)}
+          >
+            Add {vertical}
+          </Button>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -170,59 +193,149 @@ const InventoryView = ({ title = "Inventory" }) => {
         </button>
       </div>
 
-      {/* Table Section */}
-      <Card noPadding className="border-slate-100 shadow-2xl shadow-slate-200/20 overflow-hidden">
-        <Table headers={["Location Info", "Property Details", "Conf", "Area", "Pricing", "Status"]}>
-          {filteredData.map((item) => (
-            <TableRow key={item.id} className="group cursor-pointer">
-              <TableCell>
-                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all">
-                       <MapPin size={18} />
-                    </div>
-                    <span className="font-bold text-slate-900">{item.location}</span>
-                 </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm group-hover:scale-105 transition-transform">
-                    <img src={item.image} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <p className="font-black text-slate-900 leading-tight">{item.title}</p>
-                    <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-1">ID: #BP-{item.id + 1000}</p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="font-black text-slate-600">{item.beds > 0 ? `${item.beds} BHK` : 'N/A'}</TableCell>
-              <TableCell className="text-sm font-bold text-slate-500 italic">{item.sqft.toLocaleString()} Sq Ft</TableCell>
-              <TableCell className="font-black text-slate-900">
-                {item.price > 0 ? (
-                  item.price >= 10000000 ? `₹${(item.price / 10000000).toFixed(2)} Cr` : `₹${(item.price / 100000).toFixed(2)} L`
-                ) : (
-                  <span className="text-primary-600">Contact</span>
-                )}
-              </TableCell>
-              <TableCell>
-                <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-lg border">
-                  {item.status === 'Active' ? 'Verified' : 'Reviewing'}
-                </Badge>
-              </TableCell>
-            </TableRow>
-          ))}
-        </Table>
-
-        {filteredData.length === 0 && (
-          <div className="p-24 text-center">
-             <div className="w-20 h-20 rounded-full bg-slate-50 text-slate-200 flex items-center justify-center mx-auto mb-4">
-                <SlidersHorizontal size={40} />
-             </div>
-             <h4 className="text-lg font-black text-slate-900 tracking-tight">No results matched your filters</h4>
-             <p className="text-sm text-slate-400 mt-1">Try resetting your filters to see more results.</p>
-             <Button variant="outline" className="mt-6 border-slate-200" onClick={resetFilters}>Clear All Filters</Button>
+      {/* Content Rendering Logic */}
+      {viewMode === 'grid' && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+             {filteredData.map(item => (
+               <PropertyCard key={item.id} item={item} />
+             ))}
           </div>
-        )}
-      </Card>
+          {filteredData.length === 0 && (
+            <div className="py-24 text-center bg-white rounded-[2rem] border border-slate-100 shadow-soft">
+               <div className="w-20 h-20 rounded-full bg-slate-50 text-slate-200 flex items-center justify-center mx-auto mb-4">
+                  <SlidersHorizontal size={40} />
+               </div>
+               <h4 className="text-lg font-black text-slate-900 tracking-tight">Focus lost? No listings found.</h4>
+               <p className="text-sm text-slate-400 mt-1">Try resetting your filters to explore more of the network.</p>
+               <Button variant="outline" className="mt-8 border-slate-200" onClick={resetFilters}>Clear All Filters</Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {viewMode === 'table' && (
+        <div className="space-y-6">
+          <div className="hidden lg:block">
+            <Card noPadding className="border-slate-100 shadow-2xl shadow-slate-200/20 overflow-hidden">
+              <Table headers={["Location Info", "Property Details", "Conf", "Area", "Pricing", "Status"]}>
+                {filteredData.map((item) => (
+                  <TableRow 
+                    key={item.id} 
+                    className="group cursor-pointer hover:bg-slate-50/80 transition-colors"
+                    onClick={() => navigate(`/property/${item.id}`)}
+                  >
+                    <TableCell>
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all">
+                             <MapPinIcon size={18} />
+                          </div>
+                          <span className="font-bold text-slate-900">{item.location}</span>
+                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm group-hover:scale-105 transition-transform">
+                          <img src={item.image} alt="" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <p className="font-black text-slate-900 leading-tight">{item.title}</p>
+                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-1">ID: #BP-{item.id + 1000}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-black text-slate-600">{item.beds > 0 ? `${item.beds} BHK` : 'N/A'}</TableCell>
+                    <TableCell className="text-sm font-bold text-slate-500 italic">{item.sqft.toLocaleString()} Sq Ft</TableCell>
+                    <TableCell className="font-black text-slate-900">
+                      {item.price > 0 ? (
+                        item.price >= 10000000 ? `₹${(item.price / 10000000).toFixed(2)} Cr` : `₹${(item.price / 100000).toFixed(2)} L`
+                      ) : (
+                        <span className="text-primary-600">Contact</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="font-black text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-lg border">
+                        {item.status === 'Active' ? 'Verified' : 'Reviewing'}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </Table>
+
+              {filteredData.length === 0 && (
+                <div className="p-24 text-center">
+                   <div className="w-20 h-20 rounded-full bg-slate-50 text-slate-200 flex items-center justify-center mx-auto mb-4">
+                      <SlidersHorizontal size={40} />
+                   </div>
+                   <h4 className="text-lg font-black text-slate-900 tracking-tight">No results matched your filters</h4>
+                   <p className="text-sm text-slate-400 mt-1">Try resetting your filters to see more results.</p>
+                   <Button variant="outline" className="mt-6 border-slate-200" onClick={resetFilters}>Clear All Filters</Button>
+                </div>
+              )}
+            </Card>
+          </div>
+
+          <div className="lg:hidden space-y-4">
+            {filteredData.map((item) => (
+              <div 
+                key={item.id} 
+                className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4 active:bg-slate-50 transition-all cursor-pointer"
+                onClick={() => navigate(`/property/${item.id}`)}
+              >
+                 <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+                       <img src={item.image} alt="" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <div className="flex items-center justify-between gap-2 mb-1">
+                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest">#BP-{item.id + 1000}</p>
+                          <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="text-[9px] uppercase tracking-tighter">
+                             {item.status === 'Active' ? 'Verified' : 'Reviewing'}
+                          </Badge>
+                       </div>
+                       <h4 className="font-bold text-slate-900 truncate leading-tight">{item.title}</h4>
+                       <div className="flex items-center gap-1 text-slate-400 mt-1">
+                          <MapPinIcon size={12} />
+                          <span className="text-[13px] font-medium truncate">{item.location}</span>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-slate-50">
+                    <div className="text-center">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Conf</p>
+                       <p className="text-xs font-black text-slate-700 mt-0.5">{item.beds > 0 ? `${item.beds} BHK` : 'N/A'}</p>
+                    </div>
+                    <div className="text-center border-x border-slate-50">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Area</p>
+                       <p className="text-xs font-black text-slate-700 mt-0.5">{item.sqft.toLocaleString()}</p>
+                    </div>
+                    <div className="text-center">
+                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Type</p>
+                       <p className="text-xs font-black text-slate-700 mt-0.5">{item.type}</p>
+                    </div>
+                 </div>
+
+                 <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Asking Price</span>
+                    <span className="font-black text-slate-900 text-lg">
+                      {item.price > 0 ? (
+                        item.price >= 10000000 ? `₹${(item.price / 10000000).toFixed(2)} Cr` : `₹${(item.price / 100000).toFixed(2)} L`
+                      ) : <span className="text-primary-600">Contact</span>}
+                    </span>
+                 </div>
+              </div>
+            ))}
+            
+            {filteredData.length === 0 && (
+              <Card className="p-12 text-center">
+                 <p className="text-slate-400 font-bold">No inventory found.</p>
+                 <Button variant="ghost" size="sm" onClick={resetFilters} className="mt-2">Clear Filters</Button>
+              </Card>
+            )}
+          </div>
+        </div>
+      )}
       
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
@@ -249,12 +362,5 @@ const InventoryView = ({ title = "Inventory" }) => {
     </div>
   );
 };
-
-// Internal replacement for missing icon if needed
-const MapPin = ({ size, className }) => (
-   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" />
-   </svg>
-);
 
 export default InventoryView;

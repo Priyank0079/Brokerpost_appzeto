@@ -87,34 +87,64 @@ const Dashboard = () => {
                Go to Inventory
              </Button>
           </div>
-          <Card noPadding className="border-slate-100 overflow-hidden">
-            <Table headers={["Property", "Type", "Price", "Status"]}>
-              {listings.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                         <img src={item.image} alt="" className="w-full h-full object-cover" />
-                       </div>
-                       <div className="min-w-0">
-                         <p className="font-bold text-slate-900 truncate">{item.title}</p>
-                         <p className="text-xs text-slate-400 truncate">{item.location}</p>
-                       </div>
+          {/* Desktop Table View */}
+          <div className="hidden md:block">
+            <Card noPadding className="border-slate-100 overflow-hidden">
+              <Table headers={["Property", "Type", "Price", "Status"]}>
+                {listings.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                         <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
+                           <img src={item.image} alt="" className="w-full h-full object-cover" />
+                         </div>
+                         <div className="min-w-0">
+                           <p className="font-bold text-slate-900 truncate">{item.title}</p>
+                           <p className="text-xs text-slate-400 truncate">{item.location}</p>
+                         </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="font-bold text-[10px]">{item.type}</Badge>
+                    </TableCell>
+                    <TableCell className="font-bold text-slate-900">₹{(item.price / 10000000).toFixed(2)} Cr</TableCell>
+                    <TableCell>
+                      <Badge variant={item.status === 'Active' ? 'success' : 'warning'}>
+                         {item.status === 'Active' ? 'Verified' : 'Reviewing'}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </Table>
+            </Card>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {listings.map((item) => (
+              <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden shrink-0 shadow-sm">
+                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <Badge variant="secondary" className="font-extrabold text-[10px] uppercase">{item.type}</Badge>
+                      <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="text-[10px]">
+                         {item.status === 'Active' ? 'Verified' : 'Reviewing'}
+                      </Badge>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="font-bold text-[10px]">{item.type}</Badge>
-                  </TableCell>
-                  <TableCell className="font-bold text-slate-900">₹{(item.price / 10000000).toFixed(2)} Cr</TableCell>
-                  <TableCell>
-                    <Badge variant={item.status === 'Active' ? 'success' : 'warning'}>
-                       {item.status === 'Active' ? 'Verified' : 'Reviewing'}
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </Table>
-          </Card>
+                    <h4 className="font-bold text-slate-900 truncate mt-1">{item.title}</h4>
+                    <p className="text-xs text-slate-500 truncate">{item.location}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-3 border-t border-slate-50">
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Price</span>
+                  <span className="font-black text-slate-900 text-lg">₹{(item.price / 10000000).toFixed(2)} Cr</span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Activity Feed */}

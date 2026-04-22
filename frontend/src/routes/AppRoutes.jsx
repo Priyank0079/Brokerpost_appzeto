@@ -5,6 +5,7 @@ import AdminRoutes from '../modules/admin/routes/AdminRoutes';
 import { useAuth } from '../modules/broker/context/AuthContext';
 
 // Broker Pages
+import Home from '../modules/broker/pages/Home';
 import Dashboard from '../modules/broker/pages/Dashboard';
 import ResidentialInventory from '../modules/broker/pages/ResidentialInventory';
 import CommercialInventory from '../modules/broker/pages/CommercialInventory';
@@ -21,7 +22,7 @@ import AdminLogin from '../modules/admin/pages/Login';
 
 const AppRoutes = () => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'Super Admin';
+  const isAdmin = user?.role === 'Administrator' || user?.role === 'Super Admin';
 
   return (
     <Routes>
@@ -38,7 +39,8 @@ const AppRoutes = () => {
         user ? (
           <BrokerLayout>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Home />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/residential" element={<ResidentialInventory />} />
               <Route path="/commercial" element={<CommercialInventory />} />
               <Route path="/my-listings" element={<MyListings />} />

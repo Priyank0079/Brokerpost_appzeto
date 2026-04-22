@@ -11,16 +11,19 @@ import {
   PanelLeftOpen,
   Settings,
   LogOut,
-  Shield
+  Shield,
+  Building2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   const handleLogout = () => {
     logout();
@@ -28,36 +31,57 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
   };
 
   return (
-    <nav className="h-16 px-6 lg:px-10 border-b border-slate-100 bg-white sticky top-0 z-30 flex items-center justify-between">
-      <div className="flex items-center gap-4">
-        {/* Mobile Sidebar Toggle */}
-        <button 
-          onClick={toggleSidebar}
-          className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg lg:hidden"
-        >
-          <Menu size={20} />
-        </button>
+    <nav className="h-16 px-6 lg:px-10 border-b border-slate-50 bg-white sticky top-0 z-30 flex items-center justify-between">
+      {/* Left: Logo */}
+      <div className="flex items-center gap-8">
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/20 group-hover:scale-110 transition-transform">
+            <Building2 size={24} />
+          </div>
+          <span className="text-xl font-black text-slate-900 tracking-tighter">BROKER<span className="text-primary-600">POST</span></span>
+        </Link>
 
-        {/* Desktop Sidebar Collapse */}
-        <button 
-          onClick={toggleCollapse}
-          className="hidden lg:flex p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        >
-          {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
-        </button>
-
-        <div className="relative hidden md:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-          <input 
-            type="text" 
-            placeholder="Search listings, brokers..."
-            className="pl-10 pr-4 py-2 bg-slate-50 border-none rounded-2xl w-72 focus:ring-4 focus:ring-primary-500/5 text-sm font-medium transition-all"
-          />
-        </div>
+        {/* Sidebar Controls (Hidden on Home) */}
+        {!isHomePage && (
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={toggleSidebar}
+              className="p-2 text-slate-500 hover:bg-slate-50 rounded-lg lg:hidden"
+            >
+              <Menu size={20} />
+            </button>
+            <button 
+              onClick={toggleCollapse}
+              className="hidden lg:flex p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all"
+              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isCollapsed ? <PanelLeftOpen size={20} /> : <PanelLeftClose size={20} />}
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Center: Search Bar */}
+      <div className="flex-1 max-w-xl mx-8 relative hidden md:block">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <input 
+          type="text" 
+          placeholder="Search inventories, brokers or regions..."
+          className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border-none rounded-2xl focus:ring-4 focus:ring-primary-500/5 text-sm font-bold text-slate-800 placeholder:text-slate-400 transition-all shadow-inner"
+        />
+      </div>
+
+      {/* Right side controls */}
       <div className="flex items-center gap-2 sm:gap-4">
+        {/* Dashboard Link on Home Page */}
+        {isHomePage && (
+          <Link to="/dashboard">
+            <button className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 mr-2">
+               <LayoutTemplate size={14} />
+               <span>Go to Dashboard</span>
+            </button>
+          </Link>
+        )}
         {/* Notifications */}
         <div className="relative">
           <button 

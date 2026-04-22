@@ -3,6 +3,7 @@ import {
   LayoutDashboard, 
   Home, 
   Building2, 
+  Building,
   FileText, 
   ClipboardList, 
   Users, 
@@ -20,8 +21,9 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
 
   const { logout } = useAuth();
   const menuItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/' },
-    { icon: <Home size={20} />, label: 'Residential Inventory', path: '/residential' },
+    { icon: <Home size={20} />, label: 'Home', path: '/' },
+    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
+    { icon: <Building size={20} />, label: 'Residential Inventory', path: '/residential' },
     { icon: <Building2 size={20} />, label: 'Commercial Inventory', path: '/commercial' },
     { icon: <FileText size={20} />, label: 'My Listings', path: '/my-listings' },
     { icon: <ClipboardList size={20} />, label: 'My Requirements', path: '/my-requirements' },

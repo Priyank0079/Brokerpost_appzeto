@@ -28,7 +28,7 @@ const Modal = ({ isOpen, onClose, title, children, footer }) => {
         </div>
 
         {/* Content */}
-        <div className="p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
+        <div className="p-4 sm:p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
           {children}
         </div>
 

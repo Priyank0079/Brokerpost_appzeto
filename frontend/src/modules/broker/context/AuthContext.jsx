@@ -10,7 +10,15 @@ export const AuthProvider = ({ children }) => {
     // Check for saved user session
     const savedUser = localStorage.getItem('broker_session');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      const parsedUser = JSON.parse(savedUser);
+      // Auto-update legacy admin name if found in existing session
+      if (parsedUser.name === 'System Admin') {
+        parsedUser.name = 'Amit Sharma';
+        parsedUser.role = 'Verified Broker';
+        parsedUser.avatar = 'https://i.pravatar.cc/150?u=amit';
+        localStorage.setItem('broker_session', JSON.stringify(parsedUser));
+      }
+      setUser(parsedUser);
     }
     setLoading(false);
   }, []);
@@ -58,12 +66,12 @@ export const AuthProvider = ({ children }) => {
   const adminLogin = (email, password) => {
     if (email === 'admin@gmail.com' && password === '123456') {
       const adminData = {
-        name: 'System Admin',
+        name: 'Amit Sharma',
         mobile: '9111966732',
         email: email,
-        avatar: null,
-        role: 'Super Admin',
-        id: 'ADMIN-001',
+        avatar: 'https://i.pravatar.cc/150?u=amit',
+        role: 'Administrator',
+        id: 'ADMIN-SYS-2026',
         status: 'Active'
       };
       setUser(adminData);
