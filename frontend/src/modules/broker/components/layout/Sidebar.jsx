@@ -14,17 +14,18 @@ import {
   ArrowLeft,
   ArrowRight
 } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
 
   const { logout } = useAuth();
+  const location = useLocation();
   const menuItems = [
     { icon: <Home size={20} />, label: 'Home', path: '/' },
     { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
-    { icon: <Building size={20} />, label: 'Residential Inventory', path: '/residential' },
-    { icon: <Building2 size={20} />, label: 'Commercial Inventory', path: '/commercial' },
+    { icon: <Building size={20} />, label: 'Residential Property', path: '/post-property?type=RESIDENTIAL' },
+    { icon: <Building2 size={20} />, label: 'Commercial Property', path: '/post-property?type=COMMERCIAL' },
     { icon: <FileText size={20} />, label: 'My Listings', path: '/my-listings' },
     { icon: <ClipboardList size={20} />, label: 'My Requirements', path: '/my-requirements' },
     { icon: <Users size={20} />, label: 'Groups', path: '/groups' },
@@ -83,13 +84,20 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
               to={item.path}
               title={isCollapsed ? item.label : ''}
               onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-              className={({ isActive }) => `
-                flex items-center gap-3 rounded-xl transition-all duration-200
-                ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'px-4 py-3 w-full'}
-                ${isActive 
-                   ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
-                   : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}
-              `}
+              className={({ isActive }) => {
+                const isPropertyLink = item.path.includes('post-property');
+                const isReallyActive = isPropertyLink 
+                  ? location.pathname + location.search === item.path
+                  : isActive;
+
+                return `
+                  flex items-center gap-3 rounded-xl transition-all duration-200
+                  ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'px-4 py-3 w-full'}
+                  ${isReallyActive 
+                     ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
+                     : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}
+                `;
+              }}
             >
               {item.icon}
               {!isCollapsed && <span className="text-sm font-medium animate-in fade-in slide-in-from-left-2 duration-300">{item.label}</span>}

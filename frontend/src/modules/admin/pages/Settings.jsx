@@ -25,7 +25,9 @@ const Settings = () => {
     emailNotifications: true,
     autoApproveBrokers: false,
     maxListingsPerBroker: 100,
-    supportEmail: 'admin@brokerpost.com'
+    supportEmail: 'admin@brokerpost.com',
+    termsAndConditions: '',
+    privacyPolicy: ''
   });
 
   const handleSave = () => {
@@ -166,6 +168,43 @@ const Settings = () => {
                   >
                      <div className="w-4 h-4 bg-white rounded-full shadow-sm" />
                   </button>
+               </div>
+            </div>
+         </Card>
+
+         {/* Legal & Compliance */}
+         <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10">
+            <div className="flex items-center gap-3 mb-8 border-b border-slate-50 pb-6">
+               <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+                  <ShieldAlert size={20} />
+               </div>
+               <div>
+                  <h4 className="text-xl font-bold text-slate-900 leading-none">Legal & Compliance</h4>
+                  <p className="text-xs text-slate-400 mt-2">Manage Terms of Service and Privacy Policy content.</p>
+               </div>
+            </div>
+
+            <div className="space-y-8">
+               <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Terms and Conditions</label>
+                  <textarea 
+                    rows="5"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-medium text-slate-700 resize-none"
+                    placeholder="Enter Terms and Conditions content..."
+                    value={config.termsAndConditions}
+                    onChange={(e) => setConfig({...config, termsAndConditions: e.target.value})}
+                  />
+               </div>
+
+               <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Privacy Policy</label>
+                  <textarea 
+                    rows="5"
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-medium text-slate-700 resize-none"
+                    placeholder="Enter Privacy Policy content..."
+                    value={config.privacyPolicy}
+                    onChange={(e) => setConfig({...config, privacyPolicy: e.target.value})}
+                  />
                </div>
             </div>
          </Card>

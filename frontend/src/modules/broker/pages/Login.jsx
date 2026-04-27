@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   Mail, 
@@ -120,15 +120,15 @@ const Login = () => {
                      </form>
 
                      <div className="pt-4 text-center">
-                        <p className="text-xs font-medium text-slate-400">
-                           New to the network? 
-                           <button 
-                              onClick={() => setIsRegister(true)}
-                              className="ml-2 font-black text-primary-600 hover:underline"
-                           >
-                              Create Account
-                           </button>
-                        </p>
+                         <p className="text-xs font-medium text-slate-400">
+                            New to the network? 
+                            <Link 
+                               to="/register"
+                               className="ml-2 font-black text-primary-600 hover:underline"
+                            >
+                               Create Account
+                            </Link>
+                         </p>
                      </div>
                   </div>
                ) : (
