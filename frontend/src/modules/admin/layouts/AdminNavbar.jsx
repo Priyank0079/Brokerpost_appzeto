@@ -28,7 +28,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
   const notifications = [
     { id: 1, title: 'New Broker Request', desc: 'Rajesh Malhotra applied for verification.', time: '2 mins ago', icon: <User className="text-blue-500" /> },
     { id: 2, title: 'Subscription Expiring', desc: 'Suresh Raina plan expires in 3 days.', time: '1 hour ago', icon: <Zap className="text-amber-500" /> },
-    { id: 3, title: 'Spam Alert', desc: 'Listing #BP-1044 marked as spam.', time: '5 hours ago', icon: <ShieldCheck className="text-red-500" /> },
+    { id: 3, title: 'Spam Alert', desc: 'Listing #BPS-1044 marked as spam.', time: '5 hours ago', icon: <ShieldCheck className="text-red-500" /> },
   ];
 
   return (

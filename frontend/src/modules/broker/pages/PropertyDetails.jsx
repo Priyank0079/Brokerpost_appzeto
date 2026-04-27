@@ -32,7 +32,7 @@ const PropertyDetails = () => {
   const item = listings.find(l => l.id === parseInt(id)) || listings[0];
 
   const handleWhatsAppConnect = () => {
-    const message = `Hi, I'm interested in "${item.title}" (ID: #BP-${item.id + 1000}) located in ${item.location}. Can you provide more details?`;
+    const message = `Hi, I'm interested in "${item.title}" (ID: #BPS-${item.id + 1000}) located in ${item.location}. Can you provide more details?`;
     const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -108,7 +108,7 @@ const PropertyDetails = () => {
                     <div className="flex items-center gap-2 mb-0.5">
                        <Badge variant="secondary" className="bg-primary-50 text-primary-600 border-none font-black text-[8px] md:text-[10px] uppercase tracking-[0.2em] px-2 py-1">{item.type}</Badge>
                        <span className="text-slate-200">•</span>
-                       <span className="text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest">ID: #BP-{item.id + 1000}</span>
+                       <span className="text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest">ID: #BPS-{item.id + 1000}</span>
                     </div>
                     <h1 className="text-2xl md:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.1] md:leading-tight">{item.title}</h1>
                     <div className="flex items-center gap-1.5 text-slate-500 font-bold text-xs md:text-lg">

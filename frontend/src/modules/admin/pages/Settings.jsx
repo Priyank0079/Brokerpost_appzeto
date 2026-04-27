@@ -19,13 +19,13 @@ const Settings = () => {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [config, setConfig] = useState({
-    siteName: 'Brokerpost Platform',
+    siteName: 'Brokerspost Platform',
     maintenanceMode: false,
     registrationEnabled: true,
     emailNotifications: true,
     autoApproveBrokers: false,
     maxListingsPerBroker: 100,
-    supportEmail: 'admin@brokerpost.com',
+    supportEmail: 'admin@brokerspost.com',
     termsAndConditions: '',
     privacyPolicy: ''
   });

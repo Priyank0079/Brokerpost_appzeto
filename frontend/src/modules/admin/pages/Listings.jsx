@@ -49,7 +49,7 @@ const Listings = () => {
                         </div>
                         <div>
                            <p className="text-sm font-black text-slate-900 leading-tight">{item.title}</p>
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #BP-{1000 + item.id}</p>
+                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #BPS-{1000 + item.id}</p>
                         </div>
                      </div>
                   </AdminTableCell>

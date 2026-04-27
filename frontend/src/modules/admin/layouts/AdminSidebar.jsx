@@ -62,7 +62,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) =>
             <div className="flex items-center gap-3 animate-in fade-in zoom-in duration-300">
                <div className="w-10 h-10 rounded-xl bg-primary-600 flex items-center justify-center font-black text-xl shadow-lg shadow-primary-600/20 leading-none">B</div>
                <div className="flex flex-col">
-                 <span className="text-lg font-black tracking-tighter leading-none">BROKERPOST</span>
+                  <span className="text-lg font-black tracking-tighter leading-none">BROKERS<span className="text-primary-400">POST</span></span>
                  <span className="text-[10px] font-bold text-primary-400 uppercase tracking-widest mt-1">Admin Panel</span>
                </div>
             </div>

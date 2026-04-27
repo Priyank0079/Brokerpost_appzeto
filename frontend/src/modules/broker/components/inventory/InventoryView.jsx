@@ -240,7 +240,7 @@ const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' })
                         </div>
                         <div>
                           <p className="font-black text-slate-900 leading-tight">{item.title}</p>
-                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-1">ID: #BP-{item.id + 1000}</p>
+                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mt-1">ID: #BPS-{item.id + 1000}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -288,7 +288,7 @@ const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' })
                     </div>
                     <div className="flex-1 min-w-0">
                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest">#BP-{item.id + 1000}</p>
+                          <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest">#BPS-{item.id + 1000}</p>
                           <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="text-[9px] uppercase tracking-tighter">
                              {item.status === 'Active' ? 'Verified' : 'Reviewing'}
                           </Badge>

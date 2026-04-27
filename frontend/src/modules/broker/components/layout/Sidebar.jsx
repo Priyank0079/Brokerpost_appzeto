@@ -48,7 +48,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
       )}
 
       <aside className={`
-        fixed top-0 left-0 h-full bg-sidebar z-50 transition-all duration-500 ease-in-out transform flex flex-col
+        fixed top-0 left-0 h-screen bg-sidebar z-50 transition-all duration-500 ease-in-out transform flex flex-col overscroll-contain
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         ${isCollapsed ? 'w-20' : 'w-72'}
       `}>
@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
               <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-600/20">
                 <Building2 className="text-white" size={20} />
               </div>
-              <span className="text-xl font-bold text-white tracking-tight">Broker<span className="text-primary-500">post</span></span>
+              <span className="text-xl font-bold text-white tracking-tight">Brokers<span className="text-primary-500">post</span></span>
             </div>
           )}
 

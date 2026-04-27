@@ -360,7 +360,7 @@ const BrokerRegistration = () => {
 
         {/* Footer */}
         <div className="mt-12 text-center pb-10">
-          <p className="text-xs font-black text-slate-300 uppercase tracking-[4px]">© 2026 Brokerpost Network • Verified Professional Gateway</p>
+          <p className="text-xs font-black text-slate-300 uppercase tracking-[4px]">© 2026 Brokerspost Network • Verified Professional Gateway</p>
         </div>
       </div>
     </div>

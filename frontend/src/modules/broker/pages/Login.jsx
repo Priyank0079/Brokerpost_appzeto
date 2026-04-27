@@ -64,7 +64,7 @@ const Login = () => {
          {/* Simple Branding */}
          <div className="flex flex-col items-center gap-2 mb-8">
             <div className="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center font-black text-xl text-white shadow-xl shadow-primary-600/20 shadow-primary-600/20">B</div>
-            <span className="text-xl font-black tracking-tighter text-slate-900">BROKERPOST</span>
+            <span className="text-xl font-black tracking-tighter text-slate-900">BROKERS<span className="text-primary-600">POST</span></span>
          </div>
 
          <div className="bg-white border border-slate-200/60 rounded-[32px] shadow-2xl shadow-slate-200/50 overflow-hidden">
@@ -233,7 +233,7 @@ const Login = () => {
             </div>
          </div>
          
-         <p className="mt-8 text-center text-[10px] font-black text-slate-400 uppercase tracking-[3px]">© 2026 Brokerpost Network</p>
+         <p className="mt-8 text-center text-[10px] font-black text-slate-400 uppercase tracking-[3px]">© 2026 Brokerspost Network</p>
       </div>
     </div>
   );

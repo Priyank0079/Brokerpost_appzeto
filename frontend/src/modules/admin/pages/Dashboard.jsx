@@ -112,7 +112,7 @@ const Dashboard = () => {
                  </div>
                  <div>
                     <p className="text-sm text-slate-600">
-                       <span className="font-bold text-slate-900">Spam Detected</span> in Borivali listing #BP-442.
+                       <span className="font-bold text-slate-900">Spam Detected</span> in Borivali listing #BPS-442.
                     </p>
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">24 Mins Ago</p>
                  </div>

@@ -29,10 +29,10 @@ export const AuthProvider = ({ children }) => {
       const userData = {
         name: 'Amit Sharma',
         mobile: mobile,
-        email: 'amit@brokerpost.com',
+        email: 'amit@brokerspost.com',
         avatar: 'https://i.pravatar.cc/150?u=amit',
         role: 'Verified Broker',
-        id: 'BP-AMIT-2026',
+        id: 'BPS-AMIT-2026',
         status: 'Active'
       };
       setUser(userData);
