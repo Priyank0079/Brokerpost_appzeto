@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Card, { CardHeader, CardContent } from '../components/ui/Card';
 import Badge from '../components/ui/Badge';
 import Table, { TableRow, TableCell } from '../components/ui/Table';
 import Button from '../components/ui/Button';
-import Modal from '../components/ui/Modal';
-import PostInventoryForm from '../components/inventory/PostInventoryForm';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   FileText, 
@@ -22,7 +21,7 @@ import { listings } from '../data/listings';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [showPostModal, setShowPostModal] = useState(false);
+  const navigate = useNavigate();
   const stats = [
     { label: 'Total Posts', value: '45', icon: <FileText className="text-blue-500" />, trend: '+12%', trendUp: true },
     { label: 'Active Listings', value: '12', icon: <CheckCircle2 className="text-emerald-500" />, trend: '+2', trendUp: true },
@@ -40,7 +39,13 @@ const Dashboard = () => {
         </div>
         <div className="flex items-center gap-3">
            <Button variant="outline" leftIcon={<ArrowUpRight size={18} />}>Export Data</Button>
-           <Button variant="primary" onClick={() => setShowPostModal(true)} leftIcon={<Plus size={18} />}>New Post</Button>
+           <Button
+             variant="primary"
+             onClick={() => navigate('/post-property?type=RESIDENTIAL')}
+             leftIcon={<Plus size={18} />}
+           >
+             New Post
+           </Button>
         </div>
       </div>
 
@@ -173,14 +178,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Post Inventory Modal */}
-      <Modal 
-        isOpen={showPostModal} 
-        onClose={() => setShowPostModal(false)}
-        title="Post New Inventory"
-      >
-        <PostInventoryForm onSuccess={() => setShowPostModal(false)} />
-      </Modal>
     </div>
   );
 };

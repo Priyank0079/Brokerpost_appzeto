@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Building2, 
@@ -26,11 +26,21 @@ const CONFIG = {
         intents: {
           PURCHASE: { 
             label: 'Wanted on Purchase',
-            fields: ['location', 'project', 'size', 'bedrooms', 'budget_type', 'total_budget', 'status_res']
+            fields: [
+              'location',
+              'project',
+              'bedrooms',
+              'size',
+              'budget_sqft',
+              'lumpsum_budget',
+              'total_budget',
+              'status_res',
+              'short_description'
+            ]
           },
           RENT: { 
             label: 'Wanted on Rent',
-            fields: ['location', 'project', 'size', 'bedrooms', 'budget_rent']
+            fields: ['location', 'project', 'bedrooms', 'size', 'budget_rent', 'tenant_status', 'short_description']
           }
         }
       },
@@ -88,25 +98,15 @@ const CONFIG = {
   }
 };
 
-const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
-  const [formData, setFormData] = useState({});
+const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
   const { propertyType, flowType, intent, subType } = selections;
+  const isResidentialPurchaseRequirement =
+    propertyType === 'RESIDENTIAL' && flowType === 'REQUIREMENT' && intent === 'PURCHASE';
 
   const currentIntent = CONFIG[propertyType].flows[flowType].intents[intent];
   const fields = currentIntent.fields;
 
   const showBedrooms = propertyType === 'RESIDENTIAL' && subType !== 'Plots' && fields.includes('bedrooms');
-  const showFloor = (subType === 'Apartments' || subType === 'Office');
-
-  const [pricing, setPricing] = useState({
-    min: '',
-    max: '',
-    unit: 'Lakh',
-    rate: '',
-    rateUnit: 'Sqft',
-    total: '',
-    totalUnit: 'Cr'
-  });
 
   const units = ['Thousand', 'Lakh', 'Cr'];
 
@@ -163,12 +163,14 @@ const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
       case 'project':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Project Name</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {propertyType === 'RESIDENTIAL' ? 'Project/Society Name' : 'Project Name'}
+            </label>
             <div className="relative group">
               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
               <input 
                 type="text" 
-                placeholder="Enter Name"
+                placeholder={propertyType === 'RESIDENTIAL' ? 'Enter project or society name' : 'Enter Name'}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
               />
             </div>
@@ -177,12 +179,14 @@ const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
       case 'size':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Size</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {propertyType === 'RESIDENTIAL' ? 'Size in Sqft.' : 'Size'}
+            </label>
             <div className="relative group">
               <Layout className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
               <input 
                 type="number" 
-                placeholder="Enter Size"
+                placeholder={propertyType === 'RESIDENTIAL' ? 'e.g. 1900' : 'Enter Size'}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
               />
             </div>
@@ -221,6 +225,95 @@ const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
             </div>
           </div>
         );
+      case 'budget_sqft':
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget in Sq.ft.</label>
+            <div className="relative group">
+              <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+              <input 
+                type="text" 
+                placeholder="e.g. 11,000"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+              />
+            </div>
+          </div>
+        );
+      case 'budget_rent':
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget</label>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="relative group">
+                <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="number" 
+                  placeholder="Min"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+              <div className="relative group">
+                <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="number" 
+                  placeholder="Max"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case 'rent':
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rent</label>
+            <div className="relative group">
+              <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+              <input 
+                type="number" 
+                placeholder="e.g. 55000"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+              />
+            </div>
+          </div>
+        );
+      case 'tenant_status':
+        return (
+          <div key={fieldKey} className="space-y-1.5 md:col-span-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tenant Status</label>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+              {['Students', 'Family', 'MNC', 'Korean', 'Businessman'].map((opt) => (
+                <button
+                  key={opt}
+                  type="button"
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-all"
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      case 'lumpsum_budget':
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lumpsum Budget</label>
+            <div className="flex gap-2">
+              <div className="relative flex-1 group">
+                <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="text" 
+                  placeholder="e.g. 85,00,000 - 95,00,000"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+              <select className="bg-slate-100 text-slate-900 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none border-none">
+                <option>Lakh</option>
+                <option>Cr</option>
+              </select>
+            </div>
+          </div>
+        );
       case 'total_budget':
       case 'total_cost':
         return renderPricingInput(`Total ${fieldKey.includes('budget') ? 'Budget' : 'Cost'}`, 'total', 'totalUnit', 'Amount', flowType === 'REQUIREMENT');
@@ -230,10 +323,25 @@ const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</label>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {(fieldKey === 'status_res' ? ['Ready', 'Under Const.'] : ['Vacant', 'Rented', 'Ready', 'Const.']).map(opt => (
+              {(fieldKey === 'status_res'
+                ? (isResidentialPurchaseRequirement
+                    ? ['Ready to Move', 'Under Construction']
+                    : ['Ready', 'Under Const.'])
+                : ['Vacant', 'Rented', 'Ready', 'Const.']).map(opt => (
                 <button key={opt} type="button" className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all">{opt}</button>
               ))}
             </div>
+          </div>
+        );
+      case 'short_description':
+        return (
+          <div key={fieldKey} className="space-y-1.5 md:col-span-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Short Description</label>
+            <textarea
+              rows={4}
+              placeholder="Add a short note about furnishing, parking, floor preference, possession, etc."
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none"
+            />
           </div>
         );
       default:
@@ -262,7 +370,9 @@ const DynamicPropertyForm = ({ config, selections, onCancel, onSubmit }) => {
         </div>
         
         <div className="pt-4 flex items-center gap-3">
-          <button type="submit" className="px-10 py-4 bg-primary-600 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-primary-500 shadow-lg shadow-primary-600/20 transition-all">Submit Listing</button>
+          <button type="submit" className="px-10 py-4 bg-primary-600 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-primary-500 shadow-lg shadow-primary-600/20 transition-all">
+            {isResidentialPurchaseRequirement ? 'Submit Requirement' : 'Submit Listing'}
+          </button>
           <button type="button" onClick={onCancel} className="px-10 py-4 text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:bg-slate-50 rounded-xl transition-all">Cancel</button>
         </div>
       </form>
@@ -346,7 +456,7 @@ const PropertyPostingFlow = () => {
       </div>
     );
 
-    const Card = ({ onClick, icon, title, sub, active, variant = 'primary' }) => (
+    const Card = ({ onClick, icon, title, sub, variant = 'primary' }) => (
       <button onClick={onClick} className="group relative bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-primary-500/20 transition-all text-center flex flex-col items-center gap-4">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${variant === 'primary' ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white' : 'bg-slate-900 text-white'}`}>
           {icon}

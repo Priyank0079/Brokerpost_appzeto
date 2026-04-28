@@ -10,7 +10,13 @@ import { listings } from '../../data/listings';
 import { Link, useNavigate } from 'react-router-dom';
 import PropertyCard from '../common/PropertyCard';
 
-const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' }) => {
+const InventoryView = ({
+  title = "Inventory",
+  defaultVertical = 'Residential',
+  verticalOptions = ['Residential', 'Commercial'],
+  addButtonLabel,
+  addButtonTo,
+}) => {
   const navigate = useNavigate();
   // View states
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
@@ -80,9 +86,16 @@ const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' })
             variant="primary" 
             leftIcon={<Plus size={18} />} 
             className="shadow-xl shadow-primary-600/20 py-3.5 px-6 font-bold"
-            onClick={() => setIsPostModalOpen(true)}
+            onClick={() => {
+              if (addButtonTo) {
+                navigate(addButtonTo);
+                return;
+              }
+
+              setIsPostModalOpen(true);
+            }}
           >
-            Add {vertical}
+            {addButtonLabel || `Add ${vertical}`}
           </Button>
         </div>
       </div>
@@ -91,20 +104,23 @@ const InventoryView = ({ title = "Inventory", defaultVertical = 'Residential' })
       <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-visible">
         <div className="p-4 flex flex-col xl:flex-row xl:items-center gap-4 bg-white rounded-2xl">
           {/* Vertical Toggle */}
-          <div className="flex bg-slate-100 p-1.5 rounded-xl self-start">
-            <button 
-              onClick={() => setVertical('Residential')}
-              className={`px-6 py-2 text-sm font-bold rounded-lg transition-all ${vertical === 'Residential' ? 'bg-white text-primary-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
-            >
-              Residential
-            </button>
-            <button 
-              onClick={() => setVertical('Commercial')}
-              className={`px-6 py-2 text-sm font-bold rounded-lg transition-all ${vertical === 'Commercial' ? 'bg-white text-primary-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
-            >
-              Commercial
-            </button>
-          </div>
+          {verticalOptions.length > 1 ? (
+            <div className="flex bg-slate-100 p-1.5 rounded-xl self-start">
+              {verticalOptions.map((option) => (
+                <button 
+                  key={option}
+                  onClick={() => setVertical(option)}
+                  className={`px-6 py-2 text-sm font-bold rounded-lg transition-all ${vertical === option ? 'bg-white text-primary-600 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="px-6 py-2.5 rounded-xl bg-slate-100 text-sm font-bold text-primary-600 self-start">
+              {verticalOptions[0]}
+            </div>
+          )}
 
           <div className="h-8 w-[1px] bg-slate-100 hidden xl:block" />
 

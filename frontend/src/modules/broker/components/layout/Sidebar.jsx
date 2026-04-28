@@ -6,7 +6,6 @@ import {
   Building,
   FileText, 
   ClipboardList, 
-  Users, 
   CreditCard, 
   Settings, 
   LogOut,
@@ -28,7 +27,6 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
     { icon: <Building2 size={20} />, label: 'Commercial Property', path: '/post-property?type=COMMERCIAL' },
     { icon: <FileText size={20} />, label: 'My Listings', path: '/my-listings' },
     { icon: <ClipboardList size={20} />, label: 'My Requirements', path: '/my-requirements' },
-    { icon: <Users size={20} />, label: 'Groups', path: '/groups' },
     { icon: <CreditCard size={20} />, label: 'Subscription', path: '/subscription' },
   ];
 
