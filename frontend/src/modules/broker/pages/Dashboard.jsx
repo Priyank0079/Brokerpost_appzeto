@@ -29,7 +29,6 @@ const Dashboard = () => {
     { label: 'Subscription', value: 'Gold', icon: <Zap className="text-purple-500" />, trend: 'Active', trendUp: true, variant: 'primary' },
   ];
 
-  const [groupFilter, setGroupFilter] = React.useState('All Groups');
 
   return (
     <div className="space-y-12 animate-fade-in pb-10">
@@ -49,43 +48,19 @@ const Dashboard = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 bg-white/50 backdrop-blur-md p-2 rounded-[2rem] border border-slate-200/60 shadow-sm">
-            <div className="px-4 py-2 border-r border-slate-100 hidden md:block">
-              <select 
-                value={groupFilter}
-                onChange={(e) => setGroupFilter(e.target.value)}
-                className="bg-transparent text-[11px] font-black uppercase tracking-widest text-slate-500 outline-none cursor-pointer hover:text-primary-600 transition-colors"
-              >
-                <option value="All Groups">Global Network</option>
-                <option value="Mumbai Luxury Brokers">Mumbai Luxury</option>
-                <option value="South Delhi Top Agents">South Delhi Elite</option>
-                <option value="Bangalore Tech Park Deals">Bangalore Tech</option>
-              </select>
-            </div>
-            <div className="flex items-center gap-2">
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 className="rounded-full text-[10px] font-black uppercase tracking-widest px-6"
-                 leftIcon={<ArrowUpRight size={14} />}
-               >
-                 Intelligence Export
-               </Button>
-               <div className="flex gap-1">
-                  <button
-                    onClick={() => navigate('/post-property?type=RESIDENTIAL')}
-                    className="h-11 px-6 bg-primary-600 hover:bg-primary-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary-600/20 active:scale-95 transition-all flex items-center gap-2"
-                  >
-                    <Plus size={14} /> Residential
-                  </button>
-                  <button
-                    onClick={() => navigate('/post-property?type=COMMERCIAL')}
-                    className="h-11 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-900/10 active:scale-95 transition-all flex items-center gap-2"
-                  >
-                    <Plus size={14} /> Commercial
-                  </button>
-               </div>
-            </div>
+          <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md p-1.5 rounded-full border border-slate-200/60 shadow-sm">
+            <button
+              onClick={() => navigate('/post-property?type=RESIDENTIAL')}
+              className="h-10 px-6 bg-primary-600 hover:bg-primary-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary-600/20 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Plus size={14} /> Residential
+            </button>
+            <button
+              onClick={() => navigate('/post-property?type=COMMERCIAL')}
+              className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-900/10 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Plus size={14} /> Commercial
+            </button>
           </div>
         </div>
       </div>
