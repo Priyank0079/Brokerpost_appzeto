@@ -85,28 +85,87 @@ const CONFIG = {
         intents: {
           SALE: { 
             label: 'Available on Sale',
-            fields: ['location', 'project', 'size', 'price_sqft', 'total_cost', 'status_com']
+            fields: ['location', 'project', 'size', 'price_sqft', 'total_cost', 'vacant_rented', 'status_com']
           },
           LEASE: { 
             label: 'Available on Lease',
-            fields: ['location', 'project', 'size', 'rent_type']
+            fields: ['location', 'project', 'size', 'rent_type', 'total_rent']
           }
         }
       }
     },
-    types: ['Shop / Showroom', 'Office', 'Warehouse', 'Standalone Building', 'Plot']
+    types: ['Shop / Showroom', 'Office', 'Warehouse', 'Standalone Building', 'Plot', 'Apartments']
   }
 };
 
-const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
+const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
   const { propertyType, flowType, intent, subType } = selections;
   const isResidentialPurchaseRequirement =
     propertyType === 'RESIDENTIAL' && flowType === 'REQUIREMENT' && intent === 'PURCHASE';
 
   const currentIntent = CONFIG[propertyType].flows[flowType].intents[intent];
-  const fields = currentIntent.fields;
+  let fields = [...currentIntent.fields];
 
-  const showBedrooms = propertyType === 'RESIDENTIAL' && subType !== 'Plots' && fields.includes('bedrooms');
+  // Dynamic field filtering based on subtype for Residential
+  if (propertyType === 'RESIDENTIAL') {
+    if (flowType === 'REQUIREMENT') {
+      if (intent === 'PURCHASE') {
+        if (subType === 'Plots') {
+          fields = ['location', 'project', 'size', 'budget_type', 'lumpsum_budget', 'total_budget'];
+        } else if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
+          fields = ['location', 'project', 'size', 'bedrooms', 'total_budget', 'status_res'];
+        }
+        // Apartments remain as defined in CONFIG (matches Table 1)
+      } else if (intent === 'RENT') {
+        if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
+          fields = ['location', 'project', 'size', 'bedrooms', 'budget_rent'];
+        }
+        // Apartments remain as defined in CONFIG (matches Table 2)
+      }
+    } else if (flowType === 'AVAILABILITY') {
+      if (intent === 'SALE') {
+        if (subType === 'Plots') {
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost'];
+        } else if (subType === 'Apartments') {
+          fields = ['location', 'project', 'size', 'bedrooms', 'price_sqft', 'total_cost', 'status_res'];
+        } else {
+          fields = ['location', 'project', 'size', 'bedrooms', 'total_cost', 'status_res'];
+        }
+      } else if (intent === 'RENTALS') {
+        if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas' || subType === 'Apartments') {
+          fields = ['location', 'project', 'size', 'bedrooms', 'rent'];
+        }
+      }
+    }
+  } else if (propertyType === 'COMMERCIAL') {
+    if (flowType === 'REQUIREMENT') {
+      if (intent === 'PURCHASE') {
+        if (subType === 'Plot') {
+          fields = ['location', 'project', 'size', 'budget_type', 'lumpsum_budget', 'total_budget'];
+        } else if (subType === 'Warehouse') {
+          fields = ['location', 'project', 'size', 'budget_type', 'total_budget', 'vacant_rented'];
+        } else {
+          fields = ['location', 'project', 'size', 'budget_type', 'total_budget', 'vacant_rented', 'status_com'];
+        }
+      } else if (intent === 'LEASE') {
+        fields = ['location', 'project', 'size', 'budget_type', 'total_budget'];
+      }
+    } else if (flowType === 'AVAILABILITY') {
+      if (intent === 'SALE') {
+        if (subType === 'Plot') {
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost'];
+        } else {
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost', 'vacant_rented', 'status_com'];
+        }
+      } else if (intent === 'LEASE') {
+        if (subType === 'Shop / Showroom' || subType === 'Office') {
+          fields = ['location', 'project', 'size', 'rent_type', 'total_rent'];
+        } else {
+          fields = ['location', 'project', 'size', 'rent_type', 'total_rent'];
+        }
+      }
+    }
+  }
 
   const units = ['Thousand', 'Lakh', 'Cr'];
 
@@ -177,23 +236,43 @@ const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
           </div>
         );
       case 'size':
+        const sizeUnits = (
+          subType === 'Plots' || 
+          subType === 'Plot' || 
+          subType === 'Low Rise Floors' || 
+          subType === 'Kothi / Villas' || 
+          subType === 'Warehouse' || 
+          subType === 'Standalone Building'
+        ) 
+          ? ['Sq. Ft.', 'Sq. Yd.', 'Sq. Mt.'] 
+          : ['Sq. Ft.'];
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              {propertyType === 'RESIDENTIAL' ? 'Size in Sqft.' : 'Size'}
+              Size
             </label>
-            <div className="relative group">
-              <Layout className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-              <input 
-                type="number" 
-                placeholder={propertyType === 'RESIDENTIAL' ? 'e.g. 1900' : 'Enter Size'}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
-              />
+            <div className="flex gap-2">
+              <div className="relative flex-1 group">
+                <Layout className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                <input 
+                  type="number" 
+                  placeholder="Enter Size"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                />
+              </div>
+              {sizeUnits.length > 1 ? (
+                <select className="bg-slate-900 text-white rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none">
+                  {sizeUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                </select>
+              ) : (
+                <div className="bg-slate-100 text-slate-500 rounded-xl px-4 flex items-center text-[10px] font-bold uppercase tracking-widest">
+                  Sq.ft
+                </div>
+              )}
             </div>
           </div>
         );
       case 'bedrooms':
-        if (!showBedrooms) return null;
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BHK</label>
@@ -206,9 +285,15 @@ const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
         );
       case 'budget_type':
       case 'price_sqft':
+      case 'rent_type':
+        const priceUnits = (subType === 'Plots' || subType === 'Plot')
+          ? ['Per Sqft', 'Per Sqyd', 'Per Sqmtr', 'Lumpsum']
+          : ['Per Sqft', 'Lumpsum'];
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Price Rate</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {fieldKey === 'rent_type' ? 'Rent Rate' : 'Price Rate'}
+            </label>
             <div className="flex gap-2">
               <div className="relative flex-1 group">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
@@ -219,8 +304,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
                 />
               </div>
               <select className="bg-slate-100 text-slate-900 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none border-none">
-                <option>Per Sqft</option>
-                <option>Lumpsum</option>
+                {priceUnits.map(u => <option key={u}>{u}</option>)}
               </select>
             </div>
           </div>
@@ -316,19 +400,41 @@ const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
         );
       case 'total_budget':
       case 'total_cost':
-        return renderPricingInput(`Total ${fieldKey.includes('budget') ? 'Budget' : 'Cost'}`, 'total', 'totalUnit', 'Amount', flowType === 'REQUIREMENT');
+      case 'total_rent':
+        let label = 'Total Cost';
+        if (fieldKey === 'total_budget') label = 'Total Budget';
+        if (fieldKey === 'total_rent') label = 'Total Rent';
+        return renderPricingInput(label, 'total', 'totalUnit', 'Amount', flowType === 'REQUIREMENT');
+      case 'vacant_rented':
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Occupancy</label>
+            <div className="grid grid-cols-2 gap-3">
+              {['Vacant', 'Rented'].map(opt => (
+                <button key={opt} type="button" className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all">{opt}</button>
+              ))}
+            </div>
+          </div>
+        );
       case 'status_res':
       case 'status_com':
+        const isRequirement = flowType === 'REQUIREMENT';
+        const statusOptions = (fieldKey === 'status_res' || fieldKey === 'status_com') 
+          ? ['Ready to Move', 'Under Construction']
+          : ['Ready', 'Under Const.'];
+        
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {(fieldKey === 'status_res'
-                ? (isResidentialPurchaseRequirement
-                    ? ['Ready to Move', 'Under Construction']
-                    : ['Ready', 'Under Const.'])
-                : ['Vacant', 'Rented', 'Ready', 'Const.']).map(opt => (
-                <button key={opt} type="button" className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all">{opt}</button>
+            <div className="grid grid-cols-2 gap-3">
+              {statusOptions.map(opt => (
+                <button 
+                  key={opt} 
+                  type="button" 
+                  className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all"
+                >
+                  {opt}
+                </button>
               ))}
             </div>
           </div>
@@ -353,7 +459,14 @@ const DynamicPropertyForm = ({ selections, onCancel, onSubmit }) => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden max-w-5xl mx-auto">
       <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center">
+          <button 
+            onClick={onBack}
+            className="w-10 h-10 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-900 hover:border-slate-300 transition-all group"
+            title="Go Back"
+          >
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          </button>
+          <div className="w-12 h-12 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-lg">
             {CONFIG[propertyType].icon}
           </div>
           <div>
@@ -516,7 +629,14 @@ const PropertyPostingFlow = () => {
           </div>
         );
       case 'FORM':
-        return <DynamicPropertyForm selections={selections} onCancel={() => setStep('TYPE')} onSubmit={() => alert('Success!')} />;
+        return (
+          <DynamicPropertyForm 
+            selections={selections} 
+            onCancel={() => setStep('TYPE')} 
+            onBack={() => setStep('SUBTYPE')}
+            onSubmit={() => alert('Success!')} 
+          />
+        );
       default: return null;
     }
   };

@@ -110,7 +110,7 @@ const Brokers = () => {
                   <AdminTableCell><StatusBadge type={b.plan} /></AdminTableCell>
                   <AdminTableCell><StatusBadge type={b.status} /></AdminTableCell>
                   <AdminTableCell>
-                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                     <div className="flex items-center gap-1">
                         <ActionButton 
                           icon={<Eye size={16} />} 
                           label="View Details" 

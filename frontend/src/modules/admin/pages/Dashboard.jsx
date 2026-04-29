@@ -21,13 +21,28 @@ const Dashboard = () => {
     { label: 'Total Revenue', value: '₹12.4L', icon: <TrendingUp className="text-amber-600" />, trend: '-2.1%', up: false },
   ];
 
+  const [groupFilter, setGroupFilter] = React.useState('All Groups');
+
   return (
     <div className="space-y-10">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Analytics Overview</h1>
-           <p className="text-slate-500 text-sm mt-1">Real-time performance metrics and platform health.</p>
+        <div className="flex flex-col md:flex-row md:items-center gap-6">
+          <div>
+            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Analytics Overview</h1>
+            <p className="text-slate-500 text-sm mt-1">Real-time performance metrics and platform health.</p>
+          </div>
+          <div className="h-10 w-[1px] bg-slate-200 hidden md:block" />
+          <select 
+            value={groupFilter}
+            onChange={(e) => setGroupFilter(e.target.value)}
+            className="bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest px-4 py-2.5 rounded-xl focus:ring-4 focus:ring-primary-500/5 outline-none shadow-sm"
+          >
+            <option value="All Groups">Filter: All Groups</option>
+            <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
+            <option value="South Delhi Top Agents">South Delhi Top Agents</option>
+            <option value="Bangalore Tech Park Deals">Bangalore Tech Park Deals</option>
+          </select>
         </div>
         <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-100 h-fit">
            <button className="px-4 py-2 text-xs font-bold bg-slate-900 text-white rounded-lg">Today</button>

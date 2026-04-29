@@ -7,10 +7,10 @@ export const brokers = [
 ];
 
 export const listings = [
-  { id: 1, title: 'Luxury Villa in Hiranandani', location: 'Powai, Mumbai', type: 'Residential', category: 'Sale', price: 85000000, broker: 'Amit Sharma', status: 'Active' },
-  { id: 2, title: 'Commercial Office Space', location: 'Connaught Place, Delhi', type: 'Commercial', category: 'Rent', price: 250000, broker: 'Rajesh Malhotra', status: 'Pending' },
-  { id: 3, title: 'Modern 3BHK Apartment', location: 'Koramangala, Bangalore', type: 'Residential', category: 'Sale', price: 18000000, broker: 'Priya Verma', status: 'Active' },
-  { id: 4, title: 'Retail Shop in DLF Mall', location: 'Gurugram', type: 'Commercial', category: 'Rent', price: 150000, broker: 'Amit Sharma', status: 'Spam' },
+  { id: 1, title: 'Luxury Villa in Hiranandani', location: 'Powai, Mumbai', type: 'Residential', category: 'Sale', price: 85000000, broker: 'Amit Sharma', status: 'Active', group: 'Mumbai Luxury Brokers' },
+  { id: 2, title: 'Commercial Office Space', location: 'Connaught Place, Delhi', type: 'Commercial', category: 'Rent', price: 250000, broker: 'Rajesh Malhotra', status: 'Pending', group: 'South Delhi Top Agents' },
+  { id: 3, title: 'Modern 3BHK Apartment', location: 'Koramangala, Bangalore', type: 'Residential', category: 'Sale', price: 18000000, broker: 'Priya Verma', status: 'Active', group: 'Bangalore Tech Park Deals' },
+  { id: 4, title: 'Retail Shop in DLF Mall', location: 'Gurugram', type: 'Commercial', category: 'Rent', price: 150000, broker: 'Amit Sharma', status: 'Spam', group: 'Mumbai Luxury Brokers' },
 ];
 
 export const groups = [

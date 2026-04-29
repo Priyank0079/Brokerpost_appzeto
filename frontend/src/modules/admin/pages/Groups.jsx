@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   UsersRound, 
   MapPin, 
@@ -6,13 +6,30 @@ import {
   Trash2, 
   UserMinus,
   Search,
-  MoreVertical
+  MoreVertical,
+  Plus
 } from 'lucide-react';
 import Card from '../../broker/components/ui/Card';
+import Button from '../../broker/components/ui/Button';
 import { AdminTable, AdminTableRow, AdminTableCell, ActionButton } from '../components/common/AdminUI';
-import { groups } from '../data/data';
+import { groups as initialGroups } from '../data/data';
+import CreateGroupModal from '../components/common/CreateGroupModal';
 
 const Groups = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [groupList, setGroupList] = useState(initialGroups);
+
+  const handleCreateGroup = (newGroupData) => {
+    const newGroup = {
+      id: groupList.length + 1,
+      name: newGroupData.name,
+      members: newGroupData.members.length,
+      createdBy: 'Administrator',
+      region: newGroupData.members[0]?.location || 'Multiple',
+    };
+    setGroupList([newGroup, ...groupList]);
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -27,21 +44,29 @@ const Groups = () => {
               <input 
                 type="text" 
                 placeholder="Search groups..." 
-                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none w-64"
+                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none w-64 focus:ring-4 focus:ring-primary-500/5 transition-all"
               />
            </div>
+           <Button 
+             variant="primary" 
+             className="bg-primary-600 hover:bg-primary-700 text-white font-bold px-6"
+             onClick={() => setIsModalOpen(true)}
+             leftIcon={<Plus size={18} />}
+           >
+             Create Group
+           </Button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-         {groups.map(g => (
+         {groupList.map(g => (
            <Card key={g.id} noPadding className="border-slate-100 group relative">
               <div className="p-6">
                  <div className="flex items-center justify-between mb-6">
                     <div className="w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 shadow-sm shadow-primary-500/5 group-hover:scale-110 transition-transform duration-500">
                        <UsersRound size={28} />
                     </div>
-                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="transition-opacity">
                        <button className="p-2 text-slate-400 hover:text-slate-900 rounded-lg hover:bg-slate-50"><MoreVertical size={20} /></button>
                     </div>
                  </div>
@@ -72,16 +97,25 @@ const Groups = () => {
          ))}
 
          {/* Create Link Mockup */}
-         <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary-400 hover:bg-primary-50/5 transition-all cursor-pointer group">
-            <div className="w-12 h-12 rounded-full bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all">
-               <UsersRound size={24} />
+         <div 
+           onClick={() => setIsModalOpen(true)}
+           className="border-2 border-dashed border-slate-200 rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary-400 hover:bg-primary-50/5 transition-all cursor-pointer group min-h-[320px]"
+         >
+            <div className="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
+               <Plus size={28} />
             </div>
             <div>
-               <h4 className="text-sm font-bold text-slate-900">Create Official Group</h4>
-               <p className="text-xs text-slate-400 mt-1">Found a new region-based community.</p>
+               <h4 className="text-lg font-black text-slate-900">Create Official Group</h4>
+               <p className="text-xs font-medium text-slate-400 mt-1">Found a new region-based community.</p>
             </div>
          </div>
       </div>
+
+      <CreateGroupModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onCreate={handleCreateGroup}
+      />
     </div>
   );
 };

@@ -17,13 +17,17 @@ const phoneByBroker = {
 const MyListings = ({
   title = 'My Listings',
   subtitle = 'Manage your residential posts and requirements.',
-  buttonLabel = 'Add Property',
 }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState('All Property Types');
   const [transactionFilter, setTransactionFilter] = useState('All Transactions');
+  const [groupFilter, setGroupFilter] = useState('All Groups');
+  const [bhkFilter, setBhkFilter] = useState('All BHK');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+  const [unitFilter, setUnitFilter] = useState('All Units');
 
   const residentialListings = useMemo(
     () => listings.filter((item) => item.vertical === 'Residential'),
@@ -46,10 +50,24 @@ const MyListings = ({
         propertyTypeFilter === 'All Property Types' || item.type === propertyTypeFilter;
       const matchesTransaction =
         transactionFilter === 'All Transactions' || item.transaction === transactionFilter;
+      const matchesGroup = groupFilter === 'All Groups' || item.group === groupFilter;
+      const matchesBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
+      const matchesStatus = statusFilter === 'All Status' || 
+                           (statusFilter === 'Ready to Move' && item.status === 'Active') ||
+                           (statusFilter === 'Under Construction' && item.status === 'Pending');
+      
+      let matchesBudget = true;
+      if (budgetFilter !== 'All Budgets') {
+        const price = item.price;
+        if (budgetFilter === 'Under 50L') matchesBudget = price < 5000000;
+        else if (budgetFilter === '50L - 1Cr') matchesBudget = price >= 5000000 && price <= 10000000;
+        else if (budgetFilter === '1Cr - 5Cr') matchesBudget = price > 10000000 && price <= 50000000;
+        else if (budgetFilter === 'Above 5Cr') matchesBudget = price > 50000000;
+      }
 
-      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction;
+      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesGroup && matchesBhk && matchesStatus && matchesBudget;
     });
-  }, [residentialListings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter]);
+  }, [residentialListings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter, groupFilter, bhkFilter, statusFilter, budgetFilter]);
 
   const handleApplyFilters = () => {};
 
@@ -60,13 +78,22 @@ const MyListings = ({
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
           <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
         </div>
-        <Button
-          variant="primary"
-          onClick={() => navigate('/post-property?type=RESIDENTIAL')}
-          className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 font-bold"
-        >
-          {buttonLabel}
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button
+            variant="primary"
+            onClick={() => navigate('/post-property?type=RESIDENTIAL')}
+            className="flex-1 sm:flex-initial bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 font-bold"
+          >
+            Post Residential
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => navigate('/post-property?type=COMMERCIAL')}
+            className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20 font-bold"
+          >
+            Post Commercial
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-[24px] bg-white p-4 md:p-5 shadow-[0_10px_40px_rgba(15,23,42,0.05)] border border-slate-100">
@@ -113,25 +140,84 @@ const MyListings = ({
             ))}
           </select>
 
-          <select
-            value={transactionFilter}
-            onChange={(e) => setTransactionFilter(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
-          >
-            <option>All Transactions</option>
-            <option>Sale</option>
-            <option>Rent</option>
-          </select>
+            <select
+              value={transactionFilter}
+              onChange={(e) => setTransactionFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option>All Transactions</option>
+              <option>Sale</option>
+              <option>Rent</option>
+            </select>
 
-          <Button
-            variant="outline"
-            onClick={handleApplyFilters}
-            className="h-[48px] border-primary-200 text-primary-600 font-semibold"
-            leftIcon={<Filter size={16} />}
-          >
-            Apply Filters
-          </Button>
-        </div>
+            <select
+              value={groupFilter}
+              onChange={(e) => setGroupFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option value="All Groups">All Groups</option>
+              <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
+              <option value="South Delhi Top Agents">South Delhi Top Agents</option>
+              <option value="Bangalore Tech Park Deals">Bangalore Tech Park Deals</option>
+            </select>
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+            <select
+              value={bhkFilter}
+              onChange={(e) => setBhkFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option>All BHK</option>
+              <option>1 BHK</option>
+              <option>2 BHK</option>
+              <option>3 BHK</option>
+              <option>4 BHK</option>
+              <option>5 BHK</option>
+            </select>
+
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option>All Status</option>
+              <option>Ready to Move</option>
+              <option>Under Construction</option>
+            </select>
+
+            <select
+              value={budgetFilter}
+              onChange={(e) => setBudgetFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option>All Budgets</option>
+              <option>Under 50L</option>
+              <option>50L - 1Cr</option>
+              <option>1Cr - 5Cr</option>
+              <option>Above 5Cr</option>
+            </select>
+
+            <select
+              value={unitFilter}
+              onChange={(e) => setUnitFilter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            >
+              <option>All Units</option>
+              <option>Sq. Ft.</option>
+              <option>Sq. Yd.</option>
+              <option>Sq. Mt.</option>
+            </select>
+
+            <Button
+              variant="outline"
+              onClick={handleApplyFilters}
+              className="h-[48px] border-primary-200 text-primary-600 font-semibold"
+              leftIcon={<Filter size={16} />}
+            >
+              Apply Filters
+            </Button>
+          </div>
       </div>
 
       <Card noPadding className="overflow-hidden border-slate-200 shadow-[0_14px_50px_rgba(15,23,42,0.06)]">
@@ -166,7 +252,11 @@ const MyListings = ({
                   <td className="px-4 py-4 text-sm font-semibold text-slate-900">{item.title}</td>
                   <td className="px-4 py-4 text-sm text-slate-600">{item.broker}</td>
                   <td className="px-4 py-4 text-sm text-slate-600">
-                    {phoneByBroker[item.broker] || '-'}
+                    {(() => {
+                      const phone = phoneByBroker[item.broker];
+                      if (!phone) return '-';
+                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
+                    })()}
                   </td>
                   <td className="px-4 py-4">
                     <Link to={`/property/${item.id}`}>
@@ -231,7 +321,13 @@ const MyListings = ({
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Phone No.</p>
-                  <p className="font-medium text-slate-700">{phoneByBroker[item.broker] || '-'}</p>
+                  <p className="font-medium text-slate-700">
+                    {(() => {
+                      const phone = phoneByBroker[item.broker];
+                      if (!phone) return '-';
+                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
+                    })()}
+                  </p>
                 </div>
               </div>
             </div>
