@@ -11,13 +11,13 @@ import {
 
 const SearchPhilosophy = () => {
   return (
-    <section className="py-12 px-6 bg-white relative overflow-hidden">
+    <section className="pt-2 pb-10 px-0 bg-white relative overflow-hidden">
       {/* Subtle Background Elements */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-primary-50/50 rounded-full blur-[100px] -z-10" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-[100px] -z-10" />
 
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center space-y-3 mb-10">
+      <div className="w-full px-4 md:px-6">
+        <div className="text-center space-y-3 mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -51,7 +51,7 @@ const SearchPhilosophy = () => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 xl:gap-6">
           {[
             { icon: <Zap size={20} />, title: 'Equal Visibility', color: 'primary', desc: ['No algorithm bias.', 'Every listing gets equal exposure.'] },
             { icon: <Target size={20} />, title: 'Match Probability', color: 'emerald', desc: ['More listings = Higher match rate.', 'Direct inventory-demand connection.'] },
@@ -82,7 +82,7 @@ const SearchPhilosophy = () => {
         </div>
 
         {/* How it Works Section - High Density & Compact */}
-        <div className="mt-8">
+        <div className="mt-6">
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}

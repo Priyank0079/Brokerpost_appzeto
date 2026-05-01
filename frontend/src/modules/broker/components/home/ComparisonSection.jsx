@@ -11,11 +11,11 @@ import {
 
 const ComparisonSection = () => {
   return (
-    <section className="py-16 px-4 bg-white overflow-hidden">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+    <section className="py-12 md:py-16 bg-white overflow-hidden w-full">
+      <div className="w-full px-4 md:px-6 lg:px-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-10 xl:gap-12">
           {/* Left: Text Content */}
-          <div className="max-w-xl space-y-6">
+          <div className="w-full lg:max-w-[560px] space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-50 rounded-lg text-primary-600">
               <Zap size={14} />
               <span className="text-[10px] font-black uppercase tracking-widest">The Ultimate Upgrade</span>
@@ -42,7 +42,7 @@ const ComparisonSection = () => {
           </div>
 
           {/* Right: Benefits List (Simple & Professional) */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="w-full lg:flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 xl:gap-6">
             {[
               { 
                 icon: <Target className="text-emerald-500" />, 
