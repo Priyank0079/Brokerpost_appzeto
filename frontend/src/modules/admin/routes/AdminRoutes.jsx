@@ -11,6 +11,7 @@ import Payments from '../pages/Payments';
 import Settings from '../pages/Settings';
 import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
+import BrokerDetail from '../pages/BrokerDetail';
 
 const AdminRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AdminRoutes = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/carousel" element={<CarouselManagement />} />
         <Route path="/brokers" element={<Brokers />} />
+        <Route path="/brokers/:id" element={<BrokerDetail />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/groups" element={<Groups />} />
         <Route path="/subscriptions" element={<Subscriptions />} />

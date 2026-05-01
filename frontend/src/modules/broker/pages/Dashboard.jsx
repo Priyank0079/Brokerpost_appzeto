@@ -14,20 +14,76 @@ import {
   MoreHorizontal,
   ExternalLink,
   Plus,
-  ShieldAlert
+  ShieldAlert,
+  Building
 } from 'lucide-react';
 
-import { listings } from '../data/listings';
+import { listings as staticListings } from '../data/listings';
+import { getMyPostings, getPostings } from '../services/postingService';
+
+// Constants for display
+const INTENT_MAP = {
+  'PURCHASE': 'Sale',
+  'RENT': 'Rent',
+  'SALE': 'Sale',
+  'RENTALS': 'Rent',
+  'LEASE': 'Lease'
+};
+
+const SUBTYPE_DISPLAY_MAP = {
+  'APARTMENTS': 'Apartments',
+  'LOW_RISE_FLOORS': 'Low Rise Floors',
+  'KOTHI_VILLAS': 'Kothi / Villas',
+  'PLOTS': 'Plots',
+  'SHOP_SHOWROOM': 'Shop / Showroom',
+  'OFFICE': 'Office',
+  'WAREHOUSE': 'Warehouse',
+  'STANDALONE_BUILDING': 'Standalone Building',
+  'PLOT': 'Plot',
+  'COMMERCIAL_APARTMENTS': 'Apartments (Com)'
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const stats = [
-    { label: 'Total Posts', value: '45', icon: <FileText className="text-blue-500" />, trend: '+12%', trendUp: true },
-    { label: 'Active Listings', value: '12', icon: <CheckCircle2 className="text-emerald-500" />, trend: '+2', trendUp: true },
-    { label: 'Requirements', value: '8', icon: <ClipboardList className="text-amber-500" />, trend: '-5%', trendUp: false },
+  const [recentPostings, setRecentPostings] = React.useState([]);
+  const [stats, setStats] = React.useState([
+    { label: 'Total Posts', value: '0', icon: <FileText className="text-blue-500" />, trend: '...', trendUp: true },
+    { label: 'Active Listings', value: '0', icon: <CheckCircle2 className="text-emerald-500" />, trend: '...', trendUp: true },
+    { label: 'Requirements', value: '0', icon: <ClipboardList className="text-amber-500" />, trend: '...', trendUp: false },
     { label: 'Subscription', value: 'Gold', icon: <Zap className="text-purple-500" />, trend: 'Active', trendUp: true, variant: 'primary' },
-  ];
+  ]);
+
+  const fetchData = async () => {
+    try {
+      // Fetch my stats
+      const myResult = await getMyPostings({ limit: 100 });
+      if (myResult.success) {
+        const total = myResult.total;
+        const active = myResult.data.filter(p => p.postType === 'AVAILABILITY').length;
+        const reqs = myResult.data.filter(p => p.postType === 'REQUIREMENT').length;
+
+        setStats(prev => [
+          { ...prev[0], value: total.toString() },
+          { ...prev[1], value: active.toString() },
+          { ...prev[2], value: reqs.toString() },
+          prev[3]
+        ]);
+      }
+
+      // Fetch global recent postings
+      const recentResult = await getPostings({ limit: 6 });
+      if (recentResult.success) {
+        setRecentPostings(recentResult.data);
+      }
+    } catch (err) {
+      console.error('Dashboard fetch error:', err);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
 
   return (
@@ -141,57 +197,67 @@ const Dashboard = () => {
           {/* Desktop Table View */}
           <div className="hidden md:block">
             <Card noPadding className="border-slate-100 overflow-hidden">
-              <Table headers={["Property", "Type", "Price", "Status"]}>
-                {listings.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                         <div className="w-10 h-10 rounded-lg bg-slate-100 overflow-hidden shrink-0">
-                           <img src={item.image} alt="" className="w-full h-full object-cover" />
-                         </div>
-                         <div className="min-w-0">
-                           <p className="font-bold text-slate-900 truncate">{item.title}</p>
-                           <p className="text-xs text-slate-400 truncate">{item.location}</p>
-                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary" className="font-bold text-[10px]">{item.type}</Badge>
-                    </TableCell>
-                    <TableCell className="font-bold text-slate-900">₹{(item.price / 10000000).toFixed(2)} Cr</TableCell>
-                    <TableCell>
-                      <Badge variant={item.status === 'Active' ? 'success' : 'warning'}>
-                         {item.status === 'Active' ? 'Verified' : 'Reviewing'}
-                      </Badge>
-                    </TableCell>
+              <Table headers={["Property", "Type", "Budget/Price", "Status"]}>
+                {recentPostings.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan="4" className="text-center py-10 text-slate-400">No recent postings</TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  recentPostings.map((item) => (
+                    <TableRow key={item._id} className="cursor-pointer hover:bg-slate-50" onClick={() => navigate(`/property/${item._id}`)}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                           <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+                             <Building size={20} className="text-slate-400" />
+                           </div>
+                           <div className="min-w-0">
+                             <p className="font-bold text-slate-900 truncate">{item.project || 'No Project'}</p>
+                             <p className="text-xs text-slate-400 truncate">{item.location}</p>
+                           </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="font-bold text-[10px]">{SUBTYPE_DISPLAY_MAP[item.subType]}</Badge>
+                      </TableCell>
+                      <TableCell className="font-bold text-slate-900">
+                        {item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : item.budgetMax ? `₹${item.budgetMax} ${item.budgetUnit}` : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={item.postType === 'AVAILABILITY' ? 'success' : 'warning'}>
+                           {item.postType === 'AVAILABILITY' ? 'Available' : 'Wanted'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </Table>
             </Card>
           </div>
 
           {/* Mobile Card View */}
           <div className="md:hidden space-y-4">
-            {listings.map((item) => (
-              <div key={item.id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4">
+            {recentPostings.map((item) => (
+              <div key={item._id} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4" onClick={() => navigate(`/property/${item._id}`)}>
                 <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden shrink-0 shadow-sm">
-                    <img src={item.image} alt="" className="w-full h-full object-cover" />
+                  <div className="w-14 h-14 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 shadow-sm">
+                    <Building size={24} className="text-slate-400" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="secondary" className="font-extrabold text-[10px] uppercase">{item.type}</Badge>
-                      <Badge variant={item.status === 'Active' ? 'success' : 'warning'} className="text-[10px]">
-                         {item.status === 'Active' ? 'Verified' : 'Reviewing'}
+                      <Badge variant="secondary" className="font-extrabold text-[10px] uppercase">{SUBTYPE_DISPLAY_MAP[item.subType]}</Badge>
+                      <Badge variant={item.postType === 'AVAILABILITY' ? 'success' : 'warning'} className="text-[10px]">
+                         {item.postType === 'AVAILABILITY' ? 'Available' : 'Wanted'}
                       </Badge>
                     </div>
-                    <h4 className="font-bold text-slate-900 truncate mt-1">{item.title}</h4>
+                    <h4 className="font-bold text-slate-900 truncate mt-1">{item.project || 'No Project'}</h4>
                     <p className="text-xs text-slate-500 truncate">{item.location}</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-slate-50">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Price</span>
-                  <span className="font-black text-slate-900 text-lg">₹{(item.price / 10000000).toFixed(2)} Cr</span>
+                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Budget/Price</span>
+                  <span className="font-black text-slate-900 text-lg">
+                    {item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : item.budgetMax ? `₹${item.budgetMax} ${item.budgetUnit}` : 'N/A'}
+                  </span>
                 </div>
               </div>
             ))}
@@ -202,25 +268,33 @@ const Dashboard = () => {
         <div className="space-y-6">
            <h2 className="text-xl font-bold text-slate-900">Network Activity</h2>
            <Card noPadding className="divide-y divide-slate-50 border-slate-100">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer group">
-                   <div className={`w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 ${i % 2 === 0 ? 'text-blue-500' : 'text-amber-500'}`}>
-                      {i % 2 === 0 ? <ExternalLink size={20} /> : <ClipboardList size={20} />}
-                   </div>
-                   <div className="flex-1">
-                      <p className="text-sm text-slate-600 line-clamp-2">
-                         <span className="font-bold text-slate-900">Rajesh Malhotra</span> 
-                         {i % 2 === 0 ? ' posted a new availability for ' : ' added a requirement for '}
-                         <span className="text-primary-600 font-semibold">3BHK in Hiranandani Estate</span>
-                      </p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">12 MINS AGO</p>
-                   </div>
-                </div>
-              ))}
-              <div className="p-4 text-center">
-                 <button className="text-xs font-bold text-slate-400 hover:text-slate-900 transition-all uppercase tracking-widest">Load More Activities</button>
-              </div>
-           </Card>
+              {recentPostings.length === 0 ? (
+                 <div className="p-8 text-center text-slate-400 text-sm font-bold uppercase tracking-widest">No activity yet</div>
+               ) : (
+                 recentPostings.map((item) => (
+                  <div key={item._id} className="p-4 flex items-start gap-4 hover:bg-slate-50 transition-colors cursor-pointer group" onClick={() => navigate(`/property/${item._id}`)}>
+                     <div className={`w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 ${item.postType === 'AVAILABILITY' ? 'text-blue-500' : 'text-amber-500'}`}>
+                        {item.postType === 'AVAILABILITY' ? <ExternalLink size={20} /> : <ClipboardList size={20} />}
+                     </div>
+                     <div className="flex-1">
+                        <p className="text-sm text-slate-600 line-clamp-2">
+                           <span className="font-bold text-slate-900">{item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System Agent'}</span> 
+                           {item.postType === 'AVAILABILITY' ? ' posted a new availability for ' : ' added a requirement for '}
+                           <span className="text-primary-600 font-semibold">
+                             {item.bedrooms ? `${item.bedrooms} BHK` : SUBTYPE_DISPLAY_MAP[item.subType]} in {item.location}
+                           </span>
+                        </p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                          {new Date(item.createdAt).toLocaleDateString()}
+                        </p>
+                     </div>
+                  </div>
+                ))
+               )}
+               <div className="p-4 text-center">
+                  <button onClick={() => navigate('/feed')} className="text-xs font-bold text-slate-400 hover:text-slate-900 transition-all uppercase tracking-widest">View Global Feed</button>
+               </div>
+            </Card>
         </div>
       </div>
 

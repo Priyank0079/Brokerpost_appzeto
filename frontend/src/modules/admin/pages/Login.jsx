@@ -21,8 +21,8 @@ const AdminLogin = () => {
     setError('');
 
     // Small delay for professional feel
-    setTimeout(() => {
-      const result = adminLogin(email, password);
+    setTimeout(async () => {
+      const result = await adminLogin(email, password);
       if (result.success) {
         navigate('/admin');
       } else {

@@ -11,9 +11,27 @@ import {
   CheckCircle2,
   ChevronRight,
   ArrowLeft,
-  X
+  X,
+  Loader2,
+  Image as ImageIcon,
+  Upload,
+  XCircle
 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { createPosting, uploadPropertyImages } from '../../services/postingService';
+
+// Maps display labels (from CONFIG) → schema enum keys
+const SUBTYPE_KEY_MAP = {
+  'Apartments':          'APARTMENTS',
+  'Low Rise Floors':     'LOW_RISE_FLOORS',
+  'Kothi / Villas':      'KOTHI_VILLAS',
+  'Plots':               'PLOTS',
+  'Shop / Showroom':     'SHOP_SHOWROOM',
+  'Office':              'OFFICE',
+  'Warehouse':           'WAREHOUSE',
+  'Standalone Building': 'STANDALONE_BUILDING',
+  'Plot':                'PLOT',
+};
 
 const CONFIG = {
   RESIDENTIAL: {
@@ -99,9 +117,128 @@ const CONFIG = {
 };
 
 const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
+  const navigate = useNavigate();
   const { propertyType, flowType, intent, subType } = selections;
   const isResidentialPurchaseRequirement =
     propertyType === 'RESIDENTIAL' && flowType === 'REQUIREMENT' && intent === 'PURCHASE';
+
+  // ── Controlled form state (keys match backend schema exactly) ──────────────
+  const [formData, setFormData] = useState({
+    location: '', project: '',
+    size: '', sizeUnit: 'SQ_FT',
+    bedrooms: '',
+    priceRate: '', priceRateType: 'PER_SQFT',
+    totalAmount: '', totalAmountUnit: 'LAKH',
+    budgetMin: '', budgetMax: '', budgetUnit: 'LAKH',
+    occupancy: '', constructionStatus: '',
+    tenantPreference: [], shortDescription: '',
+    images: []
+  });
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
+
+  const set = (key, val) => setFormData(p => ({ ...p, [key]: val }));
+  
+  const handleImageUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    
+    if (formData.images.length + files.length > 5) {
+      setError('Max 5 images allowed');
+      return;
+    }
+
+    setUploading(true);
+    setError('');
+    try {
+      const result = await uploadPropertyImages(files);
+      if (result.success) {
+        set('images', [...formData.images, ...result.data]);
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError('Image upload failed');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (url) => {
+    set('images', formData.images.filter(img => img !== url));
+  };
+
+  const toggleArr = (key, val) => setFormData(p => ({
+    ...p,
+    [key]: p[key].includes(val) ? p[key].filter(x => x !== val) : [...p[key], val]
+  }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    // Validation
+    const missingFields = [];
+    fields.forEach(f => {
+      if (f === 'location' && !formData.location.trim()) missingFields.push('Location');
+      if (f === 'project' && !formData.project.trim()) missingFields.push('Project');
+      if (f === 'size' && !formData.size) missingFields.push('Size');
+      if (f === 'bedrooms' && !formData.bedrooms) missingFields.push('BHK');
+      if ((f === 'price_sqft' || f === 'rent_type' || f === 'budget_type') && !formData.priceRate) missingFields.push('Rate/Price');
+      if ((f === 'total_cost' || f === 'total_rent') && !formData.totalAmount) missingFields.push('Total Amount');
+      if (f === 'total_budget') {
+        if (flowType === 'REQUIREMENT') {
+          if (!formData.budgetMin || !formData.budgetMax) missingFields.push('Budget Range');
+        } else {
+          if (!formData.totalAmount) missingFields.push('Total Budget');
+        }
+      }
+      if (f === 'budget_rent' && (!formData.budgetMin || !formData.budgetMax)) missingFields.push('Budget Range');
+      if (f === 'vacant_rented' && !formData.occupancy) missingFields.push('Occupancy');
+      if ((f === 'status_res' || f === 'status_com') && !formData.constructionStatus) missingFields.push('Status');
+      if (f === 'short_description' && !formData.shortDescription.trim()) missingFields.push('Short Description');
+    });
+
+    if (missingFields.length > 0) {
+      setError(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = {
+        vertical:  propertyType,
+        postType:  flowType,
+        intent:    intent,
+        subType:   propertyType === 'COMMERCIAL' && subType === 'Apartments' 
+                   ? 'COMMERCIAL_APARTMENTS' 
+                   : (SUBTYPE_KEY_MAP[subType] || subType),
+        // Remove empty strings so mongoose doesn't complain
+        ...Object.fromEntries(
+          Object.entries(formData).filter(([, v]) =>
+            v !== '' && !(Array.isArray(v) && v.length === 0)
+          )
+        )
+      };
+      const result = await createPosting(payload);
+      if (result.success) {
+        onSubmit(result.data);
+        // Navigate based on post type
+        if (payload.postType === 'AVAILABILITY') {
+          navigate('/my-listings');
+        } else {
+          navigate('/my-requirements');
+        }
+      } else {
+        setError(result.message || 'Failed to create posting');
+      }
+    } catch (err) {
+      setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const currentIntent = CONFIG[propertyType].flows[flowType].intents[intent];
   let fields = [...currentIntent.fields];
@@ -115,26 +252,22 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         } else if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
           fields = ['location', 'project', 'size', 'bedrooms', 'total_budget', 'status_res'];
         }
-        // Apartments remain as defined in CONFIG (matches Table 1)
       } else if (intent === 'RENT') {
         if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
           fields = ['location', 'project', 'size', 'bedrooms', 'budget_rent'];
         }
-        // Apartments remain as defined in CONFIG (matches Table 2)
       }
     } else if (flowType === 'AVAILABILITY') {
       if (intent === 'SALE') {
         if (subType === 'Plots') {
-          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost'];
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost', 'images'];
         } else if (subType === 'Apartments') {
-          fields = ['location', 'project', 'size', 'bedrooms', 'price_sqft', 'total_cost', 'status_res'];
+          fields = ['location', 'project', 'size', 'bedrooms', 'price_sqft', 'total_cost', 'status_res', 'images'];
         } else {
-          fields = ['location', 'project', 'size', 'bedrooms', 'total_cost', 'status_res'];
+          fields = ['location', 'project', 'size', 'bedrooms', 'total_cost', 'status_res', 'images'];
         }
       } else if (intent === 'RENTALS') {
-        if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas' || subType === 'Apartments') {
-          fields = ['location', 'project', 'size', 'bedrooms', 'rent'];
-        }
+        fields = ['location', 'project', 'size', 'bedrooms', 'rent', 'images'];
       }
     }
   } else if (propertyType === 'COMMERCIAL') {
@@ -153,67 +286,31 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
     } else if (flowType === 'AVAILABILITY') {
       if (intent === 'SALE') {
         if (subType === 'Plot') {
-          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost'];
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost', 'images'];
         } else {
-          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost', 'vacant_rented', 'status_com'];
+          fields = ['location', 'project', 'size', 'price_sqft', 'total_cost', 'vacant_rented', 'status_com', 'images'];
         }
       } else if (intent === 'LEASE') {
-        if (subType === 'Shop / Showroom' || subType === 'Office') {
-          fields = ['location', 'project', 'size', 'rent_type', 'total_rent'];
-        } else {
-          fields = ['location', 'project', 'size', 'rent_type', 'total_rent'];
-        }
+        fields = ['location', 'project', 'size', 'rent_type', 'total_rent', 'images'];
       }
     }
   }
 
   const units = ['Thousand', 'Lakh', 'Cr'];
 
-  const renderPricingInput = (label, valueKey, unitKey, placeholder, isRange = false) => (
-    <div className="space-y-3">
-      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">{label}</label>
-      <div className="flex gap-2">
-        {isRange ? (
-          <div className="flex-1 flex gap-2">
-            <input 
-              type="number" 
-              placeholder="Min"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
-            />
-            <input 
-              type="number" 
-              placeholder="Max"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
-            />
-          </div>
-        ) : (
-          <div className="relative flex-1 group">
-            <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-            <input 
-              type="number" 
-              placeholder={placeholder}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
-            />
-          </div>
-        )}
-        <select className="bg-slate-900 text-white rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none">
-          {units.map(u => <option key={u} value={u}>{u}</option>)}
-        </select>
-      </div>
-    </div>
-  );
-
   const renderField = (fieldKey) => {
     switch (fieldKey) {
       case 'location':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Location <span className="text-red-500">*</span></label>
             <div className="relative group">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Sector / Area / City"
+                value={formData.location}
+                onChange={e => set('location', e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
               />
             </div>
@@ -223,13 +320,15 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              {propertyType === 'RESIDENTIAL' ? 'Project/Society Name' : 'Project Name'}
+              {propertyType === 'RESIDENTIAL' ? 'Project/Society Name' : 'Project Name'} <span className="text-red-500">*</span>
             </label>
             <div className="relative group">
               <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder={propertyType === 'RESIDENTIAL' ? 'Enter project or society name' : 'Enter Name'}
+                value={formData.project}
+                onChange={e => set('project', e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
               />
             </div>
@@ -249,20 +348,27 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              Size
+              Size <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1 group">
                 <Layout className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   placeholder="Enter Size"
+                  value={formData.size}
+                  onChange={e => set('size', e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
                 />
               </div>
               {sizeUnits.length > 1 ? (
-                <select className="bg-slate-900 text-white rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none">
-                  {sizeUnits.map(u => <option key={u} value={u}>{u}</option>)}
+                <select
+                  value={formData.sizeUnit}
+                  onChange={e => set('sizeUnit', e.target.value)}
+                  className="bg-slate-900 text-white rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none">
+                  <option value="SQ_FT">Sq. Ft.</option>
+                  <option value="SQ_YD">Sq. Yd.</option>
+                  <option value="SQ_MT">Sq. Mt.</option>
                 </select>
               ) : (
                 <div className="bg-slate-100 text-slate-500 rounded-xl px-4 flex items-center text-[10px] font-bold uppercase tracking-widest">
@@ -275,44 +381,53 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
       case 'bedrooms':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BHK</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">BHK <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-5 gap-2">
               {['1', '2', '3', '4', '5+'].map(num => (
-                <button key={num} type="button" className="py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-bold hover:border-primary-500 transition-all">{num}</button>
+                <button
+                  key={num} type="button"
+                  onClick={() => set('bedrooms', num)}
+                  className={`py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                    formData.bedrooms === num
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white border-slate-200 hover:border-primary-500'
+                  }`}>{num}</button>
               ))}
             </div>
           </div>
         );
       case 'budget_type':
       case 'price_sqft':
-      case 'rent_type':
-        const priceUnits = (subType === 'Plots' || subType === 'Plot')
-          ? ['Per Sqft', 'Per Sqyd', 'Per Sqmtr', 'Lumpsum']
-          : ['Per Sqft', 'Lumpsum'];
+      case 'rent_type': {
+        const priceTypeOpts = (subType === 'Plots' || subType === 'Plot')
+          ? [['PER_SQFT','Per Sqft'],['PER_SQYD','Per Sqyd'],['PER_SQMT','Per Sqmt'],['LUMPSUM','Lumpsum']]
+          : [['PER_SQFT','Per Sqft'],['LUMPSUM','Lumpsum']];
         return (
           <div key={fieldKey} className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-              {fieldKey === 'rent_type' ? 'Rent Rate' : 'Price Rate'}
+              {fieldKey === 'rent_type' ? 'Rent Rate' : 'Price Rate'} <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1 group">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input 
-                  type="number" 
-                  placeholder="Amount"
+                <input type="number" placeholder="Amount"
+                  value={formData.priceRate}
+                  onChange={e => set('priceRate', e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
                 />
               </div>
-              <select className="bg-slate-100 text-slate-900 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none border-none">
-                {priceUnits.map(u => <option key={u}>{u}</option>)}
+              <select value={formData.priceRateType} onChange={e => set('priceRateType', e.target.value)}
+                className="bg-slate-100 text-slate-900 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none border-none">
+                {priceTypeOpts.map(([v,l]) => <option key={v} value={v}>{l}</option>)}
               </select>
             </div>
           </div>
         );
+      }
       case 'budget_sqft':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget in Sq.ft.</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget in Sq.ft. <span className="text-red-500">*</span></label>
             <div className="relative group">
               <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
               <input 
@@ -326,21 +441,19 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
       case 'budget_rent':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Budget Range <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-2 gap-2">
               <div className="relative group">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input 
-                  type="number" 
-                  placeholder="Min"
+                <input type="number" placeholder="Min"
+                  value={formData.budgetMin} onChange={e => set('budgetMin', e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
                 />
               </div>
               <div className="relative group">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-                <input 
-                  type="number" 
-                  placeholder="Max"
+                <input type="number" placeholder="Max"
+                  value={formData.budgetMax} onChange={e => set('budgetMax', e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
                 />
               </div>
@@ -350,12 +463,11 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
       case 'rent':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rent</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Rent <span className="text-red-500">*</span></label>
             <div className="relative group">
               <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
-              <input 
-                type="number" 
-                placeholder="e.g. 55000"
+              <input type="number" placeholder="e.g. 55000"
+                value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)}
                 className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
               />
             </div>
@@ -364,16 +476,16 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
       case 'tenant_status':
         return (
           <div key={fieldKey} className="space-y-1.5 md:col-span-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tenant Status</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tenant Preference</label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-              {['Students', 'Family', 'MNC', 'Korean', 'Businessman'].map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-[10px] font-bold uppercase tracking-widest text-slate-700 hover:border-primary-500 hover:text-primary-600 transition-all"
-                >
-                  {opt}
-                </button>
+              {[['STUDENTS','Students'],['FAMILY','Family'],['MNC','MNC'],['KOREAN','Korean'],['BUSINESSMAN','Businessman']].map(([v,l]) => (
+                <button key={v} type="button"
+                  onClick={() => toggleArr('tenantPreference', v)}
+                  className={`rounded-xl border px-3 py-3 text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    formData.tenantPreference.includes(v)
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-white text-slate-700 border-slate-200 hover:border-primary-500'
+                  }`}>{l}</button>
               ))}
             </div>
           </div>
@@ -400,52 +512,121 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         );
       case 'total_budget':
       case 'total_cost':
-      case 'total_rent':
-        let label = 'Total Cost';
-        if (fieldKey === 'total_budget') label = 'Total Budget';
-        if (fieldKey === 'total_rent') label = 'Total Rent';
-        return renderPricingInput(label, 'total', 'totalUnit', 'Amount', flowType === 'REQUIREMENT');
+      case 'total_rent': {
+        const totalLabel = fieldKey === 'total_budget' ? 'Total Budget' : fieldKey === 'total_rent' ? 'Total Rent' : 'Total Cost';
+        const isRangeField = flowType === 'REQUIREMENT' && fieldKey === 'total_budget';
+        return (
+          <div key={fieldKey} className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{totalLabel} <span className="text-red-500">*</span></label>
+            <div className="flex gap-2">
+              {isRangeField ? (
+                <div className="flex-1 flex gap-2">
+                  <input type="number" placeholder="Min" value={formData.budgetMin} onChange={e => set('budgetMin', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                  <input type="number" placeholder="Max" value={formData.budgetMax} onChange={e => set('budgetMax', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                </div>
+              ) : (
+                <div className="relative flex-1">
+                  <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
+                  <input type="number" placeholder="Amount" value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                </div>
+              )}
+              <select value={isRangeField ? formData.budgetUnit : formData.totalAmountUnit}
+                onChange={e => set(isRangeField ? 'budgetUnit' : 'totalAmountUnit', e.target.value)}
+                className="bg-slate-900 text-white rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none">
+                <option value="THOUSAND">Thousand</option>
+                <option value="LAKH">Lakh</option>
+                <option value="CR">Cr</option>
+              </select>
+            </div>
+          </div>
+        );
+      }
       case 'vacant_rented':
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Occupancy</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Occupancy <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-2 gap-3">
-              {['Vacant', 'Rented'].map(opt => (
-                <button key={opt} type="button" className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all">{opt}</button>
+              {[['VACANT','Vacant'],['RENTED','Rented']].map(([v,l]) => (
+                <button key={v} type="button" onClick={() => set('occupancy', v)}
+                  className={`py-3 rounded-xl border text-[10px] font-bold uppercase transition-all ${
+                    formData.occupancy === v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-200 hover:border-primary-500'
+                  }`}>{l}</button>
               ))}
             </div>
           </div>
         );
       case 'status_res':
       case 'status_com':
-        const isRequirement = flowType === 'REQUIREMENT';
-        const statusOptions = (fieldKey === 'status_res' || fieldKey === 'status_com') 
-          ? ['Ready to Move', 'Under Construction']
-          : ['Ready', 'Under Const.'];
-        
         return (
           <div key={fieldKey} className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status</label>
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Status <span className="text-red-500">*</span></label>
             <div className="grid grid-cols-2 gap-3">
-              {statusOptions.map(opt => (
-                <button 
-                  key={opt} 
-                  type="button" 
-                  className="py-3 rounded-xl border border-slate-200 bg-white text-[10px] font-bold uppercase hover:border-primary-500 transition-all"
-                >
-                  {opt}
-                </button>
+              {[['READY','Ready to Move'],['UNDER_CONSTRUCTION','Under Construction']].map(([v,l]) => (
+                <button key={v} type="button" onClick={() => set('constructionStatus', v)}
+                  className={`py-3 rounded-xl border text-[10px] font-bold uppercase transition-all ${
+                    formData.constructionStatus === v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-200 hover:border-primary-500'
+                  }`}>{l}</button>
               ))}
             </div>
           </div>
         );
+      case 'images':
+        return (
+          <div key={fieldKey} className="space-y-1.5 md:col-span-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex justify-between">
+              <span>Property Images (Max 5)</span>
+              <span className={formData.images.length === 5 ? 'text-red-500' : ''}>{formData.images.length}/5</span>
+            </label>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+              {formData.images.map((url, idx) => (
+                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group border border-slate-100">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button 
+                    type="button"
+                    onClick={() => removeImage(url)}
+                    className="absolute top-1 right-1 p-1 bg-white/80 backdrop-blur-sm rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <XCircle size={16} />
+                  </button>
+                </div>
+              ))}
+              
+              {formData.images.length < 5 && (
+                <label className={`aspect-square rounded-xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all ${uploading ? 'bg-slate-50 border-slate-200' : 'border-slate-200 hover:border-primary-400 hover:bg-primary-50'}`}>
+                  {uploading ? (
+                    <Loader2 className="text-primary-500 animate-spin" size={24} />
+                  ) : (
+                    <>
+                      <Upload className="text-slate-400" size={24} />
+                      <span className="text-[10px] font-bold text-slate-400 mt-2">Upload</span>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleImageUpload} 
+                    disabled={uploading}
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+        );
+
       case 'short_description':
         return (
           <div key={fieldKey} className="space-y-1.5 md:col-span-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Short Description</label>
-            <textarea
-              rows={4}
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Short Description <span className="text-red-500">*</span></label>
+            <textarea rows={4}
               placeholder="Add a short note about furnishing, parking, floor preference, possession, etc."
+              value={formData.shortDescription}
+              onChange={e => set('shortDescription', e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none"
             />
           </div>
@@ -477,13 +658,17 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         <button onClick={onCancel} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
       </div>
 
-      <form className="p-8 space-y-8" onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
+      <form className="p-8 space-y-8" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {fields.map(f => renderField(f))}
         </div>
-        
+        {error && (
+          <p className="text-red-500 text-sm font-bold">{error}</p>
+        )}
         <div className="pt-4 flex items-center gap-3">
-          <button type="submit" className="px-10 py-4 bg-primary-600 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-primary-500 shadow-lg shadow-primary-600/20 transition-all">
+          <button type="submit" disabled={loading}
+            className="px-10 py-4 bg-primary-600 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-primary-500 shadow-lg shadow-primary-600/20 transition-all disabled:opacity-60 flex items-center gap-2">
+            {loading && <Loader2 size={14} className="animate-spin" />}
             {isResidentialPurchaseRequirement ? 'Submit Requirement' : 'Submit Listing'}
           </button>
           <button type="button" onClick={onCancel} className="px-10 py-4 text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:bg-slate-50 rounded-xl transition-all">Cancel</button>
@@ -495,6 +680,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
 
 const PropertyPostingFlow = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [step, setStep] = useState('TYPE');
   const [selections, setSelections] = useState({ propertyType: '', flowType: '', intent: '', subType: '' });
 
@@ -630,11 +816,14 @@ const PropertyPostingFlow = () => {
         );
       case 'FORM':
         return (
-          <DynamicPropertyForm 
-            selections={selections} 
-            onCancel={() => setStep('TYPE')} 
+          <DynamicPropertyForm
+            selections={selections}
+            onCancel={() => setStep('TYPE')}
             onBack={() => setStep('SUBTYPE')}
-            onSubmit={() => alert('Success!')} 
+            onSubmit={(posted) => {
+              setStep('TYPE');
+              setSelections({ propertyType: '', flowType: '', intent: '', subType: '' });
+            }}
           />
         );
       default: return null;

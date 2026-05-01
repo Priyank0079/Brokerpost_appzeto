@@ -4,7 +4,29 @@ import { Eye, Filter, Search } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
-import { listings } from '../data/listings';
+import { listings as staticListings } from '../data/listings';
+import { getMyPostings } from '../services/postingService';
+
+const INTENT_MAP = {
+  'PURCHASE': 'Sale',
+  'RENT': 'Rent',
+  'SALE': 'Sale',
+  'RENTALS': 'Rent',
+  'LEASE': 'Lease'
+};
+
+const SUBTYPE_DISPLAY_MAP = {
+  'APARTMENTS': 'Apartments',
+  'LOW_RISE_FLOORS': 'Low Rise Floors',
+  'KOTHI_VILLAS': 'Kothi / Villas',
+  'PLOTS': 'Plots',
+  'SHOP_SHOWROOM': 'Shop / Showroom',
+  'OFFICE': 'Office',
+  'WAREHOUSE': 'Warehouse',
+  'STANDALONE_BUILDING': 'Standalone Building',
+  'PLOT': 'Plot',
+  'COMMERCIAL_APARTMENTS': 'Apartments (Com)'
+};
 
 const phoneByBroker = {
   'John Doe': '9876543210',
@@ -28,40 +50,59 @@ const MyRequirements = () => {
   const [budgetFilter, setBudgetFilter] = useState('All Budgets');
   const [unitFilter, setUnitFilter] = useState('All Units');
 
+  const [postings, setPostings] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getMyPostings({ postType: 'REQUIREMENT' });
+      if (result.success) {
+        setPostings(result.data);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
   const propertyTypeOptions = useMemo(() => {
-    const options = new Set(listings.map((item) => item.type));
-    return ['All Property Types', ...Array.from(options)];
+    return ['All Property Types', ...Object.values(SUBTYPE_DISPLAY_MAP)];
   }, []);
 
   const filteredListings = useMemo(() => {
-    return listings.filter((item) => {
+    return postings.filter((item) => {
       const matchesSearch =
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.broker.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = typeFilter === 'All Types' || item.flow === typeFilter;
-      const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || item.type === propertyTypeFilter;
-      const matchesTransaction =
-        transactionFilter === 'All Transactions' || item.transaction === transactionFilter;
-      const matchesGroup = groupFilter === 'All Groups' || item.group === groupFilter;
-      const matchesBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
-      const matchesStatus = statusFilter === 'All Status' || 
-                           (statusFilter === 'Ready to Move' && item.status === 'Active') ||
-                           (statusFilter === 'Under Construction' && item.status === 'Pending');
+        (item.project || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.location.toLowerCase().includes(searchTerm.toLowerCase());
       
-      let matchesBudget = true;
-      if (budgetFilter !== 'All Budgets') {
-        const price = item.price;
-        if (budgetFilter === 'Under 50L') matchesBudget = price < 5000000;
-        else if (budgetFilter === '50L - 1Cr') matchesBudget = price >= 5000000 && price <= 10000000;
-        else if (budgetFilter === '1Cr - 5Cr') matchesBudget = price > 10000000 && price <= 50000000;
-        else if (budgetFilter === 'Above 5Cr') matchesBudget = price > 50000000;
-      }
+      const matchesType = 
+        typeFilter === 'All Types' || 
+        (typeFilter === 'Availability' && item.postType === 'AVAILABILITY') ||
+        (typeFilter === 'Requirement' && item.postType === 'REQUIREMENT');
 
-      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesGroup && matchesBhk && matchesStatus && matchesBudget;
+      const matchesPropertyType =
+        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
+      
+      const matchesTransaction =
+        transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
+      
+      const matchesBHK = 
+        bhkFilter === 'All BHK' || (item.bedrooms === bhkFilter.split(' ')[0]);
+
+      const matchesStatus = 
+        statusFilter === 'All Status' || 
+        (statusFilter === 'Ready to Move' && item.constructionStatus === 'READY') ||
+        (statusFilter === 'Under Construction' && item.constructionStatus === 'UNDER_CONSTRUCTION');
+      
+      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesBHK && matchesStatus;
     });
-  }, [searchTerm, typeFilter, propertyTypeFilter, transactionFilter, groupFilter, bhkFilter, statusFilter, budgetFilter]);
+  }, [postings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter, bhkFilter, statusFilter]);
 
   return (
     <div className="space-y-6 bg-[#f8fafc]">
@@ -188,62 +229,99 @@ const MyRequirements = () => {
       </div>
 
       <Card noPadding className="overflow-hidden border-[#dbe4f0] shadow-[0_14px_50px_rgba(15,23,42,0.06)]">
-        <div className="overflow-x-auto">
+        {/* Desktop Table View */}
+        <div className="hidden lg:block overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead className="bg-[#f8fafc] text-slate-500">
               <tr className="border-b border-[#e5edf6]">
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Type ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Property Type ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Transaction ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Location ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Society Name ↑</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Broker Name ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold">Phone No. ↑↓</th>
-                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase">Action</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Type</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Property Type</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Transaction</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Location</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Society/Project</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Broker</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Phone</th>
+                <th className="px-5 py-5 text-left text-[13px] font-semibold uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white">
-              {filteredListings.map((item, index) => (
-                <tr key={item.id} className={`border-b border-slate-100 last:border-b-0 transition-colors ${index % 2 === 1 ? 'bg-white' : 'bg-white'}`}>
-                  <td className="px-5 py-6">
-                    <Badge
-                      variant={item.flow === 'Availability' ? 'success' : 'warning'}
-                      className={`rounded-full px-4 py-1.5 text-[11px] font-bold ${
-                        item.flow === 'Availability'
-                          ? 'border-[#86efac] bg-[#ecfdf5] text-emerald-700'
-                          : 'border-[#fde68a] bg-[#fffbeb] text-amber-600'
-                      }`}
-                    >
-                      {item.flow}
-                    </Badge>
-                  </td>
-                  <td className="px-5 py-6 text-[15px] font-semibold text-slate-700">{item.type}</td>
-                  <td className="px-5 py-6 text-[15px] text-slate-700">{item.transaction}</td>
-                  <td className="px-5 py-6 text-[15px] text-slate-700">{item.location.split(',')[0]}</td>
-                  <td className="px-5 py-6 text-[15px] font-semibold text-slate-900">{item.title}</td>
-                  <td className="px-5 py-6 text-[15px] text-slate-700">{item.broker}</td>
-                  <td className="px-5 py-6 text-[15px] text-slate-700">
-                    {(() => {
-                      const phone = phoneByBroker[item.broker];
-                      if (!phone) return '-';
-                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
-                    })()}
-                  </td>
-                  <td className="px-5 py-6">
-                    <Link to={`/property/${item.id}`}>
-                      <Button
-                        variant="primary"
-                        className="bg-[#ff7a00] hover:bg-[#ef6f00] text-white px-4 py-2.5 text-[13px] font-bold shadow-[0_8px_18px_rgba(255,122,0,0.22)] rounded-xl"
-                        leftIcon={<Eye size={14} />}
-                      >
-                        View
-                      </Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan="8" className="px-5 py-10 text-center text-slate-400 font-bold">Fetching requirements...</td></tr>
+              ) : filteredListings.length === 0 ? (
+                <tr><td colSpan="8" className="px-5 py-10 text-center text-slate-400">No requirements found</td></tr>
+              ) : (
+                filteredListings.map((item) => (
+                  <tr key={item._id} className="border-b border-slate-100 last:border-b-0 transition-colors hover:bg-slate-50/50">
+                    <td className="px-5 py-6">
+                      <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-amber-600 uppercase tracking-tighter">REQUIREMENT</Badge>
+                    </td>
+                    <td className="px-5 py-6 text-[14px] font-bold text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                    <td className="px-5 py-6 text-[14px] font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
+                    <td className="px-5 py-6 text-[14px] text-slate-600 truncate max-w-[150px]">{item.location}</td>
+                    <td className="px-5 py-6 text-[14px] font-bold text-slate-900">{item.project || '-'}</td>
+                    <td className="px-5 py-6 text-[14px] font-medium text-slate-600">Me</td>
+                    <td className="px-5 py-6 text-[14px] text-slate-400 italic">Locked</td>
+                    <td className="px-5 py-6">
+                      <Link to={`/property/${item._id}`}>
+                        <Button
+                          variant="primary"
+                          className="bg-[#ff7a00] hover:bg-[#ef6f00] text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 rounded-xl"
+                          leftIcon={<Eye size={14} />}
+                        >
+                          View
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="space-y-4 p-4 lg:hidden">
+          {loading ? (
+            <div className="py-10 text-center text-slate-400 font-bold">Fetching your requirements...</div>
+          ) : filteredListings.length === 0 ? (
+            <div className="py-10 text-center text-slate-400 font-bold">No requirements found</div>
+          ) : (
+            filteredListings.map((item) => (
+              <div key={item._id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-amber-600">REQUIREMENT</Badge>
+                    <h3 className="mt-3 text-base font-bold text-slate-900">{item.project || 'No Project'}</h3>
+                    <p className="text-sm text-slate-500">{item.location}</p>
+                  </div>
+                  <Link to={`/property/${item._id}`}>
+                    <Button variant="outline" className="px-3 py-2 text-xs font-bold">
+                      View
+                    </Button>
+                  </Link>
+                </div>
+
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
+                    <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Intent</p>
+                    <p className="font-medium text-slate-700">{INTENT_MAP[item.intent]}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Size</p>
+                    <p className="font-medium text-slate-700">{item.size} {item.sizeUnit === 'SQ_FT' ? 'sq.ft' : 'sq.yd'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Budget</p>
+                    <p className="font-medium text-slate-700">₹{item.budgetMin}-{item.budgetMax} {item.budgetUnit}</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {filteredListings.length === 0 && (

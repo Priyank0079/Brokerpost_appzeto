@@ -4,7 +4,29 @@ import { Eye, Filter, Search, SlidersHorizontal } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
-import { listings } from '../data/listings';
+import { listings as staticListings } from '../data/listings';
+import { getMyPostings } from '../services/postingService';
+
+const INTENT_MAP = {
+  'PURCHASE': 'Sale',
+  'RENT': 'Rent',
+  'SALE': 'Sale',
+  'RENTALS': 'Rent',
+  'LEASE': 'Lease'
+};
+
+const SUBTYPE_DISPLAY_MAP = {
+  'APARTMENTS': 'Apartments',
+  'LOW_RISE_FLOORS': 'Low Rise Floors',
+  'KOTHI_VILLAS': 'Kothi / Villas',
+  'PLOTS': 'Plots',
+  'SHOP_SHOWROOM': 'Shop / Showroom',
+  'OFFICE': 'Office',
+  'WAREHOUSE': 'Warehouse',
+  'STANDALONE_BUILDING': 'Standalone Building',
+  'PLOT': 'Plot',
+  'COMMERCIAL_APARTMENTS': 'Apartments (Com)'
+};
 
 const phoneByBroker = {
   'John Doe': '9876543210',
@@ -29,45 +51,59 @@ const MyListings = ({
   const [budgetFilter, setBudgetFilter] = useState('All Budgets');
   const [unitFilter, setUnitFilter] = useState('All Units');
 
-  const residentialListings = useMemo(
-    () => listings.filter((item) => item.vertical === 'Residential'),
-    []
-  );
+  const [postings, setPostings] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getMyPostings({ postType: 'AVAILABILITY' });
+      if (result.success) {
+        setPostings(result.data);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const propertyTypeOptions = useMemo(() => {
-    const options = new Set(residentialListings.map((item) => item.type));
-    return ['All Property Types', ...Array.from(options)];
-  }, [residentialListings]);
+    return ['All Property Types', ...Object.values(SUBTYPE_DISPLAY_MAP)];
+  }, []);
 
   const filteredListings = useMemo(() => {
-    return residentialListings.filter((item) => {
+    return postings.filter((item) => {
       const matchesSearch =
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.broker.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesType = typeFilter === 'All Types' || item.flow === typeFilter;
-      const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || item.type === propertyTypeFilter;
-      const matchesTransaction =
-        transactionFilter === 'All Transactions' || item.transaction === transactionFilter;
-      const matchesGroup = groupFilter === 'All Groups' || item.group === groupFilter;
-      const matchesBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
-      const matchesStatus = statusFilter === 'All Status' || 
-                           (statusFilter === 'Ready to Move' && item.status === 'Active') ||
-                           (statusFilter === 'Under Construction' && item.status === 'Pending');
+        (item.project || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.location.toLowerCase().includes(searchTerm.toLowerCase());
       
-      let matchesBudget = true;
-      if (budgetFilter !== 'All Budgets') {
-        const price = item.price;
-        if (budgetFilter === 'Under 50L') matchesBudget = price < 5000000;
-        else if (budgetFilter === '50L - 1Cr') matchesBudget = price >= 5000000 && price <= 10000000;
-        else if (budgetFilter === '1Cr - 5Cr') matchesBudget = price > 10000000 && price <= 50000000;
-        else if (budgetFilter === 'Above 5Cr') matchesBudget = price > 50000000;
-      }
+      const matchesType = 
+        typeFilter === 'All Types' || 
+        (typeFilter === 'Availability' && item.postType === 'AVAILABILITY') ||
+        (typeFilter === 'Requirement' && item.postType === 'REQUIREMENT');
 
-      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesGroup && matchesBhk && matchesStatus && matchesBudget;
+      const matchesPropertyType =
+        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
+      
+      const matchesTransaction =
+        transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
+      
+      const matchesBHK = 
+        bhkFilter === 'All BHK' || (item.bedrooms === bhkFilter.split(' ')[0]);
+
+      const matchesStatus = 
+        statusFilter === 'All Status' || 
+        (statusFilter === 'Ready to Move' && item.constructionStatus === 'READY') ||
+        (statusFilter === 'Under Construction' && item.constructionStatus === 'UNDER_CONSTRUCTION');
+      
+      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesBHK && matchesStatus;
     });
-  }, [residentialListings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter, groupFilter, bhkFilter, statusFilter, budgetFilter]);
+  }, [postings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter, bhkFilter, statusFilter]);
 
   const handleApplyFilters = () => {};
 
@@ -236,41 +272,36 @@ const MyListings = ({
               </tr>
             </thead>
             <tbody className="bg-white">
-              {filteredListings.map((item) => (
-                <tr key={item.id} className="border-t border-slate-100 hover:bg-slate-50/60 transition-colors">
-                  <td className="px-4 py-4">
-                    <Badge
-                      variant={item.flow === 'Availability' ? 'success' : 'warning'}
-                      className="rounded-full px-3 py-1 text-[11px] font-bold"
-                    >
-                      {item.flow}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-4 text-sm font-medium text-slate-700">{item.type}</td>
-                  <td className="px-4 py-4 text-sm text-slate-600">{item.transaction}</td>
-                  <td className="px-4 py-4 text-sm text-slate-600">{item.location.split(',')[0]}</td>
-                  <td className="px-4 py-4 text-sm font-semibold text-slate-900">{item.title}</td>
-                  <td className="px-4 py-4 text-sm text-slate-600">{item.broker}</td>
-                  <td className="px-4 py-4 text-sm text-slate-600">
-                    {(() => {
-                      const phone = phoneByBroker[item.broker];
-                      if (!phone) return '-';
-                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
-                    })()}
-                  </td>
-                  <td className="px-4 py-4">
-                    <Link to={`/property/${item.id}`}>
-                      <Button
-                        variant="primary"
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-xs font-bold shadow-none"
-                        leftIcon={<Eye size={14} />}
-                      >
-                        View
-                      </Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {loading ? (
+                <tr><td colSpan="8" className="px-4 py-8 text-center text-slate-400">Loading your listings...</td></tr>
+              ) : filteredListings.length === 0 ? (
+                <tr><td colSpan="8" className="px-4 py-8 text-center text-slate-400">No listings found</td></tr>
+              ) : (
+                filteredListings.map((item) => (
+                  <tr key={item._id} className="border-t border-slate-100 hover:bg-slate-50/60 transition-colors">
+                    <td className="px-4 py-4">
+                      <Badge variant="success" className="rounded-full px-3 py-1 text-[11px] font-bold">AVAILABILITY</Badge>
+                    </td>
+                    <td className="px-4 py-4 text-sm font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                    <td className="px-4 py-4 text-sm text-slate-600">{INTENT_MAP[item.intent]}</td>
+                    <td className="px-4 py-4 text-sm text-slate-600 truncate max-w-[150px]">{item.location}</td>
+                    <td className="px-4 py-4 text-sm font-semibold text-slate-900">{item.project || '-'}</td>
+                    <td className="px-4 py-4 text-sm text-slate-600">Me</td>
+                    <td className="px-4 py-4 text-sm text-slate-600">Locked</td>
+                    <td className="px-4 py-4">
+                      <Link to={`/property/${item._id}`}>
+                        <Button
+                          variant="primary"
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-xs font-bold shadow-none"
+                          leftIcon={<Eye size={14} />}
+                        >
+                          View
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
@@ -286,57 +317,46 @@ const MyListings = ({
         </div>
 
         <div className="space-y-4 p-4 lg:hidden">
-          {filteredListings.map((item) => (
-            <div key={item.id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <Badge
-                    variant={item.flow === 'Availability' ? 'success' : 'warning'}
-                    className="rounded-full px-3 py-1 text-[11px] font-bold"
-                  >
-                    {item.flow}
-                  </Badge>
-                  <h3 className="mt-3 text-base font-bold text-slate-900">{item.title}</h3>
-                  <p className="text-sm text-slate-500">{item.location}</p>
+          {loading ? (
+            <div className="py-10 text-center text-slate-400 font-bold">Syncing your inventory...</div>
+          ) : filteredListings.length === 0 ? (
+            <div className="py-10 text-center text-slate-400 font-bold">No postings found</div>
+          ) : (
+            filteredListings.map((item) => (
+              <div key={item._id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <Badge variant="success" className="rounded-full px-3 py-1 text-[11px] font-bold">AVAILABILITY</Badge>
+                    <h3 className="mt-3 text-base font-bold text-slate-900">{item.project || 'No Project'}</h3>
+                    <p className="text-sm text-slate-500">{item.location}</p>
+                  </div>
+                  <Link to={`/property/${item._id}`}>
+                    <Button variant="outline" className="px-3 py-2 text-xs font-bold">
+                      View
+                    </Button>
+                  </Link>
                 </div>
-                <Link to={`/property/${item.id}`}>
-                  <Button variant="outline" className="px-3 py-2 text-xs font-bold">
-                    View
-                  </Button>
-                </Link>
-              </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
-                  <p className="font-medium text-slate-700">{item.type}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Broker Name</p>
-                  <p className="font-medium text-slate-700">{item.broker}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Transaction</p>
-                  <p className="font-medium text-slate-700">{item.transaction}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Phone No.</p>
-                  <p className="font-medium text-slate-700">
-                    {(() => {
-                      const phone = phoneByBroker[item.broker];
-                      if (!phone) return '-';
-                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
-                    })()}
-                  </p>
+                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
+                    <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Intent</p>
+                    <p className="font-medium text-slate-700">{INTENT_MAP[item.intent]}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Size</p>
+                    <p className="font-medium text-slate-700">{item.size} {item.sizeUnit === 'SQ_FT' ? 'sq.ft' : 'sq.yd'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Price</p>
+                    <p className="font-medium text-slate-700">₹{item.totalAmount} {item.totalAmountUnit}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-
-          {filteredListings.length === 0 && (
-            <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center">
-              <p className="font-bold text-slate-900">No posts found</p>
-            </div>
+            ))
           )}
         </div>
       </Card>
