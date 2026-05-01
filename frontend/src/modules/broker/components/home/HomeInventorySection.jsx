@@ -30,8 +30,31 @@ import Badge from '../ui/Badge';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 import Card from '../ui/Card';
-import { listings } from '../../data/listings';
+import { listings as staticListings } from '../../data/listings';
 import { useAuth } from '../../context/AuthContext';
+import { getPostings } from '../../services/postingService';
+
+// Maps backend keys to display labels
+const INTENT_MAP = {
+  'PURCHASE': 'Sale',
+  'RENT': 'Rent',
+  'SALE': 'Sale',
+  'RENTALS': 'Rent',
+  'LEASE': 'Lease'
+};
+
+const SUBTYPE_DISPLAY_MAP = {
+  'APARTMENTS': 'Apartments',
+  'LOW_RISE_FLOORS': 'Low Rise Floors',
+  'KOTHI_VILLAS': 'Kothi / Villas',
+  'PLOTS': 'Plots',
+  'SHOP_SHOWROOM': 'Shop / Showroom',
+  'OFFICE': 'Office',
+  'WAREHOUSE': 'Warehouse',
+  'STANDALONE_BUILDING': 'Standalone Building',
+  'PLOT': 'Plot',
+  'COMMERCIAL_APARTMENTS': 'Apartments (Com)'
+};
 
 const phoneByBroker = {
   'John Doe': '9876543210',
@@ -140,53 +163,63 @@ const HomeInventorySection = () => {
   const [bhkFilter, setBhkFilter] = useState('All BHK');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+  const [postings, setPostings] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [unitFilter, setUnitFilter] = useState('All Units');
 
+  const fetchPostings = async () => {
+    setLoading(true);
+    try {
+      const params = {};
+      if (typeFilter !== 'All Types') params.postType = typeFilter.toUpperCase();
+      if (searchQuery) params.location = searchQuery;
+      if (bhkFilter !== 'All BHK') params.bedrooms = bhkFilter.split(' ')[0];
+      if (statusFilter !== 'All Status') {
+        params.constructionStatus = statusFilter === 'Ready to Move' ? 'READY' : 'UNDER_CONSTRUCTION';
+      }
+      
+      const result = await getPostings(params);
+      if (result.success) {
+        setPostings(result.data);
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPostings();
+  }, [searchQuery, typeFilter, bhkFilter, statusFilter]);
+
   const propertyTypeOptions = useMemo(() => {
-    const uniqueTypes = Array.from(new Set(listings.map((item) => item.type)));
+    const uniqueTypes = Array.from(new Set(staticListings.map((item) => item.type)));
     return ['All Property Types', ...uniqueTypes];
   }, []);
 
   const filteredListings = useMemo(() => {
-    const filtered = listings.filter((item) => {
-      const matchesSearch =
-        !searchQuery ||
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.broker.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = typeFilter === 'All Types' || item.flow === typeFilter;
+    // For now we use the fetched postings directly, but we can still apply secondary filters if needed
+    const data = postings.length > 0 ? postings : [];
+    
+    const filtered = data.filter((item) => {
+      // Basic client-side filtering for things not handled by API yet
       const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || item.type === propertyTypeFilter;
+        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
       const matchesTransaction =
-        transactionFilter === 'All Transactions' || item.transaction === transactionFilter;
-      const matchesGroup = groupFilter === 'All Groups' || item.group === groupFilter;
-      const matchesBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
-      const matchesStatus = statusFilter === 'All Status' || 
-                           (statusFilter === 'Ready to Move' && item.status === 'Active') ||
-                           (statusFilter === 'Under Construction' && item.status === 'Pending');
+        transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
       
-      let matchesBudget = true;
-      if (budgetFilter !== 'All Budgets') {
-        const price = item.price;
-        if (budgetFilter === 'Under 50L') matchesBudget = price < 5000000;
-        else if (budgetFilter === '50L - 1Cr') matchesBudget = price >= 5000000 && price <= 10000000;
-        else if (budgetFilter === '1Cr - 5Cr') matchesBudget = price > 10000000 && price <= 50000000;
-        else if (budgetFilter === 'Above 5Cr') matchesBudget = price > 50000000;
-      }
-
-      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesGroup && matchesBhk && matchesStatus && matchesBudget;
+      return matchesPropertyType && matchesTransaction;
     });
+
     const sorted = [...filtered].sort((a, b) => {
       const getSortValue = (item) => {
         switch (sortKey) {
-          case 'propertyType':
-            return item.type;
-          case 'location':
-            return item.location.split(',')[0];
-          case 'phone':
-            return phoneByBroker[item.broker] || '';
-          default:
-            return item[sortKey];
+          case 'propertyType': return item.subType;
+          case 'location': return item.location;
+          case 'title': return item.project;
+          case 'broker': return item.postedBy?.firstName || '';
+          default: return item[sortKey];
         }
       };
 
@@ -196,14 +229,13 @@ const HomeInventorySection = () => {
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
       }
-
       return sortDirection === 'asc'
         ? String(aValue).localeCompare(String(bValue))
         : String(bValue).localeCompare(String(aValue));
     });
 
     return sorted;
-  }, [searchQuery, typeFilter, propertyTypeFilter, transactionFilter, sortKey, sortDirection]);
+  }, [postings, propertyTypeFilter, transactionFilter, sortKey, sortDirection]);
 
   const handleSearch = () => {
     setSearchQuery(searchInput.trim());
@@ -468,101 +500,119 @@ const HomeInventorySection = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {filteredListings.slice(0, 6).map((item) => (
-                  <tr
-                    key={item.id}
-                    className="cursor-pointer hover:bg-slate-50/60 transition-colors group"
-                    onClick={(e) => handleView(e, item)}
-                  >
-                    <td className="px-4 py-5">
-                      <Badge
-                        variant={item.flow === 'Availability' ? 'success' : 'warning'}
-                        className="rounded-full px-3 py-1 text-[11px] font-bold"
-                      >
-                        {item.flow}
-                      </Badge>
-                    </td>
-                    <td className="px-4 py-5 text-sm font-medium text-slate-700">{item.type}</td>
-                    <td className="px-4 py-5 text-sm font-medium text-slate-600">{item.transaction}</td>
-                    <td className="px-4 py-5 text-sm font-medium text-slate-600">{item.location.split(',')[0]}</td>
-                    <td className="px-4 py-5 text-sm font-semibold text-slate-900">{item.title}</td>
-                    <td className="px-4 py-5 text-sm font-medium text-slate-600">{item.broker}</td>
-                    <td className="px-4 py-5 text-sm font-medium text-slate-600">
-                      {(() => {
-                        const phone = phoneByBroker[item.broker];
-                        if (!phone) return '-';
-                        return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
-                      })()}
-                    </td>
-                    <td className="px-4 py-5">
-                      <Button
-                        variant="primary"
-                        onClick={(e) => handleView(e, item)}
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-xs font-bold shadow-none"
-                        leftIcon={<Eye size={14} />}
-                      >
-                        View
-                      </Button>
-                    </td>
+                {loading ? (
+                  <tr>
+                    <td colSpan="8" className="px-4 py-10 text-center text-slate-400 font-medium">Loading inventory...</td>
                   </tr>
-                ))}
+                ) : filteredListings.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="px-4 py-10 text-center text-slate-400 font-medium">No postings found matching your criteria.</td>
+                  </tr>
+                ) : (
+                  filteredListings.slice(0, 10).map((item) => (
+                    <tr
+                      key={item._id}
+                      className="cursor-pointer hover:bg-slate-50/60 transition-colors group"
+                      onClick={(e) => handleView(e, item)}
+                    >
+                      <td className="px-4 py-5">
+                        <Badge
+                          variant={item.postType === 'AVAILABILITY' ? 'success' : 'warning'}
+                          className="rounded-full px-3 py-1 text-[11px] font-bold"
+                        >
+                          {item.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement'}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-600 truncate max-w-[150px]">{item.location}</td>
+                      <td className="px-4 py-5 text-sm font-semibold text-slate-900">{item.project || '-'}</td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-600">
+                        {item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System'}
+                      </td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-600">
+                        {(() => {
+                          const phone = item.postedBy?.phoneNumber;
+                          if (!phone) return '-';
+                          return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
+                        })()}
+                      </td>
+                      <td className="px-4 py-5">
+                        <Button
+                          variant="primary"
+                          onClick={(e) => handleView(e, item)}
+                          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-xs font-bold shadow-none"
+                          leftIcon={<Eye size={14} />}
+                        >
+                          View
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="xl:hidden p-4 space-y-4">
-            {filteredListings.slice(0, 6).map((item) => (
-              <div
-                key={item.id}
-                className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
-                onClick={() => navigate(`/property/${item.id}`)}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <Badge
-                      variant={item.flow === 'Availability' ? 'success' : 'warning'}
-                      className="rounded-full px-3 py-1 text-[11px] font-bold"
+            {loading ? (
+              <div className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">Loading...</div>
+            ) : filteredListings.length === 0 ? (
+              <div className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">No entries found</div>
+            ) : (
+              filteredListings.slice(0, 10).map((item) => (
+                <div
+                  key={item._id}
+                  className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+                  onClick={() => navigate(`/property/${item._id}`)}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <Badge
+                        variant={item.postType === 'AVAILABILITY' ? 'success' : 'warning'}
+                        className="rounded-full px-3 py-1 text-[11px] font-bold"
+                      >
+                        {item.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement'}
+                      </Badge>
+                      <h3 className="mt-3 text-base font-bold text-slate-900">{item.project || 'No Project'}</h3>
+                      <p className="text-sm text-slate-500 line-clamp-1">{item.location}</p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="px-3 py-2 text-xs font-bold"
+                      onClick={(e) => handleView(e, item)}
                     >
-                      {item.flow}
-                    </Badge>
-                    <h3 className="mt-3 text-base font-bold text-slate-900">{item.title}</h3>
-                    <p className="text-sm text-slate-500">{item.location}</p>
+                      View
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="px-3 py-2 text-xs font-bold"
-                    onClick={(e) => handleView(e, item)}
-                  >
-                    View
-                  </Button>
-                </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
-                    <p className="font-medium text-slate-700">{item.type}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Broker Name</p>
-                    <p className="font-medium text-slate-700">{item.broker}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Transaction</p>
-                    <p className="font-medium text-slate-700">{item.transaction}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Phone No.</p>
-                    <p className="font-medium text-slate-700">
-                      {(() => {
-                        const phone = phoneByBroker[item.broker];
-                        if (!phone) return '-';
-                        return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
-                      })()}
-                    </p>
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
+                      <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Broker Name</p>
+                      <p className="font-medium text-slate-700">{item.postedBy ? `${item.postedBy.firstName}` : 'System'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Transaction</p>
+                      <p className="font-medium text-slate-700">{INTENT_MAP[item.intent]}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Phone No.</p>
+                      <p className="font-medium text-slate-700">
+                        {(() => {
+                          const phone = item.postedBy?.phoneNumber;
+                          if (!phone) return '-';
+                          return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
+                        })()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -602,12 +652,12 @@ const HomeInventorySection = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="bg-primary-50 text-primary-600 font-black text-[9px] uppercase px-2 py-1 tracking-wider border-none">
-                    {selectedProperty.type}
+                    {SUBTYPE_DISPLAY_MAP[selectedProperty.subType]}
                   </Badge>
                   <span className="text-slate-300">•</span>
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: #BPS-{selectedProperty.id + 1000}</span>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: #{selectedProperty._id.slice(-6).toUpperCase()}</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">{selectedProperty.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">{selectedProperty.project || 'Untitled Posting'}</h2>
                 <div className="flex items-center gap-1.5 text-slate-500 font-medium text-sm">
                   <MapPin size={16} className="text-primary-500" />
                   {selectedProperty.location}
@@ -632,16 +682,16 @@ const HomeInventorySection = () => {
                 </div>
                 <div>
                   <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Accommodation</p>
-                  <p className="text-sm font-black text-slate-900">{selectedProperty.beds || 3} BHK</p>
+                  <p className="text-sm font-black text-slate-900">{selectedProperty.bedrooms || '-'} BHK</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 border-x border-slate-100 px-4">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                  <Bath size={20} />
+                  <Calendar size={20} />
                 </div>
                 <div>
-                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Washrooms</p>
-                  <p className="text-sm font-black text-slate-900">{selectedProperty.baths || 3} Luxury</p>
+                  <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Status</p>
+                  <p className="text-sm font-black text-slate-900 truncate">{selectedProperty.constructionStatus === 'READY' ? 'Ready' : 'Under Const.'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -650,7 +700,7 @@ const HomeInventorySection = () => {
                 </div>
                 <div>
                   <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Area</p>
-                  <p className="text-sm font-black text-slate-900">{selectedProperty.sqft.toLocaleString()} Sqft</p>
+                  <p className="text-sm font-black text-slate-900">{selectedProperty.size || '-'} {selectedProperty.sizeUnit === 'SQ_FT' ? 'Sqft' : 'Sqyd'}</p>
                 </div>
               </div>
             </div>
@@ -659,8 +709,7 @@ const HomeInventorySection = () => {
             <div className="space-y-3">
               <h4 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Detailed Narrative</h4>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                Explore this exceptional {selectedProperty.title} located in {selectedProperty.location}. 
-                Designed for high-end brokerage standards, this property offers premium visibility and matching requirements in the network.
+                {selectedProperty.shortDescription || `Explore this exceptional ${SUBTYPE_DISPLAY_MAP[selectedProperty.subType]} located in ${selectedProperty.location}. Designed for high-end brokerage standards, this property offers premium visibility.`}
               </p>
             </div>
 
@@ -677,8 +726,8 @@ const HomeInventorySection = () => {
                   </div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black text-white tracking-tight">{selectedProperty.broker}</h4>
-                  <p className="text-primary-400 text-[9px] font-black uppercase tracking-[0.3em] mt-0.5">Verified Network Partner</p>
+                  <h4 className="text-xl font-black text-white tracking-tight">{selectedProperty.postedBy ? `${selectedProperty.postedBy.firstName} ${selectedProperty.postedBy.lastName}` : 'System'}</h4>
+                  <p className="text-primary-400 text-[9px] font-black uppercase tracking-[0.3em] mt-0.5">{selectedProperty.postedBy?.companyName || 'Verified Network Partner'}</p>
                   <div className="flex items-center justify-center md:justify-start gap-4 mt-3">
                     <div className="text-center">
                       <p className="text-white text-sm font-black">124</p>

@@ -28,21 +28,34 @@ const AppRoutes = () => {
 
   return (
     <Routes>
+      {/* Public Landing Page */}
+      <Route path="/" element={
+        user ? (
+          <BrokerLayout><Home /></BrokerLayout>
+        ) : (
+          <Home />
+        )
+      } />
+
       {/* Auth */}
-      <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
+      <Route path="/login" element={
+        !user ? (
+          <Login />
+        ) : (
+          <Navigate to={isAdmin ? "/admin" : "/dashboard"} />
+        )
+      } />
       <Route path="/register" element={<BrokerRegistration />} />
       <Route path="/admin/login" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin" />} />
 
       {/* Admin Module */}
       <Route path="/admin/*" element={isAdmin ? <AdminRoutes /> : <Navigate to="/admin/login" />} />
 
-
-      {/* Broker Module (Protected) */}
+      {/* Protected Broker Module */}
       <Route path="/*" element={
         user ? (
           <BrokerLayout>
             <Routes>
-              <Route path="/" element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/residential" element={<ResidentialInventory />} />
               <Route path="/commercial" element={<CommercialInventory />} />
@@ -55,7 +68,7 @@ const AppRoutes = () => {
               <Route path="/settings" element={<Profile title="Account Settings" />} />
               <Route path="/post-property" element={<PostProperty />} />
               <Route path="/property/:id" element={<PropertyDetails />} />
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </BrokerLayout>
         ) : (

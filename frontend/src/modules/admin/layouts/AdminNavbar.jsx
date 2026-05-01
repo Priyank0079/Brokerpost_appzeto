@@ -13,14 +13,17 @@ import {
   LogOut
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../broker/context/AuthContext';
 
 
 const AdminNavbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const handleLogout = () => {
+    logout();
     navigate('/login');
   };
 
@@ -103,11 +106,11 @@ const AdminNavbar = ({ toggleSidebar }) => {
              className={`flex items-center gap-3 p-1.5 md:pl-1.5 md:pr-3 rounded-xl transition-all ${showUserMenu ? 'bg-slate-50' : 'hover:bg-slate-50'}`}
           >
             <div className="w-9 h-9 rounded-lg bg-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-md animate-fade-in">
-              AD
+              {user?.firstName?.charAt(0) || 'A'}{user?.lastName?.charAt(0) || ''}
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-xs font-bold text-slate-900 leading-none">System Admin</p>
-              <p className="text-[10px] font-bold text-emerald-600 mt-1 uppercase tracking-wider">Superuser</p>
+              <p className="text-xs font-bold text-slate-900 leading-none">{user?.firstName} {user?.lastName}</p>
+              <p className="text-[10px] font-bold text-emerald-600 mt-1 uppercase tracking-wider">{user?.role}</p>
             </div>
             <ChevronDown size={14} className={`text-slate-400 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
           </button>

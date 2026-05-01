@@ -21,14 +21,14 @@ export const AdminTable = ({ headers, children }) => {
   );
 };
 
-export const AdminTableRow = ({ children, className = "" }) => (
-  <tr className={`hover:bg-slate-50/80 transition-colors group ${className}`}>
+export const AdminTableRow = ({ children, className = "", ...props }) => (
+  <tr className={`hover:bg-slate-50/80 transition-colors group ${className}`} {...props}>
     {children}
   </tr>
 );
 
-export const AdminTableCell = ({ children, className = "" }) => (
-  <td className={`px-6 py-5 align-middle ${className}`}>
+export const AdminTableCell = ({ children, className = "", ...props }) => (
+  <td className={`px-6 py-5 align-middle ${className}`} {...props}>
     {children}
   </td>
 );

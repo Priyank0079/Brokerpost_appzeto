@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Building2, 
   MapPin, 
@@ -8,36 +8,63 @@ import {
   AlertTriangle,
   Search,
   Filter,
-  RotateCcw
+  RotateCcw,
+  Loader2
 } from 'lucide-react';
 import Card from '../../broker/components/ui/Card';
 import Button from '../../broker/components/ui/Button';
 import { AdminTable, AdminTableRow, AdminTableCell, StatusBadge, ActionButton } from '../components/common/AdminUI';
-import { listings as initialListings } from '../data/data';
+import { getPostings } from '../../broker/services/postingService';
 
 const Listings = () => {
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
-  const [propertyTypeFilter, setPropertyTypeFilter] = useState('All Property Types');
   const [transactionFilter, setTransactionFilter] = useState('All Transactions');
-  const [groupFilter, setGroupFilter] = useState('All Groups');
   const [statusFilter, setStatusFilter] = useState('All Status');
-  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await getPostings();
+        if (res.success) {
+          setListings(res.data);
+        }
+      } catch (err) {
+        console.error('Fetch listings error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const filteredListings = useMemo(() => {
-    return initialListings.filter((item) => {
-      const matchesSearch = !searchTerm || 
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.broker.toLowerCase().includes(searchTerm.toLowerCase());
+    return listings.filter((item) => {
+      const brokerName = item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System';
+      const title = item.project || item.location;
       
-      const matchesType = typeFilter === 'All Types' || item.type === typeFilter;
-      const matchesTransaction = transactionFilter === 'All Transactions' || item.category === transactionFilter;
-      const matchesStatus = statusFilter === 'All Status' || item.status === statusFilter;
+      const matchesSearch = !searchTerm || 
+        title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        brokerName.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesType = typeFilter === 'All Types' || 
+        (typeFilter === 'Residential' && item.vertical === 'RESIDENTIAL') ||
+        (typeFilter === 'Commercial' && item.vertical === 'COMMERCIAL');
+
+      const matchesTransaction = transactionFilter === 'All Transactions' || 
+        (transactionFilter === 'Sale' && (item.intent === 'SALE' || item.intent === 'PURCHASE')) ||
+        (transactionFilter === 'Rent' && (item.intent === 'RENT' || item.intent === 'RENTALS' || item.intent === 'LEASE'));
+
+      const matchesStatus = statusFilter === 'All Status' || 
+        (statusFilter === 'Active' && item.isActive) ||
+        (statusFilter === 'Inactive' && !item.isActive);
       
       return matchesSearch && matchesType && matchesTransaction && matchesStatus;
     });
-  }, [searchTerm, typeFilter, transactionFilter, statusFilter]);
+  }, [listings, searchTerm, typeFilter, transactionFilter, statusFilter]);
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -101,59 +128,57 @@ const Listings = () => {
               <option>Rent</option>
            </select>
 
-           <select 
-             value={groupFilter}
-             onChange={(e) => setGroupFilter(e.target.value)}
-             className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-           >
-              <option>All Groups</option>
-              <option>Mumbai Luxury Brokers</option>
-              <option>South Delhi Top Agents</option>
-              <option>Bangalore Tech Park Deals</option>
-           </select>
 
-           <select 
-             value={statusFilter}
-             onChange={(e) => setStatusFilter(e.target.value)}
-             className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-           >
-              <option>All Status</option>
-              <option>Active</option>
-              <option>Pending</option>
-              <option>Spam</option>
-           </select>
 
-           <select 
-             value={budgetFilter}
-             onChange={(e) => setBudgetFilter(e.target.value)}
-             className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-           >
-              <option>All Budgets</option>
-              <option>Under 1Cr</option>
-              <option>1Cr - 5Cr</option>
-              <option>Above 5Cr</option>
-           </select>
+            <select 
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
+            >
+               <option>All Status</option>
+               <option>Active</option>
+               <option>Inactive</option>
+            </select>
 
-           <button className="flex items-center justify-center gap-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-slate-800 transition-all">
-              <Filter size={14} />
-              Apply
-           </button>
+            <button className="md:col-span-2 flex items-center justify-center gap-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-slate-800 transition-all">
+               <Filter size={14} />
+               Apply Filters
+            </button>
         </div>
       </Card>
 
       {/* Table Card */}
       <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-hidden">
          <AdminTable headers={["Property Name", "Details", "Price", "Posted By", "Status", "Actions"]}>
-            {filteredListings.map(item => (
-               <AdminTableRow key={item.id}>
+            {loading ? (
+              <AdminTableRow>
+                <AdminTableCell colSpan={6} className="text-center py-20">
+                  <div className="flex flex-col items-center gap-3">
+                    <Loader2 className="text-primary-600 animate-spin" size={32} />
+                    <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading Listings...</p>
+                  </div>
+                </AdminTableCell>
+              </AdminTableRow>
+            ) : filteredListings.length === 0 ? (
+              <AdminTableRow>
+                <AdminTableCell colSpan={6} className="text-center py-20">
+                  <p className="text-sm font-black text-slate-400 uppercase tracking-widest">No listings found</p>
+                </AdminTableCell>
+              </AdminTableRow>
+            ) : filteredListings.map(item => (
+               <AdminTableRow key={item._id}>
                   <AdminTableCell>
                      <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
-                           <img src={`https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=100&h=100&u=${item.id}`} alt="" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                           <img 
+                            src={item.images?.[0] || `https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=100&h=100&u=${item._id}`} 
+                            alt="" 
+                            className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+                           />
                         </div>
                         <div>
-                           <p className="text-sm font-black text-slate-900 leading-tight">{item.title}</p>
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #BPS-{1000 + item.id}</p>
+                           <p className="text-sm font-black text-slate-900 leading-tight">{item.project || 'Untitled Project'}</p>
+                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #{item._id.slice(-6).toUpperCase()}</p>
                         </div>
                      </div>
                   </AdminTableCell>
@@ -164,23 +189,34 @@ const Listings = () => {
                            {item.location}
                         </p>
                         <div className="flex items-center gap-2">
-                           <StatusBadge type={item.type}>{item.type}</StatusBadge>
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.category}</span>
+                           <StatusBadge type={item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}>
+                             {item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}
+                           </StatusBadge>
+                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                             {item.intent}
+                           </span>
                         </div>
                      </div>
                   </AdminTableCell>
                   <AdminTableCell className="text-sm font-black text-slate-900">
-                     ₹{(item.price / 10000000).toFixed(2)} Cr
+                     {item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : item.budgetMax ? `₹${item.budgetMax} ${item.budgetUnit}` : 'N/A'}
                   </AdminTableCell>
                   <AdminTableCell>
-                     <p className="text-sm font-bold text-slate-900 hover:text-primary-600 transition-all cursor-pointer underline decoration-dotted underline-offset-4 decoration-slate-200 hover:decoration-primary-600">{item.broker}</p>
-                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 cursor-pointer hover:text-slate-900">View History</p>
+                     <p className="text-sm font-bold text-slate-900 hover:text-primary-600 transition-all cursor-pointer underline decoration-dotted underline-offset-4 decoration-slate-200 hover:decoration-primary-600">
+                       {item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'N/A'}
+                     </p>
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                       {item.postedBy?.companyName || 'Verified Broker'}
+                     </p>
                   </AdminTableCell>
-                  <AdminTableCell><StatusBadge type={item.status} /></AdminTableCell>
+                  <AdminTableCell>
+                    <StatusBadge type={item.isActive ? 'Active' : 'Inactive'}>
+                      {item.isActive ? 'Active' : 'Inactive'}
+                    </StatusBadge>
+                  </AdminTableCell>
                   <AdminTableCell>
                      <div className="flex items-center gap-1">
                         <ActionButton icon={<Eye size={16} />} label="View Listing" variant="primary" />
-                        <ActionButton icon={<Edit3 size={16} />} label="Edit" variant="ghost" />
                         <ActionButton icon={<AlertTriangle size={16} />} label="Mark as Spam" variant="danger" />
                         <ActionButton icon={<Trash2 size={16} />} label="Delete" variant="danger" />
                      </div>
