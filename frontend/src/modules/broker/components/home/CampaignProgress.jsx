@@ -1,72 +1,93 @@
 import React from 'react';
-import { Target } from 'lucide-react';
-
-const brokerProgress = {
-  current: 47,
-  total: 100,
-  label: 'Brokers Joined',
-  gradient: 'linear-gradient(90deg, #5b6df0 0%, #7c4faf 100%)',
-};
-
-const listingProgress = {
-  current: 705,
-  total: 1500,
-  label: 'Listings',
-  gradient: 'linear-gradient(90deg, #48c27d 0%, #36a96d 100%)',
-};
+import { Target, Users, Building2, Flame } from 'lucide-react';
 
 const CampaignProgress = () => {
-  const brokerPercent = (brokerProgress.current / brokerProgress.total) * 100;
-  const listingPercent = (listingProgress.current / listingProgress.total) * 100;
+  const brokers = { current: 47, total: 100 };
+  const listings = { current: 705, total: 1500 };
+  
+  const brokerPercent = (brokers.current / brokers.total) * 100;
+  const listingPercent = (listings.current / listings.total) * 100;
 
   return (
-    <section className="py-12 px-4 bg-[#f8fafc]">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="rounded-[28px] bg-[#fbfcfe] border border-slate-100 shadow-[0_18px_60px_rgba(15,23,42,0.04)] px-6 py-10 md:px-10 md:py-12 lg:px-12">
-          <div className="max-w-[1500px] mx-auto">
-            <div className="flex flex-col items-center justify-center text-center gap-3 mb-8">
-              <div className="inline-flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-50 text-primary-600 shadow-sm">
-                  <Target size={20} strokeWidth={2.4} />
+    <section className="py-24 px-6 bg-slate-50/50">
+      <div className="max-w-5xl mx-auto">
+        <div className="relative overflow-hidden bg-white rounded-[3rem] border border-slate-200/60 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.06)] p-8 md:p-16 text-center">
+          {/* Subtle Decorative Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary-50 rounded-full -mr-48 -mt-48 blur-3xl opacity-50" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-50 rounded-full -ml-48 -mb-48 blur-3xl opacity-50" />
+
+          <div className="relative space-y-12">
+            {/* Header */}
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full text-primary-600 mb-2">
+                <Target size={16} className="animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Growth Milestone</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
+                Platform <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-900">Velocity</span>
+              </h2>
+              <p className="text-slate-500 font-medium text-lg max-w-2xl mx-auto">
+                Tracking our journey towards the network effect. Be part of the ecosystem that's redefining broker collaboration.
+              </p>
+            </div>
+
+            {/* Progress Visualization */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+              {/* Brokers Progress */}
+              <div className="space-y-4 text-left">
+                <div className="flex items-end justify-between px-1">
+                  <div className="space-y-1">
+                    <p className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+                      <Users size={14} className="text-primary-500" /> Professional Network
+                    </p>
+                    <h4 className="text-2xl font-black text-slate-900">{brokers.current} <span className="text-slate-300 font-medium">/ {brokers.total}</span></h4>
+                  </div>
+                  <span className="text-sm font-black text-primary-600">{Math.round(brokerPercent)}%</span>
                 </div>
-                <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-950">
-                  Campaign Progress
-                </h2>
+                <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary-500 to-primary-700 rounded-full transition-all duration-1000 shadow-sm"
+                    style={{ width: `${brokerPercent}%` }}
+                  />
+                </div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 italic">Verified Brokers Joined</p>
+              </div>
+
+              {/* Listings Progress */}
+              <div className="space-y-4 text-left">
+                <div className="flex items-end justify-between px-1">
+                  <div className="space-y-1">
+                    <p className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
+                      <Building2 size={14} className="text-emerald-500" /> Inventory Depth
+                    </p>
+                    <h4 className="text-2xl font-black text-slate-900">{listings.current} <span className="text-slate-300 font-medium">/ {listings.total}</span></h4>
+                  </div>
+                  <span className="text-sm font-black text-emerald-600">{Math.round(listingPercent)}%</span>
+                </div>
+                <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-1000 shadow-sm"
+                    style={{ width: `${listingPercent}%` }}
+                  />
+                </div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1 italic">Exclusive Properties Listed</p>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="relative h-10 w-full overflow-hidden rounded-full bg-slate-200/80">
-                <div
-                  className="relative flex h-full items-center justify-center rounded-full text-white shadow-sm"
-                  style={{ width: `${brokerPercent}%`, background: brokerProgress.gradient }}
-                >
-                  <span className="text-[16px] md:text-[18px] font-extrabold leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.18)]">
-                    {brokerProgress.current}/{brokerProgress.total} {brokerProgress.label}
-                  </span>
-                </div>
-              </div>
-
-              <div className="relative h-10 w-full overflow-hidden rounded-full bg-slate-200/80">
-                <div
-                  className="relative flex h-full items-center justify-center rounded-full text-white shadow-sm"
-                  style={{ width: `${listingPercent}%`, background: listingProgress.gradient }}
-                >
-                  <span className="text-[16px] md:text-[18px] font-extrabold leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.18)]">
-                    {listingProgress.current}/{listingProgress.total} {listingProgress.label}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 text-center space-y-1.5">
-              <p className="text-[20px] md:text-[22px] font-extrabold text-slate-950 tracking-tight">
-                {brokerProgress.total - brokerProgress.current} more brokers needed to reach{' '}
-                <span className="uppercase">Critical Mass!</span>
-              </p>
-              <p className="text-[18px] md:text-[20px] font-medium text-slate-900">
-                Join now and be a Founding Member.
-              </p>
+            {/* CTA / Callout */}
+            <div className="pt-6 border-t border-slate-100 max-w-2xl mx-auto">
+               <div className="flex flex-col items-center gap-6">
+                  <div className="flex items-center gap-3 bg-amber-50 px-6 py-3 rounded-2xl border border-amber-100">
+                     <Flame size={20} className="text-amber-500 fill-amber-500" />
+                     <p className="text-sm md:text-base font-black text-amber-900 uppercase tracking-tight">
+                        Only <span className="text-amber-600">{brokers.total - brokers.current}</span> more brokers needed for <span className="underline decoration-2 underline-offset-4">CRITICAL MASS</span>
+                     </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-xl font-black text-slate-900 tracking-tight">Join now and secure your status as a Founding Member.</p>
+                    <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">Early access ends once milestones are achieved.</p>
+                  </div>
+               </div>
             </div>
           </div>
         </div>

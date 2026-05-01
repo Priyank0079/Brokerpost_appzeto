@@ -22,6 +22,11 @@ const MyRequirements = () => {
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState('All Property Types');
   const [transactionFilter, setTransactionFilter] = useState('All Transactions');
+  const [groupFilter, setGroupFilter] = useState('All Groups');
+  const [bhkFilter, setBhkFilter] = useState('All BHK');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+  const [unitFilter, setUnitFilter] = useState('All Units');
 
   const propertyTypeOptions = useMemo(() => {
     const options = new Set(listings.map((item) => item.type));
@@ -39,10 +44,24 @@ const MyRequirements = () => {
         propertyTypeFilter === 'All Property Types' || item.type === propertyTypeFilter;
       const matchesTransaction =
         transactionFilter === 'All Transactions' || item.transaction === transactionFilter;
+      const matchesGroup = groupFilter === 'All Groups' || item.group === groupFilter;
+      const matchesBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
+      const matchesStatus = statusFilter === 'All Status' || 
+                           (statusFilter === 'Ready to Move' && item.status === 'Active') ||
+                           (statusFilter === 'Under Construction' && item.status === 'Pending');
+      
+      let matchesBudget = true;
+      if (budgetFilter !== 'All Budgets') {
+        const price = item.price;
+        if (budgetFilter === 'Under 50L') matchesBudget = price < 5000000;
+        else if (budgetFilter === '50L - 1Cr') matchesBudget = price >= 5000000 && price <= 10000000;
+        else if (budgetFilter === '1Cr - 5Cr') matchesBudget = price > 10000000 && price <= 50000000;
+        else if (budgetFilter === 'Above 5Cr') matchesBudget = price > 50000000;
+      }
 
-      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction;
+      return matchesSearch && matchesType && matchesPropertyType && matchesTransaction && matchesGroup && matchesBhk && matchesStatus && matchesBudget;
     });
-  }, [searchTerm, typeFilter, propertyTypeFilter, transactionFilter]);
+  }, [searchTerm, typeFilter, propertyTypeFilter, transactionFilter, groupFilter, bhkFilter, statusFilter, budgetFilter]);
 
   return (
     <div className="space-y-6 bg-[#f8fafc]">
@@ -99,6 +118,65 @@ const MyRequirements = () => {
             <option>Rent</option>
           </select>
 
+          <select
+            value={groupFilter}
+            onChange={(e) => setGroupFilter(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+          >
+            <option value="All Groups">All Groups</option>
+            <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
+            <option value="South Delhi Top Agents">South Delhi Top Agents</option>
+            <option value="Bangalore Tech Park Deals">Bangalore Tech Park Deals</option>
+          </select>
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <select
+            value={bhkFilter}
+            onChange={(e) => setBhkFilter(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+          >
+            <option>All BHK</option>
+            <option>1 BHK</option>
+            <option>2 BHK</option>
+            <option>3 BHK</option>
+            <option>4 BHK</option>
+            <option>5 BHK</option>
+          </select>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+          >
+            <option>All Status</option>
+            <option>Ready to Move</option>
+            <option>Under Construction</option>
+          </select>
+
+          <select
+            value={budgetFilter}
+            onChange={(e) => setBudgetFilter(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+          >
+            <option>All Budgets</option>
+            <option>Under 50L</option>
+            <option>50L - 1Cr</option>
+            <option>1Cr - 5Cr</option>
+            <option>Above 5Cr</option>
+          </select>
+
+          <select
+            value={unitFilter}
+            onChange={(e) => setUnitFilter(e.target.value)}
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+          >
+            <option>All Units</option>
+            <option>Sq. Ft.</option>
+            <option>Sq. Yd.</option>
+            <option>Sq. Mt.</option>
+          </select>
+
           <Button
             variant="outline"
             className="h-[60px] rounded-2xl border-[#dbe4f0] text-slate-700 font-semibold hover:border-[#ff7a00]/30 hover:text-slate-900"
@@ -145,7 +223,11 @@ const MyRequirements = () => {
                   <td className="px-5 py-6 text-[15px] font-semibold text-slate-900">{item.title}</td>
                   <td className="px-5 py-6 text-[15px] text-slate-700">{item.broker}</td>
                   <td className="px-5 py-6 text-[15px] text-slate-700">
-                    {phoneByBroker[item.broker] || '-'}
+                    {(() => {
+                      const phone = phoneByBroker[item.broker];
+                      if (!phone) return '-';
+                      return `${phone.slice(0, 2)}******${phone.slice(-2)}`;
+                    })()}
                   </td>
                   <td className="px-5 py-6">
                     <Link to={`/property/${item.id}`}>

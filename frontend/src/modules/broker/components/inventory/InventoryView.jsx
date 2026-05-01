@@ -27,6 +27,10 @@ const InventoryView = ({
   const [propertyType, setPropertyType] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [groupFilter, setGroupFilter] = useState('All Groups');
+  const [bhkFilter, setBhkFilter] = useState('All BHK');
+  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+  const [unitFilter, setUnitFilter] = useState('All Units');
   
   // Modal State
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -39,14 +43,28 @@ const InventoryView = ({
       const matchTransaction = item.transaction === transaction;
       const matchPropType = propertyType === 'All' || item.type === propertyType;
       const matchSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          item.location.toLowerCase().includes(searchTerm.toLowerCase());
+                          item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          item.broker.toLowerCase().includes(searchTerm.toLowerCase());
+      
       const matchStatus = statusFilter === 'All' || 
                           (statusFilter === 'Ready' && item.status === 'Active') || 
                           (statusFilter === 'Const' && item.status === 'Pending');
 
-      return matchVertical && matchFlow && matchTransaction && matchPropType && matchSearch && matchStatus;
+      const matchGroup = groupFilter === 'All Groups' || item.group === groupFilter;
+      const matchBhk = bhkFilter === 'All BHK' || `${item.beds} BHK` === bhkFilter;
+      
+      let matchBudget = true;
+      if (budgetFilter !== 'All Budgets') {
+        const price = item.price;
+        if (budgetFilter === 'Under 50L') matchBudget = price < 5000000;
+        else if (budgetFilter === '50L - 1Cr') matchBudget = price >= 5000000 && price <= 10000000;
+        else if (budgetFilter === '1Cr - 5Cr') matchBudget = price > 10000000 && price <= 50000000;
+        else if (budgetFilter === 'Above 5Cr') matchBudget = price > 50000000;
+      }
+
+      return matchVertical && matchFlow && matchTransaction && matchPropType && matchSearch && matchStatus && matchGroup && matchBhk && matchBudget;
     });
-  }, [vertical, flow, transaction, propertyType, searchTerm, statusFilter]);
+  }, [vertical, flow, transaction, propertyType, searchTerm, statusFilter, groupFilter, bhkFilter, budgetFilter]);
 
   const resetFilters = () => {
     setVertical(defaultVertical);
@@ -55,6 +73,10 @@ const InventoryView = ({
     setPropertyType('All');
     setSearchTerm('');
     setStatusFilter('All');
+    setGroupFilter('All Groups');
+    setBhkFilter('All BHK');
+    setBudgetFilter('All Budgets');
+    setUnitFilter('All Units');
   };
 
   return (
@@ -82,21 +104,22 @@ const InventoryView = ({
                 <List size={20} />
              </button>
           </div>
-          <Button 
-            variant="primary" 
-            leftIcon={<Plus size={18} />} 
-            className="shadow-xl shadow-primary-600/20 py-3.5 px-6 font-bold"
-            onClick={() => {
-              if (addButtonTo) {
-                navigate(addButtonTo);
-                return;
-              }
-
-              setIsPostModalOpen(true);
-            }}
-          >
-            {addButtonLabel || `Add ${vertical}`}
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button 
+              variant="primary" 
+              className="bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 font-bold"
+              onClick={() => navigate('/post-property?type=RESIDENTIAL')}
+            >
+              Post Residential
+            </Button>
+            <Button 
+              variant="primary" 
+              className="bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20 font-bold"
+              onClick={() => navigate('/post-property?type=COMMERCIAL')}
+            >
+              Post Commercial
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -162,6 +185,53 @@ const InventoryView = ({
                    <option value="Penthouse">Penthouse</option>
                    <option value="Office">Office</option>
                    <option value="Shop">Shop</option>
+                </select>
+
+                <select 
+                  value={groupFilter}
+                  onChange={(e) => setGroupFilter(e.target.value)}
+                  className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl focus:ring-4 focus:ring-primary-500/5 outline-none"
+                >
+                   <option value="All Groups">Network Group: All</option>
+                   <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
+                   <option value="South Delhi Top Agents">South Delhi Top Agents</option>
+                   <option value="Bangalore Tech Park Deals">Bangalore Tech Park Deals</option>
+                </select>
+
+                <select 
+                  value={bhkFilter}
+                  onChange={(e) => setBhkFilter(e.target.value)}
+                  className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl focus:ring-4 focus:ring-primary-500/5 outline-none"
+                >
+                   <option value="All BHK">BHK: All</option>
+                   <option value="1 BHK">1 BHK</option>
+                   <option value="2 BHK">2 BHK</option>
+                   <option value="3 BHK">3 BHK</option>
+                   <option value="4 BHK">4 BHK</option>
+                   <option value="5 BHK">5 BHK</option>
+                </select>
+
+                <select 
+                  value={budgetFilter}
+                  onChange={(e) => setBudgetFilter(e.target.value)}
+                  className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl focus:ring-4 focus:ring-primary-500/5 outline-none"
+                >
+                   <option value="All Budgets">Budget: All</option>
+                   <option value="Under 50L">Under 50L</option>
+                   <option value="50L - 1Cr">50L - 1Cr</option>
+                   <option value="1Cr - 5Cr">1Cr - 5Cr</option>
+                   <option value="Above 5Cr">Above 5Cr</option>
+                </select>
+
+                <select 
+                  value={unitFilter}
+                  onChange={(e) => setUnitFilter(e.target.value)}
+                  className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl focus:ring-4 focus:ring-primary-500/5 outline-none"
+                >
+                   <option value="All Units">Unit: All</option>
+                   <option value="Sq. Ft.">Sq. Ft.</option>
+                   <option value="Sq. Yd.">Sq. Yd.</option>
+                   <option value="Sq. Mt.">Sq. Mt.</option>
                 </select>
              </div>
 

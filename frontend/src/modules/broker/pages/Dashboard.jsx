@@ -29,58 +29,104 @@ const Dashboard = () => {
     { label: 'Subscription', value: 'Gold', icon: <Zap className="text-purple-500" />, trend: 'Active', trendUp: true, variant: 'primary' },
   ];
 
+
   return (
-    <div className="space-y-10 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Overview</h1>
-          <p className="text-slate-500 text-sm mt-1">Good morning, {user?.name?.split(' ')[0] || 'Broker'}. Welcome to your dashboard.</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <Button variant="outline" leftIcon={<ArrowUpRight size={18} />}>Export Data</Button>
-           <Button
-             variant="primary"
-             onClick={() => navigate('/post-property?type=RESIDENTIAL')}
-             leftIcon={<Plus size={18} />}
-           >
-             New Post
-           </Button>
+    <div className="space-y-12 animate-fade-in pb-10">
+      {/* Premium Header Section */}
+      <div className="relative">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-8 h-[2px] bg-primary-600 rounded-full" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-600">Executive Control</span>
+            </div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">
+              Strategic <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-900">Overview</span>
+            </h1>
+            <p className="text-slate-400 font-medium text-sm max-w-md">
+              Welcome back, <span className="text-slate-900 font-bold">{user?.name || 'Partner'}</span>. Your real-time network performance is summarized below.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 bg-white/50 backdrop-blur-md p-1.5 rounded-full border border-slate-200/60 shadow-sm">
+            <button
+              onClick={() => navigate('/post-property?type=RESIDENTIAL')}
+              className="h-10 px-6 bg-primary-600 hover:bg-primary-700 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary-600/20 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Plus size={14} /> Residential
+            </button>
+            <button
+              onClick={() => navigate('/post-property?type=COMMERCIAL')}
+              className="h-10 px-6 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-900/10 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Plus size={14} /> Commercial
+            </button>
+          </div>
         </div>
       </div>
 
       {user?.status === 'Pending Approval' && (
-        <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-center gap-4 animate-pulse">
-           <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/20">
-              <ShieldAlert size={20} />
-           </div>
-           <div>
-              <p className="text-sm font-bold text-amber-900">Account Pending Approval</p>
-              <p className="text-xs text-amber-700">Your professional profile is currently being reviewed by our team. Some features may be limited.</p>
+        <div className="relative overflow-hidden bg-slate-900 rounded-[2rem] p-6 text-white group">
+           <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600/10 rounded-full -mr-32 -mt-32 blur-3xl group-hover:bg-primary-600/20 transition-all duration-700" />
+           <div className="relative flex items-center gap-6">
+              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center text-primary-400">
+                 <ShieldAlert size={28} />
+              </div>
+              <div>
+                 <h4 className="text-lg font-black tracking-tight">Credentials Under Verification</h4>
+                 <p className="text-slate-400 text-sm font-medium mt-1">Our compliance team is currently auditing your brokerage profile. Full feature set will be unlocked post-approval.</p>
+              </div>
            </div>
         </div>
       )}
 
+      {/* High-Fidelity Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {stats.map((stat, i) => {
+          const getRoute = (label) => {
+            switch(label) {
+              case 'Total Posts':
+              case 'Active Listings': return '/my-listings';
+              case 'Requirements': return '/my-requirements';
+              case 'Subscription': return '/subscription';
+              default: return '/dashboard';
+            }
+          };
 
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {stats.map((stat, i) => (
-          <Card key={i} noPadding className="hover:border-primary-200 transition-all">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center">
-                  {stat.icon}
+          return (
+            <div 
+              key={i} 
+              className="relative group cursor-pointer active:scale-95 transition-all duration-500"
+              onClick={() => navigate(getRoute(stat.label))}
+            >
+              {/* Card Background with Layered Effects */}
+              <div className="absolute inset-0 bg-white rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] group-hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] transition-all duration-500" />
+              <div className="absolute inset-x-6 -bottom-2 h-10 bg-slate-900/[0.02] blur-xl rounded-[2.5rem]" />
+              
+              <div className="relative p-8 overflow-hidden rounded-[2.5rem] border border-slate-100 group-hover:border-primary-100 transition-all duration-500">
+                {/* Decorative Pattern */}
+                <div className="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-700 scale-0 group-hover:scale-150" />
+                
+                <div className="flex items-center justify-between mb-10">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-sm ${stat.label === 'Subscription' ? 'bg-primary-50 text-primary-600' : 'bg-slate-50 text-slate-600 group-hover:bg-primary-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-primary-600/30'}`}>
+                    {React.cloneElement(stat.icon, { size: 24, strokeWidth: 2.5 })}
+                  </div>
+                  <div className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-[0.1em] uppercase ${stat.label === 'Subscription' ? 'bg-primary-600 text-white' : stat.trendUp ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                    {stat.trend}
+                  </div>
                 </div>
-                <Badge variant={stat.label === 'Subscription' ? 'primary' : stat.trendUp ? 'success' : 'danger'}>
-                  {stat.trend}
-                </Badge>
+
+                <div className="space-y-1">
+                  <h3 className="text-4xl font-black text-slate-900 tracking-tighter transition-all duration-500 group-hover:translate-x-1">{stat.value}</h3>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{stat.label}</p>
+                    <div className="flex-1 h-[1px] bg-slate-100 group-hover:bg-primary-100 transition-colors" />
+                  </div>
+                </div>
               </div>
-              <h3 className="text-3xl font-black text-slate-900">{stat.value}</h3>
-              <p className="text-sm font-semibold text-slate-400 mt-1 uppercase tracking-wider">{stat.label}</p>
             </div>
-          </Card>
-        ))}
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
