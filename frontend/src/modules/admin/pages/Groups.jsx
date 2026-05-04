@@ -12,23 +12,63 @@ import {
 import Card from '../../broker/components/ui/Card';
 import Button from '../../broker/components/ui/Button';
 import { AdminTable, AdminTableRow, AdminTableCell, ActionButton } from '../components/common/AdminUI';
-import { groups as initialGroups } from '../data/data';
+import { getGroups, createGroup, deleteGroup, getGroup } from '../services/groupService';
 import CreateGroupModal from '../components/common/CreateGroupModal';
+import GroupMembersModal from '../components/common/GroupMembersModal';
 
 const Groups = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [groupList, setGroupList] = useState(initialGroups);
+  const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [groupList, setGroupList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCreateGroup = (newGroupData) => {
-    const newGroup = {
-      id: groupList.length + 1,
-      name: newGroupData.name,
-      members: newGroupData.members.length,
-      createdBy: 'Administrator',
-      region: newGroupData.members[0]?.location || 'Multiple',
-    };
-    setGroupList([newGroup, ...groupList]);
+
+  const fetchGroups = async () => {
+    setLoading(true);
+    try {
+      const result = await getGroups();
+      if (result.success) {
+        setGroupList(result.data);
+      }
+    } catch (error) {
+      console.error('Fetch groups error:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  React.useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const handleCreateGroup = async (newGroupData) => {
+    try {
+      const result = await createGroup({
+        name: newGroupData.name,
+        members: newGroupData.members.map(m => m._id)
+      });
+      if (result.success) {
+        fetchGroups();
+      }
+    } catch (error) {
+      console.error('Create group error:', error);
+    }
+  };
+
+  const handleDeleteGroup = async (id) => {
+    if (window.confirm('Are you sure you want to delete this group?')) {
+      try {
+        const result = await deleteGroup(id);
+        if (result.success) {
+          fetchGroups();
+        }
+      } catch (error) {
+        console.error('Delete group error:', error);
+      }
+    }
+  };
+
 
   return (
     <div className="space-y-8">
@@ -60,7 +100,7 @@ const Groups = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
          {groupList.map(g => (
-           <Card key={g.id} noPadding className="border-slate-100 group relative">
+           <Card key={g._id} noPadding className="border-slate-100 group relative">
               <div className="p-6">
                  <div className="flex items-center justify-between mb-6">
                     <div className="w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 shadow-sm shadow-primary-500/5 group-hover:scale-110 transition-transform duration-500">
@@ -74,27 +114,44 @@ const Groups = () => {
                  <h3 className="text-xl font-black text-slate-900 leading-tight">{g.name}</h3>
                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2 flex items-center gap-1">
                     <MapPin size={12} className="text-primary-500" />
-                    {g.region}
+                    {g.members?.[0]?.operatingCity || 'Multi-region'}
                  </p>
 
                  <div className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-50 pt-6">
                     <div>
-                       <p className="text-lg font-black text-slate-900">{g.members}</p>
+                       <p className="text-lg font-black text-slate-900">{g.members?.length || 0}</p>
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Members</p>
                     </div>
                     <div className="border-l border-slate-100 pl-4">
-                       <p className="text-sm font-bold text-slate-900 truncate">{g.createdBy}</p>
+                       <p className="text-sm font-bold text-slate-900 truncate">Admin</p>
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Owner</p>
                     </div>
                  </div>
 
                  <div className="mt-8 flex gap-2">
-                    <button className="flex-1 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest py-3 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10">View Members</button>
-                    <button className="px-4 border border-red-100 text-red-500 bg-red-50/10 rounded-xl hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16} /></button>
+                    <button 
+                      onClick={async () => {
+                        const result = await getGroup(g._id);
+                        if (result.success) {
+                          setSelectedGroup(result.data);
+                          setIsMembersModalOpen(true);
+                        }
+                      }}
+                      className="flex-1 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest py-3 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10"
+                    >
+                      View Members
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteGroup(g._id)}
+                      className="px-4 border border-red-100 text-red-500 bg-red-50/10 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                    >
+                      <Trash2 size={16} />
+                    </button>
                  </div>
               </div>
            </Card>
          ))}
+
 
          {/* Create Link Mockup */}
          <div 
@@ -116,6 +173,20 @@ const Groups = () => {
         onClose={() => setIsModalOpen(false)} 
         onCreate={handleCreateGroup}
       />
+
+      <GroupMembersModal
+        isOpen={isMembersModalOpen}
+        onClose={() => setIsMembersModalOpen(false)}
+        group={selectedGroup}
+        onUpdate={async () => {
+          const result = await getGroup(selectedGroup._id);
+          if (result.success) {
+            setSelectedGroup(result.data);
+            fetchGroups(); // Refresh main list too
+          }
+        }}
+      />
+
     </div>
   );
 };

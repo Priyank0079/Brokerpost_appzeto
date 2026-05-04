@@ -40,4 +40,24 @@ router.post('/profile', protect, upload.single('image'), (req, res) => {
   }
 });
 
+// @desc    Upload single image (Generic)
+
+// @route   POST /api/v1/upload
+// @access  Private
+router.post('/', protect, upload.single('image'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' });
+    }
+
+    res.status(200).json({
+      success: true,
+      url: req.file.path // Carousel expects 'url'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
 module.exports = router;

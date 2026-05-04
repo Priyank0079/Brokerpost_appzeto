@@ -24,7 +24,9 @@ import {
   Check,
   Share2,
   Bookmark,
+  Loader2
 } from 'lucide-react';
+
 import { Link, useNavigate } from 'react-router-dom';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
@@ -67,75 +69,104 @@ const phoneByBroker = {
   'Mike Wilson': '9001122334',
 };
 
-const bannerSlides = [
-  {
-    title: 'Broker Network Registration',
-    subtitle: 'Connect with agencies in Gurgaon, Delhi, Noida, Faridabad, Ghaziabad & Greater Noida.',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600&h=600',
-    badge: 'Registration Open',
-  },
-  {
-    title: 'Verified Professional Access',
-    subtitle: 'Mandatory RERA registration & Identity verification for every network member.',
-    image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1600&h=600',
-    badge: 'Verified Network',
-  },
-  {
-    title: 'Agency Collaboration Hub',
-    subtitle: 'Direct access to premium listings and requirement matching for certified brokers.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600&h=600',
-    badge: 'Direct Bridge',
-  },
-];
+import { getCarousels } from '../../../admin/services/carouselService';
+
 
 const BannerCarousel = () => {
+  const [banners, setBanners] = useState([]);
   const [current, setCurrent] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const defaultBanners = [
+    {
+      title: 'Broker Network Registration',
+      subtitle: 'Connect with agencies in Gurgaon, Delhi, Noida, Faridabad, Ghaziabad & Greater Noida.',
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1600&h=600',
+      category: 'Registration Open',
+    },
+    {
+      title: 'Verified Professional Access',
+      subtitle: 'Mandatory RERA registration & Identity verification for every network member.',
+      image: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=1600&h=600',
+      category: 'Verified Network',
+    }
+  ];
 
   useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const result = await getCarousels();
+        if (result.success && result.data.length > 0) {
+          setBanners(result.data);
+        } else {
+          setBanners(defaultBanners);
+        }
+      } catch (error) {
+        console.error('Fetch banners error:', error);
+        setBanners(defaultBanners);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    if (banners.length === 0) return;
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % bannerSlides.length);
+      setCurrent((prev) => (prev + 1) % banners.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [banners]);
+
+  if (loading) {
+    return (
+      <div className="h-[220px] md:h-[400px] w-full animate-pulse bg-slate-100 rounded-[2.5rem] my-8 flex items-center justify-center">
+        <Loader2 className="animate-spin text-slate-300" size={40} />
+      </div>
+    );
+  }
+
+  const activeBanner = banners[current];
 
   return (
     <div className="relative h-[220px] md:h-[400px] w-full overflow-hidden rounded-[2.5rem] bg-slate-900 shadow-2xl my-8 border border-white/10 group">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-900/60 to-transparent z-10" />
         <img
-          src={bannerSlides[current].image}
+          src={activeBanner.image}
           className="w-full h-full object-cover opacity-60 transition-opacity duration-700"
-          alt={bannerSlides[current].title}
+          alt={activeBanner.title}
         />
       </div>
 
-      <div className="absolute inset-y-0 left-0 p-6 md:p-16 z-20 flex flex-col justify-center max-w-2xl">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-600 rounded-full mb-5 shadow-lg shadow-primary-600/20">
+      <div className="absolute inset-y-0 left-0 p-6 md:p-12 z-20 flex flex-col justify-center max-w-2xl">
+        <div className="inline-flex w-fit items-center gap-2 px-3 py-1 bg-primary-600 rounded-full mb-4 shadow-lg shadow-primary-600/20">
           <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-          <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">
-            {bannerSlides[current].badge}
+          <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">
+            {activeBanner.category || activeBanner.badge}
           </span>
         </div>
-        <h2 className="text-3xl md:text-6xl font-black text-white tracking-tighter mb-3 leading-[0.95] drop-shadow-2xl">
-          {bannerSlides[current].title}
+        <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight mb-3 leading-tight drop-shadow-2xl">
+          {activeBanner.title}
         </h2>
-        <p className="text-sm md:text-xl text-slate-300 font-medium leading-relaxed mb-8 opacity-90">
-          {bannerSlides[current].subtitle}
+        <p className="text-xs md:text-lg text-slate-300 font-medium leading-relaxed mb-6 opacity-90">
+          {activeBanner.subtitle}
         </p>
 
-        <Link to="/register">
+        <Link to={activeBanner.link || "/register"} className="w-fit">
           <Button
             variant="primary"
-            className="rounded-[1.25rem] px-10 py-5 bg-white !text-slate-900 font-black uppercase tracking-[0.2em] text-[11px] shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:!bg-primary-600 hover:!text-white border-none transition-all transform hover:translate-y-[-2px] active:scale-95 flex items-center gap-3"
-            rightIcon={<ArrowRight size={18} strokeWidth={3} />}
+            className="rounded-xl px-8 py-4 bg-white !text-slate-900 font-black uppercase tracking-[0.2em] text-[10px] shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:!bg-primary-600 hover:!text-white border-none transition-all transform hover:translate-y-[-2px] active:scale-95 flex items-center gap-3"
+            rightIcon={<ArrowRight size={16} strokeWidth={3} />}
           >
-            Join Network Now
+            {activeBanner.buttonText || 'Join Network Now'}
           </Button>
         </Link>
       </div>
 
       <div className="absolute bottom-8 right-8 z-30 flex gap-3">
-        {bannerSlides.map((_, i) => (
+        {banners.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrent(i)}
@@ -147,7 +178,8 @@ const BannerCarousel = () => {
   );
 };
 
-const HomeInventorySection = () => {
+
+const HomeInventorySection = ({ data }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [searchInput, setSearchInput] = useState('');
@@ -166,6 +198,8 @@ const HomeInventorySection = () => {
   const [postings, setPostings] = useState([]);
   const [loading, setLoading] = useState(false);
   const [unitFilter, setUnitFilter] = useState('All Units');
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 5;
 
   const fetchPostings = async () => {
     setLoading(true);
@@ -177,7 +211,7 @@ const HomeInventorySection = () => {
       if (statusFilter !== 'All Status') {
         params.constructionStatus = statusFilter === 'Ready to Move' ? 'READY' : 'UNDER_CONSTRUCTION';
       }
-      
+
       const result = await getPostings(params);
       if (result.success) {
         setPostings(result.data);
@@ -191,7 +225,12 @@ const HomeInventorySection = () => {
 
   useEffect(() => {
     fetchPostings();
+    setCurrentPage(1);
   }, [searchQuery, typeFilter, bhkFilter, statusFilter]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [propertyTypeFilter, transactionFilter, sortKey]);
 
   const propertyTypeOptions = useMemo(() => {
     const uniqueTypes = Array.from(new Set(staticListings.map((item) => item.type)));
@@ -201,14 +240,14 @@ const HomeInventorySection = () => {
   const filteredListings = useMemo(() => {
     // For now we use the fetched postings directly, but we can still apply secondary filters if needed
     const data = postings.length > 0 ? postings : [];
-    
+
     const filtered = data.filter((item) => {
       // Basic client-side filtering for things not handled by API yet
       const matchesPropertyType =
         propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
       const matchesTransaction =
         transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
-      
+
       return matchesPropertyType && matchesTransaction;
     });
 
@@ -285,12 +324,12 @@ const HomeInventorySection = () => {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">Inventory Management</h2>
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">{data?.title || "Inventory Management"}</h2>
                 <Badge variant="success" className="px-2 py-0.5 rounded-md text-[8px] font-black tracking-widest uppercase">
                   Live
                 </Badge>
               </div>
-              <p className="text-[11px] font-medium text-slate-500">Real-time property network and CRM sync</p>
+              <p className="text-[11px] font-medium text-slate-500">{data?.subtitle || "Real-time property network and CRM sync"}</p>
             </div>
           </div>
 
@@ -314,7 +353,8 @@ const HomeInventorySection = () => {
               <div className="text-right hidden sm:block">
                 <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">Active Member</p>
                 <p className="text-[13px] font-black text-slate-900 group-hover:text-primary-600 transition-colors">
-                  {user?.name || 'Guest Broker'}
+                  {user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Guest Broker')}
+
                 </p>
               </div>
               <div className="relative">
@@ -509,7 +549,7 @@ const HomeInventorySection = () => {
                     <td colSpan="8" className="px-4 py-10 text-center text-slate-400 font-medium">No postings found matching your criteria.</td>
                   </tr>
                 ) : (
-                  filteredListings.slice(0, 10).map((item) => (
+                  filteredListings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((item) => (
                     <tr
                       key={item._id}
                       className="cursor-pointer hover:bg-slate-50/60 transition-colors group"
@@ -522,13 +562,22 @@ const HomeInventorySection = () => {
                         >
                           {item.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement'}
                         </Badge>
+                        {item.isGroupMember === 1 && (
+                          <Badge variant="secondary" className="ml-2 bg-indigo-50 text-indigo-600 rounded-full px-2 py-0.5 text-[8px] font-black uppercase tracking-widest border-none">
+                            Group
+                          </Badge>
+                        )}
+
                       </td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600 truncate max-w-[150px]">{item.location}</td>
                       <td className="px-4 py-5 text-sm font-semibold text-slate-900">{item.project || '-'}</td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600">
-                        {item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System'}
+                        {item.postedBy
+                          ? (item.postedBy.name || `${item.postedBy.firstName || ''} ${item.postedBy.lastName || ''}`.trim() || 'Listed User')
+                          : 'System'}
+
                       </td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600">
                         {(() => {
@@ -560,7 +609,7 @@ const HomeInventorySection = () => {
             ) : filteredListings.length === 0 ? (
               <div className="p-10 text-center text-slate-400 font-bold uppercase tracking-widest text-xs">No entries found</div>
             ) : (
-              filteredListings.slice(0, 10).map((item) => (
+              filteredListings.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE).map((item) => (
                 <div
                   key={item._id}
                   className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
@@ -593,7 +642,10 @@ const HomeInventorySection = () => {
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Broker Name</p>
-                      <p className="font-medium text-slate-700">{item.postedBy ? `${item.postedBy.firstName}` : 'System'}</p>
+                      <p className="font-medium text-slate-700">
+                        {item.postedBy ? (item.postedBy.name || item.postedBy.firstName || 'Listed User') : 'System'}
+                      </p>
+
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Transaction</p>
@@ -615,10 +667,85 @@ const HomeInventorySection = () => {
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {!loading && filteredListings.length > PAGE_SIZE && (() => {
+          const totalPages = Math.ceil(filteredListings.length / PAGE_SIZE);
+          const start = (currentPage - 1) * PAGE_SIZE + 1;
+          const end = Math.min(currentPage * PAGE_SIZE, filteredListings.length);
+
+          const getPageNumbers = () => {
+            const pages = [];
+            const delta = 2;
+            const left = currentPage - delta;
+            const right = currentPage + delta;
+            let last;
+            for (let i = 1; i <= totalPages; i++) {
+              if (i === 1 || i === totalPages || (i >= left && i <= right)) {
+                if (last && i - last > 1) pages.push('...');
+                pages.push(i);
+                last = i;
+              }
+            }
+            return pages;
+          };
+
+          return (
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+              {/* Results summary */}
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Showing <span className="text-slate-700">{start}–{end}</span> of{' '}
+                <span className="text-slate-700">{filteredListings.length}</span> listings
+              </p>
+
+              {/* Page controls */}
+              <div className="flex items-center gap-1.5">
+                {/* Prev */}
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  <ArrowRight size={13} className="rotate-180" />
+                  Prev
+                </button>
+
+                {/* Page numbers */}
+                {getPageNumbers().map((pg, i) =>
+                  pg === '...' ? (
+                    <span key={`ellipsis-${i}`} className="px-2 text-slate-300 font-bold text-xs">…</span>
+                  ) : (
+                    <button
+                      key={pg}
+                      onClick={() => setCurrentPage(pg)}
+                      className={`w-9 h-9 rounded-xl text-xs font-black transition-all ${currentPage === pg
+                          ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
+                          : 'bg-white border border-slate-200 text-slate-500 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200'
+                        }`}
+                    >
+                      {pg}
+                    </button>
+                  )
+                )}
+
+                {/* Next */}
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
+                  Next
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+            </div>
+          );
+        })()
+        }
       </div>
 
-      <Modal 
-        isOpen={isModalOpen} 
+      <Modal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Property Spotlight"
       >
@@ -626,9 +753,9 @@ const HomeInventorySection = () => {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Image & Price Header */}
             <div className="relative rounded-2xl overflow-hidden aspect-video shadow-2xl">
-              <img 
-                src={selectedProperty.image} 
-                className="w-full h-full object-cover" 
+              <img
+                src={selectedProperty.image}
+                className="w-full h-full object-cover"
                 alt={selectedProperty.title}
               />
               <div className="absolute top-4 left-4 flex gap-2">
@@ -726,7 +853,12 @@ const HomeInventorySection = () => {
                   </div>
                 </div>
                 <div className="flex-1 text-center md:text-left">
-                  <h4 className="text-xl font-black text-white tracking-tight">{selectedProperty.postedBy ? `${selectedProperty.postedBy.firstName} ${selectedProperty.postedBy.lastName}` : 'System'}</h4>
+                  <h4 className="text-xl font-black text-white tracking-tight">
+                    {selectedProperty.postedBy
+                      ? (selectedProperty.postedBy.name || `${selectedProperty.postedBy.firstName || ''} ${selectedProperty.postedBy.lastName || ''}`.trim() || 'Listed User')
+                      : 'System'}
+                  </h4>
+
                   <p className="text-primary-400 text-[9px] font-black uppercase tracking-[0.3em] mt-0.5">{selectedProperty.postedBy?.companyName || 'Verified Network Partner'}</p>
                   <div className="flex items-center justify-center md:justify-start gap-4 mt-3">
                     <div className="text-center">

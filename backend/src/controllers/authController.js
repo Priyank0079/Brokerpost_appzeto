@@ -1,14 +1,17 @@
 const User = require('../models/User');
+const Admin = require('../models/Admin');
+
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
 
 // Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+const generateToken = (id, model = 'User') => {
+  return jwt.sign({ id, model }, process.env.JWT_SECRET, {
     expiresIn: '30d'
   });
 };
+
 
 // @desc    Register user and send OTP
 // @route   POST /api/v1/auth/register
@@ -119,7 +122,8 @@ exports.verifyOTP = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Email verified and password set successfully',
-      token: generateToken(user._id)
+      token: generateToken(user._id, 'User')
+
     });
   } catch (error) {
     next(error);
@@ -147,7 +151,8 @@ exports.login = async (req, res, next) => {
 
     res.json({
       success: true,
-      token: generateToken(user._id),
+      token: generateToken(user._id, 'User'),
+
       data: {
         _id: user._id,
         firstName: user.firstName,
@@ -169,12 +174,52 @@ exports.login = async (req, res, next) => {
   }
 };
 
+// @desc    Admin Login
+// @route   POST /api/v1/auth/admin/login
+// @access  Public
+exports.adminLogin = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const admin = await Admin.findOne({ email }).select('+password');
+
+    if (!admin) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+    }
+
+    const isMatch = await admin.matchPassword(password);
+
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+    }
+
+    res.json({
+      success: true,
+      token: generateToken(admin._id, 'Admin'),
+
+      data: {
+        _id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 // @desc    Get current user profile
 // @route   GET /api/v1/auth/me
 // @access  Private
 exports.getMe = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id);
+    let user = await User.findById(req.user.id);
+    
+    if (!user) {
+      user = await Admin.findById(req.user.id);
+    }
 
     if (user) {
       res.json({
@@ -188,6 +233,7 @@ exports.getMe = async (req, res, next) => {
     next(error);
   }
 };
+
 // @desc    Get all brokers (Admin only)
 // @route   GET /api/v1/auth/brokers
 // @access  Private/Admin
@@ -322,3 +368,49 @@ exports.updateMe = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Get user notifications
+// @route   GET /api/v1/auth/notifications
+// @access  Private
+exports.getNotifications = async (req, res, next) => {
+  try {
+    const Notification = require('../models/Notification');
+    const notifications = await Notification.find({ recipient: req.user._id })
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    res.status(200).json({
+      success: true,
+      data: notifications
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Mark notification as read
+// @route   PATCH /api/v1/auth/notifications/:id/read
+// @access  Private
+exports.markNotificationRead = async (req, res, next) => {
+  try {
+    const Notification = require('../models/Notification');
+    const notification = await Notification.findOneAndUpdate(
+      { _id: req.params.id, recipient: req.user._id },
+      { isRead: true },
+      { new: true }
+    );
+
+    if (!notification) {
+      return res.status(404).json({ success: false, message: 'Notification not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: notification
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

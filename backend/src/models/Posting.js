@@ -4,10 +4,17 @@ const postingSchema = new mongoose.Schema({
   // ── WHO POSTED ──────────────────────────────────────────────────────────────
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
     required: true,
+    refPath: 'onModel',
     index: true
   },
+  onModel: {
+    type: String,
+    required: true,
+    enum: ['User', 'Admin'],
+    default: 'User'
+  },
+
 
   // ── CLASSIFICATION (drives field visibility in frontend) ─────────────────────
   vertical: {

@@ -10,38 +10,42 @@ import NetworkEffect from '../components/home/NetworkEffect';
 import FoundingMember from '../components/home/FoundingMember';
 import FAQ from '../components/home/FAQ';
 
+import { useLandingConfig } from '../../../hooks/useLandingConfig';
+
 const Home = () => {
+  const { config, loading } = useLandingConfig();
+
+  if (loading) return null; // Or a loader if preferred
+
+  const { sections } = config;
+
   return (
     <div className="pb-20 bg-[#F8FAFC]">
-      {/* 
-          Main Dashboard Section 
-          Contains: 
-          1. Header Area (Branding, Notifications, Profile)
-          2. Search & Tabs
-          3. Dynamic Banner (Broker Registration Content)
-          4. Inventory Table
-      */}
       <section>
-        <HomeInventorySection />
+        <HomeInventorySection data={sections.hero} />
       </section>
 
-      <SearchPhilosophy />
+      {sections.searchPhilosophy?.visible && <SearchPhilosophy data={sections.searchPhilosophy} />}
 
-      <ComparisonSection />
+      {sections.comparison?.visible && <ComparisonSection data={sections.comparison} />}
 
-      <HowItWorks />
+      {sections.howItWorks?.visible && <HowItWorks data={sections.howItWorks} />}
 
-      <CampaignProgress />
+      {sections.campaignProgress?.visible && (
+        <CampaignProgress data={sections.campaignProgress} />
+      )}
 
-      <TheMathSection />
+      {sections.theMath?.visible && <TheMathSection data={sections.theMath} />}
 
-      <BrokerBenefits />
+      {sections.brokerBenefits?.visible && <BrokerBenefits data={sections.brokerBenefits} />}
 
-      <NetworkEffect />
+      {sections.networkEffect?.visible && <NetworkEffect data={sections.networkEffect} />}
 
-      <FAQ />
+      {sections.faqs?.visible && <FAQ data={sections.faqs} />}
 
-      <FoundingMember />
+      {sections.foundingMember?.visible && (
+        <FoundingMember data={sections.foundingMember} />
+      )}
 
     </div>
   );

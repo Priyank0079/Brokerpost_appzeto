@@ -12,11 +12,60 @@ import {
   MessageSquare
 } from 'lucide-react';
 
+import { useLandingConfig } from '../../../../hooks/useLandingConfig';
+
+const ICON_MAP = {
+  ShieldCheck: ShieldCheck,
+  Globe: Globe,
+  Users: Users,
+  MessageSquare: MessageSquare,
+  Share2: Share2,
+  Mail: Mail,
+  Phone: Phone
+};
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { config } = useLandingConfig();
+  
+  const contact = config?.contact || {
+    email: "connect@brokerspost.net",
+    phone: "+91 800-BROKERS"
+  };
+
+  const footer = config?.sections?.footer || {
+    brandingDesc: "The trusted network for real estate professionals. Connecting verified brokers with premium global inventories.",
+    certifications: [
+      { label: "ISO Certified", icon: "ShieldCheck" },
+      { label: "Global Hubs", icon: "Globe" }
+    ],
+    navigation: [
+      {
+        title: "Core Navigation",
+        links: [
+          { label: "Marketplace", url: "/" },
+          { label: "Broker Network", url: "/" },
+          { label: "Intelligence", url: "/" },
+          { label: "Recent Listings", url: "/" },
+          { label: "Events", url: "/" }
+        ]
+      },
+      {
+        title: "Business Verticals",
+        links: [
+          { label: "Commercial Estates", url: "/" },
+          { label: "Luxury Residential", url: "/" },
+          { label: "Industrial Plots", url: "/" },
+          { label: "Retail Spaces", url: "/" },
+          { label: "Investment Portfolios", url: "/" }
+        ]
+      }
+    ],
+    copyright: `© ${currentYear} Brokerspost Network Platform.`
+  };
 
   return (
-    <footer className="bg-transparent pt-16 pb-8 px-6 lg:px-10 text-slate-900 hidden lg:block border-t border-slate-100">
+    <footer className="bg-transparent pt-16 pb-8 px-6 lg:px-10 text-slate-900 border-t border-slate-100">
       <div className="max-w-[1500px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Identity Column */}
@@ -31,50 +80,38 @@ const Footer = () => {
             </div>
             
             <p className="text-slate-500 text-xs leading-relaxed font-medium max-w-xs">
-              The trusted network for real estate professionals. Connecting verified brokers with premium global inventories.
+              {footer.brandingDesc}
             </p>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg border border-slate-100 bg-slate-50">
-                 <ShieldCheck className="text-emerald-500" size={12} />
-                 <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">ISO Certified</span>
-              </div>
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-lg border border-slate-100 bg-slate-50">
-                 <Globe className="text-blue-500" size={12} />
-                 <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Global Hubs</span>
-              </div>
+              {(footer.certifications || []).map((cert, i) => {
+                const Icon = ICON_MAP[cert.icon] || ShieldCheck;
+                return (
+                  <div key={i} className="flex items-center gap-2 px-2.5 py-1 rounded-lg border border-slate-100 bg-slate-50">
+                    <Icon className={cert.icon === 'ShieldCheck' ? 'text-emerald-500' : 'text-blue-500'} size={12} />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{cert.label}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600">Core Navigation</h4>
-            <ul className="space-y-3">
-              {['Marketplace', 'Broker Network', 'Intelligence', 'Recent Listings', 'Events'].map((link) => (
-                <li key={link}>
-                  <Link to="/" className="text-slate-500 hover:text-primary-600 transition-colors text-xs font-bold flex items-center group gap-2">
-                    <span>{link}</span>
-                    <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 -translate-y-0.5 translate-x-0.5 transition-all" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Business Units */}
-          <div className="space-y-6">
-            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600">Business Verticals</h4>
-            <ul className="space-y-3">
-              {['Commercial Estates', 'Luxury Residential', 'Industrial Plots', 'Retail Spaces', 'Investment Portfolios'].map((link) => (
-                <li key={link}>
-                  <Link to="/" className="text-slate-500 hover:text-primary-600 transition-colors text-xs font-bold flex items-center group gap-2">
-                    <span>{link}</span>
-                    <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 -translate-y-0.5 translate-x-0.5 transition-all" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Navigation Columns */}
+          {(footer.navigation || []).map((column, idx) => (
+            <div key={idx} className="space-y-6">
+              <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary-600">{column.title}</h4>
+              <ul className="space-y-3">
+                {(column.links || []).map((link, lIdx) => (
+                  <li key={lIdx}>
+                    <Link to={link.url} className="text-slate-500 hover:text-primary-600 transition-colors text-xs font-bold flex items-center group gap-2">
+                      <span>{link.label}</span>
+                      <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 -translate-y-0.5 translate-x-0.5 transition-all" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
           {/* Global Support */}
           <div className="space-y-6">
@@ -86,7 +123,7 @@ const Footer = () => {
                 </div>
                 <div>
                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Email</p>
-                   <p className="text-xs font-bold text-slate-900">connect@brokerspost.net</p>
+                   <p className="text-xs font-bold text-slate-900">{contact.email}</p>
                 </div>
               </div>
               
@@ -96,7 +133,7 @@ const Footer = () => {
                 </div>
                 <div>
                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Hotline</p>
-                   <p className="text-xs font-bold text-slate-900">+91 800-BROKERS</p>
+                   <p className="text-xs font-bold text-slate-900">{contact.phone}</p>
                 </div>
               </div>
             </div>
@@ -115,7 +152,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-slate-400 text-[10px] font-bold uppercase tracking-tight">
-            © {currentYear} Brokerspost Network Platform.
+            {footer.copyright}
           </p>
           
           <div className="flex items-center gap-6">

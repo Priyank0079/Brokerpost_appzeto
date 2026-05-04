@@ -66,9 +66,10 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['Broker', 'Administrator', 'Super Admin'],
+    enum: ['Broker'],
     default: 'Broker'
   },
+
   profileImage: String,
   isVerified: {
     type: Boolean,

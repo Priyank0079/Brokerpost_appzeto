@@ -1,21 +1,26 @@
-const API_BASE_URL = 'http://localhost:5000/api/v1';
+import { API_BASE_URL } from '../../../config/api';
+
+const getHeaders = (contentType = 'application/json') => {
+  const token = localStorage.getItem('token');
+  const headers = {};
+  if (contentType) headers['Content-Type'] = contentType;
+  if (token && token !== 'null' && token !== 'undefined') {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
 
 export const api = {
   get: async (endpoint) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: getHeaders(null)
     });
     return response.json();
   },
   post: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
+      headers: getHeaders(),
       body: JSON.stringify(data)
     });
     return response.json();
@@ -23,10 +28,7 @@ export const api = {
   put: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
+      headers: getHeaders(),
       body: JSON.stringify(data)
     });
     return response.json();
@@ -34,10 +36,7 @@ export const api = {
   patch: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
+      headers: getHeaders(),
       body: JSON.stringify(data)
     });
     return response.json();
@@ -45,10 +44,9 @@ export const api = {
   delete: async (endpoint) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+      headers: getHeaders(null)
     });
     return response.json();
   }
 };
+

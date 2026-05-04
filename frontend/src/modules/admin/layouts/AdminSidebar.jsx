@@ -14,14 +14,15 @@ import {
   PieChart,
   ArrowLeft,
   ArrowRight,
-  Image
+  Image,
+  Layout
 } from 'lucide-react';
 
 import { useAuth } from '../../broker/context/AuthContext';
 
 const menuItems = [
   { path: '/admin', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
-  { path: '/admin/carousel', icon: <Image size={20} />, label: 'Carousel' },
+  { path: '/admin/landing', icon: <Layout size={20} />, label: 'Landing Page' },
   { path: '/admin/brokers', icon: <Users size={20} />, label: 'Brokers' },
   { path: '/admin/listings', icon: <Building2 size={20} />, label: 'Listings' },
   { path: '/admin/groups', icon: <UsersRound size={20} />, label: 'Groups' },

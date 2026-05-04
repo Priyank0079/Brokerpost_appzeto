@@ -1,36 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus, HelpCircle } from 'lucide-react';
-
-const faqs = [
-  {
-    id: 1,
-    question: "What if I post my inventory and no one matches?",
-    answer: "With our growing network of verified brokers, your property is seen by professionals actively searching for requirements. The high match probability ensures zero-risk exposure for your inventory."
-  },
-  {
-    id: 2,
-    question: "Will my listing get buried under others?",
-    answer: "No. Brokerspost is search-first, not feed-based. Listings appear when they match specific criteria (e.g., location, BHK, budget), ensuring equal visibility regardless of when you post."
-  },
-  {
-    id: 3,
-    question: "How is this different from WhatsApp groups?",
-    answer: "WhatsApp is noisy and unorganized. Brokerspost provides a structured, searchable CRM experience that saves you hours by filtering for only relevant matching deals."
-  },
-  {
-    id: 4,
-    question: "What if other brokers don't join?",
-    answer: "Hundreds of brokers are already active on the platform. As the network grows, so does the value and match probability for every individual member."
-  }
-];
+import { api } from '../../services/api';
 
 const FAQItem = ({ faq, isOpen, toggle }) => {
   return (
     <div className="border-b border-slate-100 last:border-none">
       <button
         onClick={toggle}
-        className="w-full py-5 flex items-center justify-between text-left group focus:outline-none"
+        className="w-full py-4 flex items-center justify-between text-left group focus:outline-none"
       >
         <span className={`text-base md:text-lg font-bold tracking-tight transition-colors duration-300 ${isOpen ? 'text-primary-600' : 'text-slate-800 group-hover:text-primary-500'}`}>
           {faq.question}
@@ -58,27 +36,31 @@ const FAQItem = ({ faq, isOpen, toggle }) => {
   );
 };
 
-const FAQ = () => {
-  const [openId, setOpenId] = useState(1);
+const FAQ = ({ data }) => {
+  const [openId, setOpenId] = useState(null);
+
+  if (!data || !data.items || data.items.length === 0) return null;
+
+  const { title, subtitle, items } = data;
 
   return (
-    <section className="py-12 px-4 bg-white">
+    <section className="py-10 px-4 bg-white">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center space-y-2 mb-8">
+        <div className="text-center space-y-1 mb-6">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-lg border border-slate-100">
             <HelpCircle className="text-primary-500" size={14} />
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Concerns</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{subtitle || "Concerns"}</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+          <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">{title || "Frequently Asked Questions"}</h2>
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-10 shadow-xl shadow-slate-200/20">
-          {faqs.map((faq) => (
+        <div className="bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-lg shadow-slate-200/10">
+          {items.map((faq, index) => (
             <FAQItem 
-              key={faq.id} 
+              key={index} 
               faq={faq} 
-              isOpen={openId === faq.id} 
-              toggle={() => setOpenId(openId === faq.id ? null : faq.id)} 
+              isOpen={openId === index} 
+              toggle={() => setOpenId(openId === index ? null : index)} 
             />
           ))}
         </div>
@@ -86,7 +68,7 @@ const FAQ = () => {
         {/* Support CTA */}
         <div className="mt-8 text-center">
           <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">
-            Still have questions? <a href="mailto:support@brokerspost.com" className="text-primary-600 hover:underline">Connect with us</a>
+            {data.footerText || "Still have questions? Connect with us"}
           </p>
         </div>
       </div>

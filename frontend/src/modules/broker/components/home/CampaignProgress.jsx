@@ -1,12 +1,13 @@
 import React from 'react';
 import { Target, Users, Building2, Flame } from 'lucide-react';
 
-const CampaignProgress = () => {
-  const brokers = { current: 47, total: 100 };
-  const listings = { current: 705, total: 1500 };
+const CampaignProgress = ({ data }) => {
+  if (!data) return null;
+
+  const { title, subtitle, brokersCurrent, brokersTotal, listingsCurrent, listingsTotal } = data;
   
-  const brokerPercent = (brokers.current / brokers.total) * 100;
-  const listingPercent = (listings.current / listings.total) * 100;
+  const brokerPercent = (brokersCurrent / brokersTotal) * 100;
+  const listingPercent = (listingsCurrent / listingsTotal) * 100;
 
   return (
     <section className="py-24 px-6 bg-slate-50/50">
@@ -21,13 +22,13 @@ const CampaignProgress = () => {
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-full text-primary-600 mb-2">
                 <Target size={16} className="animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Growth Milestone</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">{data.badgeText || "Growth Milestone"}</span>
               </div>
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">
-                Platform <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-900">Velocity</span>
+                {title || "Platform Velocity"}
               </h2>
               <p className="text-slate-500 font-medium text-lg max-w-2xl mx-auto">
-                Tracking our journey towards the network effect. Be part of the ecosystem that's redefining broker collaboration.
+                {subtitle || "Tracking our journey towards the network effect. Be part of the ecosystem that's redefining broker collaboration."}
               </p>
             </div>
 
@@ -40,7 +41,7 @@ const CampaignProgress = () => {
                     <p className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
                       <Users size={14} className="text-primary-500" /> Professional Network
                     </p>
-                    <h4 className="text-2xl font-black text-slate-900">{brokers.current} <span className="text-slate-300 font-medium">/ {brokers.total}</span></h4>
+                    <h4 className="text-2xl font-black text-slate-900">{brokersCurrent} <span className="text-slate-300 font-medium">/ {brokersTotal}</span></h4>
                   </div>
                   <span className="text-sm font-black text-primary-600">{Math.round(brokerPercent)}%</span>
                 </div>
@@ -60,7 +61,7 @@ const CampaignProgress = () => {
                     <p className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest">
                       <Building2 size={14} className="text-emerald-500" /> Inventory Depth
                     </p>
-                    <h4 className="text-2xl font-black text-slate-900">{listings.current} <span className="text-slate-300 font-medium">/ {listings.total}</span></h4>
+                    <h4 className="text-2xl font-black text-slate-900">{listingsCurrent} <span className="text-slate-300 font-medium">/ {listingsTotal}</span></h4>
                   </div>
                   <span className="text-sm font-black text-emerald-600">{Math.round(listingPercent)}%</span>
                 </div>
@@ -80,12 +81,12 @@ const CampaignProgress = () => {
                   <div className="flex items-center gap-3 bg-amber-50 px-6 py-3 rounded-2xl border border-amber-100">
                      <Flame size={20} className="text-amber-500 fill-amber-500" />
                      <p className="text-sm md:text-base font-black text-amber-900 uppercase tracking-tight">
-                        Only <span className="text-amber-600">{brokers.total - brokers.current}</span> more brokers needed for <span className="underline decoration-2 underline-offset-4">CRITICAL MASS</span>
+                        Only <span className="text-amber-600">{brokersTotal - brokersCurrent}</span> more brokers needed for <span className="underline decoration-2 underline-offset-4">CRITICAL MASS</span>
                      </p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-xl font-black text-slate-900 tracking-tight">Join now and secure your status as a Founding Member.</p>
-                    <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">Early access ends once milestones are achieved.</p>
+                    <p className="text-xl font-black text-slate-900 tracking-tight">{data.footerTitle || "Join now and secure your status as a Founding Member."}</p>
+                    <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">{data.footerSubtitle || "Early access ends once milestones are achieved."}</p>
                   </div>
                </div>
             </div>

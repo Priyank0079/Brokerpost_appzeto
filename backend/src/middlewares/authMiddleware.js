@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Admin = require('../models/Admin');
+
 
 const protect = async (req, res, next) => {
   let token;
@@ -13,15 +15,39 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (!token || token === 'null' || token === 'undefined') {
+        return res.status(401).json({ success: false, message: 'Not authorized, invalid token' });
+      }
 
-      // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      // Get user/admin from the token using the model claim
+      const userModel = decoded.model || 'User'; // Fallback to 'User' for older tokens
+      let foundUser;
+      
+      if (userModel === 'Admin') {
+        foundUser = await Admin.findById(decoded.id).select('-password');
+      } else {
+        foundUser = await User.findById(decoded.id).select('-password');
+      }
+      
+      if (!foundUser) {
+        return res.status(401).json({ success: false, message: 'User not found' });
+      }
+
+      req.user = foundUser;
+      req.userModel = userModel;
+
+
+
 
       next();
     } catch (error) {
-      console.error(error);
-      res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+      console.error('JWT Error:', error.message);
+      res.status(401).json({ 
+        success: false, 
+        message: error.name === 'TokenExpiredError' ? 'Token expired' : 'Not authorized, token failed' 
+      });
     }
   }
 

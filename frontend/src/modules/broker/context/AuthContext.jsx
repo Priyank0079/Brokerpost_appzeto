@@ -58,8 +58,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const adminLogin = async (email, password) => {
-    return await login(email, password);
+    try {
+      const response = await api.post('/auth/admin/login', { email, password });
+      if (response.success) {
+        localStorage.setItem('token', response.token);
+        setUser(response.data);
+        return { success: true, user: response.data };
+      }
+      return { success: false, message: response.message || 'Invalid admin credentials' };
+    } catch (err) {
+      return { success: false, message: 'Server connection failed' };
+    }
   };
+
 
   return (
     <AuthContext.Provider value={{ user, login, logout, adminLogin, loading, checkAuth, updateUser }}>

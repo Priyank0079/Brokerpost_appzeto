@@ -18,9 +18,11 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useLandingConfig } from '../../../../hooks/useLandingConfig';
 
 const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
   const { user, logout } = useAuth();
+  const { config } = useLandingConfig();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
@@ -81,8 +83,18 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
       <div className="flex items-center gap-3 md:gap-5">
         {/* Navigation Links (Desktop) */}
         <div className="hidden xl:flex items-center gap-6 mr-6">
-          <Link to="/inventory" className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary-600 transition-colors">Marketplace</Link>
-          <Link to="/network" className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary-600 transition-colors">Network</Link>
+          {(config?.sections?.navbar?.links || [
+            { label: "Marketplace", url: "/inventory" },
+            { label: "Network", url: "/network" }
+          ]).map((link, idx) => (
+            <Link 
+              key={idx} 
+              to={link.url} 
+              className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary-600 transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         {isHomePage && (
@@ -157,7 +169,10 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
                 >
                   <div className="px-5 py-4 border-b border-slate-50 mb-2 bg-slate-50/30">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Profile</p>
-                      <p className="text-sm font-black text-slate-900 truncate mt-1">{user?.name || 'Guest User'}</p>
+                      <p className="text-sm font-black text-slate-900 truncate mt-1">
+                        {user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 'Guest User')}
+                      </p>
+
                       <p className="text-[10px] font-bold text-primary-600 uppercase tracking-widest mt-0.5">{user?.role || 'Verified Broker'}</p>
                   </div>
                   

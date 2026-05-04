@@ -24,7 +24,8 @@ import AdminLogin from '../modules/admin/pages/Login';
 
 const AppRoutes = () => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'Administrator' || user?.role === 'Super Admin';
+  const isAdmin = user?.role === 'Admin';
+
 
   return (
     <Routes>

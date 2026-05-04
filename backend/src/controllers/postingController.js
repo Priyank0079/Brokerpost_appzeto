@@ -21,6 +21,8 @@ exports.createPosting = async (req, res, next) => {
 
     const posting = await Posting.create({
       postedBy: req.user._id,
+      onModel: req.userModel,
+
       vertical, postType, intent, subType,
       location, project,
       size, sizeUnit,
@@ -54,6 +56,7 @@ exports.getPostings = async (req, res, next) => {
     const {
       vertical, postType, intent, subType,
       location, bedrooms, constructionStatus, occupancy,
+      groupId,
       page = 1, limit = 20
     } = req.query;
 
@@ -67,21 +70,69 @@ exports.getPostings = async (req, res, next) => {
     if (constructionStatus) filter.constructionStatus = constructionStatus;
     if (occupancy)          filter.occupancy          = occupancy;
 
-    // Location: partial case-insensitive text match
     if (location) {
       filter.location = { $regex: location.trim(), $options: 'i' };
     }
 
+    // If groupId is provided, filter by its members
+    if (groupId) {
+      const Group = require('../models/Group');
+      const group = await Group.findById(groupId);
+      if (group) {
+        filter.postedBy = { $in: group.members };
+      }
+    }
+
     const skip = (Number(page) - 1) * Number(limit);
 
-    const [postings, total] = await Promise.all([
-      Posting.find(filter)
-        .populate('postedBy', 'firstName lastName phoneNumber companyName operatingCity')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(Number(limit)),
-      Posting.countDocuments(filter)
-    ]);
+    // If user is a broker, we might want to prioritize their group members
+    let postings;
+    let total;
+
+    if (req.userModel === 'User' && !groupId) {
+      const Group = require('../models/Group');
+      const userGroups = await Group.find({ members: req.user._id });
+      const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
+      
+      // Use aggregation to prioritize
+      const aggregation = [
+        { $match: filter },
+        {
+          $addFields: {
+            isGroupMember: {
+              $cond: {
+                if: { $in: [{ $toString: "$postedBy" }, memberIds] },
+                then: 1,
+                else: 0
+              }
+            }
+          }
+        },
+        { $sort: { isGroupMember: -1, createdAt: -1 } },
+        { $skip: skip },
+        { $limit: Number(limit) }
+      ];
+
+      [postings, total] = await Promise.all([
+        Posting.aggregate(aggregation),
+        Posting.countDocuments(filter)
+      ]);
+
+      // Manually populate since aggregate doesn't do it as easily as find
+      postings = await Posting.populate(postings, {
+        path: 'postedBy',
+        select: 'firstName lastName name phoneNumber companyName operatingCity'
+      });
+    } else {
+      [postings, total] = await Promise.all([
+        Posting.find(filter)
+          .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit)),
+        Posting.countDocuments(filter)
+      ]);
+    }
 
     res.status(200).json({
       success: true,
@@ -95,6 +146,7 @@ exports.getPostings = async (req, res, next) => {
     next(error);
   }
 };
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Get postings created by the currently logged-in broker
@@ -144,7 +196,8 @@ exports.getMyPostings = async (req, res, next) => {
 exports.getPostingById = async (req, res, next) => {
   try {
     const posting = await Posting.findById(req.params.id)
-      .populate('postedBy', 'firstName lastName phoneNumber companyName operatingCity');
+      .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity');
+
 
     if (!posting) {
       return res.status(404).json({ success: false, message: 'Posting not found' });

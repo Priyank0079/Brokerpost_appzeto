@@ -1,9 +1,15 @@
-const API_BASE = 'http://localhost:5000/api/v1';
+import { API_BASE_URL as API_BASE } from '../../../config/api';
 
-const authHeader = () => ({
-  'Content-Type': 'application/json',
-  Authorization: `Bearer ${localStorage.getItem('token')}`
-});
+const authHeader = (includeContentType = true) => {
+  const token = localStorage.getItem('token');
+  const headers = {};
+  if (includeContentType) headers['Content-Type'] = 'application/json';
+  if (token && token !== 'null' && token !== 'undefined') {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
 
 // ── CREATE ─────────────────────────────────────────────────────────────────
 export const createPosting = async (data) => {
@@ -76,10 +82,7 @@ export const uploadPropertyImages = async (files) => {
 
   const res = await fetch(`${API_BASE}/upload/property`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-      // Note: No Content-Type header! Browser sets it automatically with boundary for FormData
-    },
+    headers: authHeader(false),
     body: formData
   });
   return res.json();
@@ -91,9 +94,7 @@ export const uploadProfileImage = async (file) => {
 
   const res = await fetch(`${API_BASE}/upload/profile`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    },
+    headers: authHeader(false),
     body: formData
   });
   return res.json();

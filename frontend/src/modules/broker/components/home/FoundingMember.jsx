@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Sparkles, Timer, ShieldCheck } from 'lucide-react';
 
-const benefits = [
+const defaultBenefits = [
   "Free Lifetime Membership",
   "25 Free Listings",
   "Founding Member Badge",
@@ -13,7 +13,12 @@ const benefits = [
   "Lifetime 10% Discount"
 ];
 
-const FoundingMember = () => {
+const FoundingMember = ({ data }) => {
+  if (!data) return null;
+
+  const { title, subtitle, slotsRemaining, benefits } = data;
+  const displayBenefits = benefits && benefits.length > 0 ? benefits : defaultBenefits;
+
   return (
     <section className="py-12 px-4 bg-slate-900 relative overflow-hidden">
       {/* Dynamic Background */}
@@ -36,33 +41,32 @@ const FoundingMember = () => {
             
             <div className="space-y-4">
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-                Be a <span className="text-primary-400">Founding Member</span>
+                {title || "Be a Founding Member"}
               </h2>
               <p className="text-base md:text-lg text-slate-400 font-medium">
-                The first <span className="text-white font-bold underline decoration-primary-500 decoration-2 underline-offset-4">100 brokers</span> get exclusive lifetime benefits.
+                {subtitle || "The first 100 brokers get exclusive lifetime benefits."}
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <button className="group relative px-8 py-4 bg-primary-600 text-white rounded-xl font-bold uppercase tracking-widest text-[11px] shadow-xl shadow-primary-600/20 hover:bg-primary-500 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3">
-                Join Now — Completely Free
+                {data.ctaText || "Join Now — Completely Free"}
                 <ShieldCheck size={16} />
               </button>
               
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-[10px] font-black uppercase tracking-widest animate-pulse">
                 <Sparkles size={14} />
-                Only 53 slots remaining!
+                Only {slotsRemaining} slots remaining!
               </div>
             </div>
             
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              No credit card required • No commitment • Cancel anytime
+              {data.footerNote || "No credit card required • No commitment • Cancel anytime"}
             </p>
           </div>
 
-          {/* Benefits Grid Right */}
           <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 bg-white/5 p-6 md:p-8 rounded-2xl border border-white/5">
-            {benefits.map((benefit, index) => (
+            {displayBenefits.map((benefit, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: 10 }}

@@ -5,11 +5,17 @@ import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
+import { useLandingConfig } from '../../../../hooks/useLandingConfig';
+
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
+  const { config } = useLandingConfig();
+  const contact = config?.contact || {
+    whatsapp: "910000000000"
+  };
 
   return (
     <div className="min-h-screen bg-background flex overflow-x-hidden relative">
@@ -40,7 +46,7 @@ const Layout = ({ children }) => {
 
       {/* Premium Floating WhatsApp Button */}
       <a 
-        href="https://wa.me/910000000000" 
+        href={`https://wa.me/${contact.whatsapp}`} 
         target="_blank" 
         rel="noopener noreferrer"
         className="fixed bottom-8 right-8 z-[100] group"
@@ -58,7 +64,7 @@ const Layout = ({ children }) => {
 
           {/* Connect Label (Visible on Hover) */}
           <div className="absolute right-20 top-1/2 -translate-y-1/2 bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0 whitespace-nowrap pointer-events-none shadow-2xl border border-white/10">
-             Direct Network Bridge
+             {config?.sections?.foundingMember?.ctaText ? "Join Network" : "Direct Network Bridge"}
           </div>
         </div>
       </a>

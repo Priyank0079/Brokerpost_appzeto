@@ -315,8 +315,11 @@ const PropertyDetails = () => {
                   </div>
                   <div>
                     <h4 className="text-lg font-black text-slate-900 tracking-tight">
-                      {item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System Agent'}
+                      {item.postedBy 
+                        ? (item.postedBy.name || `${item.postedBy.firstName || ''} ${item.postedBy.lastName || ''}`.trim() || 'Listed User')
+                        : 'System Agent'}
                     </h4>
+
                     <p className="text-primary-600 text-[9px] font-black uppercase tracking-[0.3em] mt-0.5">
                       {item.postedBy?.companyName || 'Verified Power Broker'}
                     </p>

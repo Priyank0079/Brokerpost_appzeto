@@ -12,12 +12,14 @@ import Settings from '../pages/Settings';
 import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
 import BrokerDetail from '../pages/BrokerDetail';
+import LandingPageManager from '../pages/LandingPageManager';
 
 const AdminRoutes = () => {
   return (
     <AdminLayout>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/landing" element={<LandingPageManager />} />
         <Route path="/carousel" element={<CarouselManagement />} />
         <Route path="/brokers" element={<Brokers />} />
         <Route path="/brokers/:id" element={<BrokerDetail />} />

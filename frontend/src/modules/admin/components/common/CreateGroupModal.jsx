@@ -2,25 +2,46 @@ import React, { useState } from 'react';
 import { Search, X, Check, UserPlus } from 'lucide-react';
 import Modal from '../../../broker/components/ui/Modal';
 import Button from '../../../broker/components/ui/Button';
-import { brokers } from '../../data/data';
+import { getAllBrokers } from '../../services/brokerService';
 
 const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
   const [groupName, setGroupName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBrokers, setSelectedBrokers] = useState([]);
+  const [brokersList, setBrokersList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredBrokers = brokers.filter(b => 
-    b.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const fetchBrokers = async () => {
+    setLoading(true);
+    try {
+      const result = await getAllBrokers();
+      if (result.success) {
+        setBrokersList(result.data);
+      }
+    } catch (error) {
+      console.error('Fetch brokers error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    if (isOpen) fetchBrokers();
+  }, [isOpen]);
+
+  const filteredBrokers = brokersList.filter(b => 
+    `${b.firstName} ${b.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (b.operatingCity && b.operatingCity.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const toggleBroker = (broker) => {
-    if (selectedBrokers.find(b => b.id === broker.id)) {
-      setSelectedBrokers(selectedBrokers.filter(b => b.id !== broker.id));
+    if (selectedBrokers.find(b => b._id === broker._id)) {
+      setSelectedBrokers(selectedBrokers.filter(b => b._id !== broker._id));
     } else {
       setSelectedBrokers([...selectedBrokers, broker]);
     }
   };
+
 
   const handleCreate = () => {
     if (!groupName.trim()) {
@@ -85,8 +106,8 @@ const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
           {selectedBrokers.length > 0 && (
             <div className="flex flex-wrap gap-2 animate-in fade-in slide-in-from-top-2">
               {selectedBrokers.map(b => (
-                <div key={b.id} className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                  {b.name}
+                <div key={b._id} className="flex items-center gap-1 bg-slate-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                  {b.firstName}
                   <button onClick={() => toggleBroker(b)} className="hover:text-red-400 transition-colors">
                     <X size={12} />
                   </button>
@@ -97,22 +118,24 @@ const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
 
           {/* List */}
           <div className="max-h-[300px] overflow-y-auto border border-slate-50 rounded-2xl divide-y divide-slate-50 custom-scrollbar">
-            {filteredBrokers.length > 0 ? (
+            {loading ? (
+              <div className="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Brokers...</div>
+            ) : filteredBrokers.length > 0 ? (
               filteredBrokers.map(b => {
-                const isSelected = selectedBrokers.find(sb => sb.id === b.id);
+                const isSelected = selectedBrokers.find(sb => sb._id === b._id);
                 return (
                   <div 
-                    key={b.id} 
+                    key={b._id} 
                     onClick={() => toggleBroker(b)}
                     className={`p-4 flex items-center justify-between cursor-pointer transition-all ${isSelected ? 'bg-primary-50/50' : 'hover:bg-slate-50'}`}
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs shadow-sm">
-                        {b.name.split(' ').map(n => n[0]).join('')}
+                        {b.firstName?.[0]}{b.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-slate-900">{b.name}</p>
-                        <p className="text-[10px] text-slate-500 font-medium">{b.location} • {b.plan} Member</p>
+                        <p className="text-sm font-bold text-slate-900">{b.firstName} {b.lastName}</p>
+                        <p className="text-[10px] text-slate-500 font-medium">{b.operatingCity || 'No Location'} • {b.companyName || 'Independent'}</p>
                       </div>
                     </div>
                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-600/20' : 'border-slate-100 bg-white'}`}>
@@ -127,6 +150,7 @@ const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
               </div>
             )}
           </div>
+
         </div>
 
         <div className="pt-4 flex gap-3">

@@ -18,21 +18,34 @@ import { getPostings } from '../../broker/services/postingService';
 
 const Listings = () => {
   const [listings, setListings] = useState([]);
+  const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter States
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('All Types');
-  const [transactionFilter, setTransactionFilter] = useState('All Transactions');
-  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [postTypeFilter, setPostTypeFilter] = useState('All Types');
+  const [verticalFilter, setVerticalFilter] = useState('All Property Types');
+  const [intentFilter, setIntentFilter] = useState('All Transactions');
+  const [groupFilter, setGroupFilter] = useState('All Groups');
+  const [bhkFilter, setBhkFilter] = useState('All BHK');
+  const [constructionStatusFilter, setConstructionStatusFilter] = useState('All Status');
+  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
+  const [unitFilter, setUnitFilter] = useState('All Units');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getPostings();
-        if (res.success) {
-          setListings(res.data);
-        }
+        const [listingsRes, groupsRes] = await Promise.all([
+          getPostings(),
+          fetch(`${import.meta.env.VITE_API_BASE_URL}/groups`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+          }).then(res => res.json())
+        ]);
+        
+        if (listingsRes.success) setListings(listingsRes.data);
+        if (groupsRes.success) setGroups(groupsRes.data);
       } catch (err) {
-        console.error('Fetch listings error:', err);
+        console.error('Fetch error:', err);
       } finally {
         setLoading(false);
       }
@@ -42,38 +55,39 @@ const Listings = () => {
 
   const filteredListings = useMemo(() => {
     return listings.filter((item) => {
-      const brokerName = item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'System';
-      const title = item.project || item.location;
+      const brokerName = item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}`.toLowerCase() : 'system';
+      const title = (item.project || '').toLowerCase();
+      const location = (item.location || '').toLowerCase();
+      const search = searchTerm.toLowerCase();
       
       const matchesSearch = !searchTerm || 
-        title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        brokerName.toLowerCase().includes(searchTerm.toLowerCase());
+        title.includes(search) ||
+        location.includes(search) ||
+        brokerName.includes(search);
       
-      const matchesType = typeFilter === 'All Types' || 
-        (typeFilter === 'Residential' && item.vertical === 'RESIDENTIAL') ||
-        (typeFilter === 'Commercial' && item.vertical === 'COMMERCIAL');
-
-      const matchesTransaction = transactionFilter === 'All Transactions' || 
-        (transactionFilter === 'Sale' && (item.intent === 'SALE' || item.intent === 'PURCHASE')) ||
-        (transactionFilter === 'Rent' && (item.intent === 'RENT' || item.intent === 'RENTALS' || item.intent === 'LEASE'));
-
-      const matchesStatus = statusFilter === 'All Status' || 
-        (statusFilter === 'Active' && item.isActive) ||
-        (statusFilter === 'Inactive' && !item.isActive);
+      const matchesPostType = postTypeFilter === 'All Types' || item.postType === postTypeFilter.toUpperCase();
+      const matchesVertical = verticalFilter === 'All Property Types' || item.vertical === verticalFilter.toUpperCase();
+      const matchesIntent = intentFilter === 'All Transactions' || item.intent === intentFilter.toUpperCase();
       
-      return matchesSearch && matchesType && matchesTransaction && matchesStatus;
+      const matchesGroup = groupFilter === 'All Groups' || (item.postedBy && groups.find(g => g._id === groupFilter)?.members.some(m => m === item.postedBy._id || m._id === item.postedBy._id));
+      
+      const matchesBhk = bhkFilter === 'All BHK' || item.bedrooms === bhkFilter;
+      const matchesConstruction = constructionStatusFilter === 'All Status' || item.constructionStatus === constructionStatusFilter.toUpperCase();
+      
+      return matchesSearch && matchesPostType && matchesVertical && matchesIntent && matchesGroup && matchesBhk && matchesConstruction;
     });
-  }, [listings, searchTerm, typeFilter, transactionFilter, statusFilter]);
+  }, [listings, groups, searchTerm, postTypeFilter, verticalFilter, intentFilter, groupFilter, bhkFilter, constructionStatusFilter]);
 
   const resetFilters = () => {
     setSearchTerm('');
-    setTypeFilter('All Types');
-    setPropertyTypeFilter('All Property Types');
-    setTransactionFilter('All Transactions');
+    setPostTypeFilter('All Types');
+    setVerticalFilter('All Property Types');
+    setIntentFilter('All Transactions');
     setGroupFilter('All Groups');
-    setStatusFilter('All Status');
+    setBhkFilter('All BHK');
+    setConstructionStatusFilter('All Status');
     setBudgetFilter('All Budgets');
+    setUnitFilter('All Units');
   };
 
   return (
@@ -91,8 +105,8 @@ const Listings = () => {
                 type="text" 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search properties..." 
-                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none w-64 focus:ring-4 focus:ring-primary-500/5 transition-all"
+                placeholder="Search by location, society, broker..." 
+                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none w-80 focus:ring-4 focus:ring-primary-500/5 transition-all"
               />
            </div>
            <button 
@@ -107,45 +121,105 @@ const Listings = () => {
 
       {/* Filter Bar */}
       <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-visible">
-        <div className="p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 bg-white rounded-2xl">
-           <select 
-             value={typeFilter}
-             onChange={(e) => setTypeFilter(e.target.value)}
-             className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-           >
-              <option>All Types</option>
-              <option>Residential</option>
-              <option>Commercial</option>
-           </select>
+        <div className="p-5 space-y-4 bg-white rounded-2xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+             <select 
+               value={postTypeFilter}
+               onChange={(e) => setPostTypeFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Types</option>
+                <option>Availability</option>
+                <option>Requirement</option>
+             </select>
 
-           <select 
-             value={transactionFilter}
-             onChange={(e) => setTransactionFilter(e.target.value)}
-             className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-           >
-              <option>All Transactions</option>
-              <option>Sale</option>
-              <option>Rent</option>
-           </select>
+             <select 
+               value={verticalFilter}
+               onChange={(e) => setVerticalFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Property Types</option>
+                <option value="RESIDENTIAL">Residential</option>
+                <option value="COMMERCIAL">Commercial</option>
+                <option value="PLOT">Plots</option>
+             </select>
 
+             <select 
+               value={intentFilter}
+               onChange={(e) => setIntentFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Transactions</option>
+                <option value="SALE">Sale</option>
+                <option value="RENT">Rent</option>
+                <option value="LEASE">Lease</option>
+             </select>
 
+             <select 
+               value={groupFilter}
+               onChange={(e) => setGroupFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Groups</option>
+                {groups.map(g => (
+                  <option key={g._id} value={g._id}>{g.name}</option>
+                ))}
+             </select>
 
-            <select 
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-slate-50 border-slate-100 text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5"
-            >
-               <option>All Status</option>
-               <option>Active</option>
-               <option>Inactive</option>
-            </select>
+             <select 
+               value={bhkFilter}
+               onChange={(e) => setBhkFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All BHK</option>
+                <option>1 BHK</option>
+                <option>2 BHK</option>
+                <option>3 BHK</option>
+                <option>4 BHK</option>
+                <option>5+ BHK</option>
+             </select>
 
-            <button className="md:col-span-2 flex items-center justify-center gap-2 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest py-2.5 rounded-xl hover:bg-slate-800 transition-all">
-               <Filter size={14} />
-               Apply Filters
-            </button>
+             <select 
+               value={constructionStatusFilter}
+               onChange={(e) => setConstructionStatusFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Status</option>
+                <option value="READY_TO_MOVE">Ready To Move</option>
+                <option value="UNDER_CONSTRUCTION">Under Construction</option>
+             </select>
+
+             <select 
+               value={budgetFilter}
+               onChange={(e) => setBudgetFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Budgets</option>
+                <option>Below 50L</option>
+                <option>50L - 1Cr</option>
+                <option>1Cr - 5Cr</option>
+                <option>Above 5Cr</option>
+             </select>
+
+             <select 
+               value={unitFilter}
+               onChange={(e) => setUnitFilter(e.target.value)}
+               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
+             >
+                <option>All Units</option>
+                <option>Apartment</option>
+                <option>Villa</option>
+                <option>Penthouse</option>
+             </select>
+
+             <button className="md:col-span-2 flex items-center justify-center gap-3 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.2em] py-3.5 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10">
+                <Filter size={16} />
+                Apply Filters
+             </button>
+          </div>
         </div>
       </Card>
+
 
       {/* Table Card */}
       <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-hidden">
