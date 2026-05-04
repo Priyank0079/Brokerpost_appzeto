@@ -23,13 +23,13 @@ const SearchPhilosophy = ({ data }) => {
   const { title, subtitle, features } = data;
 
   return (
-    <section className="py-12 px-6 bg-white relative overflow-hidden">
+    <section className="pt-2 pb-10 px-0 bg-white relative overflow-hidden">
       {/* Subtle Background Elements */}
       <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-primary-50/50 rounded-full blur-[100px] -z-10" />
       <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-[100px] -z-10" />
 
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center space-y-3 mb-10">
+      <div className="w-full px-4 md:px-6">
+        <div className="text-center space-y-3 mb-8">
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -61,7 +61,7 @@ const SearchPhilosophy = ({ data }) => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 xl:gap-6">
           {(features || []).map((feature, i) => {
             const icons = [<Zap size={20} />, <Target size={20} />, <Users size={20} />];
             const styles = COLOR_MAP[feature.color] || COLOR_MAP.primary;
@@ -92,7 +92,7 @@ const SearchPhilosophy = ({ data }) => {
         </div>
 
         {/* How it Works Section - High Density & Compact */}
-        <div className="mt-8">
+        <div className="mt-6">
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}

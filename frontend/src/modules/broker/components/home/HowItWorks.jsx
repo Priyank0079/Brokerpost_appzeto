@@ -14,10 +14,10 @@ const HowItWorks = ({ data }) => {
   const { title, subtitle, steps } = data;
 
   return (
-    <section className="py-12 px-4 bg-white relative overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section className="pt-2 pb-10 px-0 bg-white relative overflow-hidden">
+      <div className="w-full px-4 md:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center space-y-2 mb-10">
+        <div className="text-center space-y-2 mb-8">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -38,7 +38,7 @@ const HowItWorks = ({ data }) => {
         </div>
 
         {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-6 relative">
           {(steps || []).map((step, index) => {
             const icons = [
               <UserPlus size={24} />,
@@ -55,7 +55,7 @@ const HowItWorks = ({ data }) => {
                 transition={{ delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-6 h-full hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 text-center flex flex-col items-center">
+                <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 md:p-6 h-full hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 text-center flex flex-col items-center">
                   
                   {/* Step Number Badge */}
                   <div className="absolute top-4 left-4 w-6 h-6 rounded-full bg-white border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 shadow-sm">
@@ -63,7 +63,7 @@ const HowItWorks = ({ data }) => {
                   </div>
 
                   {/* Icon Wrapper */}
-                  <div className={`w-14 h-14 rounded-2xl bg-${step.color}-500/10 text-${step.color}-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                  <div className={`w-14 h-14 rounded-2xl bg-${step.color || 'primary'}-500/10 text-${step.color || 'primary'}-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                     {icons[index % icons.length]}
                   </div>
 

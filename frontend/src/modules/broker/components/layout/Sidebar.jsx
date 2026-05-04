@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
       )}
 
       <aside className={`
-        fixed top-0 left-0 h-screen bg-sidebar z-50 transition-all duration-500 ease-in-out transform flex flex-col overscroll-contain
+        fixed top-0 left-0 h-screen bg-sidebar z-50 transition-all duration-500 ease-in-out transform flex flex-col overflow-y-auto overscroll-y-contain
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         ${isCollapsed ? 'w-20' : 'w-72'}
       `}>
@@ -75,7 +75,7 @@ const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
 
 
         {/* Menu */}
-        <nav className={`flex-1 px-4 py-4 space-y-1 overflow-y-auto ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
+        <nav className={`flex-1 px-4 py-4 space-y-1 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
