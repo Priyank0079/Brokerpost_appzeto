@@ -53,11 +53,11 @@ const LandingHero = () => {
                 Register as Broker
               </button>
             </Link>
-            <Link to="/inventory">
+            <a href="/#inventory">
               <button className="px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-900 font-bold text-xs hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all">
                 Browse Inventory
               </button>
-            </Link>
+            </a>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 pt-14 border-t border-slate-200">

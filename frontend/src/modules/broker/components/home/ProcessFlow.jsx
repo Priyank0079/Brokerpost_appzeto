@@ -25,7 +25,7 @@ const ProcessFlow = () => {
   ];
 
   return (
-    <section className="bg-[#1a365d] py-10 px-6 lg:px-20 text-white">
+    <section id="how-it-works" className="bg-[#1a365d] py-10 px-6 lg:px-20 text-white">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="mb-10">

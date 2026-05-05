@@ -5,7 +5,7 @@ const LandingSearch = () => {
   const [activeTab, setActiveTab] = React.useState('residential');
 
   return (
-    <section className="bg-[#0f172a] py-6 px-6 lg:px-20 overflow-hidden relative">
+    <section id="inventory" className="bg-[#0f172a] py-6 px-6 lg:px-20 overflow-hidden relative">
       {/* Decorative Gradient */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C59D3F]/5 blur-[120px] rounded-full pointer-events-none" />
 

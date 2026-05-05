@@ -42,7 +42,7 @@ const PlatformFeatures = () => {
   ];
 
   return (
-    <section className="bg-pink-50 pt-20 pb-28 px-6 lg:px-20">
+    <section id="features" className="bg-pink-50 pt-20 pb-28 px-6 lg:px-20">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="mb-12">
