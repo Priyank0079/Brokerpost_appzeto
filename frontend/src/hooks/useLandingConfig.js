@@ -10,9 +10,11 @@ export const useLandingConfig = () => {
     const fetchConfig = async () => {
       try {
         const response = await landingConfigService.getLandingConfig();
+        console.log('Landing Config Response:', response);
         if (response.success) {
           setConfig(response.data);
         } else {
+          console.error('Landing Config Error:', response.message);
           setError('Failed to fetch configuration');
         }
       } catch (err) {

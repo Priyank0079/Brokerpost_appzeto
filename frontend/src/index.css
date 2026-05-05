@@ -3,25 +3,25 @@
 @tailwind utilities;
 
 :root {
-  --background: #020617;
-  --foreground: #f8fafc;
-  --card: #1e293b;
-  --card-foreground: #f8fafc;
-  --popover: #0f172a;
-  --popover-foreground: #f8fafc;
-  --primary: #38bdf8;
-  --primary-foreground: #0f172a;
-  --secondary: #1e293b;
-  --secondary-foreground: #f8fafc;
-  --muted: #334155;
-  --muted-foreground: #94a3b8;
-  --accent: #f97316;
-  --accent-foreground: #fafafa;
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
-  --border: #334155;
-  --input: #334155;
-  --ring: #38bdf8;
+  --background: #FAF9F6;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #C59D3F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F8FAFC;
+  --muted-foreground: #64748B;
+  --accent: #C59D3F;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #C59D3F;
 }
 
 @layer base {
@@ -56,9 +56,14 @@
   }
 
   body {
-    @apply bg-slate-950 text-slate-50 antialiased;
+    @apply bg-[#FAF9F6] text-slate-900 antialiased;
+    font-family: 'Outfit', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     overflow-y: auto;
+  }
+
+  .font-serif {
+    font-family: 'Playfair Display', serif;
   }
 }
 
@@ -67,11 +72,11 @@
 }
 
 .premium-gradient {
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #1A1A1A 0%, #333333 100%);
 }
 
 .glow {
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 0 20px rgba(197, 157, 63, 0.2);
 }
 
 /* Custom Scrollbar */

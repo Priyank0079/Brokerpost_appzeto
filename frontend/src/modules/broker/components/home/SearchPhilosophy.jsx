@@ -91,49 +91,6 @@ const SearchPhilosophy = ({ data }) => {
           })}
         </div>
 
-        {/* How it Works Section - High Density & Compact */}
-        <div className="mt-6">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.98 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="bg-slate-900 rounded-2xl p-6 md:p-8 text-white relative overflow-hidden border border-white/5 shadow-xl"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600/5 rounded-full blur-[80px]" />
-            
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div className="space-y-3">
-                <h4 className="text-lg md:text-xl font-bold tracking-tight">{data.matchingTitle || "How Pure Matching Works"}</h4>
-                <p className="text-slate-400 font-medium text-[13px] leading-relaxed max-w-md">
-                  {data.matchingSubtitle || "Our system operates on high-intent search queries that connect inventory directly to demand without interference."}
-                </p>
-                <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 backdrop-blur-sm w-fit">
-                  <ShieldCheck className="text-primary-400 shrink-0" size={16} />
-                  <p className="text-[10px] font-bold text-slate-300">{data.matchingBadge || "Guaranteed visibility for matching criteria."}</p>
-                </div>
-              </div>
-
-              <div className="bg-slate-800/50 backdrop-blur-md rounded-xl p-5 border border-white/5">
-                <div className="flex items-center gap-2 text-primary-400 mb-3 font-bold text-[8px] uppercase tracking-widest">
-                  <Search size={10} />
-                  {data.liveNetworkQueryLabel || "Live Network Query"}
-                </div>
-                <div className="text-sm md:text-base font-bold text-white italic mb-1 leading-tight">
-                   {data.liveNetworkQueryExample || "\"3 BHK + Sector 45 + Below ₹1.5 Cr\""}
-                </div>
-                <div className="w-6 h-[1px] bg-slate-700 my-2.5" />
-                <div className="flex items-center gap-2 text-emerald-400 font-bold text-[8px] uppercase tracking-widest mb-2">
-                  <Zap size={10} />
-                  {data.instantMatchLabel || "Instant Match"}
-                </div>
-                <div className="text-[11px] font-medium text-slate-400">
-                  {data.instantMatchStats || "Found 12 properties from 8 verified brokers"}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
       </div>
     </section>
   );
