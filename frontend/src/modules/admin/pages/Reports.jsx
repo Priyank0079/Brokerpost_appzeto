@@ -82,7 +82,7 @@ const Reports = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
          {/* Performance Chart Placeholder */}
          <Card title="Traffic & Conversion Trends" className="border-slate-100">
-            <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100 mt-4 overflow-hidden relative group">
+            <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-lg border-2 border-dashed border-slate-100 mt-4 overflow-hidden relative group">
                <BarChart3 size={48} className="text-slate-200 group-hover:scale-110 transition-transform" />
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Generating Visualization...</p>
                
@@ -97,7 +97,7 @@ const Reports = () => {
 
          {/* Distribution Chart Placeholder */}
          <Card title="Vertical Distribution" className="border-slate-100">
-            <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100 mt-4 relative group">
+            <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-lg border-2 border-dashed border-slate-100 mt-4 relative group">
                <PieIcon size={48} className="text-slate-200 group-hover:rotate-12 transition-transform" />
                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Analyzing segments...</p>
                
@@ -111,7 +111,7 @@ const Reports = () => {
                      <span className="text-xs font-bold text-slate-600">Commercial (22%)</span>
                   </div>
                   <div className="flex items-center gap-2">
-                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                     <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />
                      <span className="text-xs font-bold text-slate-600">Industrial (10%)</span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -134,7 +134,7 @@ const Reports = () => {
             ].map((report, i) => (
               <div key={i} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-all group">
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#fdf8f3] group-hover:text-[#c0922e] transition-all border border-slate-100/50">
+                    <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#fdf8f3] group-hover:text-[#c0922e] transition-all border border-slate-100/50">
                        <FileText size={20} />
                     </div>
                     <div>

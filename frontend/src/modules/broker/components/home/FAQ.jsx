@@ -54,7 +54,7 @@ const FAQ = ({ data }) => {
           <h2 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">{title || "Frequently Asked Questions"}</h2>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 p-5 md:p-8 shadow-lg shadow-slate-200/10">
+        <div className="bg-white rounded-lg border border-slate-100 p-5 md:p-8 shadow-lg shadow-slate-200/10">
           {items.map((faq, index) => (
             <FAQItem 
               key={index} 

@@ -37,7 +37,7 @@ export const StatusBadge = ({ type, children }) => {
   const styles = {
     Approved: 'bg-emerald-50 text-emerald-600 border-emerald-100',
     Active: 'bg-emerald-50 text-emerald-600 border-emerald-100',
-    Pending: 'bg-amber-50 text-amber-600 border-amber-100',
+    Pending: 'bg-primary-50 text-primary-600 border-primary-100',
     Blocked: 'bg-red-50 text-red-600 border-red-100',
     Spam: 'bg-red-50 text-red-600 border-red-100',
     Expired: 'bg-slate-50 text-slate-400 border-slate-200',

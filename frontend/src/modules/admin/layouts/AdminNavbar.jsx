@@ -30,7 +30,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
 
   const notifications = [
     { id: 1, title: 'New Broker Request', desc: 'Rajesh Malhotra applied for verification.', time: '2 mins ago', icon: <User className="text-blue-500" /> },
-    { id: 2, title: 'Subscription Expiring', desc: 'Suresh Raina plan expires in 3 days.', time: '1 hour ago', icon: <Zap className="text-amber-500" /> },
+    { id: 2, title: 'Subscription Expiring', desc: 'Suresh Raina plan expires in 3 days.', time: '1 hour ago', icon: <Zap className="text-primary-500" /> },
     { id: 3, title: 'Spam Alert', desc: 'Listing #BPS-1044 marked as spam.', time: '5 hours ago', icon: <ShieldCheck className="text-red-500" /> },
   ];
 
@@ -46,7 +46,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
           <input 
             type="text" 
             placeholder="Search brokers, listings, transaction ID..." 
-            className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-400 font-medium"
+            className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-600 font-medium"
           />
         </div>
       </div>
@@ -64,7 +64,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden animate-slide-up">
+            <div className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-2xl border border-slate-100 overflow-hidden animate-slide-up">
               <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                  <h4 className="font-bold text-slate-900 leading-none">Notifications</h4>
                  <div className="flex items-center gap-3">
@@ -116,7 +116,7 @@ const AdminNavbar = ({ toggleSidebar }) => {
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden py-2 animate-slide-up">
+            <div className="absolute right-0 mt-3 w-64 bg-white rounded-lg shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden py-2 animate-slide-up">
 
               <div className="px-4 py-3 border-b border-slate-50 mb-2 bg-slate-50/50">
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master Authority</p>

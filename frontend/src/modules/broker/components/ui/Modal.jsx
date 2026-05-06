@@ -25,7 +25,7 @@ const Modal = ({ isOpen, onClose, title, children, footer }) => {
       />
       
       {/* Modal Container */}
-      <div className="relative bg-white border border-slate-200 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in slide-in-from-bottom-4 duration-300">
+      <div className="relative bg-white border border-slate-200 rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in slide-in-from-bottom-4 duration-300">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-50 bg-slate-50/50">

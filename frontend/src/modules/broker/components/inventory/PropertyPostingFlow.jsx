@@ -627,7 +627,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
               placeholder="Add a short note about furnishing, parking, floor preference, possession, etc."
               value={formData.shortDescription}
               onChange={e => set('shortDescription', e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none"
             />
           </div>
         );
@@ -637,7 +637,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden max-w-5xl mx-auto">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden max-w-5xl mx-auto">
       <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button 
@@ -756,7 +756,7 @@ const PropertyPostingFlow = () => {
     );
 
     const Card = ({ onClick, icon, title, sub, variant = 'primary' }) => (
-      <button onClick={onClick} className="group relative bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-primary-500/20 transition-all text-center flex flex-col items-center gap-4">
+      <button onClick={onClick} className="group relative bg-white p-6 md:p-8 rounded-lg border border-slate-200 shadow-sm hover:shadow-xl hover:border-primary-500/20 transition-all text-center flex flex-col items-center gap-4">
         <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${variant === 'primary' ? 'bg-primary-50 text-primary-600 group-hover:bg-primary-600 group-hover:text-white' : 'bg-slate-900 text-white'}`}>
           {icon}
         </div>

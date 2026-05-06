@@ -57,7 +57,7 @@ const Login = () => {
 
       <div className="w-full max-w-md">
          <div className="flex flex-col items-center gap-2 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-primary-600 flex items-center justify-center font-black text-xl text-white shadow-xl shadow-primary-600/20">B</div>
+            <div className="w-12 h-12 rounded-lg bg-primary-600 flex items-center justify-center font-black text-xl text-white shadow-xl shadow-primary-600/20">B</div>
             <span className="text-xl font-black tracking-tighter text-slate-900">BROKERS<span className="text-primary-600">POST</span></span>
          </div>
 
@@ -81,7 +81,7 @@ const Login = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Enter email..." 
-                                className="w-full pl-11 pr-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 focus:border-primary-200 transition-all font-bold text-slate-900" 
+                                className="w-full pl-11 pr-5 py-3.5 bg-slate-50 border border-slate-100 rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 focus:border-primary-200 transition-all font-bold text-slate-900" 
                               />
                           </div>
                         </div>
@@ -95,7 +95,7 @@ const Login = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••" 
-                                className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 focus:border-primary-200 transition-all font-bold text-slate-900" 
+                                className="w-full pl-11 pr-11 py-3.5 bg-slate-50 border border-slate-100 rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-primary-500/5 focus:border-primary-200 transition-all font-bold text-slate-900" 
                               />
                               <button 
                                 type="button"
@@ -112,7 +112,7 @@ const Login = () => {
 
                     <Button 
                         variant="primary" 
-                        className="w-full py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary-600/20"
+                        className="w-full py-4 rounded-lg text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary-600/20"
                         type="submit"
                         disabled={loading}
                         rightIcon={loading ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <ChevronRight size={16} />}

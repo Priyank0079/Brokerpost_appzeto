@@ -55,7 +55,7 @@ const HowItWorks = ({ data }) => {
                 transition={{ delay: index * 0.1 }}
                 className="relative group"
               >
-                <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-5 md:p-6 h-full hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 text-center flex flex-col items-center">
+                <div className="bg-slate-50/50 rounded-lg border border-slate-100 p-5 md:p-6 h-full hover:bg-white hover:shadow-xl hover:shadow-slate-200/40 transition-all duration-300 text-center flex flex-col items-center">
                   
                   {/* Step Number Badge */}
                   <div className="absolute top-4 left-4 w-6 h-6 rounded-full bg-white border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 shadow-sm">
@@ -63,7 +63,7 @@ const HowItWorks = ({ data }) => {
                   </div>
 
                   {/* Icon Wrapper */}
-                  <div className={`w-14 h-14 rounded-2xl bg-${step.color || 'primary'}-500/10 text-${step.color || 'primary'}-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                  <div className={`w-14 h-14 rounded-lg bg-${step.color || 'primary'}-500/10 text-${step.color || 'primary'}-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                     {icons[index % icons.length]}
                   </div>
 

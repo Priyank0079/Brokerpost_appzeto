@@ -97,7 +97,7 @@ const Subscriptions = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100/50 w-fit rounded-2xl border border-slate-200/60 shadow-inner">
+        <div className="flex items-center gap-2 p-1.5 bg-slate-100/50 w-fit rounded-lg border border-slate-200/60 shadow-inner">
            <button 
              onClick={() => setActiveTab('users')}
              className={`px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === 'users' ? 'bg-white text-[#c0922e] shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
@@ -211,9 +211,9 @@ const Subscriptions = () => {
 
            <div 
              onClick={() => setIsModalOpen(true)}
-             className="border-2 border-dashed border-slate-200 rounded-3xl p-10 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary-400 hover:bg-primary-50/5 transition-all cursor-pointer group min-h-[400px]"
+             className="border-2 border-dashed border-slate-200 rounded-xl p-10 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary-400 hover:bg-primary-50/5 transition-all cursor-pointer group min-h-[400px]"
            >
-              <div className="w-16 h-16 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
+              <div className="w-16 h-16 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all shadow-sm">
                  <Plus size={32} />
               </div>
                <div>

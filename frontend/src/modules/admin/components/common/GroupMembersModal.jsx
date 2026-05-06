@@ -95,7 +95,7 @@ const GroupMembersModal = ({ isOpen, onClose, group, onUpdate }) => {
               </Button>
             </div>
 
-            <div className="max-h-[400px] overflow-y-auto border border-slate-50 rounded-2xl divide-y divide-slate-50 custom-scrollbar">
+            <div className="max-h-[400px] overflow-y-auto border border-slate-50 rounded-lg divide-y divide-slate-50 custom-scrollbar">
               {filteredMembers.length > 0 ? (
                 filteredMembers.map(m => (
                   <div key={m._id} className="p-4 flex items-center justify-between group hover:bg-slate-50 transition-colors">
@@ -141,7 +141,7 @@ const GroupMembersModal = ({ isOpen, onClose, group, onUpdate }) => {
               />
             </div>
 
-            <div className="max-h-[300px] overflow-y-auto border border-slate-50 rounded-2xl divide-y divide-slate-50 custom-scrollbar">
+            <div className="max-h-[300px] overflow-y-auto border border-slate-50 rounded-lg divide-y divide-slate-50 custom-scrollbar">
               {filteredAllBrokers.length > 0 ? (
                 filteredAllBrokers.map(b => (
                   <div key={b._id} className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">

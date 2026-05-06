@@ -13,8 +13,8 @@ const CTASection = () => {
       <div className="max-w-[720px] mx-auto">
         <div className="bg-white rounded-[40px] p-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center">
-              <Trophy size={32} className="text-[#C59D3F]" />
+            <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center">
+              <Trophy size={32} className="text-[#c8962a]" />
             </div>
           </div>
           
@@ -29,7 +29,7 @@ const CTASection = () => {
           <div className="flex flex-col items-center gap-4">
             <button 
               onClick={() => setIsRegisterModalOpen(true)}
-              className="bg-[#C59D3F] text-white px-8 py-3.5 rounded-2xl font-bold text-xs hover:bg-[#b08b35] transition-all shadow-lg shadow-[#C59D3F]/20"
+              className="bg-[#c8962a] text-white px-8 py-3.5 rounded-lg font-bold text-xs hover:bg-[#b08b35] transition-all shadow-lg shadow-[#c8962a]/20"
             >
               Register as a Verified Broker
             </button>

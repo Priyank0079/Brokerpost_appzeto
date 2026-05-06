@@ -298,7 +298,7 @@ const LandingPageManager = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100/50 w-fit rounded-2xl border border-slate-200/60 shadow-inner overflow-x-auto no-scrollbar max-w-full">
+        <div className="flex items-center gap-2 p-1.5 bg-slate-100/50 w-fit rounded-lg border border-slate-200/60 shadow-inner overflow-x-auto no-scrollbar max-w-full">
           {tabs.map(tab => (
             <button 
               key={tab.id}
@@ -321,10 +321,10 @@ const LandingPageManager = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {contentSections.map(section => (
-              <div key={section.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-[#c0922e]/40 transition-all group">
+              <div key={section.id} className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm hover:border-[#c0922e]/40 transition-all group">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${config?.sections?.[section.id]?.visible ? 'bg-[#fdf8f3] text-[#c0922e]' : 'bg-slate-100 text-slate-400'}`}>
+                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all ${config?.sections?.[section.id]?.visible ? 'bg-[#fdf8f3] text-[#c0922e]' : 'bg-slate-100 text-slate-400'}`}>
                       <Layout size={20} />
                     </div>
                     <div>
@@ -431,7 +431,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {(config?.sections?.searchPhilosophy?.features || []).map((feature, idx) => (
-                        <div key={idx} className="p-4 bg-slate-50 rounded-2xl space-y-3 relative group">
+                        <div key={idx} className="p-4 bg-slate-50 rounded-lg space-y-3 relative group">
                           <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -573,7 +573,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {(config?.sections?.comparison?.benefits || []).map((benefit, idx) => (
-                        <div key={idx} className="p-4 bg-slate-50 rounded-2xl space-y-3 relative group">
+                        <div key={idx} className="p-4 bg-slate-50 rounded-lg space-y-3 relative group">
                           <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -619,7 +619,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="space-y-4">
                       {(config?.sections?.howItWorks?.steps || []).map((step, idx) => (
-                        <div key={idx} className="p-4 bg-slate-50 rounded-2xl flex gap-4 items-start relative group">
+                        <div key={idx} className="p-4 bg-slate-50 rounded-lg flex gap-4 items-start relative group">
                            <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -729,7 +729,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="space-y-6">
                       {(config?.sections?.theMath?.cards || []).map((card, idx) => (
-                        <div key={idx} className="p-6 bg-slate-50 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-6 relative group">
+                        <div key={idx} className="p-6 bg-slate-50 rounded-lg border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-6 relative group">
                            <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -787,7 +787,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {(config?.sections?.brokerBenefits?.benefits || []).map((benefit, idx) => (
-                        <div key={idx} className="p-5 bg-slate-50 rounded-2xl space-y-3 relative group">
+                        <div key={idx} className="p-5 bg-slate-50 rounded-lg space-y-3 relative group">
                           <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -867,7 +867,7 @@ const LandingPageManager = () => {
                     
                     <div>
                       <h5 className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Success Story (Testimonial)</h5>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-6 rounded-2xl shadow-2xl">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-900 p-6 rounded-lg shadow-2xl">
                          <div className="space-y-4">
                             <label className="text-[10px] font-black text-primary-400 uppercase tracking-widest">The Quote</label>
                             <textarea className="w-full bg-slate-800 border-none rounded-xl text-white text-sm p-4 focus:ring-1 focus:ring-primary-500 outline-none" rows="4" value={config?.sections?.networkEffect?.testimonial?.quote || ''} onChange={(e) => updateNestedField('networkEffect', 'testimonial', 'quote', e.target.value)} />
@@ -978,7 +978,7 @@ const LandingPageManager = () => {
                     </div>
                     <div className="space-y-4">
                       {(config?.sections?.faqs?.items || []).map((faq, idx) => (
-                        <div key={idx} className="p-4 bg-slate-50 rounded-2xl space-y-3 relative group">
+                        <div key={idx} className="p-4 bg-slate-50 rounded-lg space-y-3 relative group">
                           <button 
                             className="absolute top-4 right-4 p-2 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={() => {
@@ -1069,7 +1069,7 @@ const LandingPageManager = () => {
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {(config.sections.footer.navigation || []).map((col, idx) => (
-                          <div key={idx} className="p-5 bg-slate-50 rounded-2xl space-y-4">
+                          <div key={idx} className="p-5 bg-slate-50 rounded-lg space-y-4">
                             <div className="flex items-center justify-between">
                               <input 
                                 type="text" 
@@ -1159,8 +1159,8 @@ const LandingPageManager = () => {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6 animate-in fade-in duration-500"
           >
-            <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 text-center space-y-4">
-              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto text-slate-400">
+            <div className="p-8 bg-slate-50 rounded-xl border border-slate-100 text-center space-y-4">
+              <div className="w-16 h-16 bg-white rounded-lg shadow-sm flex items-center justify-center mx-auto text-slate-400">
                 <Settings size={32} />
               </div>
               <div>
@@ -1238,7 +1238,7 @@ const LandingPageManager = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]"
           >
-             <div className={`px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-slate-900 text-white'}`}>
+             <div className={`px-8 py-5 rounded-xl shadow-2xl flex items-center gap-4 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-slate-900 text-white'}`}>
                 {toast.type === 'success' ? <CheckCircle2 className="text-emerald-400" size={24} /> : <AlertCircle size={24} />}
                 <p className="text-sm font-black uppercase tracking-[0.2em]">{toast.message}</p>
              </div>

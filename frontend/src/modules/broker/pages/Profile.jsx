@@ -134,7 +134,7 @@ const Profile = ({ title = "My Profile" }) => {
       </div>
 
       {saveStatus && (
-        <div className={`p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-500 border ${
+        <div className={`p-4 rounded-lg flex items-center gap-3 animate-in slide-in-from-top-2 duration-500 border ${
           saveStatus.type === 'success' ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'
         }`}>
            {saveStatus.type === 'success' ? <CheckCircle2 className="text-emerald-500" size={20} /> : <AlertCircle className="text-red-500" size={20} />}
@@ -150,8 +150,8 @@ const Profile = ({ title = "My Profile" }) => {
            <Card className="text-center overflow-hidden border-slate-100 shadow-xl shadow-slate-200/20">
               <div className="h-24 bg-gradient-to-br from-primary-600 to-blue-700 -mx-6 -mt-6" />
               <div className="relative -mt-12 mb-6 inline-block">
-                  <div className="w-24 h-24 rounded-3xl bg-white p-1.5 shadow-2xl relative">
-                     <div className="w-full h-full rounded-2xl bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-100">
+                  <div className="w-24 h-24 rounded-xl bg-white p-1.5 shadow-2xl relative">
+                     <div className="w-full h-full rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-100">
                         {user?.profileImage ? (
                           <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
                         ) : (
@@ -185,7 +185,7 @@ const Profile = ({ title = "My Profile" }) => {
            <Card title="Account Security" className="border-slate-100">
               <button className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all group">
                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
                        <Lock size={18} />
                     </div>
                     <span className="text-sm font-bold text-slate-700">Change Password</span>
@@ -225,7 +225,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.firstName}
                           onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                        />
@@ -239,7 +239,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.lastName}
                           onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                        />
@@ -253,7 +253,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={true}
                           type="email" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-100 border-transparent rounded-2xl outline-none text-sm font-bold text-slate-400 cursor-not-allowed"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-100 border-transparent rounded-lg outline-none text-sm font-bold text-slate-400 cursor-not-allowed"
                           value={formData.email}
                        />
                     </div>
@@ -266,7 +266,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.phoneNumber}
                           onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
                        />
@@ -280,7 +280,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.companyName}
                           onChange={(e) => setFormData({...formData, companyName: e.target.value})}
                        />
@@ -294,7 +294,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.reraNumber}
                           onChange={(e) => setFormData({...formData, reraNumber: e.target.value})}
                        />
@@ -307,7 +307,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <MapPin className="absolute left-4 top-4 text-slate-300 group-focus-within:text-primary-600" size={18} />
                        <textarea 
                           disabled={!isEditing}
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 h-24 resize-none disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 h-24 resize-none disabled:opacity-60"
                           value={formData.officeAddress}
                           onChange={(e) => setFormData({...formData, officeAddress: e.target.value})}
                        />
@@ -321,7 +321,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.officeCity}
                           onChange={(e) => setFormData({...formData, officeCity: e.target.value})}
                        />
@@ -335,7 +335,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.pinCode}
                           onChange={(e) => setFormData({...formData, pinCode: e.target.value})}
                        />
@@ -349,7 +349,7 @@ const Profile = ({ title = "My Profile" }) => {
                        <input 
                           disabled={!isEditing}
                           type="text" 
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                           value={formData.operatingCity}
                           onChange={(e) => setFormData({...formData, operatingCity: e.target.value})}
                        />

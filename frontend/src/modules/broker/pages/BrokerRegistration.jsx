@@ -176,7 +176,7 @@ const BrokerRegistration = () => {
       <div className="min-h-screen bg-slate-50 p-4 md:p-8 flex items-center justify-center">
         <div className="max-w-md w-full bg-white rounded-[40px] shadow-2xl shadow-slate-200/50 p-8 md:p-12 space-y-8 animate-in slide-in-from-bottom-10 duration-500">
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600 mx-auto mb-4">
+            <div className="w-16 h-16 bg-primary-50 rounded-lg flex items-center justify-center text-primary-600 mx-auto mb-4">
               <Mail size={32} />
             </div>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">Verify Email</h2>
@@ -192,7 +192,7 @@ const BrokerRegistration = () => {
                   type="text" 
                   maxLength="6"
                   placeholder="000000"
-                  className={`w-full pl-12 pr-5 py-4 bg-slate-50 border ${errors.otp ? 'border-red-200' : 'border-slate-100'} rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all font-black text-2xl tracking-[10px] text-center text-slate-900`}
+                  className={`w-full pl-12 pr-5 py-4 bg-slate-50 border ${errors.otp ? 'border-red-200' : 'border-slate-100'} rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all font-black text-2xl tracking-[10px] text-center text-slate-900`}
                   value={otpData.otp}
                   onChange={(e) => setOtpData({...otpData, otp: e.target.value.replace(/\D/g, '')})}
                 />
@@ -208,7 +208,7 @@ const BrokerRegistration = () => {
                   <input 
                     type={showPassword ? "text" : "password"} 
                     placeholder="••••••••"
-                    className={`w-full pl-12 pr-12 py-4 bg-slate-50 border ${errors.password ? 'border-red-200' : 'border-slate-100'} rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
+                    className={`w-full pl-12 pr-12 py-4 bg-slate-50 border ${errors.password ? 'border-red-200' : 'border-slate-100'} rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
                     value={otpData.password}
                     onChange={(e) => setOtpData({...otpData, password: e.target.value})}
                   />
@@ -230,7 +230,7 @@ const BrokerRegistration = () => {
                   <input 
                     type="password" 
                     placeholder="••••••••"
-                    className={`w-full pl-12 pr-5 py-4 bg-slate-50 border ${errors.confirmPassword ? 'border-red-200' : 'border-slate-100'} rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
+                    className={`w-full pl-12 pr-5 py-4 bg-slate-50 border ${errors.confirmPassword ? 'border-red-200' : 'border-slate-100'} rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
                     value={otpData.confirmPassword}
                     onChange={(e) => setOtpData({...otpData, confirmPassword: e.target.value})}
                   />
@@ -241,7 +241,7 @@ const BrokerRegistration = () => {
 
             <Button 
               variant="primary" 
-              className="w-full py-5 rounded-[24px] text-sm font-black uppercase tracking-[4px] shadow-2xl shadow-primary-600/30"
+              className="w-full py-5 rounded-xl text-sm font-black uppercase tracking-[4px] shadow-2xl shadow-primary-600/30"
               type="submit"
               disabled={loading}
             >
@@ -279,7 +279,7 @@ const BrokerRegistration = () => {
                 <input 
                   type="text" 
                   placeholder="John"
-                  className={`w-full px-5 py-4 bg-slate-50 border ${errors.firstName ? 'border-red-500' : 'border-slate-100'} rounded-2xl outline-none font-bold`}
+                  className={`w-full px-5 py-4 bg-slate-50 border ${errors.firstName ? 'border-red-500' : 'border-slate-100'} rounded-lg outline-none font-bold`}
                   value={formData.firstName}
                   onChange={(e) => setFormData({...formData, firstName: e.target.value.replace(/[^A-Za-z\s]/g, '')})}
                 />
@@ -290,7 +290,7 @@ const BrokerRegistration = () => {
                 <input 
                   type="text" 
                   placeholder="Doe"
-                  className={`w-full px-5 py-4 bg-slate-50 border ${errors.lastName ? 'border-red-500' : 'border-slate-100'} rounded-2xl outline-none font-bold`}
+                  className={`w-full px-5 py-4 bg-slate-50 border ${errors.lastName ? 'border-red-500' : 'border-slate-100'} rounded-lg outline-none font-bold`}
                   value={formData.lastName}
                   onChange={(e) => setFormData({...formData, lastName: e.target.value.replace(/[^A-Za-z\s]/g, '')})}
                 />
@@ -301,7 +301,7 @@ const BrokerRegistration = () => {
                 <div className="relative">
                   <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <select 
-                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold appearance-none"
+                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold appearance-none"
                     value={formData.city}
                     onChange={(e) => setFormData({...formData, city: e.target.value})}
                   >
@@ -330,7 +330,7 @@ const BrokerRegistration = () => {
                 <input 
                   type="text" 
                   placeholder="Registered company name"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                   value={formData.companyName}
                   onChange={(e) => setFormData({...formData, companyName: e.target.value})}
                 />
@@ -341,7 +341,7 @@ const BrokerRegistration = () => {
                 <textarea 
                   rows="2"
                   placeholder="Complete office address"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold resize-none"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold resize-none"
                   value={formData.officeAddress}
                   onChange={(e) => setFormData({...formData, officeAddress: e.target.value})}
                 />
@@ -352,7 +352,7 @@ const BrokerRegistration = () => {
                 <input 
                   type="text" 
                   placeholder="City"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                   value={formData.officeCity}
                   onChange={(e) => setFormData({...formData, officeCity: e.target.value.replace(/[^A-Za-z\s]/g, '')})}
                 />
@@ -362,7 +362,7 @@ const BrokerRegistration = () => {
                 <input 
                   type="text" 
                   placeholder="6-digit PIN"
-                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                  className="w-full px-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                   value={formData.pinCode}
                   onChange={(e) => handleNumericInput('pinCode', e.target.value, 6)}
                 />
@@ -384,7 +384,7 @@ const BrokerRegistration = () => {
                   <input 
                     type="text" 
                     placeholder="10-digit mobile"
-                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                     value={formData.phoneNumber}
                     onChange={(e) => handleNumericInput('phoneNumber', e.target.value, 10)}
                   />
@@ -398,7 +398,7 @@ const BrokerRegistration = () => {
                   <input 
                     type="email" 
                     placeholder="email@example.com"
-                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                   />
@@ -412,7 +412,7 @@ const BrokerRegistration = () => {
                   <input 
                     type="text" 
                     placeholder="A518000XXXXX"
-                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none font-bold"
+                    className="w-full pl-12 pr-5 py-4 bg-slate-50 border border-slate-100 rounded-lg outline-none font-bold"
                     value={formData.reraNumber}
                     onChange={(e) => setFormData({...formData, reraNumber: e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()})}
                   />
@@ -423,7 +423,7 @@ const BrokerRegistration = () => {
 
           <div className="pt-4">
             <div className="space-y-4 mb-6">
-              <label className="flex items-start gap-4 cursor-pointer p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-primary-200 transition-all">
+              <label className="flex items-start gap-4 cursor-pointer p-4 bg-slate-50 rounded-lg border border-slate-100 group hover:border-primary-200 transition-all">
                 <div className="relative flex items-center mt-1">
                   <input 
                     type="checkbox" 
@@ -443,7 +443,7 @@ const BrokerRegistration = () => {
 
             <Button 
               variant="primary" 
-              className="w-full py-5 rounded-[24px] text-sm font-black uppercase tracking-[4px] shadow-2xl shadow-primary-600/30 flex items-center justify-center gap-3"
+              className="w-full py-5 rounded-xl text-sm font-black uppercase tracking-[4px] shadow-2xl shadow-primary-600/30 flex items-center justify-center gap-3"
               type="submit"
               disabled={loading}
             >

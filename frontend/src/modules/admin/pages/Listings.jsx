@@ -106,7 +106,7 @@ const Listings = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold border ${
-                          listing.section === 'Residential' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-orange-50 text-orange-600 border-orange-100'
+                          listing.section === 'Residential' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-primary-50 text-primary-600 border-primary-100'
                         }`}>
                           {listing.section}
                         </span>
@@ -153,7 +153,7 @@ const Listings = () => {
       {isEditModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
           <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
-          <div className="relative w-full max-w-[700px] bg-white rounded-[24px] shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
+          <div className="relative w-full max-w-[700px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
               <div>

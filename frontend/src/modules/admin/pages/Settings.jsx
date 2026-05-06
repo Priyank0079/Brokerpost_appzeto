@@ -149,7 +149,7 @@ const Settings = () => {
         </div>
 
       {showSuccess && (
-        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-500">
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg flex items-center gap-3 animate-in slide-in-from-top-2 duration-500">
            <CheckCircle2 className="text-emerald-500" size={20} />
            <p className="text-sm font-bold text-emerald-900">System settings updated successfully!</p>
         </div>
@@ -202,7 +202,7 @@ const Settings = () => {
          {/* Access & Security */}
          <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10">
             <div className="flex items-center gap-3 mb-8 border-b border-slate-50 pb-6">
-               <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+               <div className="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
                   <Lock size={20} />
                </div>
                 <div>
@@ -212,7 +212,7 @@ const Settings = () => {
             </div>
 
             <div className="space-y-6">
-               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white transition-all">
+               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 group hover:bg-white transition-all">
                   <div className="flex gap-4">
                      <ShieldAlert size={20} className="text-slate-400 mt-1" />
                      <div>
@@ -228,7 +228,7 @@ const Settings = () => {
                   </button>
                </div>
 
-               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white transition-all">
+               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 group hover:bg-white transition-all">
                   <div className="flex gap-4">
                      <Mail size={20} className="text-slate-400 mt-1" />
                      <div>
@@ -244,7 +244,7 @@ const Settings = () => {
                   </button>
                </div>
 
-               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:bg-white transition-all">
+               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 group hover:bg-white transition-all">
                   <div className="flex gap-4">
                      <AlertTriangle size={20} className="text-slate-400 mt-1" />
                      <div>
@@ -266,7 +266,7 @@ const Settings = () => {
           <div className="py-6 px-10 bg-slate-900 rounded-[32px] overflow-hidden relative group">
              <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center text-[#c0922e] shadow-inner">
+                   <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center text-[#c0922e] shadow-inner">
                       <Server size={22} />
                    </div>
                    <div>

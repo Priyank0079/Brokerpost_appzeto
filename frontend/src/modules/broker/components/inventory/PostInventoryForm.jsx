@@ -71,9 +71,9 @@ const PostInventoryForm = ({ onSuccess }) => {
               <button 
                 key={v}
                 onClick={() => { setFormData({...formData, vertical: v}); nextStep(); }}
-                className={`p-6 sm:p-8 border-2 rounded-3xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.vertical === v ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
+                className={`p-6 sm:p-8 border-2 rounded-xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.vertical === v ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
               >
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 sm:mb-6 transition-all ${formData.vertical === v ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' : 'bg-white text-slate-400 group-hover:text-primary-600 shadow-sm'}`}>
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-lg flex items-center justify-center mb-4 sm:mb-6 transition-all ${formData.vertical === v ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' : 'bg-white text-slate-400 group-hover:text-primary-600 shadow-sm'}`}>
                   {v === 'Residential' ? <Home className="w-6 h-6 sm:w-7 sm:h-7" /> : <Warehouse className="w-6 h-6 sm:w-7 sm:h-7" />}
                 </div>
                 <h4 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">{v}</h4>
@@ -89,7 +89,7 @@ const PostInventoryForm = ({ onSuccess }) => {
               <button 
                 key={t}
                 onClick={() => { setFormData({...formData, listingType: t}); nextStep(); }}
-                className={`p-8 border-2 rounded-3xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.listingType === t ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
+                className={`p-8 border-2 rounded-xl text-left transition-all hover:border-primary-500 hover:bg-primary-50/30 group ${formData.listingType === t ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${formData.listingType === t ? 'bg-primary-500 text-white' : 'bg-white text-slate-400Shadow-sm'}`}>
                    {t === 'Availability' ? <CheckCircle2 size={24} /> : <Check size={24} />}
@@ -107,7 +107,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                   <button 
                     key={t}
                     onClick={() => { setFormData({...formData, transactionType: t}); nextStep(); }}
-                    className={`p-10 border-2 rounded-3xl text-center transition-all hover:border-primary-500 hover:bg-primary-50/30 ${formData.transactionType === t ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
+                    className={`p-10 border-2 rounded-xl text-center transition-all hover:border-primary-500 hover:bg-primary-50/30 ${formData.transactionType === t ? 'border-primary-500 bg-primary-50' : 'border-slate-100 bg-slate-50/50'}`}
                   >
                     <span className={`text-2xl font-black ${formData.transactionType === t ? 'text-primary-700' : 'text-slate-400'}`}>{t}</span>
                   </button>
@@ -121,7 +121,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <button 
                   key={p}
                   onClick={() => { setFormData({...formData, propertyType: p}); nextStep(); }}
-                  className={`p-4 border-2 rounded-2xl text-sm font-black uppercase tracking-widest transition-all ${formData.propertyType === p ? 'bg-primary-600 text-white border-primary-600 shadow-lg' : 'bg-white text-slate-500 border-slate-100 hover:border-primary-200'}`}
+                  className={`p-4 border-2 rounded-lg text-sm font-black uppercase tracking-widest transition-all ${formData.propertyType === p ? 'bg-primary-600 text-white border-primary-600 shadow-lg' : 'bg-white text-slate-500 border-slate-100 hover:border-primary-200'}`}
                 >
                   {p}
                 </button>
@@ -136,7 +136,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Property Title</label>
                 <input 
                   type="text" 
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
                   placeholder="e.g. Modern 3BHK Apartment"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -146,7 +146,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Exact Location</label>
                 <input 
                   type="text" 
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
                   placeholder="e.g. Bandra West, Mumbai"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
@@ -156,7 +156,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Price (INR)</label>
                 <input 
                   type="number" 
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
                   placeholder="e.g. 25000000"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
@@ -166,7 +166,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Built-up Area (Sq Ft)</label>
                 <input 
                   type="number" 
-                  className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
                   placeholder="e.g. 1250"
                   value={formData.sqft}
                   onChange={(e) => setFormData({...formData, sqft: e.target.value})}
@@ -190,7 +190,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 onChange={handleImageUpload}
                 accept="image/*"
               />
-              <div className="w-16 h-16 rounded-3xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-primary-600 mb-6 group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 rounded-xl bg-white shadow-xl shadow-slate-200/50 flex items-center justify-center text-primary-600 mb-6 group-hover:scale-110 transition-transform">
                 <Upload size={28} />
               </div>
               <h4 className="text-lg font-black text-slate-900">Add Property Images</h4>
@@ -200,7 +200,7 @@ const PostInventoryForm = ({ onSuccess }) => {
             {formData.images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 {formData.images.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100">
+                  <div key={i} className="relative aspect-square rounded-lg overflow-hidden group border border-slate-100">
                     <img src={img} className="w-full h-full object-cover" />
                     <button 
                       onClick={(e) => { e.stopPropagation(); removeImage(i); }}
@@ -217,7 +217,7 @@ const PostInventoryForm = ({ onSuccess }) => {
 
       case 7:
         return (
-          <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 space-y-6">
+          <div className="bg-slate-50 rounded-xl p-8 border border-slate-100 space-y-6">
             <div className="flex items-center justify-between border-b border-white pb-6">
                <h4 className="text-xl font-black text-slate-900 tracking-tight">Listing Review</h4>
                <Badge variant="primary" className="px-4 py-1.5 font-black uppercase tracking-widest text-[10px]">Ready to Submit</Badge>
@@ -262,7 +262,7 @@ const PostInventoryForm = ({ onSuccess }) => {
             onClick={() => setStep(i + 1)}
             className="relative z-10 flex flex-col items-center gap-2 sm:gap-3 group outline-none"
           >
-            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-500 ${step > i + 1 ? 'bg-emerald-500 text-white' : step === i + 1 ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/30 ring-4 ring-primary-50' : 'bg-white border-2 border-slate-50 text-slate-300 group-hover:border-primary-200 group-hover:text-primary-600'}`}>
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-lg flex items-center justify-center transition-all duration-500 ${step > i + 1 ? 'bg-emerald-500 text-white' : step === i + 1 ? 'bg-primary-600 text-white shadow-xl shadow-primary-600/30 ring-4 ring-primary-50' : 'bg-white border-2 border-slate-50 text-slate-300 group-hover:border-primary-200 group-hover:text-primary-600'}`}>
               {step > i + 1 ? <Check className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : React.cloneElement(s.icon, { className: "w-4 h-4 sm:w-5 sm:h-5" })}
             </div>
             <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-tight sm:tracking-widest transition-all ${step === i + 1 ? 'opacity-100 scale-100' : 'opacity-0 sm:opacity-100 scale-50 sm:scale-100 hidden sm:block'} ${step >= i + 1 ? 'text-primary-600' : 'text-slate-300 group-hover:text-slate-500'}`}>

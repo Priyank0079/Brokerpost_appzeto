@@ -94,7 +94,7 @@ const Dashboard = () => {
                   <div className="space-y-1 flex-1 mr-6 md:mr-8">
                     <p className="text-[10px] md:text-[11px] font-bold text-slate-500 group-hover:text-slate-900 transition-colors leading-none truncate">{item.label}</p>
                     <div className="w-full h-[1.5px] bg-[#f5f0e5] rounded-full relative mt-1.5">
-                       <div className="absolute left-0 top-0 h-full w-0 bg-[#C59D3F] transition-all" />
+                       <div className="absolute left-0 top-0 h-full w-0 bg-[#c8962a] transition-all" />
                     </div>
                   </div>
                   <span className="text-xs md:text-[12px] font-serif font-bold text-[#1e3a8a]">{item.value}</span>

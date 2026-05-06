@@ -9,19 +9,19 @@
   --card-foreground: #1A1A1A;
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
-  --primary: #C59D3F;
+  --primary: #c8962a;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F5F9;
   --secondary-foreground: #1A1A1A;
   --muted: #F8FAFC;
   --muted-foreground: #64748B;
-  --accent: #C59D3F;
+  --accent: #c8962a;
   --accent-foreground: #FFFFFF;
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;
   --border: #E2E8F0;
   --input: #E2E8F0;
-  --ring: #C59D3F;
+  --ring: #c8962a;
 }
 
 @layer base {
@@ -69,7 +69,7 @@
 }
 
 .glass-card {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
+  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-lg;
 }
 
 .premium-gradient {
@@ -77,7 +77,7 @@
 }
 
 .glow {
-  box-shadow: 0 0 20px rgba(197, 157, 63, 0.2);
+  box-shadow: 0 0 20px rgba(200, 150, 42, 0.2);
 }
 
 /* Custom Scrollbar */

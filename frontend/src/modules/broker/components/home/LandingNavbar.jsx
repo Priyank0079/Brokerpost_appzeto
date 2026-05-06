@@ -18,15 +18,15 @@ const LandingNavbar = () => {
         <div className="max-w-[1200px] mx-auto w-full h-full flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-1" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-              <span className="text-3xl font-bold text-[#1A1A1A] tracking-tight">Brokers</span>
-              <span className="text-3xl font-bold text-[#C59D3F] tracking-tight">Post</span>
+              <span className="text-3xl font-bold text-[#1e3a5f] tracking-tight">Brokers</span>
+              <span className="text-3xl font-bold text-[#c8962a] tracking-tight">Post</span>
             </Link>
           </div>
 
           <div className="hidden lg:flex items-center gap-8 ml-auto mr-12">
-            <a href="/#inventory" className="text-sm font-medium text-[#4A4A4A] hover:text-[#C59D3F] transition-colors">Browse Inventory</a>
-            <a href="/#features" className="text-sm font-medium text-[#4A4A4A] hover:text-[#C59D3F] transition-colors">Features</a>
-            <a href="/#how-it-works" className="text-sm font-medium text-[#4A4A4A] hover:text-[#C59D3F] transition-colors">How It Works</a>
+            <a href="/#inventory" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">Browse Inventory</a>
+            <a href="/#features" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">Features</a>
+            <a href="/#how-it-works" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">How It Works</a>
           </div>
 
           <div className="flex items-center gap-3">

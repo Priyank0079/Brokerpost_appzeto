@@ -76,7 +76,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-2xl outline-none focus:bg-white focus:ring-4 focus:ring-[#C59D3F]/5 focus:border-[#C59D3F]/20 transition-all font-medium text-slate-900 placeholder:text-slate-300"
+                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-slate-900 placeholder:text-slate-600"
                 />
               </div>
 
@@ -91,7 +91,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your password"
-                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-2xl outline-none focus:bg-white focus:ring-4 focus:ring-[#C59D3F]/5 focus:border-[#C59D3F]/20 transition-all font-medium text-slate-900 placeholder:text-slate-300"
+                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-slate-900 placeholder:text-slate-600"
                 />
               </div>
             </div>
@@ -114,14 +114,14 @@ const LoginModal = ({ isOpen, onClose }) => {
               <button 
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3.5 rounded-2xl border-2 border-slate-100 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                className="flex-1 px-6 py-3.5 rounded-lg border-2 border-slate-100 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all"
               >
                 Cancel
               </button>
               <button 
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3.5 rounded-2xl bg-[#C59D3F] text-white text-sm font-bold shadow-xl shadow-[#C59D3F]/20 hover:bg-[#B08A35] transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3.5 rounded-lg bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? 'Logging in...' : 'Login'}
               </button>

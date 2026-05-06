@@ -24,7 +24,7 @@ const Home = () => {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#C59D3F]"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#c8962a]"></div>
     </div>
   );
 
@@ -36,7 +36,7 @@ const Home = () => {
           <p className="text-gray-600">{error || 'Failed to load configuration'}</p>
           <button 
             onClick={() => window.location.reload()}
-            className="mt-4 px-6 py-2 bg-[#C59D3F] text-white rounded-lg hover:bg-[#B08A35] transition-colors"
+            className="mt-4 px-6 py-2 bg-[#c8962a] text-white rounded-lg hover:bg-[#b08425] transition-colors"
           >
             Retry
           </button>

@@ -68,7 +68,7 @@ const AdminProfile = () => {
       </div>
 
       {saveStatus && (
-        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-500">
+        <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-lg flex items-center gap-3 animate-in slide-in-from-top-2 duration-500">
            <CheckCircle2 className="text-emerald-500" size={20} />
            <p className="text-sm font-bold text-emerald-900">Administrative profile synchronized successfully.</p>
         </div>
@@ -81,7 +81,7 @@ const AdminProfile = () => {
               <div className="h-1 bg-gradient-to-r from-primary-600 to-blue-400 -mx-6 -mt-6" />
               <div className="mt-6 flex flex-col items-center">
                  <div className="relative group">
-                    <div className="w-24 h-24 rounded-3xl bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden">
+                    <div className="w-24 h-24 rounded-xl bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden">
                        <User size={40} className="text-slate-500" />
                     </div>
                     {isEditing && (
@@ -114,7 +114,7 @@ const AdminProfile = () => {
               <div className="space-y-2">
                  <button onClick={() => setShowPasswordFields(true)} className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all group">
                     <div className="flex items-center gap-3">
-                       <div className="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+                       <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
                           <Lock size={18} />
                        </div>
                        <span className="text-sm font-bold text-slate-700">Rotate Access Key</span>
@@ -137,7 +137,7 @@ const AdminProfile = () => {
            {showPasswordFields ? (
               <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10 animate-in slide-in-from-right-4 duration-500">
                 <div className="flex items-center gap-3 mb-10 border-b border-slate-50 pb-6">
-                   <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600">
+                   <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600">
                       <Lock size={20} />
                    </div>
                    <div>
@@ -151,7 +151,7 @@ const AdminProfile = () => {
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
                       <input 
                          type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
                          placeholder="••••••••"
                       />
                    </div>
@@ -159,7 +159,7 @@ const AdminProfile = () => {
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Secure Password</label>
                       <input 
                          type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
                          placeholder="Min 8 characters"
                       />
                    </div>
@@ -167,7 +167,7 @@ const AdminProfile = () => {
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
                       <input 
                          type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
                          placeholder="Repeat new password"
                       />
                    </div>
@@ -191,7 +191,7 @@ const AdminProfile = () => {
                       <input 
                          disabled={!isEditing}
                          type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                          value={formData.name}
                          onChange={(e) => setFormData({...formData, name: e.target.value})}
                       />
@@ -202,7 +202,7 @@ const AdminProfile = () => {
                       <input 
                          disabled={!isEditing}
                          type="email" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                          value={formData.email}
                          onChange={(e) => setFormData({...formData, email: e.target.value})}
                       />
@@ -213,7 +213,7 @@ const AdminProfile = () => {
                       <input 
                          disabled={!isEditing}
                          type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
+                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
                          value={formData.mobile}
                          onChange={(e) => setFormData({...formData, mobile: e.target.value})}
                       />
@@ -224,7 +224,7 @@ const AdminProfile = () => {
                       <input 
                          disabled={true}
                          type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border-transparent rounded-2xl outline-none text-sm font-bold text-slate-400 opacity-60"
+                         className="w-full px-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none text-sm font-bold text-slate-400 opacity-60"
                          value={formData.accessLevel}
                       />
                    </div>

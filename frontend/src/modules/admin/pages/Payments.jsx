@@ -111,15 +111,15 @@ const Payments = () => {
       
       {/* Summary Mini Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
+         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Weekly Volume</p>
             <h4 className="text-2xl font-serif text-[#1e3a8a] tracking-tight">₹1.54L</h4>
          </div>
-         <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
+         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Subscriptions</p>
             <h4 className="text-2xl font-serif text-[#1e3a8a] tracking-tight">842</h4>
          </div>
-         <div className="p-6 bg-white border border-slate-100 rounded-2xl shadow-sm">
+         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Failed Payments</p>
             <h4 className="text-2xl font-serif text-red-700 tracking-tight">1.2%</h4>
          </div>

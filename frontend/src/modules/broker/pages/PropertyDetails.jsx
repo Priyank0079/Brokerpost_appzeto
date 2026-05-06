@@ -126,7 +126,7 @@ const PropertyDetails = () => {
           <div className="lg:col-span-8 space-y-5">
             <section>
               <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2.5">
-                <div className="md:col-span-3 md:row-span-2 rounded-2xl overflow-hidden shadow-lg relative group h-[240px] md:h-[360px]">
+                <div className="md:col-span-3 md:row-span-2 rounded-lg overflow-hidden shadow-lg relative group h-[240px] md:h-[360px]">
                   <img
                     src={item.images?.[0] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=1200"}
                     alt={item.project}
@@ -186,7 +186,7 @@ const PropertyDetails = () => {
                   </div>
                 </div>
 
-                <div className="bg-slate-50 p-4 md:p-5 rounded-2xl border border-slate-100 flex flex-col items-start md:items-end relative overflow-hidden">
+                <div className="bg-slate-50 p-4 md:p-5 rounded-lg border border-slate-100 flex flex-col items-start md:items-end relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-20 h-20 bg-primary-500/5 rounded-full -mr-10 -mt-10" />
                   <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1 italic">
                     {item.postType === 'AVAILABILITY' ? 'Asking Price' : 'Budget Range'}
@@ -204,28 +204,28 @@ const PropertyDetails = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {item.occupancy && (
-                  <div className="p-4 rounded-2xl bg-white border border-slate-50 shadow-soft space-y-2">
+                  <div className="p-4 rounded-lg bg-white border border-slate-50 shadow-soft space-y-2">
                     <Building size={15} className="text-slate-400" />
                     <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Occupancy</p>
                     <p className="font-black text-slate-900 text-sm">{DISPLAY_OCCUPANCY[item.occupancy]}</p>
                   </div>
                 )}
                 {item.constructionStatus && (
-                  <div className="p-4 rounded-2xl bg-white border border-slate-50 shadow-soft space-y-2">
+                  <div className="p-4 rounded-lg bg-white border border-slate-50 shadow-soft space-y-2">
                     <Calendar size={15} className="text-slate-400" />
                     <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Status</p>
                     <p className="font-black text-slate-900 text-sm">{DISPLAY_STATUS[item.constructionStatus]}</p>
                   </div>
                 )}
                 {item.intent && (
-                  <div className="p-4 rounded-2xl bg-white border border-slate-50 shadow-soft space-y-2">
+                  <div className="p-4 rounded-lg bg-white border border-slate-50 shadow-soft space-y-2">
                     <Compass size={15} className="text-slate-400" />
                     <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Intent</p>
                     <p className="font-black text-slate-900 text-sm">{INTENT_MAP[item.intent] || item.intent}</p>
                   </div>
                 )}
                 {item.subType && (
-                  <div className="p-4 rounded-2xl bg-white border border-slate-50 shadow-soft space-y-2">
+                  <div className="p-4 rounded-lg bg-white border border-slate-50 shadow-soft space-y-2">
                     <HomeIcon size={15} className="text-slate-400" />
                     <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Category</p>
                     <p className="font-black text-slate-900 text-sm">{SUBTYPE_DISPLAY_MAP[item.subType] || item.subType}</p>
@@ -299,7 +299,7 @@ const PropertyDetails = () => {
 
           <div className="lg:col-span-4 space-y-5">
             <div className="lg:sticky lg:top-24 space-y-5 pb-10 lg:pb-0">
-              <Card className="border-none shadow-xl shadow-slate-200/50 rounded-2xl overflow-hidden p-0 ring-1 ring-slate-50">
+              <Card className="border-none shadow-xl shadow-slate-200/50 rounded-lg overflow-hidden p-0 ring-1 ring-slate-50">
                 <div className="bg-slate-50 p-5 md:p-6 text-center space-y-4 border-b border-white">
                   <div className="relative inline-block">
                     <div className="w-20 h-20 rounded-[1.5rem] bg-white border-4 border-full shadow-2xl overflow-hidden mx-auto transform -rotate-3 hover:rotate-0 transition-transform">

@@ -16,7 +16,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
       
       {/* Modal */}
-      <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
           <div>
@@ -75,20 +75,20 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Location / Area *</label>
-                <input type="text" placeholder="Sector, locality, area..." className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700" />
+                <input type="text" placeholder="Sector, locality, area..." className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">City</label>
                 <div className="space-y-1">
                   <input type="text" value="Delhi" disabled className="w-full px-4 py-2 bg-slate-100/50 border border-slate-100 rounded-xl text-[12px] font-medium text-slate-400 outline-none" />
-                  <div className="flex items-center gap-1 text-[9px] text-amber-600 font-bold">
+                  <div className="flex items-center gap-1 text-[9px] text-primary-600 font-bold">
                     <Lock size={10} /> Auto-filled from profile
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Project / Society</label>
-                <input type="text" placeholder="Project or Society name" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700" />
+                <input type="text" placeholder="Project or Society name" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bedrooms</label>
@@ -112,7 +112,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Area / Size</label>
-                <input type="text" placeholder="e.g. 1200" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700" />
+                <input type="text" placeholder="e.g. 1200" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Unit</label>
@@ -149,13 +149,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
                 <input 
                   type="text" 
                   placeholder="e.g. 5500" 
-                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none" 
+                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600" 
                 />
               </div>
             </div>
             
             {/* Total Display */}
-            <div className="p-3 bg-[#fdf8f3] rounded-xl border border-[#C59D3F]/10 space-y-1.5">
+            <div className="p-3 bg-[#fdf8f3] rounded-xl border border-[#c8962a]/10 space-y-1.5">
               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
                 {isRequirement ? 'Calculated Total Budget' : 'Calculated Total Price'}
               </p>
@@ -192,7 +192,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
                 <input 
                   type="text" 
                   placeholder="e.g. 45000" 
-                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none" 
+                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600" 
                 />
               </div>
             </div>
@@ -205,7 +205,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Photos (JPG/PNG)</label>
-                  <div className="border-2 border-dashed border-slate-200 rounded-2xl py-8 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-all cursor-pointer group">
+                  <div className="border-2 border-dashed border-slate-200 rounded-lg py-8 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-all cursor-pointer group">
                     <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-[#3b82f6] transition-all">
                       <Camera size={20} />
                     </div>
@@ -217,7 +217,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
                 </div>
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Videos (MP4/MOV)</label>
-                  <div className="border-2 border-dashed border-slate-200 rounded-2xl py-8 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-all cursor-pointer group">
+                  <div className="border-2 border-dashed border-slate-200 rounded-lg py-8 flex flex-col items-center justify-center gap-2 hover:bg-slate-50 transition-all cursor-pointer group">
                     <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 group-hover:bg-white group-hover:text-[#3b82f6] transition-all">
                       <Video size={20} />
                     </div>
@@ -238,7 +238,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Notes / Additional Info</label>
               <textarea 
                 placeholder="Any extra details..." 
-                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 h-24 resize-none rounded-xl text-[12px] font-medium outline-none"
+                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 h-24 resize-none rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600"
               />
             </div>
           </div>
@@ -253,7 +253,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
             Cancel
           </button>
           <button 
-            className="px-6 py-2.5 bg-[#C59D3F] hover:bg-[#B48C35] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#C59D3F]/20 transition-all"
+            className="px-6 py-2.5 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 transition-all"
           >
             Save Listing
           </button>

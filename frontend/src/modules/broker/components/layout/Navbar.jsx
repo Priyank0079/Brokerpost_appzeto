@@ -42,7 +42,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
           <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/10 group-hover:scale-105 transition-transform">
             <Building2 size={20} />
           </div>
-          <span className="text-lg font-black text-slate-900 tracking-tighter">
+          <span className="text-lg font-black text-[#1e3a5f] tracking-tighter">
             BROKERS<span className="text-primary-600">POST</span>
           </span>
         </Link>
@@ -75,7 +75,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
         <input 
           type="text" 
           placeholder="Search inventories, brokers or regions..."
-          className="w-full pl-11 pr-4 py-2 bg-slate-50 border border-transparent focus:border-primary-100 focus:bg-white rounded-xl text-xs font-bold text-slate-700 placeholder:text-slate-400 transition-all outline-none shadow-sm"
+          className="w-full pl-11 pr-4 py-2 bg-slate-50 border border-transparent focus:border-primary-100 focus:bg-white rounded-xl text-xs font-bold text-slate-700 placeholder:text-slate-600 transition-all outline-none shadow-sm"
         />
       </div>
 
@@ -124,7 +124,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50"
+                  className="absolute right-0 mt-3 w-80 bg-white rounded-lg shadow-2xl border border-slate-100 overflow-hidden z-50"
                 >
                   <div className="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                     <span className="font-black text-slate-900 text-xs tracking-tight uppercase">Recent Activity</span>
@@ -165,7 +165,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden py-2 z-50"
+                  className="absolute right-0 mt-3 w-64 bg-white rounded-lg shadow-2xl border border-slate-100 overflow-hidden py-2 z-50"
                 >
                   <div className="px-5 py-4 border-b border-slate-50 mb-2 bg-slate-50/30">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Profile</p>

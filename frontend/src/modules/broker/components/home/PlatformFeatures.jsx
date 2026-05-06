@@ -6,8 +6,8 @@ const PlatformFeatures = () => {
     {
       title: 'Verified Broker Community',
       description: 'Every member is a verified professional broker. No public users, no fake listings — only genuine inventory from trusted sources.',
-      icon: <ShieldCheck size={24} className="text-amber-500" />,
-      bg: 'bg-amber-50'
+      icon: <ShieldCheck size={24} className="text-primary-500" />,
+      bg: 'bg-primary-50'
     },
     {
       title: 'Zero Brokerage Platform',
@@ -46,7 +46,7 @@ const PlatformFeatures = () => {
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="mb-12">
-          <p className="text-[#C59D3F] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
+          <p className="text-[#c8962a] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
             Platform Features
           </p>
           <h2 className="text-2xl lg:text-3xl font-serif text-[#0f172a] mb-4">
@@ -60,7 +60,7 @@ const PlatformFeatures = () => {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, idx) => (
-            <div key={idx} className="bg-white p-7 rounded-3xl border border-slate-100">
+            <div key={idx} className="bg-white p-7 rounded-xl border border-slate-100">
               <div className={`w-10 h-10 ${feature.bg} rounded-xl flex items-center justify-center mb-4`}>
                 {feature.icon}
               </div>

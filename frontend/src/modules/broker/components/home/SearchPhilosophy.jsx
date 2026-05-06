@@ -13,7 +13,7 @@ const COLOR_MAP = {
   primary: { bg: 'bg-primary-50', text: 'text-primary-600', dot: 'bg-primary-500' },
   blue: { bg: 'bg-blue-50', text: 'text-blue-600', dot: 'bg-blue-500' },
   emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-500' },
-  amber: { bg: 'bg-amber-50', text: 'text-amber-600', dot: 'bg-amber-500' },
+  amber: { bg: 'bg-primary-50', text: 'text-primary-600', dot: 'bg-primary-500' },
   indigo: { bg: 'bg-indigo-50', text: 'text-indigo-600', dot: 'bg-indigo-500' }
 };
 
@@ -72,7 +72,7 @@ const SearchPhilosophy = ({ data }) => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * i }}
-                className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all group"
+                className="bg-white p-6 rounded-lg border border-slate-100 shadow-sm hover:shadow-md transition-all group"
               >
                 <div className={`w-10 h-10 ${styles.bg} rounded-xl flex items-center justify-center ${styles.text} mb-5 group-hover:scale-105 transition-transform`}>
                   {icons[i % icons.length]}

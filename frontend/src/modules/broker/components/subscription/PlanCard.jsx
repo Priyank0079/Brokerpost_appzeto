@@ -59,7 +59,7 @@ const PlanCard = () => {
       <div className="max-w-4xl mx-auto mt-20">
          <Card className="bg-slate-900 border-none">
             <div className="flex flex-col md:flex-row items-center gap-10 p-4">
-               <div className="w-20 h-20 rounded-2xl bg-primary-600 flex items-center justify-center text-white shrink-0 shadow-2xl shadow-primary-500/40">
+               <div className="w-20 h-20 rounded-lg bg-primary-600 flex items-center justify-center text-white shrink-0 shadow-2xl shadow-primary-500/40">
                   <Building2 size={40} />
                </div>
                <div className="flex-1 text-center md:text-left">

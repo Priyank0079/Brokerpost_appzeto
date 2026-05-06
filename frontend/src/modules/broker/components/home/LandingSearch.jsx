@@ -7,12 +7,12 @@ const LandingSearch = () => {
   return (
     <section id="inventory" className="bg-[#0f172a] py-6 px-6 lg:px-20 overflow-hidden relative">
       {/* Decorative Gradient */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C59D3F]/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#c8962a]/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-[1300px] mx-auto">
         {/* Header Text */}
         <div className="mb-4">
-          <p className="text-[#C59D3F] text-[8px] font-bold uppercase tracking-[0.2em] mb-2">
+          <p className="text-[#c8962a] text-[8px] font-bold uppercase tracking-[0.2em] mb-2">
             Verified Brokers Only Network
           </p>
           <h2 className="text-xl lg:text-2xl font-serif text-white mb-1">
@@ -24,7 +24,7 @@ const LandingSearch = () => {
         </div>
 
         {/* Search Card */}
-        <div className="bg-white rounded-3xl p-5 lg:p-6 shadow-2xl max-w-4xl">
+        <div className="bg-white rounded-xl p-5 lg:p-6 shadow-2xl max-w-4xl">
           {/* Tabs */}
           <div className="flex gap-2 mb-3">
             <button 
@@ -57,11 +57,11 @@ const LandingSearch = () => {
               <input 
                 type="text" 
                 placeholder="Enter location or project name..."
-                className="w-full h-9 pl-5 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F] transition-all"
+                className="w-full h-9 pl-5 pr-4 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a] transition-all placeholder:text-slate-600"
               />
             </div>
             <div className="lg:col-span-4 relative">
-              <select className="w-full h-9 pl-5 pr-10 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F] appearance-none transition-all cursor-pointer">
+              <select className="w-full h-9 pl-5 pr-10 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a] appearance-none transition-all cursor-pointer">
                 <option>All Cities</option>
               </select>
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
@@ -70,7 +70,7 @@ const LandingSearch = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-3">
             <div className="lg:col-span-4 relative">
-              <select className="w-full h-9 pl-5 pr-10 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F] appearance-none transition-all cursor-pointer">
+              <select className="w-full h-9 pl-5 pr-10 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a] appearance-none transition-all cursor-pointer">
                 {activeTab === 'residential' ? (
                   <>
                     <option>All Residential Sections</option>
@@ -92,7 +92,7 @@ const LandingSearch = () => {
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
             <div className="lg:col-span-4 relative">
-              <select className="w-full h-9 pl-5 pr-10 rounded-2xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F] appearance-none transition-all cursor-pointer">
+              <select className="w-full h-9 pl-5 pr-10 rounded-lg bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a] appearance-none transition-all cursor-pointer">
                 <option>All Sub-types</option>
                 <option>Apartments</option>
                 <option>Low Rise Floors</option>
@@ -102,11 +102,11 @@ const LandingSearch = () => {
               <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
             <div className="lg:col-span-4 flex gap-3">
-              <button className="flex-1 h-9 flex items-center justify-center gap-2 rounded-2xl bg-[#C59D3F] text-white font-bold text-[10px] hover:bg-[#B08A35] transition-all shadow-lg shadow-[#C59D3F]/20">
+              <button className="flex-1 h-9 flex items-center justify-center gap-2 rounded-lg bg-[#c8962a] text-white font-bold text-[10px] hover:bg-[#b08425] transition-all shadow-lg shadow-[#c8962a]/20">
                 <Search size={16} />
                 Search
               </button>
-              <button className="px-4 h-9 rounded-2xl border-2 border-slate-200 text-slate-400 font-bold text-[10px] hover:bg-slate-50 transition-all">
+              <button className="px-4 h-9 rounded-lg border-2 border-slate-200 text-slate-400 font-bold text-[10px] hover:bg-slate-50 transition-all">
                 Clear
               </button>
             </div>

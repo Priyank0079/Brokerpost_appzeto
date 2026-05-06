@@ -67,7 +67,7 @@ const ResidentialInventory = () => {
             <input 
               type="text" 
               placeholder="Search listings..."
-              className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+              className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600 placeholder:text-slate-600"
             />
           </div>
         </div>
@@ -94,7 +94,7 @@ const ResidentialInventory = () => {
               <input 
                 type="text" 
                 placeholder="Search location/project..."
-                className="w-full pl-4 pr-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600"
+                className="w-full pl-4 pr-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder:text-slate-600"
               />
             </div>
             
@@ -129,7 +129,7 @@ const ResidentialInventory = () => {
           
           <button 
             onClick={() => setIsPostModalOpen(true)}
-            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[#C59D3F] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#C59D3F]/20 transition-all"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#c8962a]/20 transition-all"
           >
             <Plus size={14} /> Add Listing
           </button>

@@ -30,7 +30,7 @@ const FoundingMember = ({ data }) => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-[2rem] p-8 md:p-12 lg:px-20 lg:py-10 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-12"
+          className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-8 md:p-12 lg:px-20 lg:py-10 relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-12"
         >
           {/* Header & CTA Left */}
           <div className="flex-1 space-y-8 text-center lg:text-left">
@@ -65,7 +65,7 @@ const FoundingMember = ({ data }) => {
             </p>
           </div>
 
-          <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 bg-white/5 p-6 md:p-8 rounded-2xl border border-white/5">
+          <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 bg-white/5 p-6 md:p-8 rounded-lg border border-white/5">
             {displayBenefits.map((benefit, index) => (
               <motion.div
                 key={index}

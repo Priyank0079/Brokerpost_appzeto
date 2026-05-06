@@ -77,7 +77,7 @@ const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
             placeholder="e.g. South Mumbai Luxury Network"
-            className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+            className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
           />
         </div>
 
@@ -117,7 +117,7 @@ const CreateGroupModal = ({ isOpen, onClose, onCreate }) => {
           )}
 
           {/* List */}
-          <div className="max-h-[300px] overflow-y-auto border border-slate-50 rounded-2xl divide-y divide-slate-50 custom-scrollbar">
+          <div className="max-h-[300px] overflow-y-auto border border-slate-50 rounded-lg divide-y divide-slate-50 custom-scrollbar">
             {loading ? (
               <div className="p-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">Loading Brokers...</div>
             ) : filteredBrokers.length > 0 ? (

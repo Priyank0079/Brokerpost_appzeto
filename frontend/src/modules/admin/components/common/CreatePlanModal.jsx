@@ -63,7 +63,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g. Platinum Elite"
-              className="w-full px-5 py-3.5 rounded-2xl border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
+              className="w-full px-5 py-3.5 rounded-lg border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
             />
           </div>
 
@@ -78,7 +78,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               placeholder="9999"
-              className="w-full px-5 py-3.5 rounded-2xl border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
+              className="w-full px-5 py-3.5 rounded-lg border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
             />
           </div>
         </div>

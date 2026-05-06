@@ -46,8 +46,8 @@ const Layout = ({ children }) => {
             >
               <Menu size={20} />
             </button>
-            <span className="text-base font-bold text-[#0F172A] tracking-tight font-['Times_New_Roman',_serif]">
-              Brokers<span className="text-[#C59D3F]">Post</span>
+            <span className="text-base font-bold tracking-tight font-['Times_New_Roman',_serif]">
+              <span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span>
             </span>
             <div className="w-10" /> {/* Spacer for centering */}
           </div>

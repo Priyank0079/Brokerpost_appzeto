@@ -59,7 +59,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-xl font-bold text-white tracking-tight font-['Times_New_Roman',_serif]">Brokers<span className="text-[#C59D3F]">Post</span></span>
+          <span className="text-xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span></span>
           <span className="text-[9.5px] font-bold text-slate-200 uppercase tracking-[0.2em] mt-1">MY DASHBOARD</span>
         </div>
         <button 
@@ -80,10 +80,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  className={({ isActive }) => `
-                    flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
-                    ${isActive ? 'bg-slate-800 text-white' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
-                  `}
+                  className={() => {
+                    const isActuallyActive = (location.pathname + location.search) === item.path;
+                    return `
+                      flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
+                      ${isActuallyActive ? 'bg-[#32342a] text-white shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                    `;
+                  }}
                   onClick={() => {
                     if (window.innerWidth < 1024) toggleSidebar();
                   }}
@@ -93,7 +96,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     <span>{item.label}</span>
                   </div>
                   {item.count !== undefined && (
-                    <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-[#C59D3F] text-[#0F172A] min-w-[18px] text-center">
+                    <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-[#c8962a] text-[#0F172A] min-w-[18px] text-center">
                       {item.count}
                     </span>
                   )}
@@ -108,7 +111,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       <div className="p-4 border-t border-slate-800/50">
         <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#C59D3F] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
+            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
               {user?.name?.split(' ').map(n => n[0]).join('') || 'SD'}
             </div>
             <div className="flex flex-col min-w-0">

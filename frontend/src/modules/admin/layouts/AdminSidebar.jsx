@@ -64,7 +64,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-xl font-bold text-white tracking-tight font-serif">Brokers<span className="text-[#C59D3F]">Post</span></span>
+          <span className="text-xl font-bold tracking-tight font-serif"><span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span></span>
           <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">ADMIN CONSOLE</span>
         </div>
         <button 
@@ -91,7 +91,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
                   }}
                   className={({ isActive }) => `
                     flex items-center justify-between px-4 py-2 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
-                    ${isActive ? 'bg-[#C59D3F] text-[#0F172A]' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                    ${isActive ? 'bg-[#32342a] text-white shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
                   `}
                 >
                   <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       <div className="p-4 border-t border-slate-800/50">
         <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#C59D3F] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
+            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
               {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
             </div>
             <div className="flex flex-col min-w-0">

@@ -55,7 +55,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       />
       
       {/* Modal Card */}
-      <div className="relative w-full max-w-[540px] max-h-[90vh] overflow-y-auto bg-white rounded-[24px] shadow-2xl animate-in fade-in zoom-in duration-300 scrollbar-hide">
+      <div className="relative w-full max-w-[540px] max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 scrollbar-hide">
         {/* Close Button */}
         <button 
           onClick={onClose}
@@ -78,7 +78,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
                   PROFILE PHOTO / LOGO (Optional)
                 </label>
-                <div className="w-full border-2 border-dashed border-slate-200 rounded-2xl p-4 flex items-center gap-4 hover:border-[#C59D3F]/50 transition-colors cursor-pointer bg-white">
+                <div className="w-full border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer bg-white">
                   <div className="w-12 h-12 rounded-full bg-[#fdf8f3] flex items-center justify-center text-[#1a365d]">
                     <User size={24} />
                   </div>
@@ -102,7 +102,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.fullName}
                     onChange={handleChange}
                     placeholder="Your full name"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -118,7 +118,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.companyName}
                     onChange={handleChange}
                     placeholder="Your realty firm"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -134,7 +134,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="Office address (street, locality)"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -148,7 +148,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     required
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 text-slate-900 appearance-none"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 text-slate-900 appearance-none"
                   >
                     <option value="" disabled>— Select City —</option>
                     <option value="Gurugram">Gurugram</option>
@@ -171,7 +171,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.pinCode}
                     onChange={handleChange}
                     placeholder="6-digit pin code"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -187,7 +187,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -203,7 +203,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
 
@@ -219,7 +219,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Min 6 characters"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#C59D3F]/20 focus:border-[#C59D3F]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
                   />
                 </div>
               </div>
@@ -280,12 +280,12 @@ const RegisterModal = ({ isOpen, onClose }) => {
               </div>
 
               {/* Checkbox */}
-              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-[#C59D3F]/30 transition-colors">
+              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors">
                 <input 
                   type="checkbox"
                   checked={agreedToTerms}
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded border-slate-300 text-[#C59D3F] focus:ring-[#C59D3F]/20"
+                  className="mt-1 w-4 h-4 rounded border-slate-300 text-[#c8962a] focus:ring-[#c8962a]/20"
                 />
                 <span className="text-[11px] text-slate-600 font-medium leading-relaxed">
                   I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine.

@@ -24,7 +24,7 @@ const TheMathSection = ({ data }) => {
             <article
               key={index}
               className={[
-                'relative overflow-hidden rounded-[24px] bg-white px-5 py-7 text-center shadow-[0_14px_36px_rgba(15,23,42,0.08)]',
+                'relative overflow-hidden rounded-xl bg-white px-5 py-7 text-center shadow-[0_14px_36px_rgba(15,23,42,0.08)]',
                 'border border-slate-100',
                 card.featured ? 'lg:scale-[1.01]' : '',
               ].join(' ')}

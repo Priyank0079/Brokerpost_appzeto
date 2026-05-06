@@ -146,7 +146,7 @@ const CarouselManagement = () => {
            <p className="text-slate-500 font-medium mt-1">Design and deploy high-impact visual narratives.</p>
         </div>
         
-        <div className="flex items-center gap-2 p-1.5 bg-slate-100 w-fit rounded-2xl border border-slate-200/60 shadow-inner">
+        <div className="flex items-center gap-2 p-1.5 bg-slate-100 w-fit rounded-lg border border-slate-200/60 shadow-inner">
            <button 
              onClick={() => { setActiveTab('list'); resetForm(); }}
              className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === 'list' ? 'bg-white text-primary-600 shadow-md' : 'text-slate-400 hover:text-slate-600'}`}
@@ -246,7 +246,7 @@ const CarouselManagement = () => {
                         <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Visual Studio Configuration</p>
                       </div>
                       {formData.image && (
-                        <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl animate-in zoom-in duration-500">
+                        <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-white/20 shadow-2xl animate-in zoom-in duration-500">
                           <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
                         </div>
                       )}
@@ -262,7 +262,7 @@ const CarouselManagement = () => {
                                 type="text" 
                                 required 
                                 placeholder="e.g. Luxury Sky Villas"
-                                className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all font-sans" 
+                                className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all font-sans" 
                                 value={formData.title}
                                 onChange={e => setFormData({...formData, title: e.target.value})}
                              />
@@ -275,7 +275,7 @@ const CarouselManagement = () => {
                                 type="text" 
                                 required 
                                 placeholder="e.g. Featured"
-                                className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all font-sans" 
+                                className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all font-sans" 
                                 value={formData.category}
                                 onChange={e => setFormData({...formData, category: e.target.value})}
                              />
@@ -309,7 +309,7 @@ const CarouselManagement = () => {
                              type="url" 
                              required 
                              placeholder="Enter Image URL or Upload directly..."
-                             className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all shadow-inner font-sans" 
+                             className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 transition-all shadow-inner font-sans" 
                              value={formData.image}
                              onChange={e => setFormData({...formData, image: e.target.value})}
                           />
@@ -323,15 +323,15 @@ const CarouselManagement = () => {
                              rows="3" 
                              required 
                              placeholder="Describe the value proposition..."
-                             className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 resize-none transition-all font-sans" 
+                             className="w-full px-6 py-5 bg-slate-50 border-2 border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-100 focus:ring-8 focus:ring-primary-500/5 font-bold text-slate-900 resize-none transition-all font-sans" 
                              value={formData.subtitle}
                              onChange={e => setFormData({...formData, subtitle: e.target.value})}
                           />
                        </div>
   
                        <div className="pt-6 flex gap-6">
-                          <Button type="button" variant="outline" onClick={() => { setActiveTab('list'); resetForm(); }} className="flex-1 rounded-[2rem] py-6 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all">Cancel Project</Button>
-                          <Button type="submit" className="flex-[2] rounded-[2rem] py-6 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all" leftIcon={<Save size={20} />}>
+                          <Button type="button" variant="outline" onClick={() => { setActiveTab('list'); resetForm(); }} className="flex-1 rounded-xl py-6 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 transition-all">Cancel Project</Button>
+                          <Button type="submit" className="flex-[2] rounded-xl py-6 bg-slate-900 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-slate-900/20 active:scale-95 transition-all" leftIcon={<Save size={20} />}>
                              {editingId ? 'Seal Updates' : 'Deploy To Production'}
                           </Button>
                        </div>
@@ -352,7 +352,7 @@ const CarouselManagement = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]"
           >
-             <div className={`px-8 py-5 rounded-[2rem] shadow-2xl flex items-center gap-4 ${toast.type === 'success' ? 'bg-slate-900 text-white' : 'bg-red-500 text-white'}`}>
+             <div className={`px-8 py-5 rounded-xl shadow-2xl flex items-center gap-4 ${toast.type === 'success' ? 'bg-slate-900 text-white' : 'bg-red-500 text-white'}`}>
                 {toast.type === 'success' ? <CheckCircle2 className="text-emerald-400" size={24} /> : <AlertCircle size={24} />}
                 <p className="text-sm font-black uppercase tracking-[0.2em]">{toast.message}</p>
              </div>

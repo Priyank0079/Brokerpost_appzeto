@@ -43,7 +43,7 @@ const GroupList = () => {
                </div>
             </div>
             <div className="p-6 relative">
-               <div className="absolute -top-10 left-6 w-16 h-16 rounded-2xl bg-white shadow-2xl border border-slate-100 flex items-center justify-center text-primary-600 animate-fade-in">
+               <div className="absolute -top-10 left-6 w-16 h-16 rounded-lg bg-white shadow-2xl border border-slate-100 flex items-center justify-center text-primary-600 animate-fade-in">
                   <Users size={32} />
                </div>
                <div className="mt-8 flex items-start justify-between">
@@ -93,8 +93,8 @@ const GroupList = () => {
       >
         {selectedGroup && (
           <div className="space-y-8">
-            <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-               <div className="w-16 h-16 rounded-2xl bg-white shadow-md flex items-center justify-center text-primary-600 border border-slate-200">
+            <div className="flex items-center gap-6 p-4 bg-slate-50 rounded-lg border border-slate-100">
+               <div className="w-16 h-16 rounded-lg bg-white shadow-md flex items-center justify-center text-primary-600 border border-slate-200">
                   <Users size={32} />
                </div>
                <div>

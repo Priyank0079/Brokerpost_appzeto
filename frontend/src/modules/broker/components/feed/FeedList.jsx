@@ -49,7 +49,7 @@ const FeedList = () => {
                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                />
                <div className="absolute top-4 right-4 flex flex-col gap-2">
-                  <Badge variant="accent" className="bg-white/90 backdrop-blur-sm text-amber-600 border-none shadow-sm capitalize">
+                  <Badge variant="accent" className="bg-white/90 backdrop-blur-sm text-primary-600 border-none shadow-sm capitalize">
                      {item.status}
                   </Badge>
                </div>

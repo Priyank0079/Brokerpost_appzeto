@@ -180,7 +180,7 @@ const Brokers = () => {
                             style={{ width: `${(parseInt(broker.listings.split('/')[0]) / 25) * 100}%` }}
                           />
                         </div>
-                        <button className="text-[8px] font-bold text-orange-500 flex items-center gap-1 hover:underline">
+                        <button className="text-[8px] font-bold text-primary-500 flex items-center gap-1 hover:underline">
                            Limit
                         </button>
                       </div>
@@ -208,10 +208,10 @@ const Brokers = () => {
                           onClick={() => handleEditClick(broker)}
                           className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
                         >
-                          <Edit2 size={8} className="text-orange-500" /> Edit
+                          <Edit2 size={8} className="text-primary-500" /> Edit
                         </button>
                         <button className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1">
-                          <Ban size={8} className="text-orange-500" /> Block
+                          <Ban size={8} className="text-primary-500" /> Block
                         </button>
                         <button className="p-1.5 bg-[#7f1d1d] text-white rounded-lg text-[9px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1">
                           <Trash2 size={8} /> Del
@@ -230,7 +230,7 @@ const Brokers = () => {
       {(isAddModalOpen || isEditModalOpen) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} />
-          <div className="relative w-full max-w-[700px] bg-white rounded-[24px] shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
+          <div className="relative w-full max-w-[700px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
             {/* Modal Header */}
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <div>

@@ -70,13 +70,13 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         {/* Recent Listings Column */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
               <h3 className="text-sm font-bold text-slate-900">My Recent Listings</h3>
               <button className="text-[10px] font-bold px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">View All</button>
             </div>
             <div className="p-12 flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 bg-[#fdf8f3] rounded-2xl flex items-center justify-center mb-4">
+              <div className="w-16 h-16 bg-[#fdf8f3] rounded-lg flex items-center justify-center mb-4">
                 <span className="text-2xl">📋</span>
               </div>
               <h4 className="text-sm font-bold text-slate-900">No listings yet</h4>
@@ -87,7 +87,7 @@ const Dashboard = () => {
 
         {/* Breakdown Column */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-slate-100 shadow-sm overflow-hidden">
             <div className="px-6 py-2.5 border-b border-slate-50">
               <h3 className="text-sm font-serif font-bold text-[#1e3a8a]">My Listing Breakdown</h3>
             </div>

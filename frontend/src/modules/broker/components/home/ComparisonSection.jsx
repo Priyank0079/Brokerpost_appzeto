@@ -61,7 +61,7 @@ const ComparisonSection = ({ data }) => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-4 p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all group"
+                  className="flex items-start gap-4 p-5 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0">
                     {icons[i % icons.length]}

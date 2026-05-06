@@ -38,7 +38,7 @@ const benefits = [
 const COLOR_MAP = {
   blue: { bg: 'bg-blue-500/10', border: 'bg-blue-500/20', text: 'text-blue-400', accent: 'bg-blue-500' },
   emerald: { bg: 'bg-emerald-500/10', border: 'bg-emerald-500/20', text: 'text-emerald-400', accent: 'bg-emerald-500' },
-  amber: { bg: 'bg-amber-500/10', border: 'bg-amber-500/20', text: 'text-amber-400', accent: 'bg-amber-500' },
+  amber: { bg: 'bg-primary-500/10', border: 'bg-primary-500/20', text: 'text-amber-400', accent: 'bg-primary-500' },
   indigo: { bg: 'bg-indigo-500/10', border: 'bg-indigo-500/20', text: 'text-indigo-400', accent: 'bg-indigo-500' },
   primary: { bg: 'bg-primary-500/10', border: 'bg-primary-500/20', text: 'text-primary-400', accent: 'bg-primary-500' }
 };
@@ -85,7 +85,7 @@ const BrokerBenefits = ({ data }) => {
                 transition={{ delay: index * 0.05 }}
                 className="group cursor-pointer"
               >
-                <div className="bg-slate-800/30 backdrop-blur-md border border-slate-700/50 p-6 rounded-2xl hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-300 flex items-start gap-5 shadow-xl relative overflow-hidden h-full">
+                <div className="bg-slate-800/30 backdrop-blur-md border border-slate-700/50 p-6 rounded-lg hover:bg-slate-800/50 hover:border-slate-600 transition-all duration-300 flex items-start gap-5 shadow-xl relative overflow-hidden h-full">
                   <div className={`w-12 h-12 shrink-0 rounded-xl ${styles.bg} border ${styles.border} flex items-center justify-center ${styles.text} shadow-lg group-hover:scale-105 transition-transform`}>
                     {ICON_MAP[index % ICON_MAP.length]}
                   </div>

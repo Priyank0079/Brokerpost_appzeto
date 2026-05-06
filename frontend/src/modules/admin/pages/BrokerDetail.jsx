@@ -90,7 +90,7 @@ const BrokerDetail = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
           <div className="w-32 h-32 rounded-[40px] bg-primary-50 border-4 border-white shadow-xl flex items-center justify-center text-4xl font-black text-primary-600 relative shrink-0">
             {broker.firstName?.charAt(0)}
-            <div className={`absolute -bottom-1 -right-1 w-10 h-10 rounded-2xl border-4 border-white flex items-center justify-center shadow-lg ${broker.isVerified ? 'bg-emerald-500' : 'bg-amber-500'}`}>
+            <div className={`absolute -bottom-1 -right-1 w-10 h-10 rounded-lg border-4 border-white flex items-center justify-center shadow-lg ${broker.isVerified ? 'bg-emerald-500' : 'bg-primary-500'}`}>
               {broker.isVerified ? <CheckCircle2 size={18} className="text-white" /> : <ShieldCheck size={18} className="text-white" />}
             </div>
           </div>
@@ -143,7 +143,7 @@ const BrokerDetail = () => {
               Office & Location
             </h3>
             <div className="space-y-6">
-              <div className="p-6 bg-slate-50 rounded-[24px] border border-slate-100">
+              <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Registered Office Address</p>
                 <p className="text-lg font-bold text-slate-700 leading-relaxed italic">
                   "{broker.officeAddress}, {broker.officeCity} - {broker.pinCode}"
@@ -175,14 +175,14 @@ const BrokerDetail = () => {
           <Card className="p-6 border-slate-100">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] mb-6">Active Subscriptions</h4>
             <div className="space-y-4">
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100">
+              <div className="p-4 rounded-lg bg-primary-50 border border-primary-100">
                  <div className="flex items-center justify-between">
                     <p className="text-xs font-black text-amber-700 uppercase tracking-widest">Gold Plan</p>
-                    <span className="text-[10px] font-black bg-white px-2 py-1 rounded-lg text-amber-600 shadow-sm">ACTIVE</span>
+                    <span className="text-[10px] font-black bg-white px-2 py-1 rounded-lg text-primary-600 shadow-sm">ACTIVE</span>
                  </div>
-                 <p className="text-xs text-amber-600 mt-2 font-medium">Expires in 28 days</p>
+                 <p className="text-xs text-primary-600 mt-2 font-medium">Expires in 28 days</p>
               </div>
-              <button className="w-full py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary-600 transition-colors">Manage Subscriptions</button>
+              <button className="w-full py-3 rounded-lg text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-primary-600 transition-colors">Manage Subscriptions</button>
             </div>
           </Card>
         </div>

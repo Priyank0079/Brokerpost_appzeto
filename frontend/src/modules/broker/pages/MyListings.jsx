@@ -132,7 +132,7 @@ const MyListings = ({
         </div>
       </div>
 
-      <div className="rounded-[24px] bg-white p-4 md:p-5 shadow-[0_10px_40px_rgba(15,23,42,0.05)] border border-slate-100">
+      <div className="rounded-xl bg-white p-4 md:p-5 shadow-[0_10px_40px_rgba(15,23,42,0.05)] border border-slate-100">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -148,7 +148,7 @@ const MyListings = ({
           <Button
             variant="primary"
             onClick={handleApplyFilters}
-            className="h-[48px] w-full lg:min-w-[180px] bg-orange-500 hover:bg-orange-600 shadow-none text-white font-semibold text-sm"
+            className="h-[48px] w-full lg:min-w-[180px] bg-primary-500 hover:bg-primary-600 shadow-none text-white font-semibold text-sm"
             leftIcon={<Search size={16} />}
           >
             Search
@@ -292,7 +292,7 @@ const MyListings = ({
                       <Link to={`/property/${item._id}`}>
                         <Button
                           variant="primary"
-                          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 text-xs font-bold shadow-none"
+                          className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 text-xs font-bold shadow-none"
                           leftIcon={<Eye size={14} />}
                         >
                           View
@@ -323,7 +323,7 @@ const MyListings = ({
             <div className="py-10 text-center text-slate-400 font-bold">No postings found</div>
           ) : (
             filteredListings.map((item) => (
-              <div key={item._id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+              <div key={item._id} className="rounded-lg border border-slate-100 bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <Badge variant="success" className="rounded-full px-3 py-1 text-[11px] font-bold">AVAILABILITY</Badge>

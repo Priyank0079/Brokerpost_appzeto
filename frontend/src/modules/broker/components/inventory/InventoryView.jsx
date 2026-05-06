@@ -125,7 +125,7 @@ const InventoryView = ({
 
       {/* Filter Bar */}
       <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-visible">
-        <div className="p-4 flex flex-col xl:flex-row xl:items-center gap-4 bg-white rounded-2xl">
+        <div className="p-4 flex flex-col xl:flex-row xl:items-center gap-4 bg-white rounded-lg">
           {/* Vertical Toggle */}
           {verticalOptions.length > 1 ? (
             <div className="flex bg-slate-100 p-1.5 rounded-xl self-start">
@@ -261,19 +261,19 @@ const InventoryView = ({
       <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
         <button 
           onClick={() => setStatusFilter('All')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'All' ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'All' ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-600/20' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
         >
           All Units
         </button>
         <button 
           onClick={() => setStatusFilter('Ready')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'Ready' ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'Ready' ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
         >
           Ready to Move
         </button>
         <button 
           onClick={() => setStatusFilter('Const')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'Const' ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest border transition-all ${statusFilter === 'Const' ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-300'}`}
         >
           Under Construction
         </button>
@@ -288,7 +288,7 @@ const InventoryView = ({
              ))}
           </div>
           {filteredData.length === 0 && (
-            <div className="py-24 text-center bg-white rounded-[2rem] border border-slate-100 shadow-soft">
+            <div className="py-24 text-center bg-white rounded-xl border border-slate-100 shadow-soft">
                <div className="w-20 h-20 rounded-full bg-slate-50 text-slate-200 flex items-center justify-center mx-auto mb-4">
                   <SlidersHorizontal size={40} />
                </div>
@@ -321,7 +321,7 @@ const InventoryView = ({
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm group-hover:scale-105 transition-transform">
+                        <div className="w-14 h-14 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200 shadow-sm group-hover:scale-105 transition-transform">
                           <img src={item.image} alt="" className="w-full h-full object-cover" />
                         </div>
                         <div>
@@ -365,11 +365,11 @@ const InventoryView = ({
             {filteredData.map((item) => (
               <div 
                 key={item.id} 
-                className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-4 active:bg-slate-50 transition-all cursor-pointer"
+                className="bg-white p-5 rounded-lg border border-slate-100 shadow-sm flex flex-col gap-4 active:bg-slate-50 transition-all cursor-pointer"
                 onClick={() => navigate(`/property/${item.id}`)}
               >
                  <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-100 overflow-hidden shrink-0 border border-slate-100 shadow-sm">
+                    <div className="w-16 h-16 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-100 shadow-sm">
                        <img src={item.image} alt="" className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">

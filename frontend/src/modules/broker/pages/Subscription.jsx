@@ -61,7 +61,7 @@ const Subscription = () => {
 
             <Card 
               noPadding 
-              className={`h-full border border-slate-200 transition-all duration-500 overflow-hidden rounded-2xl ${plan.highlight ? 'border-primary-600 shadow-2xl shadow-primary-600/10 scale-[1.01]' : 'hover:border-primary-200 shadow-sm shadow-slate-200/20'}`}
+              className={`h-full border border-slate-200 transition-all duration-500 overflow-hidden rounded-lg ${plan.highlight ? 'border-primary-600 shadow-2xl shadow-primary-600/10 scale-[1.01]' : 'hover:border-primary-200 shadow-sm shadow-slate-200/20'}`}
             >
               <div className="p-6 flex flex-col h-full">
                 <div className="mb-4">
@@ -105,7 +105,7 @@ const Subscription = () => {
       </div>
 
       {/* Trust Quote / Banner */}
-      <div className="bg-slate-900 text-white rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6 mt-12 relative overflow-hidden">
+      <div className="bg-slate-900 text-white rounded-lg p-6 flex flex-col md:flex-row items-center justify-between gap-6 mt-12 relative overflow-hidden">
          <div className="space-y-1 relative z-10 text-center md:text-left">
             <h4 className="text-lg font-bold tracking-tight">Need an Enterprise solution?</h4>
             <p className="text-xs font-medium text-slate-400">Custom plans for agencies with 50+ active brokers.</p>

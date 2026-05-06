@@ -71,7 +71,7 @@ const NetworkEffect = ({ data }) => {
                   </p>
 
                   <div className="flex items-center gap-4 border-t border-slate-100 pt-6">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-200 overflow-hidden border border-white shadow-sm">
+                    <div className="w-14 h-14 rounded-lg bg-slate-200 overflow-hidden border border-white shadow-sm">
                       <img
                         src={testimonial?.avatar || "https://i.pravatar.cc/150?u=rajesh"}
                         alt={testimonial?.author || "Rajesh Sharma"}

@@ -78,10 +78,10 @@ const CampaignProgress = ({ data }) => {
             {/* CTA / Callout */}
             <div className="pt-6 border-t border-slate-100 max-w-2xl mx-auto">
                <div className="flex flex-col items-center gap-6">
-                  <div className="flex items-center gap-3 bg-amber-50 px-6 py-3 rounded-2xl border border-amber-100">
-                     <Flame size={20} className="text-amber-500 fill-amber-500" />
+                  <div className="flex items-center gap-3 bg-primary-50 px-6 py-3 rounded-lg border border-primary-100">
+                     <Flame size={20} className="text-primary-500 fill-primary-500" />
                      <p className="text-sm md:text-base font-black text-amber-900 uppercase tracking-tight">
-                        Only <span className="text-amber-600">{brokersTotal - brokersCurrent}</span> more brokers needed for <span className="underline decoration-2 underline-offset-4">CRITICAL MASS</span>
+                        Only <span className="text-primary-600">{brokersTotal - brokersCurrent}</span> more brokers needed for <span className="underline decoration-2 underline-offset-4">CRITICAL MASS</span>
                      </p>
                   </div>
                   <div className="space-y-2">

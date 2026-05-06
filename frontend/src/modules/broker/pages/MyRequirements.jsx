@@ -106,7 +106,7 @@ const MyRequirements = () => {
 
   return (
     <div className="space-y-4 md:space-y-6 bg-[#f8fafc] px-2 md:px-0">
-      <div className="rounded-[28px] bg-white p-4 md:p-5 shadow-[0_12px_45px_rgba(15,23,42,0.06)] border border-slate-100">
+      <div className="rounded-xl bg-white p-4 md:p-5 shadow-[0_12px_45px_rgba(15,23,42,0.06)] border border-slate-100">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -115,13 +115,13 @@ const MyRequirements = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search listings..."
-              className="w-full rounded-2xl border border-[#dbe4f0] bg-white py-3 md:py-3.5 pl-11 pr-4 text-[13px] md:text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+              className="w-full rounded-lg border border-[#dbe4f0] bg-white py-3 md:py-3.5 pl-11 pr-4 text-[13px] md:text-sm font-medium text-slate-900 outline-none placeholder:text-slate-600 focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
             />
           </div>
 
           <Button
             variant="primary"
-            className="h-[48px] md:h-[60px] w-full lg:min-w-[180px] bg-[#ff7a00] hover:bg-[#ef6f00] shadow-[0_12px_24px_rgba(255,122,0,0.15)] text-white font-semibold rounded-2xl text-sm"
+            className="h-[48px] md:h-[60px] w-full lg:min-w-[180px] bg-[#c8962a] hover:bg-[#b08425] shadow-[0_12px_24px_rgba(200,150,42,0.15)] text-white font-semibold rounded-lg text-sm"
             leftIcon={<Search size={16} />}
           >
             Search
@@ -132,7 +132,7 @@ const MyRequirements = () => {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All Types</option>
             <option>Availability</option>
@@ -142,7 +142,7 @@ const MyRequirements = () => {
           <select
             value={propertyTypeFilter}
             onChange={(e) => setPropertyTypeFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             {propertyTypeOptions.map((option) => (
               <option key={option}>{option}</option>
@@ -152,7 +152,7 @@ const MyRequirements = () => {
           <select
             value={transactionFilter}
             onChange={(e) => setTransactionFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All Transactions</option>
             <option>Sale</option>
@@ -162,7 +162,7 @@ const MyRequirements = () => {
           <select
             value={groupFilter}
             onChange={(e) => setGroupFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option value="All Groups">All Groups</option>
             <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
@@ -175,7 +175,7 @@ const MyRequirements = () => {
           <select
             value={bhkFilter}
             onChange={(e) => setBhkFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All BHK</option>
             <option>1 BHK</option>
@@ -188,7 +188,7 @@ const MyRequirements = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All Status</option>
             <option>Ready to Move</option>
@@ -198,7 +198,7 @@ const MyRequirements = () => {
           <select
             value={budgetFilter}
             onChange={(e) => setBudgetFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All Budgets</option>
             <option>Under 50L</option>
@@ -210,7 +210,7 @@ const MyRequirements = () => {
           <select
             value={unitFilter}
             onChange={(e) => setUnitFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-lg border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10"
           >
             <option>All Units</option>
             <option>Sq. Ft.</option>
@@ -220,7 +220,7 @@ const MyRequirements = () => {
 
           <Button
             variant="outline"
-            className="h-[44px] md:h-[60px] rounded-2xl border-[#dbe4f0] text-slate-700 font-semibold hover:border-[#ff7a00]/30 hover:text-slate-900 text-xs col-span-2 lg:col-span-1"
+            className="h-[44px] md:h-[60px] rounded-lg border-[#dbe4f0] text-slate-700 font-semibold hover:border-[#c8962a]/30 hover:text-slate-900 text-xs col-span-2 lg:col-span-1"
             leftIcon={<Filter size={16} />}
           >
             Apply Filters
@@ -253,7 +253,7 @@ const MyRequirements = () => {
                 filteredListings.map((item) => (
                   <tr key={item._id} className="border-b border-slate-100 last:border-b-0 transition-colors hover:bg-slate-50/50">
                     <td className="px-5 py-6">
-                      <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-amber-600 uppercase tracking-tighter">REQUIREMENT</Badge>
+                      <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-primary-600 uppercase tracking-tighter">REQUIREMENT</Badge>
                     </td>
                     <td className="px-5 py-6 text-[14px] font-bold text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
                     <td className="px-5 py-6 text-[14px] font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
@@ -265,7 +265,7 @@ const MyRequirements = () => {
                       <Link to={`/property/${item._id}`}>
                         <Button
                           variant="primary"
-                          className="bg-[#ff7a00] hover:bg-[#ef6f00] text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20 rounded-xl"
+                          className="bg-[#c8962a] hover:bg-[#b08425] text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 rounded-xl"
                           leftIcon={<Eye size={14} />}
                         >
                           View
@@ -287,10 +287,10 @@ const MyRequirements = () => {
             <div className="py-10 text-center text-slate-400 font-bold">No requirements found</div>
           ) : (
             filteredListings.map((item) => (
-              <div key={item._id} className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
+              <div key={item._id} className="rounded-lg border border-slate-100 bg-white p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-amber-600">REQUIREMENT</Badge>
+                    <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-primary-600">REQUIREMENT</Badge>
                     <h3 className="mt-3 text-base font-bold text-slate-900">{item.project || 'No Project'}</h3>
                     <p className="text-sm text-slate-500">{item.location}</p>
                   </div>

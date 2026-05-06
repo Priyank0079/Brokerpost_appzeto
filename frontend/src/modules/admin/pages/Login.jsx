@@ -34,7 +34,7 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6 font-sans">
-      <div className="w-full max-w-[540px] bg-white rounded-[24px] shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
+      <div className="w-full max-w-[540px] bg-white rounded-xl shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
         {/* Modal Header */}
         <div className="p-8 pb-6 flex items-center justify-between">
           <div className="space-y-1">

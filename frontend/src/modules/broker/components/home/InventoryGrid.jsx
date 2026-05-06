@@ -144,20 +144,20 @@ const InventoryGrid = () => {
           /* Grid View */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {listings.map((item) => (
-              <div key={item.id} className="bg-white rounded-3xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all group">
+              <div key={item.id} className="bg-white rounded-xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all group">
                 {/* Image Area */}
                 <div className="h-32 bg-slate-100 relative overflow-hidden">
                   {item.image ? (
                     <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-[#fdfaf3]">
-                      <div className="text-[#C59D3F]/20">
+                      <div className="text-[#c8962a]/20">
                         <Maximize2 size={36} />
                       </div>
                     </div>
                   )}
                   <div className="absolute top-4 left-4">
-                    <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-[#C59D3F] text-[10px] font-bold shadow-sm border border-[#C59D3F]/10">
+                    <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-[#c8962a] text-[10px] font-bold shadow-sm border border-[#c8962a]/10">
                       {item.type}
                     </span>
                   </div>
@@ -165,7 +165,7 @@ const InventoryGrid = () => {
 
                 {/* Content */}
                 <div className="p-4">
-                  <p className="text-[8px] font-bold text-[#C59D3F] uppercase tracking-wider mb-1.5">
+                  <p className="text-[8px] font-bold text-[#c8962a] uppercase tracking-wider mb-1.5">
                     {item.status}
                   </p>
                   <h3 className="text-base font-bold text-[#0f172a] mb-1">{item.title}</h3>
@@ -203,7 +203,7 @@ const InventoryGrid = () => {
           </div>
         ) : (
           /* Table View */
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xl">
+          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
@@ -229,14 +229,14 @@ const InventoryGrid = () => {
                       <tr key={item.id} className="hover:bg-slate-50/50 transition-all group">
                         <td className="py-4 px-6 text-[11px] text-slate-400">{idx + 1}</td>
                         <td className="py-4 px-6">
-                          <span className="px-2 py-1 rounded bg-orange-50 text-orange-600 text-[9px] font-bold">
+                          <span className="px-2 py-1 rounded bg-primary-50 text-primary-600 text-[9px] font-bold">
                             {item.type}
                           </span>
                         </td>
                         <td className="py-4 px-6">
                           <span className={`px-2 py-1 rounded text-[9px] font-bold ${
                             subType?.includes('BUILDING') ? 'bg-purple-50 text-purple-600' :
-                            subType?.includes('SHOPS') ? 'bg-orange-50 text-orange-600' :
+                            subType?.includes('SHOPS') ? 'bg-primary-50 text-primary-600' :
                             'bg-blue-50 text-blue-600'
                           }`}>
                             {subType || 'N/A'}
@@ -261,7 +261,7 @@ const InventoryGrid = () => {
                           {item.features[1] && (
                             <span className={`px-2 py-1 rounded text-[9px] font-bold ${
                               item.features[1].includes('Ready') ? 'bg-emerald-50 text-emerald-600' :
-                              item.features[1].includes('Vacant') ? 'bg-orange-50 text-orange-600' :
+                              item.features[1].includes('Vacant') ? 'bg-primary-50 text-primary-600' :
                               'bg-blue-50 text-blue-600'
                             }`}>
                               {item.features[1]}
