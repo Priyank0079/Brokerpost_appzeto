@@ -1,142 +1,120 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   LayoutDashboard, 
   Home, 
-  Building2, 
-  Building,
-  FileText, 
-  ClipboardList, 
-  CreditCard, 
-  Settings, 
+  Users,
   LogOut,
-  X,
-  ArrowLeft,
-  ArrowRight
+  Building2,
+  Building
 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const Sidebar = ({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }) => {
-
-  const { logout } = useAuth();
+const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const { user, logout } = useAuth();
   const location = useLocation();
-  const menuItems = [
-    { icon: <Home size={20} />, label: 'Home', path: '/' },
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', path: '/dashboard' },
-    { icon: <Building size={20} />, label: 'Residential Property', path: '/post-property?type=RESIDENTIAL' },
-    { icon: <Building2 size={20} />, label: 'Commercial Property', path: '/post-property?type=COMMERCIAL' },
-    { icon: <FileText size={20} />, label: 'My Listings', path: '/my-listings' },
-    { icon: <ClipboardList size={20} />, label: 'My Requirements', path: '/my-requirements' },
-    { icon: <CreditCard size={20} />, label: 'Subscription', path: '/subscription' },
-  ];
+  const navigate = useNavigate();
 
-  const bottomItems = [
-    { icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
-    { icon: <LogOut size={20} />, label: 'Logout', path: '/logout', className: 'text-red-400 hover:text-red-300 hover:bg-red-500/10' },
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const menuSections = [
+    {
+      title: 'OVERVIEW',
+      items: [
+        { icon: <LayoutDashboard size={18} />, label: 'Dashboard', path: '/dashboard' },
+      ]
+    },
+    {
+      title: 'RESIDENTIAL',
+      items: [
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/residential?intent=SALE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Rental', path: '/residential?intent=RENT', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/residential?intent=PURCHASE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Rent', path: '/residential?intent=WANTED_RENT', count: 0 },
+      ]
+    },
+    {
+      title: 'COMMERCIAL',
+      items: [
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/commercial?intent=SALE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Lease', path: '/commercial?intent=LEASE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/commercial?intent=PURCHASE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Lease', path: '/commercial?intent=WANTED_LEASE', count: 0 },
+      ]
+    },
+    {
+      title: 'NETWORK',
+      items: [
+        { icon: <Users size={18} />, label: 'My Groups', path: '/groups' },
+      ]
+    }
   ];
 
   return (
-    <>
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-40 lg:hidden"
-          onClick={toggleSidebar}
-        />
-      )}
+    <aside className={`fixed top-0 left-0 h-screen bg-[#0F172A] w-64 z-50 transition-all flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      {/* Brand */}
+      <div className="p-6">
+        <div className="flex flex-col">
+          <span className="text-xl font-bold text-white tracking-tight font-['Times_New_Roman',_serif]">Brokers<span className="text-[#C59D3F]">Post</span></span>
+          <span className="text-[9.5px] font-bold text-slate-200 uppercase tracking-[0.2em] mt-1">MY DASHBOARD</span>
+        </div>
+      </div>
 
-      <aside className={`
-        fixed top-0 left-0 h-screen bg-sidebar z-50 transition-all duration-500 ease-in-out transform flex flex-col overflow-y-auto overscroll-y-contain
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        ${isCollapsed ? 'w-20' : 'w-72'}
-      `}>
-        {/* Brand */}
-        <div className={`p-6 flex items-center justify-between ${isCollapsed ? 'justify-center' : ''}`}>
-          {!isCollapsed && (
-            <div className="flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-              <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-600/20">
-                <Building2 className="text-white" size={20} />
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">Brokers<span className="text-primary-500">post</span></span>
+      {/* Menu */}
+      <nav className="flex-1 px-4 py-1 space-y-4 overflow-y-auto scrollbar-hide">
+        {menuSections.map((section, idx) => (
+          <div key={idx} className="space-y-0.5">
+            <h3 className="px-4 text-[9.5px] font-bold text-slate-200 uppercase tracking-widest mb-0.5">{section.title}</h3>
+            <div className="space-y-0.5">
+              {section.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => `
+                    flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
+                    ${isActive ? 'bg-slate-800 text-white' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                  `}
+                >
+                  <div className="flex items-center gap-3">
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </div>
+                  {item.count !== undefined && (
+                    <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-[#C59D3F] text-[#0F172A] min-w-[18px] text-center">
+                      {item.count}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
             </div>
-          )}
+          </div>
+        ))}
+      </nav>
 
+      {/* User Footer */}
+      <div className="p-4 border-t border-slate-800/50">
+        <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8.5 h-8.5 rounded-full bg-[#C59D3F] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
+              {user?.name?.split(' ').map(n => n[0]).join('') || 'SD'}
+            </div>
+            <div className="flex flex-col min-w-0">
+              <span className="text-[11px] font-bold text-white truncate">{user?.name || 'Sakshi Dwivedi'}</span>
+              <span className="text-[9.5px] text-slate-200 font-medium">Broker</span>
+            </div>
+          </div>
           <button 
-             onClick={toggleCollapse}
-             className={`hidden lg:flex p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-all ${isCollapsed ? 'bg-slate-800/50' : ''}`}
+            onClick={handleLogout}
+            className="p-2 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
           >
-             {isCollapsed ? <ArrowRight size={18} /> : <ArrowLeft size={18} />}
-          </button>
-
-          <button onClick={toggleSidebar} className="lg:hidden text-slate-400 hover:text-white">
-            <X size={24} />
+            <LogOut size={16} />
           </button>
         </div>
-
-
-        {/* Menu */}
-        <nav className={`flex-1 px-4 py-4 space-y-1 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
-          {menuItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              title={isCollapsed ? item.label : ''}
-              onClick={() => window.innerWidth < 1024 && toggleSidebar()}
-              className={({ isActive }) => {
-                const isPropertyLink = item.path.includes('post-property');
-                const isReallyActive = isPropertyLink 
-                  ? location.pathname + location.search === item.path
-                  : isActive;
-
-                return `
-                  flex items-center gap-3 rounded-xl transition-all duration-200
-                  ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'px-4 py-3 w-full'}
-                  ${isReallyActive 
-                     ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/20' 
-                     : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}
-                `;
-              }}
-            >
-              {item.icon}
-              {!isCollapsed && <span className="text-sm font-medium animate-in fade-in slide-in-from-left-2 duration-300">{item.label}</span>}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* Bottom Menu */}
-        <div className={`p-4 border-t border-slate-800/50 space-y-1 ${isCollapsed ? 'flex flex-col items-center' : ''}`}>
-          <NavLink
-            to="/settings"
-            title={isCollapsed ? 'Settings' : ''}
-            className={({ isActive }) => `
-              flex items-center gap-3 rounded-xl transition-all duration-200 text-sm font-medium
-              ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'px-4 py-3 w-full'}
-              ${isActive ? 'bg-primary-600 text-white shadow-lg' : 'text-slate-400 hover:text-white hover:bg-slate-800/50'}
-            `}
-          >
-            <Settings size={20} />
-            {!isCollapsed && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Settings</span>}
-          </NavLink>
-          
-          <button
-            onClick={() => {
-              logout();
-              window.innerWidth < 1024 && toggleSidebar();
-            }}
-            title={isCollapsed ? 'Logout' : ''}
-            className={`
-               flex items-center gap-3 transition-all duration-200 text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl
-               ${isCollapsed ? 'justify-center w-12 h-12 p-0' : 'px-4 py-3 w-full'}
-            `}
-          >
-            <LogOut size={20} />
-            {!isCollapsed && <span className="animate-in fade-in slide-in-from-left-2 duration-300">Logout</span>}
-          </button>
-        </div>
-
-
-      </aside>
-    </>
+      </div>
+    </aside>
   );
 };
 

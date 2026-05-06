@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, ArrowRight, Lock, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import RegisterModal from './RegisterModal';
 
 const InventoryItem = ({ label, type, title, subtitle, details, price, color }) => (
   <div className="p-3 border border-slate-200 rounded-2xl bg-white">
@@ -23,44 +24,48 @@ const InventoryItem = ({ label, type, title, subtitle, details, price, color }) 
 );
 
 const LandingHero = () => {
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+
   return (
-    <section className="relative px-6 lg:px-20 pt-12 pb-16 lg:pt-16 lg:pb-24 bg-[#FAF9F6] overflow-hidden">
-      {/* Decorative Blur Background */}
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#C59D3F]/5 blur-[120px] rounded-full pointer-events-none" />
+    <>
+      <section className="relative px-6 lg:px-20 pt-12 pb-16 lg:pt-16 lg:pb-24 bg-[#FAF9F6] overflow-hidden">
+        {/* Decorative Blur Background */}
+        <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#C59D3F]/5 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Left Side: Text Content */}
-        <div className="space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
-            <div className="w-2 h-2 rounded-full bg-[#C59D3F] animate-pulse" />
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Live Inventory Search</span>
-          </div>
+        <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left Side: Text Content */}
+          <div className="space-y-4 relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
+              <div className="w-2 h-2 rounded-full bg-[#C59D3F] animate-pulse" />
+              <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Live Inventory Search</span>
+            </div>
 
-          <h1 className="text-3xl lg:text-5xl font-serif font-bold text-[#1A1A1A] leading-[1.2] tracking-tight">
-            India's Most Trusted <br />
-            <span className="italic text-[#C59D3F]">Broker-to-Broker</span> <br />
-            Inventory Platform
-          </h1>
+            <h1 className="text-3xl lg:text-5xl font-serif font-bold text-[#1A1A1A] leading-[1.2] tracking-tight">
+              India's Most Trusted <br />
+              <span className="italic text-[#C59D3F]">Broker-to-Broker</span> <br />
+              Inventory Platform
+            </h1>
 
-          <p className="text-sm font-poppins text-slate-600 leading-relaxed max-w-xl">
-            A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br />
-            <span className="text-slate-600">No commission. No middlemen. No charges.</span>
-          </p>
+            <p className="text-sm font-poppins text-slate-600 leading-relaxed max-w-xl">
+              A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br />
+              <span className="text-slate-600">No commission. No middlemen. No charges.</span>
+            </p>
 
-          <div className="flex flex-wrap gap-4 pt-4">
-            <Link to="/register">
-              <button className="px-4 py-3 rounded-xl bg-[#C59D3F] text-white font-bold text-xs hover:bg-[#B08A35] transition-all shadow-xl shadow-[#C59D3F]/20 flex items-center gap-3 group">
+            <div className="flex flex-wrap gap-4 pt-4">
+              <button 
+                onClick={() => setIsRegisterModalOpen(true)}
+                className="px-4 py-3 rounded-xl bg-[#C59D3F] text-white font-bold text-xs hover:bg-[#B08A35] transition-all shadow-xl shadow-[#C59D3F]/20 flex items-center gap-3 group"
+              >
                 Register as Broker
               </button>
-            </Link>
-            <a href="/#inventory">
-              <button className="px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-900 font-bold text-xs hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all">
-                Browse Inventory
-              </button>
-            </a>
-          </div>
+              <a href="#inventory">
+                <button className="px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-900 font-bold text-xs hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all">
+                  Browse Inventory
+                </button>
+              </a>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 pt-14 border-t border-slate-200">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 pt-14 border-t border-slate-200">
             <div>
               <p className="text-2xl font-serif font-bold text-[#1a365d]">42</p>
               <p className="text-[10px] font-medium text-slate-500 mt-0">Live Listings</p>
@@ -163,6 +168,11 @@ const LandingHero = () => {
         </div>
       </div>
     </section>
+    <RegisterModal 
+      isOpen={isRegisterModalOpen} 
+      onClose={() => setIsRegisterModalOpen(false)} 
+    />
+    </>
   );
 };
 

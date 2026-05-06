@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trophy } from 'lucide-react';
+import RegisterModal from './RegisterModal';
+import LoginModal from './LoginModal';
 
 const CTASection = () => {
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
   return (
+    <>
     <section className="bg-[#FAF9F6] py-12 px-6">
       <div className="max-w-[720px] mx-auto">
         <div className="bg-white rounded-[40px] p-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
@@ -21,17 +27,30 @@ const CTASection = () => {
           </p>
           
           <div className="flex flex-col items-center gap-4">
-            <button className="bg-[#C59D3F] text-white px-8 py-3.5 rounded-2xl font-bold text-xs hover:bg-[#b08b35] transition-all shadow-lg shadow-[#C59D3F]/20">
+            <button 
+              onClick={() => setIsRegisterModalOpen(true)}
+              className="bg-[#C59D3F] text-white px-8 py-3.5 rounded-2xl font-bold text-xs hover:bg-[#b08b35] transition-all shadow-lg shadow-[#C59D3F]/20"
+            >
               Register as a Verified Broker
             </button>
             
             <p className="text-slate-400 text-xs">
-              Already registered? <button className="text-[#1a365d] font-bold hover:underline">Login here</button>
+              Already registered? <button onClick={() => setIsLoginModalOpen(true)} className="text-[#1a365d] font-bold hover:underline">Login here</button>
             </p>
           </div>
         </div>
       </div>
     </section>
+
+    <RegisterModal 
+      isOpen={isRegisterModalOpen} 
+      onClose={() => setIsRegisterModalOpen(false)} 
+    />
+    <LoginModal 
+      isOpen={isLoginModalOpen} 
+      onClose={() => setIsLoginModalOpen(false)} 
+    />
+    </>
   );
 };
 

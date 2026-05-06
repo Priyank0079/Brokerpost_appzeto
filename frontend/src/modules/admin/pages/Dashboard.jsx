@@ -1,188 +1,106 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Users, 
-  Building2, 
-  TrendingUp, 
-  Activity,
-  ArrowUpRight,
-  UserPlus,
-  ShieldAlert,
-  ArrowDownRight,
-  Loader2,
-  Clock
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Card from '../../broker/components/ui/Card';
-import { AdminTable, AdminTableRow, AdminTableCell, StatusBadge } from '../components/common/AdminUI';
-import { api } from '../../broker/services/api';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState(null);
-  const [recentBrokers, setRecentBrokers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      const [statsRes, brokersRes] = await Promise.all([
-        api.get('/auth/stats'),
-        api.get('/auth/brokers')
-      ]);
-
-      if (statsRes.success) setStats(statsRes.data);
-      if (brokersRes.success) {
-        // Take top 5 recent
-        setRecentBrokers(brokersRes.data.slice(0, 5));
-      }
-    } catch (err) {
-      console.error('Dashboard fetch failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
 
   const statCards = [
-    { label: 'Total Brokers', value: stats?.totalBrokers || '0', icon: <Users className="text-blue-600" />, trend: '+12%', up: true },
-    { label: 'Active Listings', value: stats?.activeListings || '0', icon: <Building2 className="text-purple-600" />, trend: '+5.4%', up: true },
-    { label: 'Platform Users', value: (stats?.totalUsers / 1000).toFixed(1) + 'k' || '0', icon: <Activity className="text-emerald-600" />, trend: '+8%', up: true },
-    { label: 'Pending Verifications', value: stats?.pendingBrokers || '0', icon: <ShieldAlert className="text-amber-600" />, trend: 'Manual', up: false },
+    { label: 'MY LISTINGS', value: '0', sub: 'No limit (admin)', color: 'text-slate-900' },
+    { label: 'NETWORK LISTINGS', value: '45', sub: 'All brokers', color: 'text-slate-900' },
+    { label: 'AVAILABILITY', value: '30', sub: 'For sale / rent / lease', color: 'text-slate-900' },
+    { label: 'REQUIREMENTS', value: '15', sub: 'Wanted buy / rent / lease', color: 'text-slate-900' },
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-10 h-10 text-primary-600 animate-spin" />
-        <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Compiling Analytics...</p>
-      </div>
-    );
-  }
+  const breakdownItems = [
+    { label: 'Residential Available', value: '0' },
+    { label: 'Residential Available', value: '0' },
+    { label: 'Residential Wanted on', value: '0' },
+    { label: 'Residential Wanted on', value: '0' },
+    { label: 'Commercial Available', value: '0' },
+    { label: 'Commercial Available', value: '0' },
+    { label: 'Commercial Wanted on...', value: '0' },
+    { label: 'Commercial Wanted on...', value: '0' },
+  ];
 
   return (
-    <div className="space-y-10">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Analytics Overview</h1>
-          <p className="text-slate-500 text-sm mt-1">Real-time performance metrics and platform health.</p>
-        </div>
-        <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-100 h-fit">
-           <button className="px-4 py-2 text-xs font-bold bg-slate-900 text-white rounded-lg">Real-time</button>
-           <button className="px-4 py-2 text-xs font-bold text-slate-400 hover:text-slate-900">History</button>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((s, i) => (
-          <Card 
-            key={i} 
-            noPadding 
-            className={`hover:border-primary-100 transition-all group overflow-hidden ${i === 0 ? 'cursor-pointer hover:shadow-lg active:scale-[0.98]' : 'cursor-default'}`}
-            onClick={() => i === 0 && navigate('/admin/brokers')}
+    <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
+      <div className="space-y-8 pb-10">
+        {/* Custom Header */}
+        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-6">
+            <h1 className="text-lg font-serif text-black">Dashboard</h1>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
+              <input 
+                type="text" 
+                placeholder="Search listings..."
+                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+              />
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-4 py-1.5 rounded-full border border-slate-200 text-black text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
           >
-             <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                   <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center transition-transform group-hover:scale-110">
-                      {s.icon}
-                   </div>
-                   <div className={`flex items-center gap-1 text-xs font-black ${s.up ? 'text-emerald-600' : 'text-amber-500'}`}>
-                      {s.up ? <ArrowUpRight size={14} /> : <Clock size={14} />}
-                      {s.trend}
-                   </div>
-                </div>
-                <h3 className="text-3xl font-black text-slate-900 tracking-tight">{s.value}</h3>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2">{s.label}</p>
-             </div>
-             <div className={`h-1.5 w-full bg-slate-100 relative overflow-hidden`}>
-                <div className={`absolute left-0 top-0 h-full w-2/3 ${s.up ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-             </div>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Brokers */}
-        <div className="lg:col-span-2 space-y-6">
-           <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-900">New Registrations</h2>
-              <button 
-                onClick={() => navigate('/admin/brokers')}
-                className="text-xs font-bold text-primary-600 uppercase tracking-widest hover:underline"
-              >
-                View All Brokers
-              </button>
-           </div>
-           <Card noPadding className="border-slate-100 overflow-hidden">
-             <AdminTable headers={["BROKER", "LOCATION", "VERIFICATION", "ACTION"]}>
-                {recentBrokers.map(b => (
-                   <AdminTableRow key={b._id} className="cursor-pointer hover:bg-slate-50/80 transition-all" onClick={() => navigate(`/admin/brokers/${b._id}`)}>
-                      <AdminTableCell>
-                         <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 text-xs font-bold uppercase">
-                               {b.firstName?.charAt(0)}
-                            </div>
-                            <div>
-                               <p className="text-sm font-bold text-slate-900">{b.firstName} {b.lastName}</p>
-                               <p className="text-[10px] text-slate-400">{b.email}</p>
-                            </div>
-                         </div>
-                      </AdminTableCell>
-                      <AdminTableCell className="text-sm text-slate-600 font-medium">{b.operatingCity}</AdminTableCell>
-                      <AdminTableCell>
-                        <StatusBadge type={b.isVerified ? 'Approved' : 'Pending'} />
-                      </AdminTableCell>
-                      <AdminTableCell>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/brokers/${b._id}`);
-                          }}
-                          className="text-[10px] font-black text-primary-600 uppercase hover:underline"
-                        >
-                          View Profile
-                        </button>
-                      </AdminTableCell>
-                   </AdminTableRow>
-                ))}
-             </AdminTable>
-           </Card>
+            <ArrowLeft size={14} /> Public Site
+          </button>
         </div>
 
-        {/* Activity Feed */}
-        <div className="space-y-6">
-           <h2 className="text-xl font-bold text-slate-900">System Activity</h2>
-           <Card noPadding className="border-slate-100 divide-y divide-slate-50">
-              <div className="p-4 flex gap-4 hover:bg-slate-50 transition-all cursor-pointer group">
-                 <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                    <UserPlus size={18} />
-                 </div>
-                 <div>
-                    <p className="text-sm text-slate-600">
-                       <span className="font-bold text-slate-900">Sync Success</span>: Registered brokers synchronized with Auth database.
-                    </p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Active</p>
-                 </div>
+        {/* Welcome Section */}
+        <div className="space-y-1">
+          <h2 className="text-2xl font-serif text-black">Welcome back, Shyam</h2>
+          <p className="text-[11px] text-slate-400 font-medium tracking-tight">Your personal Inventory & network overview</p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {statCards.map((card, idx) => (
+            <div key={idx} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">{card.label}</p>
+              <div className="flex flex-col">
+                <span className="text-4xl font-serif text-[#1e3a8a] leading-none">{card.value}</span>
+                <span className="text-[11px] text-slate-400 font-medium mt-2">{card.sub}</span>
               </div>
-              <div className="p-4 flex gap-4 hover:bg-slate-50 transition-all cursor-pointer group">
-                 <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-                    <ShieldAlert size={18} />
-                 </div>
-                 <div>
-                    <p className="text-sm text-slate-600">
-                       <span className="font-bold text-slate-900">Security Check</span>: 0 vulnerabilities found in recent scans.
-                    </p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Checked</p>
-                 </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Recent Listings Card */}
+          <div className="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
+            <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900">My Recent Listings</h3>
+              <button className="px-4 py-1 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all">View All</button>
+            </div>
+            <div className="flex-1 flex flex-col items-center justify-center py-10 text-center px-6">
+              <div className="w-16 h-16 bg-[#faf9f6] rounded-xl flex items-center justify-center mb-4">
+                <span className="text-2xl opacity-40">📋</span>
               </div>
-              <div className="p-4 text-center">
-                 <button className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-all">View Monitoring Logs</button>
-              </div>
-           </Card>
+              <h4 className="text-base font-bold text-slate-900">No listings yet</h4>
+              <p className="text-[11px] text-slate-400 mt-1">Use "+ Add Listing" in each section</p>
+            </div>
+          </div>
+
+          {/* Breakdown Card */}
+          <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
+            <div className="px-6 py-4 border-b border-slate-50">
+              <h3 className="text-sm font-bold text-slate-900">My Listing Breakdown</h3>
+            </div>
+            <div className="p-6 space-y-2.5 flex-1">
+              {breakdownItems.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between group">
+                  <div className="space-y-1 flex-1 mr-8">
+                    <p className="text-[11px] font-bold text-slate-500 group-hover:text-slate-900 transition-colors leading-none">{item.label}</p>
+                    <div className="w-full h-[1.5px] bg-[#f5f0e5] rounded-full relative">
+                       <div className="absolute left-0 top-0 h-full w-0 bg-[#C59D3F] transition-all" />
+                    </div>
+                  </div>
+                  <span className="text-[12px] font-serif font-bold text-[#1e3a8a]">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

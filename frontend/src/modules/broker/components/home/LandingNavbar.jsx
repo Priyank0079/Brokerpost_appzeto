@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Shield } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Shield, Lock } from 'lucide-react';
 import LoginModal from './LoginModal';
+import RegisterModal from './RegisterModal';
 
 const LandingNavbar = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -23,12 +26,24 @@ const LandingNavbar = () => {
             <a href="/#how-it-works" className="text-sm font-medium text-[#4A4A4A] hover:text-[#C59D3F] transition-colors">How It Works</a>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsLoginModalOpen(true)}
-              className="px-6 py-2 rounded-full border-2 border-[#1A1A1A] text-sm font-bold text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-all"
+              className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all"
             >
               Login
+            </button>
+            <button 
+              onClick={() => setIsRegisterModalOpen(true)}
+              className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
+            >
+              Join as Broker
+            </button>
+            <button 
+              onClick={() => navigate('/admin/login')}
+              className="px-5 py-2 rounded-xl bg-[#0f172a] text-xs font-bold text-white hover:bg-slate-800 transition-all flex items-center gap-2"
+            >
+              <Lock size={12} /> Admin
             </button>
           </div>
         </div>
@@ -37,6 +52,10 @@ const LandingNavbar = () => {
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
+      />
+      <RegisterModal 
+        isOpen={isRegisterModalOpen} 
+        onClose={() => setIsRegisterModalOpen(false)} 
       />
     </>
   );

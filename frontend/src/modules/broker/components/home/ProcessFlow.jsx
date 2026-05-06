@@ -33,7 +33,7 @@ const ProcessFlow = () => {
             Process
           </p>
           <h2 className="text-4xl lg:text-5xl font-serif mb-4">
-            How BrokersLink Works
+            How BrokersPost Works
           </h2>
           <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
             Four simple steps to start sharing and closing deals with verified brokers.

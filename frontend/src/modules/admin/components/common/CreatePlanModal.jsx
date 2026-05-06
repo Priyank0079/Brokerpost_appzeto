@@ -54,8 +54,8 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Plan Name */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-              <Zap size={12} className="text-primary-500" /> Plan Identity
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+              <Zap size={12} className="text-[#c0922e]" /> Plan Identity
             </label>
             <input 
               type="text" 
@@ -63,13 +63,13 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="e.g. Platinum Elite"
-              className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+              className="w-full px-5 py-3.5 rounded-2xl border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
             />
           </div>
 
           {/* Price */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
               <ShieldCheck size={12} className="text-emerald-500" /> Pricing (₹)
             </label>
             <input 
@@ -78,7 +78,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               placeholder="9999"
-              className="w-full px-5 py-4 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+              className="w-full px-5 py-3.5 rounded-2xl border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none font-bold text-slate-900 transition-all text-[12px]"
             />
           </div>
         </div>
@@ -94,7 +94,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
                 key={d}
                 type="button"
                 onClick={() => setFormData({ ...formData, duration: d })}
-                className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${formData.duration === d ? 'bg-slate-900 border-slate-900 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'}`}
+                className={`flex-1 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all ${formData.duration === d ? 'bg-[#c0922e] border-[#c0922e] text-white shadow-lg' : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300'}`}
               >
                 {d}
               </button>
@@ -109,7 +109,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
             <button 
               type="button"
               onClick={addFeature}
-              className="text-[9px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 underline decoration-2 underline-offset-4"
+              className="text-[9px] font-bold uppercase tracking-widest text-[#c0922e] hover:text-[#a67d26] underline decoration-1 underline-offset-4"
             >
               Add Feature
             </button>
@@ -125,7 +125,7 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
                     value={feature}
                     onChange={(e) => updateFeature(index, e.target.value)}
                     placeholder="Describe a feature..."
-                    className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-4 focus:ring-primary-500/5 outline-none text-xs font-bold text-slate-700 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-[#fefce8] focus:border-[#eab308]/40 outline-none text-[12px] font-bold text-slate-700 transition-all"
                   />
                 </div>
                 {formData.features.length > 1 && (
@@ -151,14 +151,12 @@ const CreatePlanModal = ({ isOpen, onClose, onCreate }) => {
           >
             Cancel
           </Button>
-          <Button 
-            variant="primary" 
+          <button 
             type="submit"
-            className="flex-2 py-4 px-12 bg-primary-600 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-primary-600/20"
-            leftIcon={<Check size={18} />}
+            className="flex-2 py-3 px-12 bg-[#c0922e] text-white font-bold uppercase tracking-widest text-[11px] shadow-2xl shadow-[#c0922e]/20 rounded-xl hover:bg-[#a67d26] transition-all flex items-center justify-center gap-2"
           >
-            Deploy Plan
-          </Button>
+            <Check size={18} /> Deploy Plan
+          </button>
         </div>
       </form>
     </Modal>

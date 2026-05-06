@@ -7,21 +7,13 @@ const AdminLayout = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex">
+    <div className="min-h-screen bg-[#FAF9F6] flex">
       <AdminSidebar 
         isOpen={sidebarOpen} 
         toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-        isCollapsed={isCollapsed}
-        toggleCollapse={() => setIsCollapsed(!isCollapsed)}
       />
       
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-500 ease-in-out ${isCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
-        <AdminNavbar 
-           toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-           isCollapsed={isCollapsed}
-           toggleCollapse={() => setIsCollapsed(!isCollapsed)}
-        />
-        
+      <div className="flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out lg:ml-64">
         <main className="flex-1 p-4 md:p-8 lg:p-10 animate-fade-in max-w-[1600px] mx-auto w-full">
           <div className="max-w-full">
             {children}

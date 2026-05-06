@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../broker/context/AuthContext';
 
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Loader2, X } from 'lucide-react';
 import Button from '../../broker/components/ui/Button';
 
 
@@ -33,81 +33,83 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center p-6 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px]">
-      <div className="w-full max-w-md">
-        {/* Logo / Branding */}
-        <div className="text-center mb-10">
-           <div className="w-16 h-16 bg-primary-600 rounded-[24px] flex items-center justify-center mx-auto shadow-2xl shadow-primary-600/30 mb-6 rotate-3">
-              <ShieldCheck size={32} className="text-white" />
-           </div>
-           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Admin Console</h1>
-           <p className="text-slate-400 font-medium mt-2 uppercase text-[10px] tracking-[3px]">Master Access Authority</p>
+    <div className="min-h-screen bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-6 font-sans">
+      <div className="w-full max-w-[540px] bg-white rounded-[24px] shadow-2xl relative overflow-hidden animate-in zoom-in duration-300">
+        {/* Modal Header */}
+        <div className="p-8 pb-6 flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-serif text-[#1e3a8a] tracking-tight">Platform Admin Login</h1>
+            <p className="text-[11px] text-slate-400 font-medium">Restricted access — authorised personnel only</p>
+          </div>
+          <button 
+            onClick={() => navigate('/')}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all border border-slate-100"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        <div className="bg-white rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] border border-slate-100 p-10 relative overflow-hidden">
-           {/* Top Accent Bar */}
-           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary-600 to-blue-400" />
-           
-           <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-              {error && (
-                <div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
-                   <AlertCircle className="text-red-500" size={18} />
-                   <p className="text-xs font-bold text-red-900">{error}</p>
-                </div>
-              )}
+        <form onSubmit={handleSubmit} className="p-8 pt-0 space-y-6">
+          {/* Warning Box */}
+          <div className="bg-[#fff7ed] border border-[#ffedd5] p-4 rounded-xl flex gap-3 items-start shadow-sm">
+            <div className="mt-0.5">
+               <Lock size={14} className="text-[#c0922e]" />
+            </div>
+            <p className="text-[11px] font-bold text-[#c0922e] leading-relaxed">
+              This login is for platform administrators only. Brokers should use the regular Login button.
+            </p>
+          </div>
 
-              <div className="space-y-1.5">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Admin Email Identity</label>
-                 <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary-600 transition-colors" size={18} />
-                    <input 
-                       disabled={isLoading}
-                       type="email" 
-                       placeholder="admin@gmail.com"
-                       className="w-full pl-11 pr-4 py-4 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900"
-                       value={email}
-                       onChange={(e) => setEmail(e.target.value)}
-                       required
-                    />
-                 </div>
-              </div>
+          {error && (
+            <div className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
+               <AlertCircle className="text-red-500" size={16} />
+               <p className="text-[11px] font-bold text-red-900">{error}</p>
+            </div>
+          )}
 
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">ADMIN EMAIL *</label>
+            <input 
+              disabled={isLoading}
+              type="email" 
+              placeholder="admin@gmail.com"
+              className="w-full px-5 py-3.5 bg-[#fefce8] border border-slate-200 rounded-xl outline-none focus:border-[#eab308]/40 transition-all text-[12px] font-bold text-slate-900 shadow-inner"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-              <div className="space-y-1.5">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Secret Access Key</label>
-                 <div className="relative group">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-primary-600 transition-colors" size={18} />
-                    <input 
-                       disabled={isLoading}
-                       type="password" 
-                       placeholder="Enter passcode"
-                       className="w-full pl-11 pr-4 py-4 bg-slate-50 border-transparent rounded-2xl outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900"
-                       value={password}
-                       onChange={(e) => setPassword(e.target.value)}
-                       required
-                    />
-                 </div>
-              </div>
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">ADMIN PASSWORD *</label>
+            <input 
+              disabled={isLoading}
+              type="password" 
+              placeholder="Password"
+              className="w-full px-5 py-3.5 bg-[#fefce8] border border-slate-200 rounded-xl outline-none focus:border-[#eab308]/40 transition-all text-[12px] font-bold text-slate-900 shadow-inner"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-              <Button 
-                 type="submit"
-                 variant="primary" 
-                 fullWidth 
-                 loading={isLoading}
-                 className="py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-xl shadow-primary-600/20 mt-4 active:scale-95 transition-all"
-                 rightIcon={!isLoading && <ArrowRight size={18} />}
-              >
-                 Authorize Access
-              </Button>
-           </form>
-
-           {/* Backdrop elements */}
-           <div className="absolute -bottom-20 -right-20 w-48 h-48 bg-primary-50 rounded-full blur-3xl opacity-50" />
-        </div>
-
-        <p className="text-center mt-12 text-slate-400 text-[10px] font-black uppercase tracking-widest">
-           Protected by AES-256 System Encryption
-        </p>
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <button 
+              type="button"
+              onClick={() => navigate('/')}
+              className="px-8 py-2.5 rounded-xl border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              type="submit"
+              disabled={isLoading}
+              className="px-10 py-2.5 bg-[#0F172A] text-white rounded-xl text-[11px] font-bold hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 flex items-center gap-2 disabled:opacity-50"
+            >
+              {isLoading ? <Loader2 className="animate-spin" size={14} /> : 'Login as Admin'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

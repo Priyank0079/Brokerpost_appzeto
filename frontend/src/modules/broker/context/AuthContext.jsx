@@ -57,6 +57,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
   };
 
+  const register = async (userData) => {
+    try {
+      // Mocking registration for instant dashboard access as requested by user
+      const mockUser = {
+        _id: 'mock_id_' + Date.now(),
+        name: userData.fullName,
+        firstName: userData.fullName.split(' ')[0],
+        email: userData.email,
+        role: 'Broker',
+        companyName: userData.companyName,
+        operatingCity: userData.city,
+        isVerified: true
+      };
+      
+      localStorage.setItem('token', 'mock_token');
+      setUser(mockUser);
+      return { success: true, user: mockUser };
+    } catch (err) {
+      return { success: false, message: 'Registration failed' };
+    }
+  };
+
   const adminLogin = async (email, password) => {
     try {
       const response = await api.post('/auth/admin/login', { email, password });
@@ -73,7 +95,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, adminLogin, loading, checkAuth, updateUser }}>
+    <AuthContext.Provider value={{ user, login, register, logout, adminLogin, loading, checkAuth, updateUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

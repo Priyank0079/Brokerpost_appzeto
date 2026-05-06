@@ -1,304 +1,377 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Building2, 
-  MapPin, 
-  Eye, 
-  Edit3, 
-  Trash2, 
-  AlertTriangle,
-  Search,
-  Filter,
-  RotateCcw,
-  Loader2
-} from 'lucide-react';
-import Card from '../../broker/components/ui/Card';
-import Button from '../../broker/components/ui/Button';
-import { AdminTable, AdminTableRow, AdminTableCell, StatusBadge, ActionButton } from '../components/common/AdminUI';
-import { getPostings } from '../../broker/services/postingService';
+import React, { useState } from 'react';
+import { Search, ArrowLeft, Edit2, Trash2, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Listings = () => {
-  const [listings, setListings] = useState([]);
-  const [groups, setGroups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  // Filter States
-  const [searchTerm, setSearchTerm] = useState('');
-  const [postTypeFilter, setPostTypeFilter] = useState('All Types');
-  const [verticalFilter, setVerticalFilter] = useState('All Property Types');
-  const [intentFilter, setIntentFilter] = useState('All Transactions');
-  const [groupFilter, setGroupFilter] = useState('All Groups');
-  const [bhkFilter, setBhkFilter] = useState('All BHK');
-  const [constructionStatusFilter, setConstructionStatusFilter] = useState('All Status');
-  const [budgetFilter, setBudgetFilter] = useState('All Budgets');
-  const [unitFilter, setUnitFilter] = useState('All Units');
+  const navigate = useNavigate();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingListing, setEditingListing] = useState(null);
+  const [formData, setFormData] = useState({
+    subType: '',
+    location: '',
+    city: 'Gurugram',
+    project: '',
+    bedrooms: '',
+    areaSize: '',
+    unit: 'Sq.Ft',
+    priceType: 'Sumpsum (Lump Sum)',
+    ratePrice: '',
+    propertyStatus: 'Ready to Move',
+    monthlyRent: '',
+    remarks: ''
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [listingsRes, groupsRes] = await Promise.all([
-          getPostings(),
-          fetch(`${import.meta.env.VITE_API_BASE_URL}/groups`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-          }).then(res => res.json())
-        ]);
-        
-        if (listingsRes.success) setListings(listingsRes.data);
-        if (groupsRes.success) setGroups(groupsRes.data);
-      } catch (err) {
-        console.error('Fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const platformListings = [
+    { id: 1, section: 'Residential', status: 'Available for Rental', subType: 'Apartments', location: 'DLF-4', building: 'Ridgewood Estate', area: '1425', areaUnit: 'Sq.Ft', price: '85000', broker: 'Neeraj Jain', date: '5/5/2026' },
+    { id: 2, section: 'Commercial', status: 'Available for Lease', subType: 'Standalone Building', location: 'Sector-8', building: 'IMT Manesar', area: '10000', areaUnit: 'Sq.Mt', price: '200000', broker: 'Neeraj Jain', date: '5/5/2026' },
+    { id: 3, section: 'Commercial', status: 'Available for Lease', subType: 'Shops/Showroom', location: 'Sector-37', building: 'Pace City 2', area: '250', areaUnit: 'Sq.Mt', price: '200000', broker: 'Neeraj Jain', date: '5/5/2026' },
+    { id: 4, section: 'Residential', status: 'Available for Sale', subType: 'Apartments', location: 'Sector-77', building: 'Emaar Palm Hills', area: '1450', areaUnit: 'Sq.Ft', price: '19000000', broker: 'Anirudh Panda', date: '4/5/2026' },
+    { id: 5, section: 'Residential', status: 'Wanted on Rent', subType: 'Low Rise Floors', location: 'DLF-2', building: 'Builder Floor', area: '300', areaUnit: 'Sq.Yd', price: '130000', broker: 'Abhishek Jha', date: '4/5/2026' },
+  ];
 
-  const filteredListings = useMemo(() => {
-    return listings.filter((item) => {
-      const brokerName = item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}`.toLowerCase() : 'system';
-      const title = (item.project || '').toLowerCase();
-      const location = (item.location || '').toLowerCase();
-      const search = searchTerm.toLowerCase();
-      
-      const matchesSearch = !searchTerm || 
-        title.includes(search) ||
-        location.includes(search) ||
-        brokerName.includes(search);
-      
-      const matchesPostType = postTypeFilter === 'All Types' || item.postType === postTypeFilter.toUpperCase();
-      const matchesVertical = verticalFilter === 'All Property Types' || item.vertical === verticalFilter.toUpperCase();
-      const matchesIntent = intentFilter === 'All Transactions' || item.intent === intentFilter.toUpperCase();
-      
-      const matchesGroup = groupFilter === 'All Groups' || (item.postedBy && groups.find(g => g._id === groupFilter)?.members.some(m => m === item.postedBy._id || m._id === item.postedBy._id));
-      
-      const matchesBhk = bhkFilter === 'All BHK' || item.bedrooms === bhkFilter;
-      const matchesConstruction = constructionStatusFilter === 'All Status' || item.constructionStatus === constructionStatusFilter.toUpperCase();
-      
-      return matchesSearch && matchesPostType && matchesVertical && matchesIntent && matchesGroup && matchesBhk && matchesConstruction;
+  const handleEditClick = (listing) => {
+    setEditingListing(listing);
+    setFormData({
+      subType: listing.subType,
+      location: listing.location,
+      city: 'Gurugram',
+      project: listing.building,
+      bedrooms: '3 BHK',
+      areaSize: listing.area,
+      unit: listing.areaUnit,
+      priceType: 'Sumpsum (Lump Sum)',
+      ratePrice: listing.price,
+      propertyStatus: 'Ready to Move',
+      monthlyRent: listing.status.includes('Rental') ? listing.price : '',
+      remarks: 'Fully Furnished Apartment Open for all kind of Tenents'
     });
-  }, [listings, groups, searchTerm, postTypeFilter, verticalFilter, intentFilter, groupFilter, bhkFilter, constructionStatusFilter]);
+    setIsEditModalOpen(true);
+  };
 
-  const resetFilters = () => {
-    setSearchTerm('');
-    setPostTypeFilter('All Types');
-    setVerticalFilter('All Property Types');
-    setIntentFilter('All Transactions');
-    setGroupFilter('All Groups');
-    setBhkFilter('All BHK');
-    setConstructionStatusFilter('All Status');
-    setBudgetFilter('All Budgets');
-    setUnitFilter('All Units');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Listing Moderation</h1>
-           <p className="text-slate-500 text-sm mt-1">Monitor property postings and manage content quality.</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-600" size={16} />
+    <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
+      <div className="space-y-8 pb-10">
+        {/* Custom Header */}
+        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-6">
+            <h1 className="text-lg font-serif text-black">All Listings</h1>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
               <input 
                 type="text" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by location, society, broker..." 
-                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none w-80 focus:ring-4 focus:ring-primary-500/5 transition-all"
+                placeholder="Search listings..."
+                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
               />
-           </div>
-           <button 
-             onClick={resetFilters}
-             className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-primary-600 transition-all"
-             title="Reset Filters"
-           >
-              <RotateCcw size={20} />
-           </button>
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-4 py-1.5 rounded-full border border-slate-200 text-black text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            <ArrowLeft size={14} /> Public Site
+          </button>
+        </div>
+
+        {/* Title Section */}
+        <div className="space-y-1">
+          <h2 className="text-2xl font-serif text-black">All Platform Listings</h2>
+          <p className="text-[11px] text-slate-400 font-medium tracking-tight">Admin view of all listings across all brokers</p>
+        </div>
+
+        {/* Table Container */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SECTION</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">BROKER</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {platformListings.map((listing) => (
+                  <tr key={listing.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold border ${
+                          listing.section === 'Residential' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-orange-50 text-orange-600 border-orange-100'
+                        }`}>
+                          {listing.section}
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-900 italic whitespace-nowrap">{listing.status}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold border border-blue-100 whitespace-nowrap">
+                        {listing.subType}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="min-w-[120px]">
+                        <p className="text-[11px] font-bold text-slate-900 leading-none mb-1">{listing.location}</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{listing.building}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.area} {listing.areaUnit}</td>
+                    <td className="px-6 py-4 text-[11px] font-bold text-emerald-600 whitespace-nowrap">₹{parseInt(listing.price).toLocaleString()}</td>
+                    <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.broker}</td>
+                    <td className="px-6 py-4 text-[9px] font-bold text-slate-400">{listing.date}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <button 
+                          onClick={() => handleEditClick(listing)}
+                          className="px-3 py-1 border border-slate-200 text-slate-600 rounded text-[9px] font-bold hover:bg-slate-50 transition-all"
+                        >
+                          Edit
+                        </button>
+                        <button className="px-3 py-1 bg-[#7f1d1d] text-white rounded text-[9px] font-bold hover:bg-[#991b1b] transition-all">
+                          Del
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Filter Bar */}
-      <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-visible">
-        <div className="p-5 space-y-4 bg-white rounded-2xl">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-             <select 
-               value={postTypeFilter}
-               onChange={(e) => setPostTypeFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Types</option>
-                <option>Availability</option>
-                <option>Requirement</option>
-             </select>
+      {/* Edit Listing Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
+          <div className="relative w-full max-w-[700px] bg-white rounded-[24px] shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10">
+              <div>
+                <h3 className="text-lg font-serif text-black">Edit Listing</h3>
+                <p className="text-[10px] text-slate-400 font-medium">{editingListing?.status} - {editingListing?.section}</p>
+              </div>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all"
+              >
+                <Plus size={20} className="rotate-45" />
+              </button>
+            </div>
 
-             <select 
-               value={verticalFilter}
-               onChange={(e) => setVerticalFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Property Types</option>
-                <option value="RESIDENTIAL">Residential</option>
-                <option value="COMMERCIAL">Commercial</option>
-                <option value="PLOT">Plots</option>
-             </select>
+            {/* Modal Form */}
+            <div className="p-6 space-y-8 max-h-[80vh] overflow-y-auto">
+              {/* Category */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">CATEGORY</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">SUB-TYPE *</label>
+                  <select 
+                    name="subType" value={formData.subType} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none appearance-none"
+                  >
+                    <option value="Apartments">Apartments</option>
+                    <option value="Standalone Building">Standalone Building</option>
+                  </select>
+                </div>
+              </div>
 
-             <select 
-               value={intentFilter}
-               onChange={(e) => setIntentFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Transactions</option>
-                <option value="SALE">Sale</option>
-                <option value="RENT">Rent</option>
-                <option value="LEASE">Lease</option>
-             </select>
+              {/* Property Details */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">PROPERTY DETAILS</label>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">LOCATION / AREA *</label>
+                    <input 
+                      type="text" name="location" value={formData.location} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">CITY</label>
+                    <div className="relative">
+                      <input 
+                        type="text" value={formData.city} readOnly
+                        className="w-full px-4 py-2.5 bg-[#f1f5f9] border border-slate-200 rounded-xl text-[12px] font-medium outline-none text-slate-500 cursor-not-allowed"
+                      />
+                      <span className="absolute -bottom-4 left-0 text-[8px] text-slate-400 italic">🔒 Auto-filled from profile</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5 mt-2">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">PROJECT / SOCIETY</label>
+                    <input 
+                      type="text" name="project" value={formData.project} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5 mt-2">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">BEDROOMS</label>
+                    <select 
+                      name="bedrooms" value={formData.bedrooms} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none appearance-none"
+                    >
+                      <option value="1 BHK">1 BHK</option>
+                      <option value="2 BHK">2 BHK</option>
+                      <option value="3 BHK">3 BHK</option>
+                      <option value="4 BHK">4 BHK</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
-             <select 
-               value={groupFilter}
-               onChange={(e) => setGroupFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Groups</option>
-                {groups.map(g => (
-                  <option key={g._id} value={g._id}>{g.name}</option>
-                ))}
-             </select>
+              {/* Area */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">AREA</label>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">AREA / SIZE</label>
+                    <input 
+                      type="text" name="areaSize" value={formData.areaSize} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">UNIT</label>
+                    <select 
+                      name="unit" value={formData.unit} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none appearance-none"
+                    >
+                      <option value="Sq.Ft">Sq.Ft</option>
+                      <option value="Sq.Yd">Sq.Yd</option>
+                      <option value="Sq.Mt">Sq.Mt</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
-             <select 
-               value={bhkFilter}
-               onChange={(e) => setBhkFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All BHK</option>
-                <option>1 BHK</option>
-                <option>2 BHK</option>
-                <option>3 BHK</option>
-                <option>4 BHK</option>
-                <option>5+ BHK</option>
-             </select>
+              {/* Pricing */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">PRICING</label>
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">PRICE TYPE</label>
+                    <select 
+                      name="priceType" value={formData.priceType} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none appearance-none"
+                    >
+                      <option value="Sumpsum (Lump Sum)">Sumpsum (Lump Sum)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">RATE / PRICE (₹)</label>
+                    <input 
+                      type="text" name="ratePrice" value={formData.ratePrice} onChange={handleInputChange}
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none"
+                    />
+                  </div>
+                </div>
 
-             <select 
-               value={constructionStatusFilter}
-               onChange={(e) => setConstructionStatusFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Status</option>
-                <option value="READY_TO_MOVE">Ready To Move</option>
-                <option value="UNDER_CONSTRUCTION">Under Construction</option>
-             </select>
+                {/* Calculated Total Price Box */}
+                <div className="p-4 bg-[#f5f1e8] rounded-xl border border-[#e5e0d4] space-y-1">
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">CALCULATED TOTAL PRICE</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-serif font-bold text-black">₹ {parseInt(formData.ratePrice || 0).toLocaleString()}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium italic">Lump sum price</p>
+                </div>
+              </div>
 
-             <select 
-               value={budgetFilter}
-               onChange={(e) => setBudgetFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Budgets</option>
-                <option>Below 50L</option>
-                <option>50L - 1Cr</option>
-                <option>1Cr - 5Cr</option>
-                <option>Above 5Cr</option>
-             </select>
+              {/* Status */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">STATUS</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">PROPERTY STATUS</label>
+                  <select 
+                    name="propertyStatus" value={formData.propertyStatus} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none appearance-none"
+                  >
+                    <option value="Ready to Move">Ready to Move</option>
+                    <option value="Under Construction">Under Construction</option>
+                  </select>
+                </div>
+              </div>
 
-             <select 
-               value={unitFilter}
-               onChange={(e) => setUnitFilter(e.target.value)}
-               className="bg-slate-50 border border-slate-100 text-[11px] font-black uppercase tracking-widest px-4 py-3.5 rounded-xl outline-none focus:ring-4 focus:ring-primary-500/5 transition-all appearance-none cursor-pointer"
-             >
-                <option>All Units</option>
-                <option>Apartment</option>
-                <option>Villa</option>
-                <option>Penthouse</option>
-             </select>
+              {/* Rent amount */}
+              {editingListing?.status.includes('Rental') && (
+                <div className="space-y-4">
+                  <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">RENT / LEASE AMOUNT</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">MONTHLY RENT / LEASE (₹)</label>
+                    <input 
+                      type="text" name="monthlyRent" value={formData.monthlyRent} onChange={handleInputChange}
+                      placeholder="e.g. 45000"
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none"
+                    />
+                  </div>
+                </div>
+              )}
 
-             <button className="md:col-span-2 flex items-center justify-center gap-3 bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.2em] py-3.5 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/10">
-                <Filter size={16} />
-                Apply Filters
-             </button>
+              {/* Media */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">MEDIA</label>
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">PHOTOS (JPG/PNG)</label>
+                    <div className="border-2 border-dashed border-slate-200 rounded-xl py-8 flex flex-col items-center justify-center gap-2 bg-slate-50/50 hover:bg-slate-50 transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-900">Click to upload photos</p>
+                      <p className="text-[9px] text-slate-400 font-medium">JPG, PNG — multiple allowed</p>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase">VIDEOS (MP4/MOV)</label>
+                    <div className="border-2 border-dashed border-slate-200 rounded-xl py-8 flex flex-col items-center justify-center gap-2 bg-slate-50/50 hover:bg-slate-50 transition-all cursor-pointer">
+                      <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-900">Click to upload videos</p>
+                      <p className="text-[9px] text-slate-400 font-medium">MP4, MOV — multiple allowed</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remarks */}
+              <div className="space-y-4">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">REMARKS</label>
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase">NOTES / ADDITIONAL INFO</label>
+                  <textarea 
+                    name="remarks" value={formData.remarks} onChange={handleInputChange}
+                    rows="3"
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none resize-none"
+                  />
+                </div>
+              </div>
+
+              {/* Footer Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-4 sticky bottom-0 bg-white pb-2 z-10 border-t border-slate-50 mt-4">
+                <button 
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-8 py-2.5 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="px-8 py-2.5 rounded-lg bg-[#c0922e] text-white text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
+                >
+                  Save Listing
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </Card>
-
-
-      {/* Table Card */}
-      <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-hidden">
-         <AdminTable headers={["Property Name", "Details", "Price", "Posted By", "Status", "Actions"]}>
-            {loading ? (
-              <AdminTableRow>
-                <AdminTableCell colSpan={6} className="text-center py-20">
-                  <div className="flex flex-col items-center gap-3">
-                    <Loader2 className="text-primary-600 animate-spin" size={32} />
-                    <p className="text-sm font-black text-slate-400 uppercase tracking-widest">Loading Listings...</p>
-                  </div>
-                </AdminTableCell>
-              </AdminTableRow>
-            ) : filteredListings.length === 0 ? (
-              <AdminTableRow>
-                <AdminTableCell colSpan={6} className="text-center py-20">
-                  <p className="text-sm font-black text-slate-400 uppercase tracking-widest">No listings found</p>
-                </AdminTableCell>
-              </AdminTableRow>
-            ) : filteredListings.map(item => (
-               <AdminTableRow key={item._id}>
-                  <AdminTableCell>
-                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
-                           <img 
-                            src={item.images?.[0] || `https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80&w=100&h=100&u=${item._id}`} 
-                            alt="" 
-                            className="w-full h-full object-cover transition-transform group-hover:scale-110" 
-                           />
-                        </div>
-                        <div>
-                           <p className="text-sm font-black text-slate-900 leading-tight">{item.project || 'Untitled Project'}</p>
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">ID: #{item._id.slice(-6).toUpperCase()}</p>
-                        </div>
-                     </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                     <div className="space-y-1">
-                        <p className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                           <MapPin size={12} className="text-primary-500" />
-                           {item.location}
-                        </p>
-                        <div className="flex items-center gap-2">
-                           <StatusBadge type={item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}>
-                             {item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}
-                           </StatusBadge>
-                           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                             {item.intent}
-                           </span>
-                        </div>
-                     </div>
-                  </AdminTableCell>
-                  <AdminTableCell className="text-sm font-black text-slate-900">
-                     {item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : item.budgetMax ? `₹${item.budgetMax} ${item.budgetUnit}` : 'N/A'}
-                  </AdminTableCell>
-                  <AdminTableCell>
-                     <p className="text-sm font-bold text-slate-900 hover:text-primary-600 transition-all cursor-pointer underline decoration-dotted underline-offset-4 decoration-slate-200 hover:decoration-primary-600">
-                       {item.postedBy ? `${item.postedBy.firstName} ${item.postedBy.lastName}` : 'N/A'}
-                     </p>
-                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                       {item.postedBy?.companyName || 'Verified Broker'}
-                     </p>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <StatusBadge type={item.isActive ? 'Active' : 'Inactive'}>
-                      {item.isActive ? 'Active' : 'Inactive'}
-                    </StatusBadge>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                     <div className="flex items-center gap-1">
-                        <ActionButton icon={<Eye size={16} />} label="View Listing" variant="primary" />
-                        <ActionButton icon={<AlertTriangle size={16} />} label="Mark as Spam" variant="danger" />
-                        <ActionButton icon={<Trash2 size={16} />} label="Delete" variant="danger" />
-                     </div>
-                  </AdminTableCell>
-               </AdminTableRow>
-            ))}
-         </AdminTable>
-      </Card>
+      )}
     </div>
   );
 };

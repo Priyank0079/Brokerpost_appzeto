@@ -46,15 +46,7 @@ const AppRoutes = () => {
           )
         } />
 
-        {/* Auth */}
-        <Route path="/login" element={
-          !user ? (
-            <Login />
-          ) : (
-            <Navigate to={isAdmin ? "/admin" : "/dashboard"} />
-          )
-        } />
-        <Route path="/register" element={<BrokerRegistration />} />
+        {/* Removed dedicated login/register routes to favor home modal */}
         <Route path="/admin/login" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin" />} />
 
         {/* Admin Module */}
@@ -81,7 +73,7 @@ const AppRoutes = () => {
               </Routes>
             </BrokerLayout>
           ) : (
-            <Navigate to="/login" />
+            <Navigate to="/" />
           )
         } />
       </Routes>

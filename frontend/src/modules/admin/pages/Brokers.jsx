@@ -1,347 +1,359 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  CheckCircle2, 
-  XCircle, 
-  Ban, 
-  Eye, 
-  Trash2,
-  Phone,
-  Mail,
-  MapPin,
-  Users,
-  Building2,
-  ShieldCheck,
-  Calendar,
-  X,
-  AlertTriangle,
-  Loader2
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Card from '../../broker/components/ui/Card';
-import { AdminTable, AdminTableRow, AdminTableCell, StatusBadge, ActionButton } from '../components/common/AdminUI';
-import { api } from '../../broker/services/api';
-import Button from '../../broker/components/ui/Button';
 
 const Brokers = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('All');
-  const [brokerList, setBrokerList] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedBroker, setSelectedBroker] = useState(null);
-  const [confirmAction, setConfirmAction] = useState(null); // { id, action, name }
 
-  const fetchBrokers = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get('/auth/brokers');
-      if (response.success) {
-        setBrokerList(response.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch brokers:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const stats = [
+    { label: 'Total Brokers', value: '17' },
+    { label: 'Active', value: '17' },
+    { label: 'Blocked', value: '0' },
+    { label: 'Total Listings', value: '45' },
+  ];
 
-  useEffect(() => {
-    fetchBrokers();
-  }, []);
-
-  // Prevent scroll when any modal is open
-  useEffect(() => {
-    if (selectedBroker || confirmAction) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [selectedBroker, confirmAction]);
-
-  const handleProcessAction = async () => {
-    if (!confirmAction) return;
-    const { id, action } = confirmAction;
-
-    try {
-      if (action === 'delete') {
-        const response = await api.delete(`/auth/brokers/${id}`);
-        if (response.success) {
-          setBrokerList(prev => prev.filter(b => b._id !== id));
-        }
-      } else if (action === 'approve' || action === 'reject') {
-        const response = await api.patch(`/auth/brokers/${id}/status`, {
-          isVerified: action === 'approve'
-        });
-        if (response.success) {
-          setBrokerList(prev => prev.map(b => 
-            b._id === id ? { ...b, isVerified: action === 'approve' } : b
-          ));
-        }
-      }
-      setConfirmAction(null);
-      setSelectedBroker(null);
-    } catch (err) {
-      alert('Action failed. Please try again.');
-    }
-  };
-
-  const filteredBrokers = brokerList.filter(b => {
-    const fullName = `${b.firstName} ${b.lastName}`.toLowerCase();
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || (b.email && b.email.toLowerCase().includes(searchTerm.toLowerCase()));
-    const status = b.isVerified ? 'Approved' : 'Pending';
-    const matchesFilter = filterStatus === 'All' || status === filterStatus;
-    return matchesSearch && matchesFilter;
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingBroker, setEditingBroker] = useState(null);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    company: '',
+    phone: '',
+    email: '',
+    password: '',
+    city: '',
+    address: '',
+    role: 'Broker',
+    listingLimit: '25',
+    status: 'Active',
+    groupAssignment: []
   });
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditClick = (broker) => {
+    setEditingBroker(broker);
+    setFormData({
+      fullName: broker.name,
+      company: broker.firm,
+      phone: broker.phone,
+      email: broker.email,
+      password: '', // Hidden in edit usually
+      city: broker.city,
+      address: 'H.No. 2322 Sushant Lok-2', // Mock address
+      role: 'Broker',
+      listingLimit: broker.listings.split('/')[1] || '25',
+      status: broker.status,
+      groupAssignment: broker.groups || []
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const brokers = [
+    { id: 1, name: 'D R Sharma', firm: 'Gyatari Associates', email: 'sharma@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '0/25', joined: '2026-05-04', status: 'Active' },
+    { id: 2, name: 'Sheetal', firm: 'Global Estate', email: 'sheetal@gmail.com', city: 'Gurugram', phone: '6261265704', listings: '17/25', groups: ['GURGAON REALTORS GROUP (GRG)'], joined: '2026-05-03', status: 'Active' },
+    { id: 3, name: 'Abhishek Jha', firm: 'Best Realty Group', email: 'abhishek@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '4/25', groups: ['GURGAON REALTORS GROUP (GRG)'], joined: '2026-05-04', status: 'Active' },
+    { id: 4, name: 'Baldev Rawat', firm: 'Asian Realty', email: 'asian@gmail.com', city: 'Gurugram', phone: '9810207073', listings: '0/25', joined: '2026-05-02', status: 'Active' },
+    { id: 5, name: 'Baldev Rawat', firm: 'Asian Realty', email: 'rawatb2025@gmail.com', city: 'Gurugram', phone: '9810207073', listings: '0/25', joined: '2026-05-02', status: 'Active' },
+    { id: 6, name: 'Neha Negi', firm: 'Realty Beast India', email: 'neha@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '0/25', joined: '2026-05-04', status: 'Active' },
+    { id: 7, name: 'Anirudh Panda', firm: 'New India Realty', email: 'anirudh@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '1/25', joined: '2026-05-04', status: 'Active' },
+  ];
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Broker Management</h1>
-           <p className="text-slate-500 text-sm mt-1">Review, approve, and manage registered broker accounts.</p>
-        </div>
-        <div className="flex items-center gap-3">
-           <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary-600" size={16} />
+    <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
+      <div className="space-y-8 pb-10">
+        {/* Custom Header */}
+        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-6">
+            <h1 className="text-lg font-serif text-black">Manage Brokers</h1>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
               <input 
                 type="text" 
-                placeholder="Search name or email..." 
-                className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-4 focus:ring-primary-500/10 transition-all outline-none"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search listings..."
+                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
               />
-           </div>
-           <div className="flex bg-white p-1 rounded-xl shadow-sm border border-slate-100">
-              {['All', 'Approved', 'Pending', 'Blocked'].map(s => (
-                <button 
-                  key={s}
-                  onClick={() => setFilterStatus(s)}
-                  className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${filterStatus === s ? 'bg-slate-900 text-white shadow-lg' : 'text-slate-400 hover:text-slate-900'}`}
-                >
-                  {s}
-                </button>
-              ))}
-           </div>
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-4 py-1.5 rounded-full border border-slate-200 text-black text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            <ArrowLeft size={14} /> Public Site
+          </button>
+        </div>
+
+        {/* Title Section */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-serif text-black">Manage Brokers</h2>
+            <p className="text-[11px] text-slate-400 font-medium tracking-tight">Approve, edit or remove brokers</p>
+          </div>
+          <button 
+            onClick={() => {
+              setEditingBroker(null);
+              setFormData({
+                fullName: '', company: '', phone: '', email: '', password: '', city: '', address: '', role: 'Broker', listingLimit: '25'
+              });
+              setIsAddModalOpen(true);
+            }}
+            className="bg-[#c0922e] text-white px-5 py-2 rounded-lg text-[11px] font-bold flex items-center gap-2 hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
+          >
+            <Plus size={14} /> Add Broker
+          </button>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {stats.map((stat, idx) => (
+            <div key={idx} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm text-center">
+              <span className="text-3xl font-serif text-black">{stat.value}</span>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Table Container */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse table-fixed">
+              <thead>
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-8">#</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[22%]">BROKER DETAILS</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[10%]">CITY</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">CONTACT</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">ROLE</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">LISTINGS</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">GROUPS</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-20">JOINED</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">STATUS</th>
+                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center w-[18%]">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {brokers.map((broker, idx) => (
+                  <tr key={broker.id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="px-4 py-4 text-[11px] text-slate-400 font-bold">{idx + 1}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-[10px] overflow-hidden">
+                          {broker.id % 3 === 0 ? <img src={`https://i.pravatar.cc/100?u=${broker.id}`} alt="" /> : broker.name.charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-slate-900 leading-none mb-1 truncate">{broker.name}</p>
+                          <p className="text-[9px] text-slate-400 font-medium mb-1 truncate">{broker.firm}</p>
+                          <p className="text-[9px] text-[#3b82f6] font-medium truncate">{broker.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <p className="text-[11px] font-bold text-slate-900 mb-0.5 truncate">{broker.city}</p>
+                      <p className="text-[9px] text-slate-400 font-medium">122009</p>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold text-slate-900">{broker.phone}</p>
+                        <div className="flex gap-1">
+                          <button className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100/50">
+                            WA
+                          </button>
+                          <button className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold hover:bg-blue-100 transition-all border border-blue-100/50">
+                            Call
+                          </button>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[8px] font-bold border border-blue-100">broker</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="space-y-1 w-full">
+                        <p className="text-[10px] font-bold text-slate-900">{broker.listings}</p>
+                        <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-slate-400 rounded-full" 
+                            style={{ width: `${(parseInt(broker.listings.split('/')[0]) / 25) * 100}%` }}
+                          />
+                        </div>
+                        <button className="text-[8px] font-bold text-orange-500 flex items-center gap-1 hover:underline">
+                           Limit
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4">
+                      {broker.groups ? (
+                        <div className="flex flex-wrap gap-1">
+                          {broker.groups.map((group, gIdx) => (
+                            <span key={gIdx} className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[7px] font-bold leading-tight">
+                              {group.split(' ')[0]}...
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-[9px] text-slate-400 font-medium italic">None</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{broker.joined}</td>
+                    <td className="px-4 py-4">
+                      <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold border border-emerald-100">Active</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="flex items-center justify-center gap-1">
+                        <button 
+                          onClick={() => handleEditClick(broker)}
+                          className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                        >
+                          <Edit2 size={8} className="text-orange-500" /> Edit
+                        </button>
+                        <button className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1">
+                          <Ban size={8} className="text-orange-500" /> Block
+                        </button>
+                        <button className="p-1.5 bg-[#7f1d1d] text-white rounded-lg text-[9px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1">
+                          <Trash2 size={8} /> Del
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Main Table Card */}
-      <Card noPadding className="border-slate-100 shadow-xl shadow-slate-200/20 overflow-hidden">
-         <AdminTable headers={["Broker Details", "Contact Information", "Office Info", "Status", "Actions"]}>
-             {filteredBrokers.map(b => (
-                <AdminTableRow 
-                  key={b._id} 
-                  className="cursor-pointer" 
-                  onClick={() => navigate(`/admin/brokers/${b._id}`)}
-                >
-                   <AdminTableCell>
-                     <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-sm font-black border border-slate-200 shadow-sm transition-transform group-hover:scale-105">
-                           {b.firstName?.charAt(0) || 'B'}
-                        </div>
-                        <div>
-                           <p className="text-sm font-black text-slate-900">{b.firstName} {b.lastName}</p>
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
-                              <MapPin size={10} className="text-primary-500" />
-                              {b.operatingCity}
-                           </p>
-                        </div>
-                     </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                      <div className="space-y-1">
-                         <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-                            <Phone size={12} className="text-slate-400" />
-                            {b.phoneNumber}
-                         </div>
-                         <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
-                            <Mail size={12} className="text-slate-400" />
-                            {b.email}
-                         </div>
-                      </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <div className="space-y-1 text-xs text-slate-600 font-medium">
-                      <p className="font-bold text-slate-900">{b.companyName}</p>
-                      <p>{b.officeCity}</p>
-                    </div>
-                  </AdminTableCell>
-                  <AdminTableCell>
-                    <StatusBadge type={b.isVerified ? 'Approved' : 'Pending'} />
-                  </AdminTableCell>
-                  <AdminTableCell>
-                     <div className="flex items-center gap-1">
-                        <ActionButton 
-                          icon={<Eye size={16} />} 
-                          label="View Details" 
-                          variant="primary" 
-                          onClick={() => navigate(`/admin/brokers/${b._id}`)}
-                        />
-                        {!b.isVerified ? (
-                           <>
-                              <ActionButton 
-                                icon={<CheckCircle2 size={16} />} 
-                                label="Approve" 
-                                variant="success" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setConfirmAction({ id: b._id, action: 'approve', name: `${b.firstName} ${b.lastName}` });
-                                }}
-                              />
-                              <ActionButton 
-                                icon={<Trash2 size={16} />} 
-                                label="Reject / Delete" 
-                                variant="danger" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setConfirmAction({ id: b._id, action: 'delete', name: `${b.firstName} ${b.lastName}` });
-                                }}
-                              />
-                           </>
-                        ) : (
-                          <ActionButton 
-                            icon={<Trash2 size={16} />} 
-                            label="Delete Account" 
-                            variant="danger" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setConfirmAction({ id: b._id, action: 'delete', name: `${b.firstName} ${b.lastName}` });
-                            }}
-                          />
-                        )}
-                     </div>
-                  </AdminTableCell>
-               </AdminTableRow>
-            ))}
-         </AdminTable>
-
-         {loading ? (
-            <div className="p-20 text-center space-y-4">
-              <Loader2 className="w-10 h-10 text-primary-600 animate-spin mx-auto" />
-              <p className="text-sm font-bold text-slate-400 uppercase tracking-widest">Loading Brokers...</p>
-            </div>
-         ) : filteredBrokers.length === 0 && (
-           <div className="p-20 text-center space-y-4">
-              <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mx-auto text-slate-200">
-                 <Users size={40} />
-              </div>
+      {/* Add/Edit Broker Modal */}
+      {(isAddModalOpen || isEditModalOpen) && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} />
+          <div className="relative w-full max-w-[700px] bg-white rounded-[24px] shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <div>
-                 <h4 className="text-lg font-bold text-slate-900">No brokers found</h4>
-                 <p className="text-sm text-slate-400">Try adjusting your search or filters.</p>
+                <h3 className="text-lg font-serif text-black">{isEditModalOpen ? `Edit Broker: ${editingBroker?.name}` : 'Add Broker'}</h3>
+                <p className="text-[11px] text-slate-400 font-medium">{isEditModalOpen ? 'Update profile and group assignment' : 'Add a verified broker manually'}</p>
               </div>
-           </div>
-         )}
-         
-         <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">Showing {filteredBrokers.length} Brokers</p>
-            <div className="flex items-center gap-2">
-               <button className="px-3 py-1.5 text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 transition-all">Previous</button>
-               <button className="px-3 py-1.5 text-[10px] font-black uppercase bg-white border border-slate-200 rounded-lg shadow-sm text-slate-900">1</button>
-               <button className="px-3 py-1.5 text-[10px] font-black uppercase text-slate-400 hover:text-slate-900 transition-all">Next</button>
-            </div>
-         </div>
-      </Card>
-
-      {/* Confirmation Modal */}
-      {confirmAction && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center p-6" onClick={() => setConfirmAction(null)}>
-          <div className="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl animate-in fade-in zoom-in duration-200 text-center space-y-6" onClick={e => e.stopPropagation()}>
-            <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto ${confirmAction.action === 'delete' ? 'bg-red-50 text-red-500' : 'bg-emerald-50 text-emerald-500'}`}>
-              {confirmAction.action === 'delete' ? <AlertTriangle size={40} /> : <CheckCircle2 size={40} />}
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Confirm {confirmAction.action}</h3>
-              <p className="text-sm text-slate-500 font-medium">Are you sure you want to {confirmAction.action} <span className="font-bold text-slate-900">{confirmAction.name}</span>?</p>
-            </div>
-            <div className="flex items-center gap-3 pt-2">
               <button 
-                onClick={() => setConfirmAction(null)}
-                className="flex-1 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+                onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all"
               >
-                Cancel
-              </button>
-              <button 
-                onClick={handleProcessAction}
-                className={`flex-1 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest text-white shadow-xl transition-all ${confirmAction.action === 'delete' ? 'bg-red-500 shadow-red-500/20 hover:bg-red-600' : 'bg-emerald-500 shadow-emerald-500/20 hover:bg-emerald-600'}`}
-              >
-                Confirm
+                <Plus size={20} className="rotate-45" />
               </button>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Broker Details Modal */}
-      {selectedBroker && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-2xl rounded-[32px] overflow-hidden shadow-2xl animate-in zoom-in duration-300">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <h2 className="text-xl font-black text-slate-900">Broker Profile</h2>
-              <button onClick={() => setSelectedBroker(null)} className="p-2 hover:bg-white rounded-full transition-all border border-transparent hover:border-slate-100">
-                <X size={20} className="text-slate-400" />
-              </button>
-            </div>
-            
-            <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
-              <div className="flex items-start gap-6">
-                <div className="w-24 h-24 rounded-3xl bg-primary-50 flex items-center justify-center text-3xl font-black text-primary-600 border-2 border-primary-100">
-                  {selectedBroker.firstName?.charAt(0) || 'B'}
+            {/* Modal Form */}
+            <div className="p-6 space-y-5">
+              <div className="grid grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">FULL NAME *</label>
+                  <input 
+                    type="text" name="fullName" placeholder="Full name"
+                    value={formData.fullName} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                  />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-2xl font-black text-slate-900">{selectedBroker.firstName} {selectedBroker.lastName}</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1">
-                      <ShieldCheck size={12} className="text-primary-500" />
-                      {selectedBroker.role}
-                    </span>
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${selectedBroker.isVerified ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
-                      {selectedBroker.isVerified ? 'Verified Account' : 'Verification Pending'}
-                    </span>
-                  </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">COMPANY *</label>
+                  <input 
+                    type="text" name="company" placeholder="Firm name"
+                    value={formData.company} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">PHONE *</label>
+                  <input 
+                    type="text" name="phone" placeholder="10-digit mobile"
+                    value={formData.phone} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">EMAIL *</label>
+                  <input 
+                    type="email" name="email" placeholder="Email address"
+                    value={formData.email} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    disabled={isEditModalOpen}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">CITY</label>
+                  <select 
+                    name="city" value={formData.city} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
+                  >
+                    <option value="">— Select —</option>
+                    <option value="Gurugram">Gurugram</option>
+                    <option value="Delhi">Delhi</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ADDRESS</label>
+                  <input 
+                    type="text" name="address" placeholder="Office address"
+                    value={formData.address} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ROLE</label>
+                  <select 
+                    name="role" value={formData.role} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
+                  >
+                    <option value="Broker">Broker</option>
+                    <option value="Admin">Admin</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">STATUS</label>
+                  <select 
+                    name="status" value={formData.status} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Blocked">Blocked</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">LISTING LIMIT</label>
+                  <input 
+                    type="text" name="listingLimit" 
+                    value={formData.listingLimit} onChange={handleInputChange}
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-bold outline-none focus:border-[#eab308]/40 transition-all"
+                  />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] border-b border-slate-50 pb-2">Business Information</h4>
-                  <div className="space-y-3">
-                    <DetailItem icon={<Building2 />} label="Company" value={selectedBroker.companyName} />
-                    <DetailItem icon={<MapPin />} label="Operating City" value={selectedBroker.operatingCity} />
-                    <DetailItem icon={<ShieldCheck />} label="RERA Number" value={selectedBroker.reraNumber || 'Not Provided'} />
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] border-b border-slate-50 pb-2">Contact Details</h4>
-                  <div className="space-y-3">
-                    <DetailItem icon={<Mail />} label="Email" value={selectedBroker.email} />
-                    <DetailItem icon={<Phone />} label="Mobile" value={selectedBroker.phoneNumber} />
-                    <DetailItem icon={<Calendar />} label="Joined Date" value={new Date(selectedBroker.createdAt).toLocaleDateString()} />
-                  </div>
-                </div>
-                <div className="md:col-span-2 space-y-4">
-                  <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[2px] border-b border-slate-50 pb-2">Office Address</h4>
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                    <p className="text-sm font-bold text-slate-700 leading-relaxed">
-                      {selectedBroker.officeAddress}, {selectedBroker.officeCity} - {selectedBroker.pinCode}
-                    </p>
-                  </div>
+              {/* Group Assignment Section */}
+              <div className="space-y-3 pt-2">
+                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest ml-1">GROUP ASSIGNMENT</label>
+                <div className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
+                   <label className="flex items-center gap-3 cursor-pointer group">
+                      <input type="checkbox" className="w-4 h-4 rounded border-slate-200 text-[#c0922e] focus:ring-[#c0922e]" defaultChecked={formData.groupAssignment?.includes('GURGAON REALTORS GROUP (GRG)')} />
+                      <span className="text-[11px] font-bold text-slate-900 group-hover:text-black transition-colors uppercase tracking-tight">GURGAON REALTORS GROUP (GRG)</span>
+                   </label>
                 </div>
               </div>
-            </div>
 
-            <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-3">
-              <Button variant="ghost" onClick={() => setSelectedBroker(null)} className="text-xs font-black uppercase tracking-widest">Close</Button>
-              {!selectedBroker.isVerified && (
-                <Button variant="primary" className="text-xs font-black uppercase tracking-widest" onClick={() => setConfirmAction({ id: selectedBroker._id, action: 'approve', name: `${selectedBroker.firstName} ${selectedBroker.lastName}` })}>Approve Broker</Button>
-              )}
-              <Button variant="danger" className="text-xs font-black uppercase tracking-widest" onClick={() => setConfirmAction({ id: selectedBroker._id, action: 'delete', name: `${selectedBroker.firstName} ${selectedBroker.lastName}` })}>Delete Account</Button>
+              {/* Footer Buttons */}
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button 
+                  onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }}
+                  className="px-6 py-2 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  className="px-6 py-2 rounded-lg bg-[#c0922e] text-white text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
+                >
+                  Save Listing
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -349,17 +361,5 @@ const Brokers = () => {
     </div>
   );
 };
-
-const DetailItem = ({ icon, label, value }) => (
-  <div className="flex items-center gap-3">
-    <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 shadow-sm flex items-center justify-center text-slate-400">
-      {React.cloneElement(icon, { size: 14 })}
-    </div>
-    <div>
-      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
-      <p className="text-sm font-bold text-slate-900">{value}</p>
-    </div>
-  </div>
-);
 
 export default Brokers;

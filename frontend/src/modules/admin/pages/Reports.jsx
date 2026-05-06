@@ -9,10 +9,12 @@ import {
   Filter,
   FileText
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Card from '../../broker/components/ui/Card';
-import Button from '../../broker/components/ui/Button';
+import { Search, ArrowLeft } from 'lucide-react';
 
 const Reports = () => {
+  const navigate = useNavigate();
   const reportCards = [
     { title: 'Revenue Report', scale: 'Monthly', value: '₹12.45L', growth: '+14.2%', up: true },
     { title: 'Broker Growth', scale: 'Weekly', value: '142', growth: '+8.1%', up: true },
@@ -21,23 +23,49 @@ const Reports = () => {
   ];
 
   return (
-    <div className="space-y-10 animate-fade-in py-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-           <h1 className="text-3xl font-black text-slate-900 tracking-tight">System Analytics & Reports</h1>
-           <p className="text-slate-500 font-medium mt-1">Export detailed platform data and monitor performance trends.</p>
+    <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
+      <div className="space-y-8 animate-fade-in pb-20">
+        {/* Custom Header */}
+        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-6">
+            <h1 className="text-lg font-serif text-[#1e3a8a]">System Analytics</h1>
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c0922e]" />
+              <input 
+                type="text" 
+                placeholder="Search reports..."
+                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+              />
+            </div>
+          </div>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-4 py-1.5 rounded-full border border-slate-200 text-[#1e3a8a] text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+          >
+            <ArrowLeft size={14} /> Public Site
+          </button>
         </div>
-        <div className="flex items-center gap-3">
-           <Button variant="outline" className="bg-white px-6 font-bold" leftIcon={<Filter size={18} />}>Filter Date</Button>
-           <Button variant="primary" className="px-6 font-bold shadow-lg shadow-primary-600/20" leftIcon={<Download size={18} />}>Export CSV</Button>
+
+        {/* Title Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-serif text-[#1e3a8a]">System Analytics & Reports</h2>
+            <p className="text-[11px] text-slate-400 font-medium tracking-tight">Export detailed platform data and monitor performance trends.</p>
+          </div>
+          <div className="flex items-center gap-3">
+             <button className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
+                <Filter size={14} /> Filter Date
+             </button>
+             <button className="px-6 py-2 bg-[#c0922e] text-white rounded-xl text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20 flex items-center gap-2">
+                <Download size={14} /> Export CSV
+             </button>
+          </div>
         </div>
-      </div>
 
       {/* Metric Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {reportCards.map((card, i) => (
-          <Card key={i} className="hover:border-primary-100 transition-all border-slate-100 shadow-xl shadow-slate-200/20">
+          <Card key={i} className="hover:border-[#c0922e]/30 transition-all border-slate-100 shadow-sm">
              <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.scale}</span>
                 <div className={`flex items-center gap-1 text-xs font-black ${card.up ? 'text-emerald-600' : 'text-red-500'}`}>
@@ -45,8 +73,8 @@ const Reports = () => {
                    {card.growth}
                 </div>
              </div>
-             <h3 className="text-2xl font-black text-slate-900 leading-none">{card.value}</h3>
-             <p className="text-sm font-bold text-slate-500 mt-2">{card.title}</p>
+             <h3 className="text-2xl font-serif text-[#1e3a8a] leading-none">{card.value}</h3>
+             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-3">{card.title}</p>
           </Card>
         ))}
       </div>
@@ -61,7 +89,7 @@ const Reports = () => {
                {/* Mock Bars */}
                <div className="absolute bottom-4 left-4 right-4 flex items-end gap-2 h-32 opacity-20 group-hover:opacity-40 transition-opacity">
                   {[40, 70, 45, 90, 65, 80, 55, 30, 85, 50, 95, 60].map((h, i) => (
-                    <div key={i} className="flex-1 bg-primary-600 rounded-t-lg transition-all duration-700" style={{ height: `${h}%` }} />
+                    <div key={i} className="flex-1 bg-[#c0922e] rounded-t-lg transition-all duration-700" style={{ height: `${h}%` }} />
                   ))}
                </div>
             </div>
@@ -106,7 +134,7 @@ const Reports = () => {
             ].map((report, i) => (
               <div key={i} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-all group">
                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#fdf8f3] group-hover:text-[#c0922e] transition-all border border-slate-100/50">
                        <FileText size={20} />
                     </div>
                     <div>
@@ -116,7 +144,7 @@ const Reports = () => {
                  </div>
                  <div className="flex items-center gap-4">
                     <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest hidden sm:block">{report.type}</span>
-                    <button className="p-2.5 text-primary-600 hover:bg-primary-50 rounded-xl transition-all shadow-sm bg-white border border-slate-100">
+                    <button className="p-2.5 text-[#c0922e] hover:bg-[#fdf8f3] rounded-xl transition-all shadow-sm bg-white border border-slate-100">
                        <Download size={18} />
                     </button>
                  </div>
@@ -124,6 +152,7 @@ const Reports = () => {
             ))}
          </div>
       </Card>
+      </div>
     </div>
   );
 };
