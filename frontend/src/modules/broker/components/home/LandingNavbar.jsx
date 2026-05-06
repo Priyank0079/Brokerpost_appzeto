@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Lock } from 'lucide-react';
+import { Shield, Lock, LogOut, LayoutGrid } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
 
 const LandingNavbar = () => {
+  const { user, logout } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -27,24 +29,39 @@ const LandingNavbar = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsLoginModalOpen(true)}
-              className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all"
-            >
-              Login
-            </button>
-            <button 
-              onClick={() => setIsRegisterModalOpen(true)}
-              className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
-            >
-              Join as Broker
-            </button>
-            <button 
-              onClick={() => navigate('/admin/login')}
-              className="px-5 py-2 rounded-xl bg-[#0f172a] text-xs font-bold text-white hover:bg-slate-800 transition-all flex items-center gap-2"
-            >
-              <Lock size={12} /> Admin
-            </button>
+            {user ? (
+              <>
+                <button 
+                  onClick={logout}
+                  className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all flex items-center gap-2"
+                >
+                  <LogOut size={14} />
+                  Logout
+                </button>
+                <button 
+                  onClick={() => navigate('/dashboard')}
+                  className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20 flex items-center gap-2"
+                >
+                  <LayoutGrid size={14} />
+                  My Dashboard
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all"
+                >
+                  Login
+                </button>
+                <button 
+                  onClick={() => setIsRegisterModalOpen(true)}
+                  className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
+                >
+                  Join as Broker
+                </button>
+              </>
+            )}
           </div>
         </div>
       </nav>
