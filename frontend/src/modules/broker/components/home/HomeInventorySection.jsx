@@ -403,11 +403,11 @@ const HomeInventorySection = ({ data }) => {
             </Button>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-5">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Types</option>
               <option>Availability</option>
@@ -417,7 +417,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={propertyTypeFilter}
               onChange={(e) => setPropertyTypeFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               {propertyTypeOptions.map((option) => (
                 <option key={option}>{option}</option>
@@ -427,7 +427,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={transactionFilter}
               onChange={(e) => setTransactionFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Transactions</option>
               <option>Sale</option>
@@ -437,7 +437,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={groupFilter}
               onChange={(e) => setGroupFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400 lg:col-span-1 col-span-2 md:col-span-1"
             >
               <option value="All Groups">All Groups</option>
               <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
@@ -446,11 +446,11 @@ const HomeInventorySection = ({ data }) => {
             </select>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-5">
             <select
               value={bhkFilter}
               onChange={(e) => setBhkFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All BHK</option>
               <option>1 BHK</option>
@@ -463,7 +463,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Status</option>
               <option>Ready to Move</option>
@@ -473,7 +473,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={budgetFilter}
               onChange={(e) => setBudgetFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Budgets</option>
               <option>Under 50L</option>
@@ -485,7 +485,7 @@ const HomeInventorySection = ({ data }) => {
             <select
               value={unitFilter}
               onChange={(e) => setUnitFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Units</option>
               <option>Sq. Ft.</option>
@@ -496,7 +496,7 @@ const HomeInventorySection = ({ data }) => {
             <Button
               variant="outline"
               onClick={handleApplyFilters}
-              className="h-[48px] border-primary-200 text-primary-600 font-semibold"
+              className="h-[48px] border-primary-200 text-primary-600 font-semibold lg:col-span-1 col-span-2"
               leftIcon={<Filter size={16} />}
             >
               Apply Filters

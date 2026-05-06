@@ -5,7 +5,8 @@ import {
   Users,
   LogOut,
   Building2,
-  Building
+  Building,
+  X
 } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -56,11 +57,17 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   return (
     <aside className={`fixed top-0 left-0 h-screen bg-[#0F172A] w-64 z-50 transition-all flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       {/* Brand */}
-      <div className="p-6">
+      <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-xl font-bold text-white tracking-tight font-['Times_New_Roman',_serif]">Brokers<span className="text-[#C59D3F]">Post</span></span>
           <span className="text-[9.5px] font-bold text-slate-200 uppercase tracking-[0.2em] mt-1">MY DASHBOARD</span>
         </div>
+        <button 
+          onClick={toggleSidebar}
+          className="lg:hidden p-2 text-slate-400 hover:text-white"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Menu */}
@@ -77,6 +84,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
                     ${isActive ? 'bg-slate-800 text-white' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
                   `}
+                  onClick={() => {
+                    if (window.innerWidth < 1024) toggleSidebar();
+                  }}
                 >
                   <div className="flex items-center gap-3">
                     {item.icon}

@@ -56,43 +56,44 @@ const CommercialInventory = () => {
   const config = getPageConfig();
 
   return (
-    <div className={`-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
+    <div className={`-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
       <div className="space-y-6 pb-10">
       {/* Custom Header */}
-      <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-        <div className="flex items-center gap-6">
-          <h1 className="text-lg font-serif text-black">{config.title}</h1>
-          <div className="relative">
+      <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 mb-4 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="flex items-center gap-4 md:gap-6">
+          <h1 className="text-sm md:text-lg font-serif text-black truncate max-w-[150px] md:max-w-none">{config.title}</h1>
+          <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
             <input 
               type="text" 
               placeholder="Search listings..."
-              className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+              className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
             />
           </div>
         </div>
         <button 
           onClick={() => navigate('/')}
-          className="px-4 py-1.5 rounded-full border border-slate-200 text-black text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+          className="px-3 md:px-4 py-1.5 rounded-full border border-slate-200 text-black text-[10px] md:text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shrink-0"
         >
-          <ArrowLeft size={14} /> Public Site
+          <ArrowLeft size={14} /> 
+          <span className="hidden xs:inline">Public Site</span>
         </button>
       </div>
 
-      <div className="space-y-1">
-        <h2 className="text-2xl font-serif text-black">{config.heading}</h2>
-        <p className="text-[11px] text-slate-400 font-medium tracking-tight">{config.subheading}</p>
+      <div className="space-y-1 px-2 md:px-0">
+        <h2 className="text-xl md:text-2xl font-serif text-black">{config.heading}</h2>
+        <p className="text-[10px] md:text-[11px] text-slate-400 font-medium tracking-tight">{config.subheading}</p>
       </div>
 
       {/* Unified Card Container */}
-      <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm">
+      <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm overflow-hidden">
         {/* Card Header (Filter Bar) */}
-        <div className="p-4 flex items-center justify-between gap-4 border-b border-slate-200">
-          <div className="flex items-center gap-4 flex-1">
-            <div className="relative w-64">
+        <div className="p-3 md:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4 border-b border-slate-200">
+          <div className="flex flex-wrap items-center gap-2 md:gap-4 flex-1">
+            <div className="relative flex-1 min-w-[180px] sm:max-w-64">
               <input 
                 type="text" 
-                placeholder="Search listings..."
+                placeholder="Search location/project..."
                 className="w-full pl-4 pr-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600"
               />
             </div>
@@ -100,7 +101,7 @@ const CommercialInventory = () => {
             <div className="relative">
               <button 
                 onClick={() => setShowSubTypes(!showSubTypes)}
-                className="px-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium text-slate-600 flex items-center gap-6 hover:bg-[#fefce8]/80 transition-all"
+                className="px-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium text-slate-600 flex items-center justify-between gap-4 hover:bg-[#fefce8]/80 transition-all min-w-[140px]"
               >
                 {selectedSubType} <ChevronDown size={14} className="text-slate-400" />
               </button>
@@ -123,12 +124,12 @@ const CommercialInventory = () => {
               )}
             </div>
 
-            <span className="text-[12px] text-slate-400 font-medium italic">0 listings</span>
+            <span className="text-[11px] md:text-[12px] text-slate-400 font-medium italic">0 listings</span>
           </div>
           
           <button 
             onClick={() => setIsPostModalOpen(true)}
-            className="px-4 py-2 bg-[#C59D3F] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-bold flex items-center gap-2 shadow-lg shadow-[#C59D3F]/20 transition-all"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[#C59D3F] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#C59D3F]/20 transition-all"
           >
             <Plus size={14} /> Add Listing
           </button>

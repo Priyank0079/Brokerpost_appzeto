@@ -49,36 +49,37 @@ const ManageGroups = () => {
   };
 
   return (
-    <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-8 pb-10">
+    <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
+      <div className="space-y-6 md:space-y-8 pb-10">
         {/* Custom Header */}
-        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-6">
-            <h1 className="text-lg font-serif text-black">Manage Groups</h1>
-            <div className="relative">
+        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 mb-4 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-4 md:gap-6">
+            <h1 className="text-base md:text-lg font-serif text-black">Manage Groups</h1>
+            <div className="relative hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
               <input 
                 type="text" 
                 placeholder="Search listings..."
-                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
               />
             </div>
           </div>
           <button 
             onClick={() => navigate('/')}
-            className="px-4 py-1.5 rounded-full border border-slate-200 text-black text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
+            className="px-3 md:px-4 py-1.5 rounded-full border border-slate-200 text-black text-[10px] md:text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shrink-0"
           >
-            <ArrowLeft size={14} /> Public Site
+            <ArrowLeft size={14} /> 
+            <span className="hidden xs:inline">Public Site</span>
           </button>
         </div>
 
         {/* Title Section */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 md:px-0">
           <div className="space-y-1">
-            <h2 className="text-2xl font-serif text-black">Manage Groups</h2>
-            <p className="text-[11px] text-slate-400 font-medium tracking-tight">Create groups and assign brokers</p>
+            <h2 className="text-xl md:text-2xl font-serif text-black">Manage Groups</h2>
+            <p className="text-[10px] md:text-[11px] text-slate-400 font-medium tracking-tight">Create groups and assign brokers</p>
           </div>
-          <button className="bg-[#c0922e] text-white px-5 py-2 rounded-lg text-[11px] font-bold flex items-center gap-2 hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20">
+          <button className="w-full sm:w-auto bg-[#c0922e] text-white px-5 py-2.5 sm:py-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20">
             <Plus size={14} /> Create Group
           </button>
         </div>

@@ -108,24 +108,24 @@ const MyListings = ({
   const handleApplyFilters = () => {};
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8 px-2 md:px-0">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
-          <p className="mt-1 text-sm font-medium text-slate-500">{subtitle}</p>
+        <div className="px-2 md:px-0">
+          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
+          <p className="mt-1 text-[11px] md:text-sm font-medium text-slate-500">{subtitle}</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full sm:w-auto px-2 md:px-0">
           <Button
             variant="primary"
             onClick={() => navigate('/post-property?type=RESIDENTIAL')}
-            className="flex-1 sm:flex-initial bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 font-bold"
+            className="w-full sm:w-auto bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-600/20 font-bold text-xs"
           >
             Post Residential
           </Button>
           <Button
             variant="primary"
             onClick={() => navigate('/post-property?type=COMMERCIAL')}
-            className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20 font-bold"
+            className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white shadow-xl shadow-slate-900/20 font-bold text-xs"
           >
             Post Commercial
           </Button>
@@ -133,33 +133,33 @@ const MyListings = ({
       </div>
 
       <div className="rounded-[24px] bg-white p-4 md:p-5 shadow-[0_10px_40px_rgba(15,23,42,0.05)] border border-slate-100">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by location, society, broker..."
-              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none focus:border-primary-400"
+              placeholder="Search listings..."
+              className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-[13px] md:text-sm font-medium text-slate-900 outline-none focus:border-primary-400"
             />
           </div>
 
           <Button
             variant="primary"
             onClick={handleApplyFilters}
-            className="h-[48px] min-w-[220px] bg-orange-500 hover:bg-orange-600 shadow-none text-white font-semibold"
-            leftIcon={<Search size={18} />}
+            className="h-[48px] w-full lg:min-w-[180px] bg-orange-500 hover:bg-orange-600 shadow-none text-white font-semibold text-sm"
+            leftIcon={<Search size={16} />}
           >
             Search
           </Button>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
           >
             <option>All Types</option>
             <option>Availability</option>
@@ -169,7 +169,7 @@ const MyListings = ({
           <select
             value={propertyTypeFilter}
             onChange={(e) => setPropertyTypeFilter(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+            className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
           >
             {propertyTypeOptions.map((option) => (
               <option key={option}>{option}</option>
@@ -179,7 +179,7 @@ const MyListings = ({
             <select
               value={transactionFilter}
               onChange={(e) => setTransactionFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Transactions</option>
               <option>Sale</option>
@@ -189,7 +189,7 @@ const MyListings = ({
             <select
               value={groupFilter}
               onChange={(e) => setGroupFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option value="All Groups">All Groups</option>
               <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
@@ -198,11 +198,11 @@ const MyListings = ({
             </select>
           </div>
 
-          <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+          <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <select
               value={bhkFilter}
               onChange={(e) => setBhkFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All BHK</option>
               <option>1 BHK</option>
@@ -215,7 +215,7 @@ const MyListings = ({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Status</option>
               <option>Ready to Move</option>
@@ -225,7 +225,7 @@ const MyListings = ({
             <select
               value={budgetFilter}
               onChange={(e) => setBudgetFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Budgets</option>
               <option>Under 50L</option>
@@ -237,7 +237,7 @@ const MyListings = ({
             <select
               value={unitFilter}
               onChange={(e) => setUnitFilter(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none focus:border-primary-400"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-[12px] md:text-sm text-slate-700 outline-none focus:border-primary-400"
             >
               <option>All Units</option>
               <option>Sq. Ft.</option>
@@ -248,7 +248,7 @@ const MyListings = ({
             <Button
               variant="outline"
               onClick={handleApplyFilters}
-              className="h-[48px] border-primary-200 text-primary-600 font-semibold"
+              className="h-[44px] md:h-[48px] border-primary-200 text-primary-600 font-semibold text-xs col-span-2 lg:col-span-1"
               leftIcon={<Filter size={16} />}
             >
               Apply Filters

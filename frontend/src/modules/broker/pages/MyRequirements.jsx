@@ -105,34 +105,34 @@ const MyRequirements = () => {
   }, [postings, searchTerm, typeFilter, propertyTypeFilter, transactionFilter, bhkFilter, statusFilter]);
 
   return (
-    <div className="space-y-6 bg-[#f8fafc]">
+    <div className="space-y-4 md:space-y-6 bg-[#f8fafc] px-2 md:px-0">
       <div className="rounded-[28px] bg-white p-4 md:p-5 shadow-[0_12px_45px_rgba(15,23,42,0.06)] border border-slate-100">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by location, society, broker..."
-              className="w-full rounded-2xl border border-[#dbe4f0] bg-white py-3.5 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+              placeholder="Search listings..."
+              className="w-full rounded-2xl border border-[#dbe4f0] bg-white py-3 md:py-3.5 pl-11 pr-4 text-[13px] md:text-sm font-medium text-slate-900 outline-none placeholder:text-slate-400 focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
             />
           </div>
 
           <Button
             variant="primary"
-            className="h-[60px] min-w-[280px] bg-[#ff7a00] hover:bg-[#ef6f00] shadow-[0_12px_24px_rgba(255,122,0,0.22)] text-white font-semibold rounded-2xl"
-            leftIcon={<Search size={18} />}
+            className="h-[48px] md:h-[60px] w-full lg:min-w-[180px] bg-[#ff7a00] hover:bg-[#ef6f00] shadow-[0_12px_24px_rgba(255,122,0,0.15)] text-white font-semibold rounded-2xl text-sm"
+            leftIcon={<Search size={16} />}
           >
             Search
           </Button>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All Types</option>
             <option>Availability</option>
@@ -142,7 +142,7 @@ const MyRequirements = () => {
           <select
             value={propertyTypeFilter}
             onChange={(e) => setPropertyTypeFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             {propertyTypeOptions.map((option) => (
               <option key={option}>{option}</option>
@@ -152,7 +152,7 @@ const MyRequirements = () => {
           <select
             value={transactionFilter}
             onChange={(e) => setTransactionFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All Transactions</option>
             <option>Sale</option>
@@ -162,7 +162,7 @@ const MyRequirements = () => {
           <select
             value={groupFilter}
             onChange={(e) => setGroupFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option value="All Groups">All Groups</option>
             <option value="Mumbai Luxury Brokers">Mumbai Luxury Brokers</option>
@@ -171,11 +171,11 @@ const MyRequirements = () => {
           </select>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-5">
+        <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-5">
           <select
             value={bhkFilter}
             onChange={(e) => setBhkFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All BHK</option>
             <option>1 BHK</option>
@@ -188,7 +188,7 @@ const MyRequirements = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All Status</option>
             <option>Ready to Move</option>
@@ -198,7 +198,7 @@ const MyRequirements = () => {
           <select
             value={budgetFilter}
             onChange={(e) => setBudgetFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All Budgets</option>
             <option>Under 50L</option>
@@ -210,7 +210,7 @@ const MyRequirements = () => {
           <select
             value={unitFilter}
             onChange={(e) => setUnitFilter(e.target.value)}
-            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-4 py-4 text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
+            className="w-full rounded-2xl border border-[#dbe4f0] bg-white px-3 py-3 text-[12px] md:text-[16px] text-slate-700 outline-none focus:border-[#ff7a00] focus:ring-4 focus:ring-[#ff7a00]/10"
           >
             <option>All Units</option>
             <option>Sq. Ft.</option>
@@ -220,7 +220,7 @@ const MyRequirements = () => {
 
           <Button
             variant="outline"
-            className="h-[60px] rounded-2xl border-[#dbe4f0] text-slate-700 font-semibold hover:border-[#ff7a00]/30 hover:text-slate-900"
+            className="h-[44px] md:h-[60px] rounded-2xl border-[#dbe4f0] text-slate-700 font-semibold hover:border-[#ff7a00]/30 hover:text-slate-900 text-xs col-span-2 lg:col-span-1"
             leftIcon={<Filter size={16} />}
           >
             Apply Filters

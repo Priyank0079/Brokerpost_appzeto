@@ -62,11 +62,17 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
   return (
     <aside className={`fixed top-0 left-0 h-screen bg-[#0F172A] w-64 z-50 transition-all flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       {/* Brand */}
-      <div className="p-6">
+      <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
           <span className="text-xl font-bold text-white tracking-tight font-serif">Brokers<span className="text-[#C59D3F]">Post</span></span>
           <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">ADMIN CONSOLE</span>
         </div>
+        <button 
+          onClick={toggleSidebar}
+          className="lg:hidden p-2 text-slate-400 hover:text-white"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* Menu */}
@@ -80,6 +86,9 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
                   key={item.path}
                   to={item.path}
                   end={item.path === '/admin'}
+                  onClick={() => {
+                    if (window.innerWidth < 1024) toggleSidebar();
+                  }}
                   className={({ isActive }) => `
                     flex items-center justify-between px-4 py-2 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
                     ${isActive ? 'bg-[#C59D3F] text-[#0F172A]' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}

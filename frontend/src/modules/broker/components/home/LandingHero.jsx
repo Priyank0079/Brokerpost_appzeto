@@ -143,27 +143,27 @@ const LandingHero = () => {
         </div>
       </div>
       {/* Bottom Features Bar */}
-      <div className="absolute bottom-0 left-0 right-0 bg-[#1a365d] py-4">
-        <div className="max-w-[1300px] mx-auto px-6 flex flex-wrap justify-center gap-x-10 gap-y-3">
-          <div className="flex items-center gap-2">
+      <div className="absolute lg:absolute bottom-0 left-0 right-0 bg-[#1a365d] py-3 lg:py-4">
+        <div className="max-w-[1300px] mx-auto px-6 flex items-center lg:justify-center gap-x-8 lg:gap-x-10 gap-y-3 overflow-x-auto no-scrollbar whitespace-nowrap">
+          <div className="flex items-center gap-2 shrink-0">
             <Check size={14} className="text-[#C59D3F]" strokeWidth={3} />
-            <span className="text-white text-[10px] font-bold uppercase tracking-wider">Verified Brokers Only</span>
+            <span className="text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">Verified Brokers Only</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Lock size={12} className="text-[#C59D3F]" fill="#C59D3F" />
-            <span className="text-white text-[10px] font-bold uppercase tracking-wider">No Brokerage Charged</span>
+            <span className="text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">No Brokerage Charged</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 shrink-0">
             <Zap size={12} className="text-[#C59D3F]" fill="#C59D3F" />
-            <span className="text-white text-[10px] font-bold uppercase tracking-wider">Direct Broker-to-Broker Deals</span>
+            <span className="text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">Direct Broker Deals</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[14px]">🏙️</span>
-            <span className="text-white text-[10px] font-bold uppercase tracking-wider">NCR • Delhi • Noida • Gurugram</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[12px] lg:text-[14px]">🏙️</span>
+            <span className="text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">NCR • Delhi • Noida</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-[14px]">📋</span>
-            <span className="text-white text-[10px] font-bold uppercase tracking-wider">Genuine Inventory Only</span>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[12px] lg:text-[14px]">📋</span>
+            <span className="text-white text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">Genuine Inventory Only</span>
           </div>
         </div>
       </div>

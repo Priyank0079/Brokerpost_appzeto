@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MessageCircle } from 'lucide-react';
+import { Menu, MessageCircle } from 'lucide-react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -21,16 +21,37 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen bg-background flex overflow-x-hidden relative">
       {!isHomePage && (
-        <Sidebar 
-          isOpen={sidebarOpen} 
-          toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-          isCollapsed={isCollapsed}
-          toggleCollapse={() => setIsCollapsed(!isCollapsed)}
-        />
+        <>
+          {sidebarOpen && (
+            <div 
+              className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          <Sidebar 
+            isOpen={sidebarOpen} 
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
+            isCollapsed={isCollapsed}
+            toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          />
+        </>
       )}
       
       <div className={`flex-1 flex flex-col min-h-screen overflow-x-hidden transition-all duration-500 ease-in-out ${!isHomePage ? (isCollapsed ? 'lg:ml-20' : 'lg:ml-64') : ''}`}>
-        {/* Navbar removed as per request */}
+        {!isHomePage && (
+          <div className="lg:hidden h-14 bg-white border-b border-slate-100 px-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+            >
+              <Menu size={20} />
+            </button>
+            <span className="text-base font-bold text-[#0F172A] tracking-tight font-['Times_New_Roman',_serif]">
+              Brokers<span className="text-[#C59D3F]">Post</span>
+            </span>
+            <div className="w-10" /> {/* Spacer for centering */}
+          </div>
+        )}
         
         <main className={`flex-1 ${isHomePage ? 'p-0' : (isDashboard ? 'p-6 lg:p-10 bg-[#FAF9F6]' : 'p-4 md:p-6 lg:p-10')} animate-fade-in max-w-[1600px] mx-auto w-full`}>
           {children}
