@@ -84,7 +84,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                     const isActuallyActive = (location.pathname + location.search) === item.path;
                     return `
                       flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
-                      ${isActuallyActive ? 'bg-[#32342a] text-white shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                      ${isActuallyActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
                     `;
                   }}
                   onClick={() => {

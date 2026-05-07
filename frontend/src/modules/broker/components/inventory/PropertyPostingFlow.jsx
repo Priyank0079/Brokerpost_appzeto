@@ -311,7 +311,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                 placeholder="Sector / Area / City"
                 value={formData.location}
                 onChange={e => set('location', e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
               />
             </div>
           </div>
@@ -329,7 +329,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                 placeholder={propertyType === 'RESIDENTIAL' ? 'Enter project or society name' : 'Enter Name'}
                 value={formData.project}
                 onChange={e => set('project', e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
               />
             </div>
           </div>
@@ -358,7 +358,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                   placeholder="Enter Size"
                   value={formData.size}
                   onChange={e => set('size', e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
                 />
               </div>
               {sizeUnits.length > 1 ? (
@@ -413,7 +413,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                 <input type="number" placeholder="Amount"
                   value={formData.priceRate}
                   onChange={e => set('priceRate', e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
                 />
               </div>
               <select value={formData.priceRateType} onChange={e => set('priceRateType', e.target.value)}
@@ -433,7 +433,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
               <input 
                 type="text" 
                 placeholder="e.g. 11,000"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
               />
             </div>
           </div>
@@ -447,14 +447,14 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                 <input type="number" placeholder="Min"
                   value={formData.budgetMin} onChange={e => set('budgetMin', e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
                 />
               </div>
               <div className="relative group">
                 <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                 <input type="number" placeholder="Max"
                   value={formData.budgetMax} onChange={e => set('budgetMax', e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
                 />
               </div>
             </div>
@@ -468,7 +468,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
               <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
               <input type="number" placeholder="e.g. 55000"
                 value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
               />
             </div>
           </div>
@@ -500,7 +500,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
                 <input 
                   type="text" 
                   placeholder="e.g. 85,00,000 - 95,00,000"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]"
                 />
               </div>
               <select className="bg-slate-100 text-slate-900 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest outline-none border-none">
@@ -522,15 +522,15 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
               {isRangeField ? (
                 <div className="flex-1 flex gap-2">
                   <input type="number" placeholder="Min" value={formData.budgetMin} onChange={e => set('budgetMin', e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]" />
                   <input type="number" placeholder="Max" value={formData.budgetMax} onChange={e => set('budgetMax', e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]" />
                 </div>
               ) : (
                 <div className="relative flex-1">
                   <CircleDollarSign className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" size={16} />
                   <input type="number" placeholder="Amount" value={formData.totalAmount} onChange={e => set('totalAmount', e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all" />
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all placeholder:text-[13px]" />
                 </div>
               )}
               <select value={isRangeField ? formData.budgetUnit : formData.totalAmountUnit}
@@ -627,7 +627,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
               placeholder="Add a short note about furnishing, parking, floor preference, possession, etc."
               value={formData.shortDescription}
               onChange={e => set('shortDescription', e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-sm font-bold text-slate-900 outline-none focus:border-primary-500 transition-all resize-none placeholder:text-[13px]"
             />
           </div>
         );
@@ -658,7 +658,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         <button onClick={onCancel} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><X size={20} /></button>
       </div>
 
-      <form className="p-8 space-y-8" onSubmit={handleSubmit}>
+      <form className="p-8 space-y-5" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {fields.map(f => renderField(f))}
         </div>

@@ -110,7 +110,7 @@ const Listings = () => {
                         }`}>
                           {listing.section}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-900 italic whitespace-nowrap">{listing.status}</span>
+                        <span className="text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.status}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -203,7 +203,7 @@ const Listings = () => {
                         type="text" value={formData.city} readOnly
                         className="w-full px-4 py-2.5 bg-[#f1f5f9] border border-slate-200 rounded-xl text-[12px] font-medium outline-none text-slate-500 cursor-not-allowed"
                       />
-                      <span className="absolute -bottom-4 left-0 text-[8px] text-slate-400 italic">🔒 Auto-filled from profile</span>
+                      <span className="absolute -bottom-4 left-0 text-[8px] text-slate-400">🔒 Auto-filled from profile</span>
                     </div>
                   </div>
                   <div className="space-y-1.5 mt-2">
@@ -281,7 +281,7 @@ const Listings = () => {
                   <div className="flex items-baseline gap-2">
                     <span className="text-lg font-serif font-bold text-black">₹ {parseInt(formData.ratePrice || 0).toLocaleString()}</span>
                   </div>
-                  <p className="text-[10px] text-slate-400 font-medium italic">Lump sum price</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Lump sum price</p>
                 </div>
               </div>
 

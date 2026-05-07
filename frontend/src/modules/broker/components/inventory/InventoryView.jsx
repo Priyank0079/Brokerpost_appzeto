@@ -331,7 +331,7 @@ const InventoryView = ({
                       </div>
                     </TableCell>
                     <TableCell className="font-black text-slate-600">{item.beds > 0 ? `${item.beds} BHK` : 'N/A'}</TableCell>
-                    <TableCell className="text-sm font-bold text-slate-500 italic">{item.sqft.toLocaleString()} Sq Ft</TableCell>
+                    <TableCell className="text-sm font-bold text-slate-500">{item.sqft.toLocaleString()} Sq Ft</TableCell>
                     <TableCell className="font-black text-slate-900">
                       {item.price > 0 ? (
                         item.price >= 10000000 ? `₹${(item.price / 10000000).toFixed(2)} Cr` : `₹${(item.price / 100000).toFixed(2)} L`
@@ -425,7 +425,7 @@ const InventoryView = ({
       
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
-        <p className="text-xs font-black text-slate-400 uppercase tracking-widest italic">Inventory Health: 100% Stable</p>
+        <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Inventory Health: 100% Stable</p>
         <div className="flex items-center gap-3">
           <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest disabled:opacity-30" disabled>Previous</Button>
           <div className="flex items-center gap-1.5">

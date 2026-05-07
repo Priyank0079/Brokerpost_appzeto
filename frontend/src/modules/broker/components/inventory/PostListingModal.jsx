@@ -31,10 +31,10 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
           {/* Category Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Category</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Category</h3>
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sub-type *</label>
               <div className="relative">
@@ -71,11 +71,11 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Property Details */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Property Details</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Location / Area *</label>
-                <input type="text" placeholder="Sector, locality, area..." className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
+                <input type="text" placeholder="Sector, locality, area..." className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">City</label>
@@ -88,12 +88,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Project / Society</label>
-                <input type="text" placeholder="Project or Society name" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
+                <input type="text" placeholder="Project or Society name" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Bedrooms</label>
                 <div className="relative">
-                  <select className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700">
+                  <select className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 outline-none appearance-none rounded-xl text-[12px] font-bold">
                     <option>1 BHK</option>
                     <option>2 BHK</option>
                     <option>3 BHK</option>
@@ -108,16 +108,16 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Area Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Area</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Area</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Area / Size</label>
-                <input type="text" placeholder="e.g. 1200" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 placeholder:text-slate-600" />
+                <input type="text" placeholder="e.g. 1200" className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]" />
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Unit</label>
                 <div className="relative">
-                  <select className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700">
+                  <select className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 outline-none appearance-none rounded-xl text-[12px] font-bold">
                     <option>Sq.Ft</option>
                     <option>Sq.Yd</option>
                     <option>Sq.Mt</option>
@@ -130,7 +130,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Pricing/Budget Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">
               {isRequirement ? 'Budget' : 'Pricing'}
             </h3>
             <div className="grid grid-cols-2 gap-4">
@@ -149,7 +149,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
                 <input 
                   type="text" 
                   placeholder="e.g. 5500" 
-                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600" 
+                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]" 
                 />
               </div>
             </div>
@@ -162,14 +162,14 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
               <div className="flex items-baseline gap-2">
                 <span className="text-xl font-serif text-black">—</span>
               </div>
-              <p className="text-[8px] text-slate-400 italic">Enter area and rate above</p>
+              <p className="text-[8px] text-slate-400">Enter area and rate above</p>
             </div>
           </div>
 
           {/* Status Section - Hide for Purchase */}
           {!isRequirement && (
             <div className="space-y-3">
-              <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Status</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Status</h3>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Property Status</label>
                 <div className="relative">
@@ -186,13 +186,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
           {/* Conditional Rent Section */}
           {isRental && (
             <div className="space-y-3 animate-in slide-in-from-top-2 duration-300">
-              <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Rent / Lease Amount</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Rent / Lease Amount</h3>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Monthly Rent / Lease (₹)</label>
                 <input 
                   type="text" 
                   placeholder="e.g. 45000" 
-                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600" 
+                  className="w-full px-4 py-2 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]" 
                 />
               </div>
             </div>
@@ -201,7 +201,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
           {/* Media Section - Hide for Purchase */}
           {!isRequirement && (
             <div className="space-y-3">
-              <h3 className="text-[11px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-1.5">Media</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Media</h3>
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Photos (JPG/PNG)</label>
@@ -233,12 +233,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Remarks Section */}
           <div className="space-y-4 pb-4">
-            <h3 className="text-[10px] font-black text-black uppercase tracking-widest border-b border-slate-100 pb-2">Remarks</h3>
+            <h3 className="text-[10px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-2">Remarks</h3>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Notes / Additional Info</label>
               <textarea 
                 placeholder="Any extra details..." 
-                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 h-24 resize-none rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600"
+                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#eab308]/40 transition-all text-slate-700 h-24 resize-none rounded-xl text-[12px] font-medium outline-none placeholder:text-slate-600 placeholder:text-[12px]"
               />
             </div>
           </div>
