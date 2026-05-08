@@ -91,7 +91,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
                   }}
                   className={({ isActive }) => `
                     flex items-center justify-between px-4 py-2 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
-                    ${isActive ? 'bg-[#32342a] text-white shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                    ${isActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
                   `}
                 >
                   <div className="flex items-center gap-3">

@@ -47,7 +47,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       />
       
       {/* Modal Card */}
-      <div className="relative w-full max-w-[480px] bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-[400px] bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Close Button */}
         <button 
           onClick={onClose}
@@ -56,17 +56,21 @@ const LoginModal = ({ isOpen, onClose }) => {
           <X size={20} />
         </button>
 
-        <div className="p-8 lg:p-10">
+        <div className="p-5 lg:p-6 pb-2">
           {/* Header */}
-          <div className="mb-8">
-            <h2 className="text-3xl font-serif text-[#1e3a8a] mb-2">Broker Login</h2>
-            <p className="text-slate-400 text-sm">Access your inventory dashboard</p>
+          <div className="">
+            <h2 className="text-2xl font-serif font-medium text-[#273a60] mb-1">Broker Login</h2>
+            <p className="text-slate-400 text-xs">Access your inventory dashboard</p>
           </div>
+        </div>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div className="space-y-5">
+        <div className="h-[1px] bg-slate-300 w-full" />
+
+        <div className="p-5 lg:p-6 pt-2">
+          <form onSubmit={handleLogin} className="space-y-3">
+            <div className="space-y-2">
               {/* Email Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   EMAIL ADDRESS *
                 </label>
@@ -76,12 +80,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-slate-900 placeholder:text-slate-600"
+                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-xs text-slate-900 placeholder:text-slate-600"
                 />
               </div>
 
               {/* Password Field */}
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   PASSWORD *
                 </label>
@@ -91,7 +95,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Your password"
-                  className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-slate-900 placeholder:text-slate-600"
+                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-xs text-slate-900 placeholder:text-slate-600"
                 />
               </div>
             </div>
@@ -110,18 +114,18 @@ const LoginModal = ({ isOpen, onClose }) => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex justify-end gap-3 pt-1">
               <button 
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3.5 rounded-lg border-2 border-slate-100 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                className="w-28 py-2.5 rounded-lg border-2 border-slate-100 text-[12px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
               >
                 Cancel
               </button>
               <button 
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3.5 rounded-lg bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
+                className="w-28 py-2.5 rounded-lg bg-[#c8962a] text-white text-[12px] font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? 'Logging in...' : 'Login'}
               </button>

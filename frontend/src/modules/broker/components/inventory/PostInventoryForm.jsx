@@ -136,7 +136,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Property Title</label>
                 <input 
                   type="text" 
-                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. Modern 3BHK Apartment"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
@@ -146,7 +146,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Exact Location</label>
                 <input 
                   type="text" 
-                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. Bandra West, Mumbai"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
@@ -156,7 +156,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Price (INR)</label>
                 <input 
                   type="number" 
-                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. 25000000"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
@@ -166,7 +166,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Built-up Area (Sq Ft)</label>
                 <input 
                   type="number" 
-                  className="w-full px-5 py-4 rounded-lg border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all"
+                  className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. 1250"
                   value={formData.sqft}
                   onChange={(e) => setFormData({...formData, sqft: e.target.value})}
@@ -252,7 +252,7 @@ const PostInventoryForm = ({ onSuccess }) => {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       {/* Visual Step Indicator (Clickable) */}
       <div className="flex justify-between items-center px-2 sm:px-4 relative">
         <div className="absolute top-[12px] sm:top-[15px] left-6 right-6 sm:left-8 sm:right-8 h-[2px] bg-slate-100" />
@@ -289,7 +289,7 @@ const PostInventoryForm = ({ onSuccess }) => {
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex items-center justify-between pt-10 border-t border-slate-50">
+      <div className="flex items-center justify-between pt-6 border-t border-slate-50">
         <Button 
           variant="ghost" 
           onClick={prevStep} 
