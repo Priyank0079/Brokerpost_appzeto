@@ -176,8 +176,10 @@ exports.getMyPostings = async (req, res, next) => {
       Posting.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
-      Posting.countDocuments(filter)
+        .limit(Number(limit))
+        .lean()
+        .catch(e => { console.error('getMyPostings find failed', e); return []; }),
+      Posting.countDocuments(filter).catch(e => { console.error('getMyPostings count failed', e); return 0; })
     ]);
 
     res.status(200).json({
@@ -312,42 +314,47 @@ exports.deletePosting = async (req, res, next) => {
 exports.getPostingStats = async (req, res, next) => {
   try {
     if (!req.user) {
-      return res.status(401).json({ success: false, message: 'User context missing' });
+      console.error('Stats request failed: req.user is missing');
+      return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    console.log('Fetching stats for user ID:', req.user.id);
+    const userId = req.user._id;
+    console.log('Generating dashboard stats for User ID:', userId);
+
+    // Run basic counts first (these are fast)
     const [
       totalListings,
       myListings,
       availabilityCount,
-      requirementCount,
+      requirementCount
+    ] = await Promise.all([
+      Posting.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed', e); return 0; }),
+      Posting.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed', e); return 0; }),
+      Posting.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed', e); return 0; }),
+      Posting.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed', e); return 0; })
+    ]);
+
+    // Run breakdown and recent listings
+    const [
       residentialAvailable,
       commercialAvailable,
       residentialWanted,
       commercialWanted,
       recentListings,
-      totalBrokers // Added for "Active Brokers" card
+      totalBrokers
     ] = await Promise.all([
-      Posting.countDocuments({ isActive: true }),
-      Posting.countDocuments({ postedBy: req.user.id, isActive: true }),
-      Posting.countDocuments({ postType: 'AVAILABILITY', isActive: true }),
-      Posting.countDocuments({ postType: 'REQUIREMENT', isActive: true }),
-      // Breakdown for Residential/Commercial Available
-      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }),
-      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }),
-      // Breakdown for Residential/Commercial Wanted (Requirement)
-      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }),
-      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }),
-      // Recent listings for the table
+      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
+      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
+      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
+      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
       Posting.find({ isActive: true })
         .populate('postedBy', 'firstName lastName companyName name')
         .sort({ createdAt: -1 })
-        .limit(5),
-      // Broker count
-      User.countDocuments({ role: 'Broker' })
+        .limit(5)
+        .lean()
+        .catch(e => { console.error('Recent listings fetch failed', e); return []; }),
+      User.countDocuments({ role: 'Broker' }).catch(() => 0)
     ]);
-
-    console.log('Stats fetched successfully');
 
     res.status(200).json({
       success: true,
@@ -367,7 +374,11 @@ exports.getPostingStats = async (req, res, next) => {
       }
     });
   } catch (error) {
-    console.error('Error in getPostingStats:', error);
-    next(error);
+    console.error('CRITICAL ERROR in getPostingStats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to aggregate dashboard statistics',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
