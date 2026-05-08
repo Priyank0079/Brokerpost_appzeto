@@ -1,4 +1,6 @@
 const Posting = require('../models/Posting');
+const User = require('../models/User');
+const Group = require('../models/Group');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Create a new posting (Requirement or Availability)
@@ -77,7 +79,6 @@ exports.getPostings = async (req, res, next) => {
 
     // If groupId is provided, filter by its members
     if (groupId) {
-      const Group = require('../models/Group');
       const group = await Group.findById(groupId);
       if (group) {
         filter.postedBy = { $in: group.members };
@@ -91,7 +92,6 @@ exports.getPostings = async (req, res, next) => {
     let total;
 
     if (req.userModel === 'User' && !groupId) {
-      const Group = require('../models/Group');
       const userGroups = await Group.find({ members: req.user._id });
       const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
       
@@ -185,6 +185,7 @@ exports.getMyPostings = async (req, res, next) => {
       data: postings
     });
   } catch (error) {
+    console.error('Error in getMyPostings:', error);
     next(error);
   }
 };
@@ -331,11 +332,11 @@ exports.getPostingStats = async (req, res, next) => {
       Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }),
       // Recent listings for the table
       Posting.find({ isActive: true })
-        .populate('postedBy', 'firstName lastName companyName')
+        .populate('postedBy', 'firstName lastName companyName name')
         .sort({ createdAt: -1 })
         .limit(5),
       // Broker count
-      require('../models/User').countDocuments({ role: 'Broker' })
+      User.countDocuments({ role: 'Broker' })
     ]);
 
     console.log('Stats fetched successfully');
