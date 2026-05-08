@@ -156,9 +156,13 @@ exports.getPostings = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getMyPostings = async (req, res, next) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'User context missing' });
+    }
+
     const { postType, intent, subType, isActive, page = 1, limit = 20 } = req.query;
 
-    const filter = { postedBy: req.user._id };
+    const filter = { postedBy: req.user.id };
 
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
@@ -307,7 +311,11 @@ exports.deletePosting = async (req, res, next) => {
 // ─────────────────────────────────────────────────────────────────────────────
 exports.getPostingStats = async (req, res, next) => {
   try {
-    console.log('Fetching stats for user:', req.user._id);
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'User context missing' });
+    }
+
+    console.log('Fetching stats for user ID:', req.user.id);
     const [
       totalListings,
       myListings,
@@ -321,7 +329,7 @@ exports.getPostingStats = async (req, res, next) => {
       totalBrokers // Added for "Active Brokers" card
     ] = await Promise.all([
       Posting.countDocuments({ isActive: true }),
-      Posting.countDocuments({ postedBy: req.user._id, isActive: true }),
+      Posting.countDocuments({ postedBy: req.user.id, isActive: true }),
       Posting.countDocuments({ postType: 'AVAILABILITY', isActive: true }),
       Posting.countDocuments({ postType: 'REQUIREMENT', isActive: true }),
       // Breakdown for Residential/Commercial Available
