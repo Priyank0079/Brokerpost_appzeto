@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus, Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../broker/services/api';
 
 const Brokers = () => {
   const navigate = useNavigate();
-
-  const stats = [
-    { label: 'Total Brokers', value: '17' },
-    { label: 'Active', value: '17' },
-    { label: 'Blocked', value: '0' },
-    { label: 'Total Listings', value: '45' },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [brokers, setBrokers] = useState([]);
+  const [stats, setStats] = useState([
+    { label: 'Total Brokers', value: '0' },
+    { label: 'Pending', value: '0' },
+    { label: 'Verified', value: '0' },
+    { label: 'Total Users', value: '0' },
+  ]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -52,15 +55,70 @@ const Brokers = () => {
     setIsEditModalOpen(true);
   };
 
-  const brokers = [
-    { id: 1, name: 'D R Sharma', firm: 'Gyatari Associates', email: 'sharma@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '0/25', joined: '2026-05-04', status: 'Active' },
-    { id: 2, name: 'Sheetal', firm: 'Global Estate', email: 'sheetal@gmail.com', city: 'Gurugram', phone: '6261265704', listings: '17/25', groups: ['GURGAON REALTORS GROUP (GRG)'], joined: '2026-05-03', status: 'Active' },
-    { id: 3, name: 'Abhishek Jha', firm: 'Best Realty Group', email: 'abhishek@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '4/25', groups: ['GURGAON REALTORS GROUP (GRG)'], joined: '2026-05-04', status: 'Active' },
-    { id: 4, name: 'Baldev Rawat', firm: 'Asian Realty', email: 'asian@gmail.com', city: 'Gurugram', phone: '9810207073', listings: '0/25', joined: '2026-05-02', status: 'Active' },
-    { id: 5, name: 'Baldev Rawat', firm: 'Asian Realty', email: 'rawatb2025@gmail.com', city: 'Gurugram', phone: '9810207073', listings: '0/25', joined: '2026-05-02', status: 'Active' },
-    { id: 6, name: 'Neha Negi', firm: 'Realty Beast India', email: 'neha@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '0/25', joined: '2026-05-04', status: 'Active' },
-    { id: 7, name: 'Anirudh Panda', firm: 'New India Realty', email: 'anirudh@gmail.com', city: 'Gurugram', phone: '9876543210', listings: '1/25', joined: '2026-05-04', status: 'Active' },
-  ];
+  const fetchBrokers = async () => {
+    try {
+      const response = await api.get('/auth/brokers');
+      if (response.success) {
+        setBrokers(response.data);
+      }
+    } catch (err) {
+      console.error('Error fetching brokers:', err);
+      setError('Failed to load brokers');
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await api.get('/auth/stats');
+      if (response.success) {
+        setStats([
+          { label: 'Total Brokers', value: response.data.totalBrokers || 0 },
+          { label: 'Pending', value: response.data.pendingBrokers || 0 },
+          { label: 'Verified', value: response.data.verifiedBrokers || 0 },
+          { label: 'Total Users', value: response.data.totalUsers || 0 },
+        ]);
+      }
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchBrokers(), fetchStats()]);
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this broker?')) {
+      try {
+        const response = await api.delete(`/auth/brokers/${id}`);
+        if (response.success) {
+          setBrokers(prev => prev.filter(b => b._id !== id));
+          fetchStats();
+        }
+      } catch (err) {
+        alert('Failed to delete broker');
+      }
+    }
+  };
+
+  const toggleStatus = async (broker) => {
+    try {
+      const response = await api.patch(`/auth/brokers/${broker._id}/status`, {
+        isVerified: !broker.isVerified
+      });
+      if (response.success) {
+        setBrokers(prev => prev.map(b => b._id === broker._id ? { ...b, isVerified: !broker.isVerified } : b));
+        fetchStats();
+      }
+    } catch (err) {
+      alert('Failed to update status');
+    }
+  };
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
@@ -136,28 +194,43 @@ const Brokers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {brokers.map((broker, idx) => (
-                  <tr key={broker.id} className="hover:bg-slate-50/50 transition-colors">
+                {loading ? (
+                  <tr>
+                    <td colSpan="10" className="px-4 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="animate-spin text-[#c0922e]" size={32} />
+                        <p className="text-[11px] font-bold text-slate-400">Loading brokers...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : brokers.length === 0 ? (
+                  <tr>
+                    <td colSpan="10" className="px-4 py-12 text-center text-[11px] font-bold text-slate-400">
+                      No brokers found.
+                    </td>
+                  </tr>
+                ) : brokers.map((broker, idx) => (
+                  <tr key={broker._id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-4 py-4 text-[11px] text-slate-400 font-bold">{idx + 1}</td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-[10px] overflow-hidden">
-                          {broker.id % 3 === 0 ? <img src={`https://i.pravatar.cc/100?u=${broker.id}`} alt="" /> : broker.name.charAt(0)}
+                          {broker.profileImage ? <img src={broker.profileImage} alt="" /> : broker.firstName.charAt(0)}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-slate-900 leading-none mb-1 truncate">{broker.name}</p>
-                          <p className="text-[9px] text-slate-400 font-medium mb-1 truncate">{broker.firm}</p>
+                          <p className="text-[11px] font-bold text-slate-900 leading-none mb-1 truncate">{broker.firstName} {broker.lastName}</p>
+                          <p className="text-[9px] text-slate-400 font-medium mb-1 truncate">{broker.companyName}</p>
                           <p className="text-[9px] text-[#3b82f6] font-medium truncate">{broker.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <p className="text-[11px] font-bold text-slate-900 mb-0.5 truncate">{broker.city}</p>
-                      <p className="text-[9px] text-slate-400 font-medium">122009</p>
+                      <p className="text-[11px] font-bold text-slate-900 mb-0.5 truncate">{broker.operatingCity}</p>
+                      <p className="text-[9px] text-slate-400 font-medium">{broker.pinCode}</p>
                     </td>
                     <td className="px-4 py-4">
                       <div className="space-y-1.5">
-                        <p className="text-[10px] font-bold text-slate-900">{broker.phone}</p>
+                        <p className="text-[10px] font-bold text-slate-900">{broker.phoneNumber}</p>
                         <div className="flex gap-1">
                           <button className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100/50">
                             WA
@@ -169,15 +242,15 @@ const Brokers = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[8px] font-bold border border-blue-100">broker</span>
+                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[8px] font-bold border border-blue-100">{broker.role.toLowerCase()}</span>
                     </td>
                     <td className="px-4 py-4">
                       <div className="space-y-1 w-full">
-                        <p className="text-[10px] font-bold text-slate-900">{broker.listings}</p>
+                        <p className="text-[10px] font-bold text-slate-900">0/25</p>
                         <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-slate-400 rounded-full" 
-                            style={{ width: `${(parseInt(broker.listings.split('/')[0]) / 25) * 100}%` }}
+                            style={{ width: `0%` }}
                           />
                         </div>
                         <button className="text-[8px] font-bold text-primary-500 flex items-center gap-1 hover:underline">
@@ -186,21 +259,21 @@ const Brokers = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      {broker.groups ? (
+                      {broker.associatedGroup ? (
                         <div className="flex flex-wrap gap-1">
-                          {broker.groups.map((group, gIdx) => (
-                            <span key={gIdx} className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[7px] font-bold leading-tight">
-                              {group.split(' ')[0]}...
-                            </span>
-                          ))}
+                          <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[7px] font-bold leading-tight">
+                            {broker.associatedGroup.split(' ')[0]}...
+                          </span>
                         </div>
                       ) : (
                         <span className="text-[9px] text-slate-400 font-medium italic">None</span>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{broker.joined}</td>
+                    <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{new Date(broker.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
-                      <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold border border-emerald-100">Active</span>
+                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold border ${broker.isVerified ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                        {broker.isVerified ? 'Verified' : 'Pending'}
+                      </span>
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex items-center justify-center gap-1">
@@ -210,10 +283,17 @@ const Brokers = () => {
                         >
                           <Edit2 size={8} className="text-primary-500" /> Edit
                         </button>
-                        <button className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1">
-                          <Ban size={8} className="text-primary-500" /> Block
+                        <button 
+                          onClick={() => toggleStatus(broker)}
+                          className={`p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1 ${broker.isVerified ? 'hover:text-amber-600' : 'hover:text-emerald-600'}`}
+                        >
+                          {broker.isVerified ? <XCircle size={8} className="text-amber-500" /> : <CheckCircle size={8} className="text-emerald-500" />} 
+                          {broker.isVerified ? 'Unverify' : 'Verify'}
                         </button>
-                        <button className="p-1.5 bg-[#7f1d1d] text-white rounded-lg text-[9px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1">
+                        <button 
+                          onClick={() => handleDelete(broker._id)}
+                          className="p-1.5 bg-[#7f1d1d] text-white rounded-lg text-[9px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1"
+                        >
                           <Trash2 size={8} /> Del
                         </button>
                       </div>

@@ -277,7 +277,7 @@ exports.deletePosting = async (req, res, next) => {
     }
 
     const isOwner = posting.postedBy.toString() === req.user._id.toString();
-    const isAdmin = ['Administrator', 'Super Admin'].includes(req.user.role);
+    const isAdmin = ['Administrator', 'Super Admin', 'Admin'].includes(req.user.role);
 
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this posting' });

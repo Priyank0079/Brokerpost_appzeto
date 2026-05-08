@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { Search, ArrowLeft, Edit2, Trash2, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, ArrowLeft, Edit2, Trash2, Plus, Loader2, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { api } from '../../broker/services/api';
+import Modal from '../../broker/components/ui/Modal';
 
 const Listings = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [listings, setListings] = useState([]);
+  const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [listingToDelete, setListingToDelete] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
   const [formData, setFormData] = useState({
     subType: '',
@@ -21,13 +27,51 @@ const Listings = () => {
     remarks: ''
   });
 
-  const platformListings = [
-    { id: 1, section: 'Residential', status: 'Available for Rental', subType: 'Apartments', location: 'DLF-4', building: 'Ridgewood Estate', area: '1425', areaUnit: 'Sq.Ft', price: '85000', broker: 'Neeraj Jain', date: '5/5/2026' },
-    { id: 2, section: 'Commercial', status: 'Available for Lease', subType: 'Standalone Building', location: 'Sector-8', building: 'IMT Manesar', area: '10000', areaUnit: 'Sq.Mt', price: '200000', broker: 'Neeraj Jain', date: '5/5/2026' },
-    { id: 3, section: 'Commercial', status: 'Available for Lease', subType: 'Shops/Showroom', location: 'Sector-37', building: 'Pace City 2', area: '250', areaUnit: 'Sq.Mt', price: '200000', broker: 'Neeraj Jain', date: '5/5/2026' },
-    { id: 4, section: 'Residential', status: 'Available for Sale', subType: 'Apartments', location: 'Sector-77', building: 'Emaar Palm Hills', area: '1450', areaUnit: 'Sq.Ft', price: '19000000', broker: 'Anirudh Panda', date: '4/5/2026' },
-    { id: 5, section: 'Residential', status: 'Wanted on Rent', subType: 'Low Rise Floors', location: 'DLF-2', building: 'Builder Floor', area: '300', areaUnit: 'Sq.Yd', price: '130000', broker: 'Abhishek Jha', date: '4/5/2026' },
-  ];
+  const fetchListings = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/postings');
+      if (response.success) {
+        setListings(response.data);
+      }
+    } catch (err) {
+      console.error('Error fetching listings:', err);
+      setError('Failed to load listings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const handleDeleteConfirm = async () => {
+    if (!listingToDelete) return;
+    try {
+      const response = await api.delete(`/postings/${listingToDelete}`);
+      if (response.success) {
+        setListings(prev => prev.filter(l => l._id !== listingToDelete));
+        setListingToDelete(null);
+      }
+    } catch (err) {
+      alert('Failed to delete listing');
+    }
+  };
+
+  const formatEnum = (str) => {
+    if (!str) return '';
+    return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+  };
+
+  const getStatusText = (listing) => {
+    const intent = formatEnum(listing.intent);
+    const postType = formatEnum(listing.postType);
+    if (listing.postType === 'AVAILABILITY') {
+      return `Available for ${intent}`;
+    }
+    return `Wanted for ${intent}`;
+  };
 
   const handleEditClick = (listing) => {
     setEditingListing(listing);
@@ -101,34 +145,66 @@ const Listings = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {platformListings.map((listing) => (
-                  <tr key={listing.id} className="hover:bg-slate-50/50 transition-colors">
+                 {loading ? (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-12 text-center">
+                      <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="animate-spin text-[#c0922e]" size={32} />
+                        <p className="text-[11px] font-bold text-slate-400">Loading listings...</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : listings.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="px-6 py-12 text-center text-[11px] font-bold text-slate-400">
+                      No listings found.
+                    </td>
+                  </tr>
+                ) : listings.map((listing) => (
+                  <tr 
+                    key={listing._id} 
+                    onClick={() => navigate(`/admin/listings/${listing._id}`)}
+                    className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold border ${
-                          listing.section === 'Residential' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-primary-50 text-primary-600 border-primary-100'
+                          listing.vertical === 'RESIDENTIAL' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-primary-50 text-primary-600 border-primary-100'
                         }`}>
-                          {listing.section}
+                          {formatEnum(listing.vertical)}
                         </span>
-                        <span className="text-[10px] font-bold text-slate-900 italic whitespace-nowrap">{listing.status}</span>
+                        <span className="text-[10px] font-bold text-slate-900 italic whitespace-nowrap">{getStatusText(listing)}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold border border-blue-100 whitespace-nowrap">
-                        {listing.subType}
+                        {formatEnum(listing.subType)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div className="min-w-[120px]">
-                        <p className="text-[11px] font-bold text-slate-900 leading-none mb-1">{listing.location}</p>
-                        <p className="text-[9px] text-slate-400 font-medium">{listing.building}</p>
+                        <p className="text-[11px] font-bold text-slate-900 leading-none mb-1 group-hover:text-[#c0922e] transition-colors">{listing.location}</p>
+                        <p className="text-[9px] text-slate-400 font-medium">{listing.project}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.area} {listing.areaUnit}</td>
-                    <td className="px-6 py-4 text-[11px] font-bold text-emerald-600 whitespace-nowrap">₹{parseInt(listing.price).toLocaleString()}</td>
-                    <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.broker}</td>
-                    <td className="px-6 py-4 text-[9px] font-bold text-slate-400">{listing.date}</td>
+                    <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.size} {formatEnum(listing.sizeUnit)}</td>
+                    <td className="px-6 py-4 text-[11px] font-bold text-emerald-600 whitespace-nowrap">
+                      {listing.postType === 'AVAILABILITY' ? (
+                        `₹${(listing.totalAmount || 0).toLocaleString()} ${formatEnum(listing.totalAmountUnit)}`
+                      ) : (
+                        `Budget: ₹${(listing.budgetMax || 0).toLocaleString()} ${formatEnum(listing.budgetUnit)}`
+                      )}
+                    </td>
                     <td className="px-6 py-4">
+                      <div className="min-w-[100px]">
+                        <p className="text-[10px] font-bold text-slate-900 whitespace-nowrap">
+                          {listing.postedBy?.firstName} {listing.postedBy?.lastName}
+                        </p>
+                        <p className="text-[8px] text-slate-400 font-medium truncate max-w-[120px]">{listing.postedBy?.companyName}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-[9px] font-bold text-slate-400">{new Date(listing.createdAt).toLocaleDateString()}</td>
+                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-center gap-1.5">
                         <button 
                           onClick={() => handleEditClick(listing)}
@@ -136,7 +212,10 @@ const Listings = () => {
                         >
                           Edit
                         </button>
-                        <button className="px-3 py-1 bg-[#7f1d1d] text-white rounded text-[9px] font-bold hover:bg-[#991b1b] transition-all">
+                        <button 
+                          onClick={() => setListingToDelete(listing._id)}
+                          className="px-3 py-1 bg-[#7f1d1d] text-white rounded text-[9px] font-bold hover:bg-[#991b1b] transition-all"
+                        >
                           Del
                         </button>
                       </div>
@@ -368,11 +447,46 @@ const Listings = () => {
                 >
                   Save Listing
                 </button>
-              </div>
             </div>
           </div>
         </div>
+      </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal 
+        isOpen={!!listingToDelete} 
+        onClose={() => setListingToDelete(null)}
+        title="Confirm Deletion"
+        footer={(
+          <div className="flex gap-3">
+            <button 
+              onClick={() => setListingToDelete(null)}
+              className="px-6 py-2 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleDeleteConfirm}
+              className="px-6 py-2 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-600/20"
+            >
+              Delete Posting
+            </button>
+          </div>
+        )}
+      >
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 shrink-0">
+            <AlertCircle size={24} />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 mb-1">Delete this listing?</h4>
+            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
+              Are you sure you want to remove this posting from the platform? This action cannot be undone and the posting will no longer be visible to any brokers.
+            </p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
