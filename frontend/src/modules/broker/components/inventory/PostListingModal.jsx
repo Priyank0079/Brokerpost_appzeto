@@ -18,7 +18,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
       {/* Modal */}
       <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-serif text-black">Add Listing</h2>
             <p className="text-[10px] text-slate-400 font-medium">
@@ -34,7 +34,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
         <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide">
           {/* Category Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Category</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Category</h3>
             <div className="space-y-1">
               <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sub-type *</label>
               <div className="relative">
@@ -71,7 +71,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Property Details */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Property Details</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Location / Area *</label>
@@ -108,7 +108,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Area Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Area</h3>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Area</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Area / Size</label>
@@ -130,7 +130,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Pricing/Budget Section */}
           <div className="space-y-3">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">
               {isRequirement ? 'Budget' : 'Pricing'}
             </h3>
             <div className="grid grid-cols-2 gap-4">
@@ -169,7 +169,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
           {/* Status Section - Hide for Purchase */}
           {!isRequirement && (
             <div className="space-y-3">
-              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Status</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Status</h3>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Property Status</label>
                 <div className="relative">
@@ -186,7 +186,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
           {/* Conditional Rent Section */}
           {isRental && (
             <div className="space-y-3 animate-in slide-in-from-top-2 duration-300">
-              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Rent / Lease Amount</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Rent / Lease Amount</h3>
               <div className="space-y-1">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Monthly Rent / Lease (₹)</label>
                 <input 
@@ -201,7 +201,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
           {/* Media Section - Hide for Purchase */}
           {!isRequirement && (
             <div className="space-y-3">
-              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-1.5">Media</h3>
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-1.5">Media</h3>
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Photos (JPG/PNG)</label>
@@ -233,7 +233,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
 
           {/* Remarks Section */}
           <div className="space-y-4 pb-4">
-            <h3 className="text-[10px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-100 pb-2">Remarks</h3>
+            <h3 className="text-[10px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-300 pb-2">Remarks</h3>
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Notes / Additional Info</label>
               <textarea 
@@ -245,7 +245,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'Reside
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-6 border-t border-slate-50 flex items-center justify-end gap-3 bg-slate-50/50">
+        <div className="px-8 py-6 border-t border-slate-200 flex items-center justify-end gap-3 bg-slate-50/50">
           <button 
             onClick={onClose}
             className="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-[11px] font-black uppercase tracking-widest hover:bg-white transition-all"

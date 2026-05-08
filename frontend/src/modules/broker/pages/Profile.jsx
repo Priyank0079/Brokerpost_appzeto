@@ -174,7 +174,7 @@ const Profile = ({ title = "My Profile" }) => {
                  {user?.role || 'Professional Broker'}
               </p>
               
-              <div className="mt-8 pt-8 border-t border-slate-50 grid grid-cols-1 gap-4">
+              <div className="mt-8 pt-8 border-t border-slate-200 grid grid-cols-1 gap-4">
                  <div className="text-center">
                     <p className="text-lg font-black text-slate-900 tracking-tight">Active Plan</p>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Founding Member</p>
@@ -209,7 +209,7 @@ const Profile = ({ title = "My Profile" }) => {
         {/* Right Column: Detailed Info */}
         <div className="lg:col-span-2 space-y-6">
            <Card className="border-slate-100 shadow-xl shadow-slate-200/20">
-              <div className="flex items-center gap-2 mb-8 border-b border-slate-50 pb-4">
+              <div className="flex items-center gap-2 mb-8 border-b border-slate-200 pb-4">
                  <ShieldCheck className="text-emerald-500" size={24} />
                  <div>
                     <h4 className="text-lg font-black text-slate-900 tracking-tight">Identity & Business</h4>
