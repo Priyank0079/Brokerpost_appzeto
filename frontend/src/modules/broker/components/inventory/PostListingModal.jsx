@@ -10,6 +10,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   
   // Derived Classification
   const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
+  const isRental = ['RENT', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
   const postType = isRequirement ? 'REQUIREMENT' : 'AVAILABILITY';
 
   const [formData, setFormData] = useState({
@@ -137,8 +138,8 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.location || !formData.subType) {
-      setError('Please fill in required fields (Location, Sub-type)');
+    if (!formData.location || !formData.subType || !formData.city) {
+      setError('Please fill in required fields (Location, City, Sub-type)');
       return;
     }
 
@@ -182,7 +183,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       
       <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-slate-50 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-serif text-[#1a365d]">Add Listing</h2>
             <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
@@ -195,61 +196,61 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         </div>
 
         {/* Scrollable Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 pt-6 space-y-8 custom-scrollbar">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
           {error && (
             <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-600 text-xs font-bold items-center">
               <AlertCircle size={16} /> {error}
             </div>
           )}
 
-          {/* Classification */}
+          {/* Classification Section */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Classification</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Sub-type *</label>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Classification</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Sub-type *</label>
                 <div className="relative">
                   <select 
                     name="subType"
                     value={formData.subType}
                     onChange={handleChange}
-                    className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 outline-none appearance-none rounded-2xl"
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
                   >
                     {subTypeOptions.map(opt => (
                       <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                   </select>
-                  <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
               {vertical === 'RESIDENTIAL' && formData.subType !== 'PLOTS' && (
-                <div className="space-y-2">
-                  <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Configuration (BHK)</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Configuration (BHK)</label>
                   <div className="relative">
                     <select 
                       name="bedrooms"
                       value={formData.bedrooms}
                       onChange={handleChange}
-                      className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 outline-none appearance-none rounded-2xl"
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
                     >
                       {['1', '2', '3', '4', '5+'].map(v => (
                         <option key={v} value={v}>{v} BHK</option>
                       ))}
                     </select>
-                    <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
               )}
             </div>
           </section>
 
-          {/* Location Details */}
+          {/* Location Section */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Location</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Location / Area *</label>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Location Details</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Location / Area *</label>
                 <input 
                   type="text" 
                   name="location"
@@ -257,18 +258,18 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Sector or Locality" 
-                  className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none placeholder:text-slate-300" 
+                  className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none placeholder:text-slate-400" 
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">City *</label>
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">City *</label>
                 <div className="relative">
                   <select 
                     name="city"
                     required
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 outline-none appearance-none rounded-2xl"
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
                   >
                     <option value="Gurgaon">Gurgaon</option>
                     <option value="Noida">Noida</option>
@@ -276,29 +277,29 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                     <option value="Faridabad">Faridabad</option>
                     <option value="Greater Noida">Greater Noida</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Project / Society</label>
+              <div className="col-span-2 space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Project / Society</label>
                 <input 
                   type="text" 
                   name="project"
                   value={formData.project}
                   onChange={handleChange}
                   placeholder="e.g. DLF Magnolias" 
-                  className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none placeholder:text-slate-300" 
+                  className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none placeholder:text-slate-400" 
                 />
               </div>
             </div>
           </section>
 
-          {/* Specs & Pricing */}
+          {/* Area & Pricing Section */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Specifications & Pricing</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Area / Size *</label>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Area & Pricing</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Area / Size *</label>
                 <div className="flex gap-2">
                   <input 
                     type="number" 
@@ -307,13 +308,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                     value={formData.size}
                     onChange={handleChange}
                     placeholder="Size" 
-                    className="flex-1 px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none" 
+                    className="flex-1 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
                   />
                   <select 
                     name="sizeUnit"
                     value={formData.sizeUnit}
                     onChange={handleChange}
-                    className="w-24 px-3 py-3 bg-[#fdf8f3] border border-transparent rounded-2xl text-xs font-black text-[#1a365d] outline-none"
+                    className="w-24 px-2 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-xs font-black text-slate-700 outline-none"
                   >
                     <option value="SQ_FT">Sq.Ft</option>
                     <option value="SQ_YD">Sq.Yd</option>
@@ -323,8 +324,8 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               </div>
 
               {!isRequirement ? (
-                <div className="space-y-2">
-                  <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Rate / Price (₹)</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Rate / Price (₹)</label>
                   <div className="flex gap-2">
                     <input 
                       type="number" 
@@ -332,13 +333,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       value={formData.priceRate}
                       onChange={handleChange}
                       placeholder="Rate" 
-                      className="flex-1 px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 focus:ring-4 focus:ring-[#c8962a]/5 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none" 
+                      className="flex-1 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
                     />
                     <select 
                       name="priceRateType"
                       value={formData.priceRateType}
                       onChange={handleChange}
-                      className="w-24 px-3 py-3 bg-[#fdf8f3] border border-transparent rounded-2xl text-[10px] font-black text-[#1a365d] outline-none"
+                      className="w-24 px-2 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[10px] font-black text-slate-700 outline-none"
                     >
                       <option value="PER_SQFT">/SqFt</option>
                       <option value="PER_SQYD">/SqYd</option>
@@ -347,8 +348,8 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   </div>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Budget Range (Lakhs)</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Budget Range (Lakhs)</label>
                   <div className="flex gap-2 items-center">
                     <input 
                       type="number" 
@@ -356,7 +357,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       value={formData.budgetMin}
                       onChange={handleChange}
                       placeholder="Min" 
-                      className="w-1/2 px-4 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none" 
+                      className="w-1/2 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
                     />
                     <span className="text-slate-300">-</span>
                     <input 
@@ -365,163 +366,150 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       value={formData.budgetMax}
                       onChange={handleChange}
                       placeholder="Max" 
-                      className="w-1/2 px-4 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 rounded-2xl outline-none" 
+                      className="w-1/2 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Total Display */}
             {!isRequirement && (
-              <div className="p-5 bg-[#fdf8f3] rounded-[1.5rem] border border-[#c8962a]/10 flex flex-col gap-1">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Estimated Total Price</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-serif text-[#1a365d]">
-                    {formData.totalAmount ? `₹ ${formData.totalAmount.toLocaleString()}` : '—'}
-                  </span>
-                  {formData.totalAmount && <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Total</span>}
-                </div>
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Estimated Total</p>
+                <span className="text-xl font-serif text-[#1a365d]">
+                  {formData.totalAmount ? `₹ ${formData.totalAmount.toLocaleString()}` : 'On Request'}
+                </span>
               </div>
             )}
           </section>
 
-          {/* Additional Info */}
+          {/* Status & Remarks Section */}
           <section className="space-y-4">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Additional Info</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Construction Status</label>
+            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Status & Remarks</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Construction Status</label>
                 <div className="relative">
                   <select 
                     name="constructionStatus"
                     value={formData.constructionStatus}
                     onChange={handleChange}
-                    className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white transition-all text-sm font-bold text-slate-900 outline-none appearance-none rounded-2xl"
+                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
                   >
                     <option value="READY">Ready to Move</option>
                     <option value="UNDER_CONSTRUCTION">Under Construction</option>
                   </select>
-                  <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
               
               {vertical === 'COMMERCIAL' && !isRequirement && (
-                <div className="space-y-2">
-                  <label className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Occupancy</label>
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Occupancy</label>
                   <div className="relative">
                     <select 
                       name="occupancy"
                       value={formData.occupancy}
                       onChange={handleChange}
-                      className="w-full px-5 py-3 bg-[#fdf8f3] border border-transparent focus:bg-white transition-all text-sm font-bold text-slate-900 outline-none appearance-none rounded-2xl"
+                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
                     >
                       <option value="VACANT">Vacant</option>
                       <option value="RENTED">Rented / ROI</option>
                     </select>
-                    <ChevronDown size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="space-y-2">
-              <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Short Description / Notes</label>
+            <div className="space-y-1">
+              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Short Description / Notes</label>
               <textarea 
                 name="shortDescription"
                 value={formData.shortDescription}
                 onChange={handleChange}
                 placeholder="Add any specific details or preferences..." 
-                className="w-full px-6 py-4 bg-[#fdf8f3] border border-transparent focus:bg-white focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 h-32 resize-none rounded-[1.5rem] outline-none placeholder:text-slate-300"
+                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 h-24 resize-none rounded-xl outline-none placeholder:text-slate-400"
               />
             </div>
           </section>
 
           {/* Media Section */}
-          <section className="space-y-6">
-            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 pb-2">Property Media</h3>
-            
-            {/* Photo Upload */}
-            <div className="space-y-3">
-              <p className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Photos (Up to 5)</p>
-              <div className="flex flex-wrap gap-4">
-                <label className="w-32 h-32 relative group cursor-pointer">
-                  <input type="file" multiple accept="image/*" onChange={handleMediaUpload} className="hidden" />
-                  <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 group-hover:border-[#c8962a]/50 group-hover:bg-[#fdf8f3]/50 transition-all">
-                    <Camera size={24} className="text-slate-400 group-hover:text-[#c8962a]" />
-                    <p className="text-[9px] font-black text-slate-400 uppercase">Add Photo</p>
-                  </div>
-                </label>
-                
-                {formData.images.map((img, idx) => (
-                  <div key={idx} className="w-32 h-32 rounded-[1.5rem] overflow-hidden border border-slate-100 relative group shadow-sm">
-                    <img src={img} alt="Property" className="w-full h-full object-cover" />
+          {!isRequirement && (
+            <section className="space-y-4">
+              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Property Media</h3>
+              
+              {/* Photos */}
+              <div className="space-y-3">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (Up to 5)</p>
+                <div className="flex flex-wrap gap-3">
+                  <label className="w-24 h-24 relative group cursor-pointer">
+                    <input type="file" multiple accept="image/*" onChange={handleMediaUpload} className="hidden" />
+                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition-all">
+                      <Camera size={20} className="text-slate-400" />
+                      <p className="text-[8px] font-black text-slate-400 uppercase">Add Photo</p>
+                    </div>
+                  </label>
+                  
+                  {formData.images.map((img, idx) => (
+                    <div key={idx} className="w-24 h-24 rounded-xl overflow-hidden border border-slate-100 relative group shadow-sm">
+                      <img src={img} alt="Property" className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
+                        className="absolute top-1 right-1 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Video */}
+              <div className="space-y-3">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Video Walkthrough</p>
+                {!formData.videos[0] ? (
+                  <label className="w-full h-20 relative group cursor-pointer">
+                    <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
+                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
+                      <Video size={20} className="text-slate-400" />
+                      <p className="text-[9px] font-black text-slate-400 uppercase">Upload Video Walkthrough</p>
+                    </div>
+                  </label>
+                ) : (
+                  <div className="w-full h-20 bg-slate-900 rounded-xl relative overflow-hidden group shadow-md">
+                    <video className="w-full h-full object-cover opacity-60">
+                      <source src={formData.videos[0]} type="video/mp4" />
+                    </video>
                     <button 
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
-                      className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-all shadow-sm"
+                      onClick={() => setFormData(prev => ({ ...prev, videos: [] }))}
+                      className="absolute top-2 right-2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-red-500 transition-all"
                     >
                       <X size={14} />
                     </button>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Video Upload */}
-            <div className="space-y-3">
-              <p className="text-[11px] font-black text-[#1a365d] uppercase tracking-wider ml-1">Video Walkthrough (Max 1)</p>
-              <div className="flex flex-wrap gap-4">
-                {!formData.videos[0] ? (
-                  <label className="w-full md:w-1/2 h-32 relative group cursor-pointer">
-                    <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
-                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 group-hover:border-[#c8962a]/50 group-hover:bg-[#fdf8f3]/50 transition-all">
-                      <Video size={24} className="text-slate-400 group-hover:text-[#c8962a]" />
-                      <p className="text-[9px] font-black text-slate-400 uppercase">Upload Video</p>
-                      <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest italic">Max size: 20MB</p>
-                    </div>
-                  </label>
-                ) : (
-                  <div className="w-full md:w-1/2 h-32 bg-slate-900 rounded-[1.5rem] relative overflow-hidden group shadow-xl">
-                    <video className="w-full h-full object-cover opacity-60">
-                      <source src={formData.videos[0]} type="video/mp4" />
-                    </video>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/30">
-                        <Play size={18} fill="white" />
-                      </div>
-                    </div>
-                    <button 
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, videos: [] }))}
-                      className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-red-500 shadow-lg transition-all"
-                    >
-                      <X size={16} />
-                    </button>
-                    <div className="absolute bottom-3 left-4">
-                      <span className="text-[8px] font-black text-white uppercase tracking-widest bg-[#c8962a] px-2 py-1 rounded-md">Walkthrough Loaded</span>
-                    </div>
-                  </div>
                 )}
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
-          {/* Submit Footer */}
-          <div className="pt-4 flex items-center justify-end gap-4 border-t border-slate-50 pb-2">
+          {/* Footer Actions */}
+          <div className="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
             <button 
               type="button"
               onClick={onClose}
-              className="px-10 py-3.5 rounded-2xl border border-slate-200 text-slate-500 text-xs font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+              className="px-6 py-2 rounded-xl border border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
             >
               Cancel
             </button>
             <button 
               type="submit"
               disabled={loading}
-              className="px-10 py-3.5 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-[#c8962a]/30 transition-all flex items-center gap-2"
+              className="px-8 py-2 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 transition-all flex items-center gap-2"
             >
-              {loading ? <Loader2 size={18} className="animate-spin" /> : 'Confirm & Save Listing'}
+              {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Listing'}
             </button>
           </div>
         </form>

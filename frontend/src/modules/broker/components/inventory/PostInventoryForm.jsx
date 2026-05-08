@@ -218,7 +218,7 @@ const PostInventoryForm = ({ onSuccess }) => {
       case 7:
         return (
           <div className="bg-slate-50 rounded-xl p-8 border border-slate-100 space-y-6">
-            <div className="flex items-center justify-between border-b border-white pb-6">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-6">
                <h4 className="text-xl font-black text-slate-900 tracking-tight">Listing Review</h4>
                <Badge variant="primary" className="px-4 py-1.5 font-black uppercase tracking-widest text-[10px]">Ready to Submit</Badge>
             </div>
@@ -255,7 +255,7 @@ const PostInventoryForm = ({ onSuccess }) => {
     <div className="space-y-6">
       {/* Visual Step Indicator (Clickable) */}
       <div className="flex justify-between items-center px-2 sm:px-4 relative">
-        <div className="absolute top-[12px] sm:top-[15px] left-6 right-6 sm:left-8 sm:right-8 h-[2px] bg-slate-100" />
+        <div className="absolute top-[12px] sm:top-[15px] left-6 right-6 sm:left-8 sm:right-8 h-[2px] bg-slate-300" />
         {steps.map((s, i) => (
           <button 
             key={i} 
@@ -289,7 +289,7 @@ const PostInventoryForm = ({ onSuccess }) => {
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+      <div className="flex items-center justify-between pt-6 border-t border-slate-200">
         <Button 
           variant="ghost" 
           onClick={prevStep} 

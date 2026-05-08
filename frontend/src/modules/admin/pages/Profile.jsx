@@ -136,7 +136,7 @@ const AdminProfile = () => {
         <div className="lg:col-span-2 space-y-6">
            {showPasswordFields ? (
               <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10 animate-in slide-in-from-right-4 duration-500">
-                <div className="flex items-center gap-3 mb-10 border-b border-slate-50 pb-6">
+                <div className="flex items-center gap-3 mb-10 border-b border-slate-200 pb-6">
                    <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600">
                       <Lock size={20} />
                    </div>
@@ -175,7 +175,7 @@ const AdminProfile = () => {
               </Card>
            ) : (
               <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10">
-                <div className="flex items-center gap-3 mb-10 border-b border-slate-50 pb-6">
+                <div className="flex items-center gap-3 mb-10 border-b border-slate-200 pb-6">
                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
                       <Terminal size={20} />
                    </div>
