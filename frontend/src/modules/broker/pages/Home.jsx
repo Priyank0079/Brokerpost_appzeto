@@ -21,6 +21,12 @@ import { useLandingConfig } from '../../../hooks/useLandingConfig';
 
 const Home = () => {
   const { config, loading, error } = useLandingConfig();
+  const [filters, setFilters] = React.useState({
+    vertical: '',
+    location: '',
+    intent: '',
+    subType: '',
+  });
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
@@ -53,9 +59,9 @@ const Home = () => {
       
       <LandingHero />
       
-      <LandingSearch />
+      <LandingSearch filters={filters} onFilterChange={setFilters} />
       
-      <InventoryGrid />
+      <InventoryGrid filters={filters} />
       
       <PlatformFeatures />
       

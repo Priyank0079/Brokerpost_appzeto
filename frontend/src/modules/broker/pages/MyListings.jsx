@@ -109,11 +109,7 @@ const MyListings = ({
 
   return (
     <div className="space-y-6 md:space-y-8 px-2 md:px-0">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="px-2 md:px-0">
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{title}</h1>
-          <p className="mt-1 text-[11px] md:text-sm font-medium text-slate-500">{subtitle}</p>
-        </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end px-2 md:px-0">
         <div className="flex flex-col sm:flex-row gap-2 md:gap-3 w-full sm:w-auto px-2 md:px-0">
           <Button
             variant="primary"

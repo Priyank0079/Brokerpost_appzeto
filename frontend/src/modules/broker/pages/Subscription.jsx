@@ -39,13 +39,6 @@ const Subscription = () => {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-fade-in py-6">
-      {/* Compact Header */}
-      <div className="text-center space-y-2 max-w-2xl mx-auto">
-        <Badge variant="primary" className="px-3 py-1 font-bold uppercase tracking-widest text-[9px] mb-1">Elevate Your Presence</Badge>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight">Simple Pricing, <span className="text-primary-600">Powerful Network</span></h1>
-        <p className="text-slate-500 font-medium text-xs">Choose the partner plan that best fits your business goals.</p>
-      </div>
-
       {/* Compact Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch pt-4">
         {plans.map((plan) => (

@@ -45,6 +45,14 @@ export const getMyPostings = async (params = {}) => {
   return res.json();
 };
 
+// ── READ DASHBOARD STATS ────────────────────────────────────────────────────
+export const getPostingStats = async () => {
+  const res = await fetch(`${API_BASE}/postings/stats`, {
+    headers: authHeader()
+  });
+  return res.json();
+};
+
 // ── READ ONE ────────────────────────────────────────────────────────────────
 export const getPostingById = async (id) => {
   const res = await fetch(`${API_BASE}/postings/${id}`, {
@@ -93,6 +101,18 @@ export const uploadProfileImage = async (file) => {
   formData.append('image', file);
 
   const res = await fetch(`${API_BASE}/upload/profile`, {
+    method: 'POST',
+    headers: authHeader(false),
+    body: formData
+  });
+  return res.json();
+};
+
+export const uploadPropertyVideo = async (file) => {
+  const formData = new FormData();
+  formData.append('video', file);
+
+  const res = await fetch(`${API_BASE}/upload/video`, {
     method: 'POST',
     headers: authHeader(false),
     body: formData

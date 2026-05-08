@@ -22,24 +22,34 @@ exports.register = async (req, res, next) => {
       firstName, 
       lastName, 
       email, 
+      password,
       phoneNumber, 
       city, 
       companyName, 
-      officeAddress, 
-      officeCity, 
+      address, 
       pinCode, 
       reraNumber, 
-      associatedGroup 
+      profileImage,
+      associatedGroup,
+      agreeWithTerms 
     } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ 
+      $or: [
+        { email }, 
+        { phoneNumber }
+      ] 
+    });
 
     if (userExists) {
       if (userExists.isEmailVerified) {
-        return res.status(400).json({ success: false, message: 'User already exists' });
+        const message = userExists.email === email 
+          ? 'Email already registered' 
+          : 'Phone number already registered';
+        return res.status(400).json({ success: false, message });
       }
-      // If user exists but not verified, we'll update it later or just re-send OTP
-      await User.deleteOne({ email });
+      // If user exists but not verified, we'll delete it to allow a fresh registration attempt
+      await User.deleteOne({ _id: userExists._id });
     }
 
     const otp = '123456'; // Math.floor(100000 + Math.random() * 900000).toString();
@@ -49,14 +59,17 @@ exports.register = async (req, res, next) => {
       firstName,
       lastName,
       email,
+      password,
       phoneNumber,
       operatingCity: city,
       companyName,
-      officeAddress,
-      officeCity,
+      officeAddress: address,
+      officeCity: city,
       pinCode,
       reraNumber,
+      profileImage,
       associatedGroup,
+      agreeWithTerms,
       otp,
       otpExpires,
       isEmailVerified: false
@@ -130,7 +143,80 @@ exports.verifyOTP = async (req, res, next) => {
   }
 };
 
-// @desc    Login user
+// @desc    Send Login OTP
+// @route   POST /api/v1/auth/login/send-otp
+// @access  Public
+exports.sendLoginOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No account found with this email' });
+    }
+
+    if (!user.isEmailVerified) {
+      return res.status(401).json({ success: false, message: 'Account exists but email not verified' });
+    }
+
+    const otp = '123456'; // Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      message: 'OTP sent to email (Static: 123456)',
+      email: user.email
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Verify Login OTP
+// @route   POST /api/v1/auth/login/verify-otp
+// @access  Public
+exports.verifyLoginOTP = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ 
+      email, 
+      otp, 
+      otpExpires: { $gt: Date.now() } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+      token: generateToken(user._id, 'User'),
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        companyName: user.companyName,
+        operatingCity: user.operatingCity,
+        phoneNumber: user.phoneNumber
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Login user (Password)
 // @route   POST /api/v1/auth/login
 // @access  Public
 exports.login = async (req, res, next) => {
@@ -330,8 +416,6 @@ exports.getStats = async (req, res, next) => {
         totalBrokers,
         pendingBrokers,
         verifiedBrokers,
-        activeListings: 4821, // Placeholder until listings module is ready
-        totalUsers: 18500 // Placeholder
       }
     });
   } catch (error) {

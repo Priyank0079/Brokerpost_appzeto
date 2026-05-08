@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { upload } = require('../config/cloudinary');
+const { upload, uploadVideo } = require('../config/cloudinary');
 const { protect } = require('../middlewares/authMiddleware');
 
 // @desc    Upload multiple images to Cloudinary (Max 5)
@@ -22,10 +22,27 @@ router.post('/property', protect, upload.array('images', 5), (req, res) => {
   }
 });
 
-// @desc    Upload single profile image
-// @route   POST /api/v1/upload/profile
+// @desc    Upload single video to Cloudinary
+// @route   POST /api/v1/upload/video
 // @access  Private
-router.post('/profile', protect, upload.single('image'), (req, res) => {
+router.post('/video', protect, uploadVideo.single('video'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No video file uploaded' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: req.file.path
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// @route   POST /api/v1/upload/profile
+// @access  Public (Needed for registration)
+router.post('/profile', upload.single('image'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
@@ -41,7 +58,6 @@ router.post('/profile', protect, upload.single('image'), (req, res) => {
 });
 
 // @desc    Upload single image (Generic)
-
 // @route   POST /api/v1/upload
 // @access  Private
 router.post('/', protect, upload.single('image'), (req, res) => {
@@ -58,6 +74,5 @@ router.post('/', protect, upload.single('image'), (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 module.exports = router;

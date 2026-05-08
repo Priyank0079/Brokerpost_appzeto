@@ -1,128 +1,63 @@
-import React from 'react';
-import { MapPin, Maximize2, Clock, Grid, Table, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Grid, Table, ChevronLeft, ChevronRight, Loader2, Home } from 'lucide-react';
+import { getPostings } from '../../services/postingService';
 
-const InventoryGrid = () => {
-  const [view, setView] = React.useState('grid');
+const InventoryGrid = ({ filters }) => {
+  const [view, setView] = useState('grid');
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const limit = 8;
 
-  const listings = [
-    {
-      id: 1,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR LEASE - STANDALONE BUILDING',
-      title: 'Sector-8',
-      location: 'IMT Manesar',
-      features: ['10000 Sq.Mt', 'Ready to Move', 'FOR LEASE'],
-      price: '₹2,00,000',
-      image: '/assets/office.png'
-    },
-    {
-      id: 2,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR LEASE - SHOPS/SHOWROOM',
-      title: 'Sector-37',
-      location: 'Pace City 2',
-      features: ['250 Sq.Mt', 'Vacant', 'FOR LEASE'],
-      price: '₹2,00,000',
-      image: '/assets/showroom.png'
-    },
-    {
-      id: 3,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR SALE - OFFICE',
-      title: 'Sector-102',
-      location: 'Satya Hive',
-      features: ['468 Sq.Ft', 'Ready to Move', 'COM. SALE'],
-      price: '₹65,00,000',
-      image: '/assets/office.png'
-    },
-    {
-      id: 4,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR SALE - RETAIL SHOPS/SHOWROOM',
-      title: 'Sector-113',
-      location: 'M3M Capital Walk',
-      features: ['1336 Sq.Ft', 'Under Construction', 'COM. SALE'],
-      price: '₹6,14,56,000',
-      image: '/assets/mall.png'
-    },
-    {
-      id: 5,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR LEASE - OFFICE',
-      title: 'M G Road',
-      location: 'Sewa Corporate Park',
-      features: ['2500 Sq.Ft', 'Ready to Move', 'FOR LEASE'],
-      price: '₹1,50,000',
-      image: '/assets/office.png'
-    },
-    {
-      id: 6,
-      type: 'Commercial',
-      status: 'WANTED ON LEASE - OFFICE',
-      title: 'NH-8',
-      location: 'BPTB Park Centra',
-      features: ['5000 Sq.Ft', 'Urgent Requirement', 'WANTED'],
-      price: 'Budget: ₹3L',
-      image: '/assets/office.png'
-    },
-    {
-      id: 7,
-      type: 'Commercial',
-      status: 'WANTED ON PURCHASE - OFFICE',
-      title: 'Sector-61',
-      location: 'Emmar Digital Greens',
-      features: ['1200 Sq.Ft', 'Investment Purpose', 'WANTED'],
-      price: 'Budget: ₹1.5Cr',
-      image: '/assets/office.png'
-    },
-    {
-      id: 8,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR LEASE - OFFICE',
-      title: 'Golf Course Ext.',
-      location: 'M3M IFC',
-      features: ['1800 Sq.Ft', 'Warm Shell', 'FOR LEASE'],
-      price: '₹1,80,000',
-      image: '/assets/office.png'
-    },
-    {
-      id: 9,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR SALE - SCO PLOT',
-      title: 'Sector-114',
-      location: 'Emaar Business District',
-      features: ['100 Sq.Yd', 'Possession Soon', 'COM. SALE'],
-      price: '₹4,50,00,000',
-      image: '/assets/showroom.png'
-    },
-    {
-      id: 10,
-      type: 'Commercial',
-      status: 'AVAILABLE FOR LEASE - RETAIL',
-      title: 'Sector-65',
-      location: 'M3M 65th Avenue',
-      features: ['850 Sq.Ft', 'Ground Floor', 'FOR LEASE'],
-      price: '₹1,25,000',
-      image: '/assets/mall.png'
+  const fetchListings = async () => {
+    setLoading(true);
+    try {
+      // Merge base filters with pagination
+      const response = await getPostings({ ...filters, page, limit });
+      if (response.success) {
+        setListings(response.data);
+        setTotal(response.total);
+      }
+    } catch (error) {
+      console.error('Failed to fetch listings:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [page, filters]);
+
+  const totalPages = Math.ceil(total / limit);
 
   return (
-    <section className="bg-pink-50/30 pt-12 pb-6 px-6 lg:px-20">
+    <section id="inventory-grid" className="bg-pink-50/30 pt-12 pb-24 px-6 lg:px-20 scroll-mt-10">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-          <div>
-            <h2 className="text-2xl font-serif text-[#0f172a] mb-1">All Listed Inventory</h2>
-            <p className="text-slate-500 text-sm">10 listings found</p>
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
+          <div className="space-y-1">
+            <h2 className="text-3xl font-serif font-black text-[#0f172a] tracking-tight">Active Listings</h2>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#c8962a] animate-pulse"></span>
+              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
+                {total} Real-time {filters.vertical.toLowerCase()} opportunities
+              </p>
+            </div>
           </div>
           
-          <div className="flex items-center gap-3 bg-white p-1.5 rounded-xl border border-slate-200">
-            <span className="text-xs font-bold text-slate-400 ml-2">View:</span>
+          <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
+            <span className="text-[10px] font-black text-slate-400 ml-3 uppercase tracking-widest">Layout:</span>
             <button 
               onClick={() => setView('grid')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-                view === 'grid' ? 'bg-[#1a365d] text-white shadow-lg shadow-[#1a365d]/20' : 'text-slate-500 hover:bg-slate-50'
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                view === 'grid' ? 'bg-[#1a365d] text-white shadow-xl shadow-[#1a365d]/20 scale-105' : 'text-slate-500 hover:bg-slate-50'
               }`}
             >
               <Grid size={14} />
@@ -130,8 +65,8 @@ const InventoryGrid = () => {
             </button>
             <button 
               onClick={() => setView('table')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
-                view === 'table' ? 'bg-[#1a365d] text-white shadow-lg shadow-[#1a365d]/20' : 'text-slate-500 hover:bg-slate-50'
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                view === 'table' ? 'bg-[#1a365d] text-white shadow-xl shadow-[#1a365d]/20 scale-105' : 'text-slate-500 hover:bg-slate-50'
               }`}
             >
               <Table size={14} />
@@ -140,145 +75,207 @@ const InventoryGrid = () => {
           </div>
         </div>
 
-        {view === 'grid' ? (
-          /* Grid View */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {listings.map((item) => (
-              <div key={item.id} className="bg-white rounded-xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all group">
-                {/* Image Area */}
-                <div className="h-32 bg-slate-100 relative overflow-hidden">
-                  {item.image ? (
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-[#fdfaf3]">
-                      <div className="text-[#c8962a]/20">
-                        <Maximize2 size={36} />
+        {loading ? (
+          <div className="py-40 flex flex-col items-center justify-center gap-6">
+            <div className="relative">
+              <div className="w-20 h-20 border-4 border-slate-100 rounded-full"></div>
+              <div className="w-20 h-20 border-4 border-[#c8962a] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            </div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] animate-pulse">Syncing Database...</p>
+          </div>
+        ) : listings.length > 0 ? (
+          <>
+            {view === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {listings.map((item) => (
+                  <div key={item._id} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 group relative flex flex-col">
+                    {/* Image Area */}
+                    <div className="h-48 bg-slate-100 relative overflow-hidden">
+                      {item.images && item.images.length > 0 ? (
+                        <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-[#fdfaf3]">
+                          <div className="text-[#c8962a]/10">
+                            <Home size={64} strokeWidth={1} />
+                          </div>
+                        </div>
+                      )}
+                      <div className="absolute top-5 left-5 flex flex-col gap-2">
+                        <span className="bg-white/95 backdrop-blur px-4 py-1.5 rounded-full text-[#c8962a] text-[9px] font-black uppercase tracking-widest shadow-xl border border-[#c8962a]/10">
+                          {item.vertical}
+                        </span>
+                        {item.postType === 'REQUIREMENT' && (
+                          <span className="bg-[#1a365d] px-4 py-1.5 rounded-full text-white text-[9px] font-black uppercase tracking-widest shadow-xl">
+                            Wanted
+                          </span>
+                        )}
                       </div>
                     </div>
-                  )}
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-lg text-[#c8962a] text-[10px] font-bold shadow-sm border border-[#c8962a]/10">
-                      {item.type}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Content */}
-                <div className="p-4">
-                  <p className="text-[8px] font-bold text-[#c8962a] uppercase tracking-wider mb-1.5">
-                    {item.status}
-                  </p>
-                  <h3 className="text-base font-bold text-[#0f172a] mb-1">{item.title}</h3>
-                  <div className="flex items-center gap-1 text-slate-400 text-[9px] mb-3">
-                    <MapPin size={10} />
-                    {item.location}
-                  </div>
+                    {/* Content */}
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`w-2.5 h-2.5 rounded-full shadow-sm ${item.intent?.includes('SALE') ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          {item.intent?.replace('_', ' ')} · {item.subType?.replace('_', ' ')}
+                        </p>
+                      </div>
+                      
+                      <h3 className="text-lg font-serif font-black text-[#0f172a] mb-1 line-clamp-1 group-hover:text-[#c8962a] transition-colors">{item.project || 'Unspecified Project'}</h3>
+                      <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-bold mb-6">
+                        <MapPin size={12} className="text-[#c8962a]" />
+                        <span className="truncate">{item.location}</span>
+                      </div>
 
-                  {/* Chips */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {item.features.map((feature, idx) => (
-                      <span 
-                        key={idx} 
-                        className={`px-2 py-0.5 rounded-md text-[8px] font-bold ${
-                          idx === 0 ? 'bg-slate-50 text-slate-500 border border-slate-100' :
-                          idx === 1 ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' :
-                          'bg-blue-50 text-blue-600 border border-blue-100'
-                        }`}
-                      >
-                        {feature}
-                      </span>
-                    ))}
-                  </div>
+                      {/* Chips */}
+                      <div className="flex flex-wrap gap-2 mb-8">
+                        <div className="px-3 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-tighter border border-slate-100">
+                          {item.size} {item.sizeUnit}
+                        </div>
+                        {item.bedrooms && (
+                          <div className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-tighter border border-emerald-100">
+                            {item.bedrooms} BHK
+                          </div>
+                        )}
+                      </div>
 
-                  {/* Footer */}
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                    <p className="text-base font-bold text-[#0f172a]">{item.price}</p>
-                    <button className="px-3 py-1.5 rounded-xl bg-[#1a365d] text-white text-[9px] font-bold hover:bg-[#2a4a7d] transition-all">
-                      Connect
-                    </button>
+                      {/* Footer */}
+                      <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                            {item.postType === 'REQUIREMENT' ? 'Budget range' : 'Valuation'}
+                          </span>
+                          <p className="text-lg font-black text-[#0f172a] tracking-tight">
+                            {item.postType === 'REQUIREMENT' 
+                              ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
+                              : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
+                            }
+                          </p>
+                        </div>
+                        <button className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 group-hover:scale-110 active:scale-95">
+                          <ChevronRight size={20} />
+                        </button>
+                      </div>
+                    </div>
                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)]">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-slate-100">
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] w-24">Order</th>
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Type</th>
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Sub-Type</th>
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Asset Context</th>
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Commercials</th>
+                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {listings.map((item, idx) => (
+                        <tr key={item._id} className="hover:bg-slate-50/80 transition-all group">
+                          <td className="py-6 px-10 text-[12px] font-black text-slate-300 tracking-widest">#{(page - 1) * limit + idx + 1}</td>
+                          <td className="py-6 px-10">
+                            <span className="px-4 py-1.5 rounded-full bg-[#c8962a]/10 text-[#c8962a] text-[10px] font-black uppercase tracking-widest">
+                              {item.vertical}
+                            </span>
+                          </td>
+                          <td className="py-6 px-10">
+                            <span className="px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest">
+                              {item.subType?.replace('_', ' ')}
+                            </span>
+                          </td>
+                          <td className="py-6 px-10">
+                            <div className="flex flex-col">
+                              <span className="text-[14px] font-black text-[#0f172a] tracking-tight group-hover:text-[#c8962a] transition-colors">{item.project || 'Premium Listing'}</span>
+                              <div className="flex items-center gap-1.5 mt-1.5 opacity-50">
+                                <MapPin size={12} className="text-[#c8962a]" />
+                                <span className="text-[11px] font-bold">{item.location}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-6 px-10">
+                            <div className="flex flex-col">
+                              <span className="text-[14px] font-black text-emerald-600 tracking-tight">
+                                {item.postType === 'REQUIREMENT' 
+                                  ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
+                                  : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'N/A'
+                                }
+                              </span>
+                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                {item.postType === 'REQUIREMENT' ? 'Budget Target' : 'Liquidity Ask'}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-6 px-10 text-center">
+                            <button className="px-8 py-3 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 active:scale-95">
+                              Connect
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            ))}
-          </div>
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-20 flex items-center justify-center gap-6">
+                <button 
+                  onClick={() => setPage(prev => Math.max(1, prev - 1))}
+                  disabled={page === 1}
+                  className="w-14 h-14 rounded-[1.25rem] border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                
+                <div className="flex items-center gap-3">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPage(i + 1)}
+                      className={`w-14 h-14 rounded-[1.25rem] text-[13px] font-black transition-all ${
+                        page === i + 1 
+                          ? 'bg-[#c8962a] text-white shadow-[0_15px_30px_rgba(200,150,42,0.3)] scale-110 z-10' 
+                          : 'bg-white border-2 border-slate-50 text-slate-400 hover:border-slate-200 active:scale-90'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+
+                <button 
+                  onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={page === totalPages}
+                  className="w-14 h-14 rounded-[1.25rem] border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+            )}
+          </>
         ) : (
-          /* Table View */
-          <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead>
-                  <tr className="bg-[#F9F6F0] border-b border-slate-200">
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">#</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Category</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sub-type</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Section</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Location</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Area</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Price</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="py-4 px-6 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">Connect</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {listings.map((item, idx) => {
-                    const statusParts = item.status.split(' - ');
-                    const section = statusParts[0];
-                    const subType = statusParts[1];
-                    
-                    return (
-                      <tr key={item.id} className="hover:bg-slate-50/50 transition-all group">
-                        <td className="py-4 px-6 text-[11px] text-slate-400">{idx + 1}</td>
-                        <td className="py-4 px-6">
-                          <span className="px-2 py-1 rounded bg-primary-50 text-primary-600 text-[9px] font-bold">
-                            {item.type}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className={`px-2 py-1 rounded text-[9px] font-bold ${
-                            subType?.includes('BUILDING') ? 'bg-purple-50 text-purple-600' :
-                            subType?.includes('SHOPS') ? 'bg-primary-50 text-primary-600' :
-                            'bg-blue-50 text-blue-600'
-                          }`}>
-                            {subType || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-[11px] text-slate-500 capitalize">
-                          {section.toLowerCase()}
-                        </td>
-                        <td className="py-4 px-6">
-                          <div className="flex flex-col">
-                            <span className="text-[11px] font-bold text-[#0f172a]">{item.title}</span>
-                            <span className="text-[9px] text-slate-400">{item.location}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-[11px] text-[#0f172a] font-medium">
-                          {item.features[0]}
-                        </td>
-                        <td className="py-4 px-6 text-[11px] font-bold text-emerald-600">
-                          {item.price}
-                        </td>
-                        <td className="py-4 px-6">
-                          {item.features[1] && (
-                            <span className={`px-2 py-1 rounded text-[9px] font-bold ${
-                              item.features[1].includes('Ready') ? 'bg-emerald-50 text-emerald-600' :
-                              item.features[1].includes('Vacant') ? 'bg-primary-50 text-primary-600' :
-                              'bg-blue-50 text-blue-600'
-                            }`}>
-                              {item.features[1]}
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <button className="px-4 py-1.5 rounded-lg bg-[#1a365d] text-white text-[9px] font-bold hover:bg-[#2a4a7d] transition-all">
-                            Connect
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          <div className="py-40 flex flex-col items-center justify-center text-center bg-white rounded-[4rem] border border-slate-100 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c8962a]/20 to-transparent"></div>
+            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8">
+              <Loader2 size={40} className="text-slate-200" />
             </div>
+            <h3 className="text-2xl font-serif font-black text-[#0f172a] mb-2 tracking-tight">No results match your criteria</h3>
+            <p className="text-[11px] font-black text-slate-400 mt-2 uppercase tracking-[0.25em] max-w-sm leading-relaxed">
+              Try broadening your search or clearing filters to explore other verified opportunities.
+            </p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-10 px-10 py-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+            >
+              Reset All Filters
+            </button>
           </div>
         )}
       </div>

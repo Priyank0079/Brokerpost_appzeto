@@ -34,12 +34,6 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       ]
     },
     {
-      title: 'NETWORK',
-      items: [
-        { icon: <UsersRound size={16} />, label: 'My Groups', path: '/admin/groups' },
-      ]
-    },
-    {
       title: 'ADMIN',
       items: [
         { icon: <Users size={16} />, label: 'Manage Brokers', path: '/admin/brokers' },
@@ -114,7 +108,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] font-bold text-white truncate">{user?.name || 'Administrator'}</span>
-              <span className="text-[9.5px] text-slate-200 font-medium tracking-tight uppercase">Super Admin</span>
+              <span className="text-[9.5px] text-slate-200 font-medium tracking-tight uppercase">{user?.role || 'Admin'}</span>
             </div>
           </div>
           <button 

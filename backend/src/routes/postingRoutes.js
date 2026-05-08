@@ -7,22 +7,27 @@ const {
   getMyPostings,
   getPostingById,
   updatePosting,
-  deletePosting
+  deletePosting,
+  getPostingStats
 } = require('../controllers/postingController');
 
-const { protect } = require('../middlewares/authMiddleware');
+const { protect, optionalProtect } = require('../middlewares/authMiddleware');
 
-// All posting routes require authentication
+// Public Feed — all active postings (filterable by query params)
+// optionalProtect allows identifying user if logged in, but doesn't force login
+router.get('/', optionalProtect, getPostings);
+
+// Single posting detail
+router.get('/:id', optionalProtect, getPostingById);
+
+// All other routes require mandatory authentication
 router.use(protect);
-
-// Feed — all active postings (filterable by query params)
-router.get('/', getPostings);
 
 // My postings — current broker's own posts
 router.get('/my', getMyPostings);
 
-// Single posting detail
-router.get('/:id', getPostingById);
+// Dashboard Stats
+router.get('/stats', getPostingStats);
 
 // Create new posting
 router.post('/', createPosting);

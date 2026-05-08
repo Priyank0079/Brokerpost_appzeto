@@ -1,34 +1,148 @@
-import React, { useState } from 'react';
-import { X, User } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { X, User, Camera, Loader2, AlertCircle, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { uploadProfileImage } from '../../services/postingService';
 
-const RegisterModal = ({ isOpen, onClose }) => {
-  const { register } = useAuth();
+const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
+  const { register, verifyOTP } = useAuth();
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    companyName: '',
-    address: '',
-    city: '',
-    pinCode: '',
-    phoneNumber: '',
-    email: '',
-    password: ''
+  const [uploading, setUploading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [authError, setAuthError] = useState('');
+  const [formData, setFormData] = useState(() => {
+    const saved = localStorage.getItem('registration_draft');
+    return saved ? JSON.parse(saved) : {
+      firstName: '',
+      lastName: '',
+      companyName: '',
+      address: '',
+      city: '',
+      pinCode: '',
+      phoneNumber: '',
+      email: '',
+      password: '',
+      reraNumber: '',
+      profileImage: '',
+      agreeWithTerms: false
+    };
   });
+  
+  const [errors, setErrors] = useState({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [dynamicTerms, setDynamicTerms] = useState(null);
+
+  // Fetch dynamic terms
+  React.useEffect(() => {
+    if (isOpen) {
+      const fetchTerms = async () => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/landing-config`);
+          const json = await res.json();
+          if (json.success && json.data?.sections?.registrationTerms) {
+            setDynamicTerms(json.data.sections.registrationTerms);
+          }
+        } catch (err) {
+          console.error('Failed to fetch terms:', err);
+        }
+      };
+      fetchTerms();
+    }
+  }, [isOpen]);
+
+  // Persist form data on change
+  React.useEffect(() => {
+    localStorage.setItem('registration_draft', JSON.stringify(formData));
+  }, [formData]);
 
   if (!isOpen) return null;
 
+  const validateStep1 = () => {
+    const newErrors = {};
+    const nameRegex = /^[A-Za-z\s]+$/;
+    const phoneRegex = /^\d{10}$/;
+    const pinRegex = /^\d{6}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!formData.firstName) newErrors.firstName = 'First name is required';
+    else if (!nameRegex.test(formData.firstName)) newErrors.firstName = 'Only alphabetic characters allowed';
+
+    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    else if (!nameRegex.test(formData.lastName)) newErrors.lastName = 'Only alphabetic characters allowed';
+
+    if (!formData.companyName) newErrors.companyName = 'Company name is required';
+    if (!formData.address) newErrors.address = 'Address is required';
+    if (!formData.city) newErrors.city = 'City is required';
+    
+    if (!formData.pinCode) newErrors.pinCode = 'Pin code is required';
+    else if (!pinRegex.test(formData.pinCode)) newErrors.pinCode = 'Must be exactly 6 digits';
+
+    if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+    else if (!phoneRegex.test(formData.phoneNumber)) newErrors.phoneNumber = 'Must be exactly 10 digits';
+
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!emailRegex.test(formData.email)) newErrors.email = 'Invalid email format';
+
+    if (!formData.password) newErrors.password = 'Password is required';
+    else if (formData.password.length < 6) newErrors.password = 'Min 6 characters';
+
+    if (!formData.profileImage) newErrors.profileImage = 'Profile photo is required';
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Real-time validation for alphabetic fields
+    if (name === 'firstName' || name === 'lastName') {
+      const cleanValue = value.replace(/[^A-Za-z\s]/g, '');
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    }
+    // Real-time validation for numeric fields
+    else if (name === 'phoneNumber' || name === 'pinCode') {
+      const cleanValue = value.replace(/\D/g, '');
+      if (name === 'phoneNumber' && cleanValue.length > 10) return;
+      if (name === 'pinCode' && cleanValue.length > 6) return;
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const result = await uploadProfileImage(file);
+      if (result.success) {
+        setFormData(prev => ({ ...prev, profileImage: result.data }));
+        setErrors(prev => ({ ...prev, profileImage: '' }));
+      } else {
+        setErrors(prev => ({ ...prev, profileImage: 'Upload failed. Try again.' }));
+      }
+    } catch (err) {
+      setErrors(prev => ({ ...prev, profileImage: 'Error uploading image.' }));
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleNext = (e) => {
     e.preventDefault();
-    setStep(2);
+    if (validateStep1()) {
+      setStep(2);
+    }
   };
 
   const handleBack = () => {
@@ -38,12 +152,36 @@ const RegisterModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (agreedToTerms) {
-      const result = await register(formData);
+      setUploading(true);
+      setAuthError('');
+      const result = await register({ ...formData, agreeWithTerms: true });
       if (result.success) {
-        onClose();
-        navigate('/dashboard');
+        setStep(3); // Go to OTP verification
+      } else {
+        setAuthError(result.message);
       }
+      setUploading(false);
     }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    if (!otp || otp.length < 6) {
+      setAuthError('Please enter a valid 6-digit OTP');
+      return;
+    }
+
+    setVerifying(true);
+    setAuthError('');
+    const result = await verifyOTP(formData.email, otp, formData.password);
+    if (result.success) {
+      localStorage.removeItem('registration_draft');
+      onClose();
+      navigate('/dashboard');
+    } else {
+      setAuthError(result.message);
+    }
+    setVerifying(false);
   };
 
   return (
@@ -55,7 +193,7 @@ const RegisterModal = ({ isOpen, onClose }) => {
       />
       
       {/* Modal Card */}
-      <div className="relative w-full max-w-[540px] max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 scrollbar-hide">
+      <div className="relative w-full max-w-[580px] max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 scrollbar-hide">
         {/* Close Button */}
         <button 
           onClick={onClose}
@@ -64,231 +202,309 @@ const RegisterModal = ({ isOpen, onClose }) => {
           <X size={20} />
         </button>
 
-        <div className="p-8">
+        <div className="p-8 pt-10">
           {/* Header */}
           <div className="mb-6">
-            <h2 className="text-2xl font-serif text-[#1a365d] mb-1">Register as a Broker</h2>
-            <p className="text-slate-500 text-sm">Join the verified broker network — no brokerage charged</p>
+            <h2 className="text-2xl font-serif text-[#1a365d] mb-1">
+              {step === 3 ? 'Verify Your Email' : 'Register as a Broker'}
+            </h2>
+            <p className="text-slate-500 text-sm font-medium">
+              {step === 3 ? `Enter the OTP sent to ${formData.email}` : 'Join the verified broker network — no brokerage charged'}
+            </p>
           </div>
+
+          {authError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-lg text-red-600 text-xs font-bold flex items-center gap-2">
+              <AlertCircle size={14} />
+              {authError}
+            </div>
+          )}
 
           {step === 1 ? (
             <form onSubmit={handleNext} className="space-y-6">
               {/* Photo Upload Area */}
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
-                  PROFILE PHOTO / LOGO (Optional)
+                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                  PROFILE PHOTO / LOGO 
+                  {errors.profileImage && <span className="text-red-500 lowercase font-bold flex items-center gap-1"><AlertCircle size={10} /> {errors.profileImage}</span>}
                 </label>
-                <div className="w-full border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer bg-white">
-                  <div className="w-12 h-12 rounded-full bg-[#fdf8f3] flex items-center justify-center text-[#1a365d]">
-                    <User size={24} />
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`w-full border-2 border-dashed ${errors.profileImage ? 'border-red-200 bg-red-50/30' : 'border-slate-200 bg-white'} rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer relative overflow-hidden`}
+                >
+                  <input 
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                  {uploading && (
+                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                      <Loader2 size={24} className="text-[#c8962a] animate-spin" />
+                    </div>
+                  )}
+                  <div className="w-12 h-12 rounded-full bg-[#fdf8f3] border border-[#f5ebd8] flex items-center justify-center text-[#1a365d] shrink-0 overflow-hidden">
+                    {formData.profileImage ? (
+                      <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <Camera size={20} />
+                    )}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#1a365d]">Click to upload photo</p>
+                    <p className="text-sm font-bold text-[#1a365d]">{formData.profileImage ? 'Photo uploaded' : 'Click to upload photo'}</p>
                     <p className="text-[10px] text-slate-400 font-medium">JPG or PNG • Max 2MB</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Full Name */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
-                    FULL NAME *
+                {/* First Name */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    FIRST NAME *
                   </label>
                   <input 
                     type="text"
-                    name="fullName"
-                    required
-                    value={formData.fullName}
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleChange}
-                    placeholder="Your full name"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    placeholder="Your first name"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.firstName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.firstName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.firstName}</p>}
                 </div>
 
-                {/* Company / Firm Name */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                {/* Last Name */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    LAST NAME *
+                  </label>
+                  <input 
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    placeholder="Your last name"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.lastName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                  />
+                  {errors.lastName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.lastName}</p>}
+                </div>
+
+                {/* Company Name */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     COMPANY / FIRM NAME *
                   </label>
                   <input 
                     type="text"
                     name="companyName"
-                    required
                     value={formData.companyName}
                     onChange={handleChange}
-                    placeholder="Your realty firm"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    placeholder="Your realty firm name"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.companyName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.companyName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.companyName}</p>}
                 </div>
 
-                {/* Street / Office Address */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                {/* Address */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     STREET / OFFICE ADDRESS *
                   </label>
                   <input 
                     type="text"
                     name="address"
-                    required
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="Office address (street, locality)"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.address ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.address && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.address}</p>}
                 </div>
 
                 {/* City */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     CITY *
                   </label>
-                  <select 
-                    name="city"
-                    required
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 text-slate-900 appearance-none"
-                  >
-                    <option value="" disabled>— Select City —</option>
-                    <option value="Gurugram">Gurugram</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Faridabad">Faridabad</option>
-                    <option value="Noida">Noida</option>
-                    <option value="Greater Noida">Greater Noida</option>
-                  </select>
+                  <div className="relative">
+                    <select 
+                      name="city"
+                      value={formData.city}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.city ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 appearance-none`}
+                    >
+                      <option value="" disabled>— Select City —</option>
+                      <option value="Gurugram">Gurugram</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Faridabad">Faridabad</option>
+                      <option value="Noida">Noida</option>
+                      <option value="Greater Noida">Greater Noida</option>
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                      <X size={12} className="rotate-45" />
+                    </div>
+                  </div>
+                  {errors.city && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.city}</p>}
                 </div>
 
                 {/* Pin Code */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     PIN CODE *
                   </label>
                   <input 
                     type="text"
                     name="pinCode"
-                    required
                     value={formData.pinCode}
                     onChange={handleChange}
                     placeholder="6-digit pin code"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.pinCode ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.pinCode && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.pinCode}</p>}
                 </div>
 
                 {/* Phone Number */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     PHONE NUMBER *
                   </label>
                   <input 
                     type="tel"
                     name="phoneNumber"
-                    required
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.phoneNumber ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.phoneNumber && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.phoneNumber}</p>}
                 </div>
 
                 {/* Email Address */}
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     EMAIL ADDRESS *
                   </label>
                   <input 
                     type="email"
                     name="email"
-                    required
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.email ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                  />
+                  {errors.email && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.email}</p>}
+                </div>
+
+                {/* RERA Number */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    RERA NUMBER
+                  </label>
+                  <input 
+                    type="text"
+                    name="reraNumber"
+                    value={formData.reraNumber}
+                    onChange={handleChange}
+                    placeholder="Alphanumeric code"
+                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400"
                   />
                 </div>
 
                 {/* Password */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
                     PASSWORD *
                   </label>
                   <input 
                     type="password"
                     name="password"
-                    required
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Min 6 characters"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-2 focus:ring-[#c8962a]/20 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-slate-600"
+                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.password ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
                   />
+                  {errors.password && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.password}</p>}
                 </div>
               </div>
 
+              {/* Login Link */}
+              <div className="text-center pt-2">
+                <p className="text-xs font-medium text-slate-400">
+                  Already have an account? <button type="button" onClick={onSwitchToLogin} className="font-bold text-[#1a365d] hover:underline">Login here</button>
+                </p>
+              </div>
+
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-6 pb-2">
+              <div className="flex items-center justify-between gap-3 pt-4 pb-2">
                 <button 
                   type="button"
                   onClick={onClose}
-                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-bold text-[#1a365d] hover:bg-slate-50 transition-all"
+                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
                 >
-                  ← Back
+                  Discard
                 </button>
                 <button 
                   type="submit"
-                  className="px-8 py-3 rounded-xl bg-[#c0922e] text-white text-sm font-bold hover:bg-[#a67d26] transition-all"
+                  disabled={uploading}
+                  className={`px-8 py-3 rounded-xl bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  Next: Review Terms →
+                  Next Step <ChevronRight size={16} strokeWidth={3} />
                 </button>
               </div>
             </form>
-          ) : (
+          ) : step === 2 ? (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
               {/* Blue Info Box */}
               <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
                 <span className="text-lg">📋</span>
-                <p className="text-xs text-blue-700 font-medium leading-relaxed">
+                <p className="text-xs text-blue-700 font-bold leading-relaxed">
                   Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersPost.
                 </p>
               </div>
 
               {/* Scrollable Terms Content */}
-              <div className="p-5 border border-slate-200 rounded-xl bg-[#FAF9F6] max-h-[300px] overflow-y-auto space-y-5">
-                <h3 className="text-sm font-bold text-[#1a365d]">Important Disclaimer & Terms of Use — BrokersPost</h3>
+              <div className="p-5 border border-slate-200 rounded-xl bg-[#FAF9F6] max-h-[300px] overflow-y-auto space-y-5 custom-scrollbar">
+                <h3 className="text-sm font-black text-[#1a365d]">
+                  {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersPost"}
+                </h3>
                 
                 <div className="space-y-4">
-                  <div className="flex gap-2">
-                    <span className="text-xs font-bold text-[#1a365d]">1.</span>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      <span className="font-bold text-[#1a365d]">No Liability:</span> BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal.
-                    </p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <span className="text-xs font-bold text-[#1a365d]">2.</span>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      <span className="font-bold text-[#1a365d]">Independent Dealing:</span> Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion.
-                    </p>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <span className="text-xs font-bold text-[#1a365d]">3.</span>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      <span className="font-bold text-[#1a365d]">Genuine Listings Only:</span> Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination.
-                    </p>
-                  </div>
+                  {(dynamicTerms?.items || [
+                    { title: "No Liability", content: "BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
+                    { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
+                    { title: "Genuine Listings Only", content: "Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination." }
+                  ]).map((item, idx) => (
+                    <div key={idx} className="flex gap-2">
+                      <span className="text-xs font-black text-[#1a365d]">{idx + 1}.</span>
+                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                        <span className="font-black text-[#1a365d]">{item.title}:</span> {item.content}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Checkbox */}
-              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors">
-                <input 
-                  type="checkbox"
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-1 w-4 h-4 rounded border-slate-300 text-[#c8962a] focus:ring-[#c8962a]/20"
-                />
-                <span className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                  I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine.
+              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors group">
+                <div className="relative flex items-center mt-0.5">
+                  <input 
+                    type="checkbox" 
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="w-5 h-5 rounded-lg border-slate-300 text-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10 transition-all cursor-pointer appearance-none checked:bg-[#c8962a] checked:border-[#c8962a]"
+                  />
+                  {agreedToTerms && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <svg className="w-3.5 h-3.5 text-[#0F172A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                        <path d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <span className="text-[11px] text-slate-600 font-bold leading-relaxed">
+                  {dynamicTerms?.agreementText || "I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine."}
                 </span>
               </label>
 
@@ -296,22 +512,65 @@ const RegisterModal = ({ isOpen, onClose }) => {
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button 
                   onClick={handleBack}
-                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-bold text-[#1a365d] hover:bg-slate-50 transition-all"
+                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
                 >
-                  ← Back
+                  ← Previous Step
                 </button>
                 <button 
                   onClick={handleSubmit}
-                  disabled={!agreedToTerms}
-                  className={`px-8 py-3 rounded-xl flex items-center gap-2 text-sm font-bold transition-all ${
+                  disabled={!agreedToTerms || uploading}
+                  className={`px-8 py-3 rounded-xl flex items-center gap-2 text-sm font-black transition-all shadow-xl ${
                     agreedToTerms 
-                    ? 'bg-[#c0922e] text-white hover:bg-[#a67d26]' 
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                    ? 'bg-[#c8962a] text-[#0F172A] hover:bg-[#b48c35] shadow-[#c8962a]/20' 
+                    : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
                   }`}
                 >
-                  ✔ Accept & Register
+                  {uploading ? <Loader2 size={16} className="animate-spin" /> : '✔ Submit'}
                 </button>
               </div>
+            </div>
+          ) : (
+            /* Step 3: OTP Verification */
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+               <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3">
+                <span className="text-lg">📧</span>
+                <p className="text-xs text-amber-700 font-bold leading-relaxed">
+                  Check your email for a 6-digit verification code. (Development: Use 123456)
+                </p>
+              </div>
+
+              <form onSubmit={handleVerifyOTP} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    ENTER OTP CODE
+                  </label>
+                  <input 
+                    type="text"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="000000"
+                    className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-4">
+                   <button 
+                    type="button"
+                    onClick={() => setStep(2)}
+                    className="px-8 py-3 rounded-xl border border-slate-200 text-sm font-black text-slate-400 hover:bg-slate-50 transition-all"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={verifying || otp.length < 6}
+                    className={`px-10 py-3 rounded-xl bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${verifying || otp.length < 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    {verifying ? <Loader2 size={16} className="animate-spin" /> : 'Verify & Finish'}
+                  </button>
+                </div>
+              </form>
             </div>
           )}
         </div>

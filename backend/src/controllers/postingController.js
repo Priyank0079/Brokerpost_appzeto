@@ -16,7 +16,7 @@ exports.createPosting = async (req, res, next) => {
       totalAmount, totalAmountUnit,
       budgetMin, budgetMax, budgetUnit,
       occupancy, constructionStatus,
-      tenantPreference, shortDescription, images
+      tenantPreference, shortDescription, images, videos, city
     } = req.body;
 
     const posting = await Posting.create({
@@ -31,7 +31,7 @@ exports.createPosting = async (req, res, next) => {
       totalAmount, totalAmountUnit,
       budgetMin, budgetMax, budgetUnit,
       occupancy, constructionStatus,
-      tenantPreference, shortDescription, images
+      tenantPreference, shortDescription, images, videos, city
     });
 
     res.status(201).json({
@@ -56,7 +56,7 @@ exports.getPostings = async (req, res, next) => {
     const {
       vertical, postType, intent, subType,
       location, bedrooms, constructionStatus, occupancy,
-      groupId,
+      groupId, city,
       page = 1, limit = 20
     } = req.query;
 
@@ -69,6 +69,7 @@ exports.getPostings = async (req, res, next) => {
     if (bedrooms)           filter.bedrooms           = bedrooms;
     if (constructionStatus) filter.constructionStatus = constructionStatus;
     if (occupancy)          filter.occupancy          = occupancy;
+    if (city)               filter.city               = city;
 
     if (location) {
       filter.location = { $regex: location.trim(), $options: 'i' };
@@ -222,8 +223,11 @@ exports.updatePosting = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Posting not found' });
     }
 
-    // Only the owner can update
-    if (posting.postedBy.toString() !== req.user._id.toString()) {
+    // Only the owner or an admin can update
+    const isOwner = posting.postedBy.toString() === req.user._id.toString();
+    const isAdmin = req.userModel === 'Admin';
+
+    if (!isOwner && !isAdmin) {
       return res.status(403).json({ success: false, message: 'Not authorized to update this posting' });
     }
 
@@ -236,7 +240,7 @@ exports.updatePosting = async (req, res, next) => {
       'totalAmount', 'totalAmountUnit',
       'budgetMin', 'budgetMax', 'budgetUnit',
       'occupancy', 'constructionStatus',
-      'tenantPreference', 'shortDescription',
+      'tenantPreference', 'shortDescription', 'images', 'videos',
       'isActive'
     ];
 
@@ -277,7 +281,7 @@ exports.deletePosting = async (req, res, next) => {
     }
 
     const isOwner = posting.postedBy.toString() === req.user._id.toString();
-    const isAdmin = ['Administrator', 'Super Admin', 'Admin'].includes(req.user.role);
+    const isAdmin = req.userModel === 'Admin';
 
     if (!isOwner && !isAdmin) {
       return res.status(403).json({ success: false, message: 'Not authorized to delete this posting' });
@@ -291,6 +295,70 @@ exports.deletePosting = async (req, res, next) => {
       message: 'Posting removed successfully'
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// @desc    Get dashboard statistics (aggregated counts)
+// @route   GET /api/v1/postings/stats
+// @access  Private
+// ─────────────────────────────────────────────────────────────────────────────
+exports.getPostingStats = async (req, res, next) => {
+  try {
+    console.log('Fetching stats for user:', req.user._id);
+    const [
+      totalListings,
+      myListings,
+      availabilityCount,
+      requirementCount,
+      residentialAvailable,
+      commercialAvailable,
+      residentialWanted,
+      commercialWanted,
+      recentListings,
+      totalBrokers // Added for "Active Brokers" card
+    ] = await Promise.all([
+      Posting.countDocuments({ isActive: true }),
+      Posting.countDocuments({ postedBy: req.user._id, isActive: true }),
+      Posting.countDocuments({ postType: 'AVAILABILITY', isActive: true }),
+      Posting.countDocuments({ postType: 'REQUIREMENT', isActive: true }),
+      // Breakdown for Residential/Commercial Available
+      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }),
+      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }),
+      // Breakdown for Residential/Commercial Wanted (Requirement)
+      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }),
+      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }),
+      // Recent listings for the table
+      Posting.find({ isActive: true })
+        .populate('postedBy', 'firstName lastName companyName')
+        .sort({ createdAt: -1 })
+        .limit(5),
+      // Broker count
+      require('../models/User').countDocuments({ role: 'Broker' })
+    ]);
+
+    console.log('Stats fetched successfully');
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalListings,
+        myListings,
+        availabilityCount,
+        requirementCount,
+        breakdown: {
+          residentialAvailable,
+          commercialAvailable,
+          residentialWanted,
+          commercialWanted
+        },
+        recentListings,
+        totalBrokers
+      }
+    });
+  } catch (error) {
+    console.error('Error in getPostingStats:', error);
     next(error);
   }
 };

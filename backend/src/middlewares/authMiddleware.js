@@ -56,6 +56,39 @@ const protect = async (req, res, next) => {
   }
 };
 
+const optionalProtect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      if (token && token !== 'null' && token !== 'undefined') {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userModel = decoded.model || 'User';
+        let foundUser;
+        
+        if (userModel === 'Admin') {
+          foundUser = await Admin.findById(decoded.id).select('-password');
+        } else {
+          foundUser = await User.findById(decoded.id).select('-password');
+        }
+        
+        if (foundUser) {
+          req.user = foundUser;
+          req.userModel = userModel;
+        }
+      }
+    } catch (error) {
+      console.error('Optional JWT Error:', error.message);
+      // Don't error out, just proceed without req.user
+    }
+  }
+  next();
+};
+
 const authorize = (...roles) => {
   return (req, res, next) => {
     console.log(`Checking authorization: User role [${req.user.role}], required roles [${roles.join(', ')}]`);
@@ -69,4 +102,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize };
+module.exports = { protect, optionalProtect, authorize };

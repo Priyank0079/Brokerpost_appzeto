@@ -31,7 +31,7 @@ const AdminLogin = lazy(() => import('../modules/admin/pages/Login'));
 
 const AppRoutes = () => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'Admin';
+  const isAdmin = user?.role === 'Admin' || user?.role === 'Super Admin';
 
 
   return (

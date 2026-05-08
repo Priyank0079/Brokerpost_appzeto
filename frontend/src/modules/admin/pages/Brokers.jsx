@@ -12,7 +12,6 @@ const Brokers = () => {
     { label: 'Total Brokers', value: '0' },
     { label: 'Pending', value: '0' },
     { label: 'Verified', value: '0' },
-    { label: 'Total Users', value: '0' },
   ]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -75,7 +74,6 @@ const Brokers = () => {
           { label: 'Total Brokers', value: response.data.totalBrokers || 0 },
           { label: 'Pending', value: response.data.pendingBrokers || 0 },
           { label: 'Verified', value: response.data.verifiedBrokers || 0 },
-          { label: 'Total Users', value: response.data.totalUsers || 0 },
         ]);
       }
     } catch (err) {
@@ -145,12 +143,8 @@ const Brokers = () => {
           </button>
         </div>
 
-        {/* Title Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 md:px-0">
-          <div className="space-y-1">
-            <h2 className="text-xl md:text-2xl font-serif text-black">Manage Brokers</h2>
-            <p className="text-[10px] md:text-[11px] text-slate-400 font-medium tracking-tight">Approve, edit or remove brokers</p>
-          </div>
+        {/* Action Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 px-2 md:px-0">
           <button 
             onClick={() => {
               setEditingBroker(null);
@@ -166,7 +160,7 @@ const Brokers = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 px-2 md:px-0">
           {stats.map((stat, idx) => (
             <div key={idx} className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm text-center">
               <span className="text-xl md:text-3xl font-serif text-black">{stat.value}</span>
@@ -387,7 +381,6 @@ const Brokers = () => {
                     className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
                   >
                     <option value="Broker">Broker</option>
-                    <option value="Admin">Admin</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">

@@ -146,6 +146,15 @@ const LandingPageConfigSchema = new mongoose.Schema({
         }]
       }],
       copyright: { type: String, default: "© 2026 Brokerspost Network Platform." }
+    },
+    registrationTerms: {
+      visible: { type: Boolean, default: true },
+      title: { type: String, default: "Important Disclaimer & Terms of Use — BrokersPost" },
+      items: [{
+        title: { type: String },
+        content: { type: String }
+      }],
+      agreementText: { type: String, default: "I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine." }
     }
   },
   updatedAt: {

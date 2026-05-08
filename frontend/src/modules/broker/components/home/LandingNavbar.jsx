@@ -51,12 +51,6 @@ const LandingNavbar = () => {
               ) : (
                 <>
                   <button 
-                    onClick={() => setIsLoginModalOpen(true)}
-                    className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all"
-                  >
-                    Login
-                  </button>
-                  <button 
                     onClick={() => setIsRegisterModalOpen(true)}
                     className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
                   >
@@ -132,15 +126,6 @@ const LandingNavbar = () => {
                   <>
                     <button 
                       onClick={() => {
-                        setIsLoginModalOpen(true);
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-5 py-3 rounded-xl border border-slate-300 text-sm font-bold text-[#1A1A1A]"
-                    >
-                      Login
-                    </button>
-                    <button 
-                      onClick={() => {
                         setIsRegisterModalOpen(true);
                         setIsMobileMenuOpen(false);
                       }}
@@ -159,10 +144,18 @@ const LandingNavbar = () => {
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
+        onSwitchToRegister={() => {
+          setIsLoginModalOpen(false);
+          setIsRegisterModalOpen(true);
+        }}
       />
       <RegisterModal 
         isOpen={isRegisterModalOpen} 
         onClose={() => setIsRegisterModalOpen(false)} 
+        onSwitchToLogin={() => {
+          setIsRegisterModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
       />
     </>
   );

@@ -3,17 +3,20 @@ import { X, ChevronRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const LoginModal = ({ isOpen, onClose }) => {
+const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, sendLoginOTP, loginWithOTP } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [isOtpLogin, setIsOtpLogin] = useState(false);
+  const [otpStep, setOtpStep] = useState(1); // 1: Email, 2: OTP
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleLogin = async (e) => {
+  const handlePasswordLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -22,17 +25,55 @@ const LoginModal = ({ isOpen, onClose }) => {
       const result = await login(email, password);
       if (result.success) {
         onClose();
-        const userData = result.user;
-        if (userData.role === 'Administrator' || userData.role === 'Super Admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       } else {
         setError(result.message);
       }
     } catch (err) {
       setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
+    if (!email) {
+      setError('Please enter your email');
+      return;
+    }
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await sendLoginOTP(email);
+      if (result.success) {
+        setOtpStep(2);
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError('Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const result = await loginWithOTP(email, otp);
+      if (result.success) {
+        onClose();
+        navigate('/dashboard');
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError('Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -59,78 +100,151 @@ const LoginModal = ({ isOpen, onClose }) => {
         <div className="p-5 lg:p-6 pb-2">
           {/* Header */}
           <div className="">
-            <h2 className="text-2xl font-serif font-medium text-[#273a60] mb-1">Broker Login</h2>
-            <p className="text-slate-400 text-xs">Access your inventory dashboard</p>
+            <h2 className="text-2xl font-serif font-medium text-[#273a60] mb-1">
+              {isOtpLogin && otpStep === 2 ? 'Verify OTP' : 'Broker Login'}
+            </h2>
+            <p className="text-slate-400 text-xs">
+              {isOtpLogin && otpStep === 2 ? `OTP sent to ${email}` : 'Access your inventory dashboard'}
+            </p>
           </div>
         </div>
 
-        <div className="h-[1px] bg-slate-300 w-full" />
+        <div className="h-[1px] bg-slate-100 w-full" />
 
         <div className="p-5 lg:p-6 pt-2">
-          <form onSubmit={handleLogin} className="space-y-3">
-            <div className="space-y-2">
-              {/* Email Field */}
+          {error && (
+            <p className="text-[10px] font-bold text-red-500 text-center bg-red-50 py-2 rounded-lg mb-4 animate-shake">
+              {error}
+            </p>
+          )}
+
+          {!isOtpLogin ? (
+            /* Password Login Form */
+            <form onSubmit={handlePasswordLogin} className="space-y-4">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    EMAIL ADDRESS
+                  </label>
+                  <input 
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+                    PASSWORD
+                  </label>
+                  <input 
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Your password"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-2">
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-xl bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Logging in...' : 'Login with Password'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIsOtpLogin(true)}
+                  className="text-xs font-bold text-[#1a365d] hover:underline"
+                >
+                  Login with OTP instead
+                </button>
+              </div>
+            </form>
+          ) : otpStep === 1 ? (
+            /* OTP Login - Step 1: Email */
+            <form onSubmit={handleSendOtp} className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  EMAIL ADDRESS *
+                  EMAIL ADDRESS
                 </label>
                 <input 
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-xs text-slate-900 placeholder:text-slate-600"
+                  placeholder="Enter registered email"
+                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
                 />
               </div>
 
-              {/* Password Field */}
-              <div className="space-y-1">
+              <div className="flex flex-col gap-3 pt-2">
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 rounded-xl bg-[#1a365d] text-white text-sm font-bold shadow-xl shadow-blue-900/10 hover:bg-[#122a4a] transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Sending OTP...' : 'Get Login OTP'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setIsOtpLogin(false)}
+                  className="text-xs font-bold text-slate-400 hover:underline"
+                >
+                  Back to Password Login
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* OTP Login - Step 2: Verify OTP */
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+               <div className="space-y-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                  PASSWORD *
+                  ENTER 6-DIGIT OTP
                 </label>
                 <input 
-                  type="password"
+                  type="text"
+                  maxLength={6}
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Your password"
-                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all font-medium text-xs text-slate-900 placeholder:text-slate-600"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200"
                 />
               </div>
-            </div>
 
-            {error && (
-              <p className="text-xs font-bold text-red-500 text-center bg-red-50 py-2 rounded-lg animate-shake">
-                {error}
-              </p>
-            )}
+              <div className="flex flex-col gap-3 pt-2">
+                <button 
+                  type="submit"
+                  disabled={loading || otp.length < 6}
+                  className="w-full py-3.5 rounded-xl bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Verifying...' : 'Verify & Login'}
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setOtpStep(1)}
+                  className="text-xs font-bold text-slate-400 hover:underline"
+                >
+                  Change Email
+                </button>
+              </div>
+            </form>
+          )}
 
-            {/* Registration Link */}
-            <div className="text-center pt-2">
-              <p className="text-xs font-medium text-slate-400">
-                Not registered? <Link to="/register" onClick={onClose} className="font-bold text-[#1a365d] hover:underline">Register here</Link>
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-end gap-3 pt-1">
-              <button 
-                type="button"
-                onClick={onClose}
-                className="w-28 py-2.5 rounded-lg border-2 border-slate-100 text-[12px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
-              >
-                Cancel
-              </button>
-              <button 
-                type="submit"
-                disabled={loading}
-                className="w-28 py-2.5 rounded-lg bg-[#c8962a] text-white text-[12px] font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
-              >
-                {loading ? 'Logging in...' : 'Login'}
-              </button>
-            </div>
-          </form>
+          {/* Registration Link */}
+          <div className="text-center pt-6 pb-2">
+            <p className="text-xs font-medium text-slate-400">
+              Not registered? <button type="button" onClick={onSwitchToRegister} className="font-bold text-[#1a365d] hover:underline">Register here</button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ArrowLeft, Edit2, Trash2, Plus, Loader2, AlertCircle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 import Modal from '../../broker/components/ui/Modal';
 
 const Listings = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(true);
   const [listings, setListings] = useState([]);
   const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [listingToDelete, setListingToDelete] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
+
+  // Parse query params
+  const queryParams = new URLSearchParams(location.search);
+  const postTypeFilter = queryParams.get('postType');
   const [formData, setFormData] = useState({
     subType: '',
     location: '',
@@ -30,7 +35,8 @@ const Listings = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/postings');
+      const endpoint = postTypeFilter ? `/postings?postType=${postTypeFilter}` : '/postings';
+      const response = await api.get(endpoint);
       if (response.success) {
         setListings(response.data);
       }
@@ -44,7 +50,7 @@ const Listings = () => {
 
   useEffect(() => {
     fetchListings();
-  }, []);
+  }, [postTypeFilter]);
 
   const handleDeleteConfirm = async () => {
     if (!listingToDelete) return;
@@ -120,12 +126,6 @@ const Listings = () => {
             <ArrowLeft size={14} /> 
             <span className="hidden xs:inline">Public Site</span>
           </button>
-        </div>
-
-        {/* Title Section */}
-        <div className="space-y-1 px-2 md:px-0">
-          <h2 className="text-xl md:text-2xl font-serif text-black">All Platform Listings</h2>
-          <p className="text-[10px] md:text-[11px] text-slate-400 font-medium tracking-tight">Admin view of all listings across all brokers</p>
         </div>
 
         {/* Table Container */}

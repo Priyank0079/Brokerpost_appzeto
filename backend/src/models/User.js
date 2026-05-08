@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [false, 'Please provide a password'], // Optional if it's an application
+    required: [true, 'Please provide a password'],
     minlength: 6,
     select: false
   },
@@ -84,6 +84,10 @@ const userSchema = new mongoose.Schema({
   },
   otpExpires: {
     type: Date
+  },
+  agreeWithTerms: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

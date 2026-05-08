@@ -31,7 +31,7 @@ const postingSchema = new mongoose.Schema({
   },
   intent: {
     type: String,
-    enum: ['PURCHASE', 'RENT', 'SALE', 'RENTALS', 'LEASE'],
+    enum: ['PURCHASE', 'RENT', 'SALE', 'RENTALS', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'],
     required: [true, 'Intent is required'],
     index: true
   },
@@ -54,7 +54,12 @@ const postingSchema = new mongoose.Schema({
     required: [true, 'Sub-type is required'],
     index: true
   },
-
+  city: {
+    type: String,
+    required: [true, 'City is required'],
+    trim: true,
+    index: true
+  },
   // ── LOCATION ────────────────────────────────────────────────────────────────
   location: {
     type: String,
@@ -156,6 +161,17 @@ const postingSchema = new mongoose.Schema({
         return val.length <= 5;
       },
       message: 'A posting can have a maximum of 5 images'
+    }
+  },
+
+  // ── VIDEOS ──────────────────────────────────────────────────────────────────
+  videos: {
+    type: [String],
+    validate: {
+      validator: function(val) {
+        return val.length <= 1;
+      },
+      message: 'A posting can have a maximum of 1 video'
     }
   },
 

@@ -17,9 +17,23 @@ const storage = new CloudinaryStorage({
   }
 });
 
+const videoStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'brokerpost/property_videos',
+    resource_type: 'video',
+    allowed_formats: ['mp4', 'mov', 'avi']
+  }
+});
+
 const upload = multer({ 
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-module.exports = { cloudinary, upload };
+const uploadVideo = multer({
+  storage: videoStorage,
+  limits: { fileSize: 20 * 1024 * 1024 } // 20MB limit
+});
+
+module.exports = { cloudinary, upload, uploadVideo };

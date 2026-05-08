@@ -39,18 +39,11 @@ const Layout = ({ children }) => {
       
       <div className={`flex-1 flex flex-col min-h-screen overflow-x-hidden transition-all duration-500 ease-in-out ${!isHomePage ? (isCollapsed ? 'lg:ml-20' : 'lg:ml-64') : ''}`}>
         {!isHomePage && (
-          <div className="lg:hidden h-14 bg-white border-b border-slate-100 px-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
-            <button 
-              onClick={() => setSidebarOpen(true)}
-              className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
-            >
-              <Menu size={20} />
-            </button>
-            <span className="text-base font-bold tracking-tight font-['Times_New_Roman',_serif]">
-              <span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span>
-            </span>
-            <div className="w-10" /> {/* Spacer for centering */}
-          </div>
+          <Navbar 
+            toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+            isCollapsed={isCollapsed}
+            toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          />
         )}
         
         <main className={`flex-1 ${isHomePage ? 'p-0' : (isDashboard ? 'p-6 lg:p-10 bg-[#FAF9F6]' : 'p-4 md:p-6 lg:p-10')} animate-fade-in max-w-[1600px] mx-auto w-full`}>

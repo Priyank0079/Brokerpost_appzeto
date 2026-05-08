@@ -188,6 +188,16 @@ exports.getLandingConfig = async (req, res) => {
               }
             ],
             copyright: "© 2026 Brokerspost Network Platform."
+          },
+          registrationTerms: {
+            visible: true,
+            title: "Important Disclaimer & Terms of Use — BrokersPost",
+            items: [
+              { title: "No Liability", content: "BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
+              { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
+              { title: "Genuine Listings Only", content: "Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination." }
+            ],
+            agreementText: "I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine."
           }
         }
       });
