@@ -318,7 +318,11 @@ exports.getPostingStats = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    const userId = req.user._id;
+    const mongoose = require('mongoose');
+    const PostingModel = mongoose.model('Posting');
+    const UserModel = mongoose.model('User');
+
+    const userId = req.user.id || req.user._id;
     console.log('Generating dashboard stats for User ID:', userId);
 
     // Run basic counts first (these are fast)
@@ -328,10 +332,10 @@ exports.getPostingStats = async (req, res, next) => {
       availabilityCount,
       requirementCount
     ] = await Promise.all([
-      Posting.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed', e); return 0; }),
-      Posting.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed', e); return 0; }),
-      Posting.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed', e); return 0; }),
-      Posting.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed', e); return 0; })
+      PostingModel.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed', e); return 0; }),
+      PostingModel.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed', e); return 0; }),
+      PostingModel.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed', e); return 0; }),
+      PostingModel.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed', e); return 0; })
     ]);
 
     // Run breakdown and recent listings
@@ -343,17 +347,17 @@ exports.getPostingStats = async (req, res, next) => {
       recentListings,
       totalBrokers
     ] = await Promise.all([
-      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
-      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
-      Posting.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
-      Posting.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
-      Posting.find({ isActive: true })
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
+      PostingModel.find({ isActive: true })
         .populate('postedBy', 'firstName lastName companyName name')
         .sort({ createdAt: -1 })
         .limit(5)
         .lean()
         .catch(e => { console.error('Recent listings fetch failed', e); return []; }),
-      User.countDocuments({ role: 'Broker' }).catch(() => 0)
+      UserModel.countDocuments({ role: 'Broker' }).catch(() => 0)
     ]);
 
     res.status(200).json({
@@ -378,7 +382,8 @@ exports.getPostingStats = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: 'Failed to aggregate dashboard statistics',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };

@@ -13,11 +13,19 @@ const {
 
 const { protect, optionalProtect } = require('../middlewares/authMiddleware');
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PRIORITY ROUTES (Must be before /:id)
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Dashboard Stats - High Priority
+router.get('/stats', protect, getPostingStats);
+
 // My postings — current broker's own posts
 router.get('/my', protect, getMyPostings);
 
-// Dashboard Stats
-router.get('/stats', protect, getPostingStats);
+// ─────────────────────────────────────────────────────────────────────────────
+// GENERAL ROUTES
+// ─────────────────────────────────────────────────────────────────────────────
 
 // Public Feed — all active postings (filterable by query params)
 router.get('/', optionalProtect, getPostings);
