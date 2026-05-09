@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-const LandingFooter = () => {
+const LandingFooter = ({ config }) => {
   return (
     <footer>
       {/* Disclaimer Bar */}
@@ -22,7 +22,7 @@ const LandingFooter = () => {
             <div className="flex flex-col items-center md:items-start">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-base font-bold"><span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span></span>
-                <span className="text-slate-300 text-xs"> — Verified Broker Inventory Network</span>
+                <span className="text-slate-300 text-xs"> — {config?.brandingDesc || 'Verified Broker Inventory Network'}</span>
               </div>
               <p className="text-slate-300 text-xs">
                 For professional brokers only · Zero brokerage charged
@@ -31,7 +31,7 @@ const LandingFooter = () => {
             
             <div className="flex flex-col items-center md:items-end">
               <p className="text-slate-300 text-xs mb-1">
-                © 2025 BrokersPost. All rights reserved. - <button className="hover:text-white transition-colors underline decoration-slate-600">Disclaimer & Terms</button>
+                {config?.copyright || '© 2026 Brokerspost Network Platform.'} - <button className="hover:text-white transition-colors underline decoration-slate-600">Disclaimer & Terms</button>
               </p>
             </div>
           </div>

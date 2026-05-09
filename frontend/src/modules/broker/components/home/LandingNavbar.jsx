@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Lock, LogOut, LayoutGrid, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import LoginModal from './LoginModal';
-import RegisterModal from './RegisterModal';
 
-const LandingNavbar = () => {
+const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
   const { user, logout } = useAuth();
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -51,7 +47,7 @@ const LandingNavbar = () => {
               ) : (
                 <>
                   <button 
-                    onClick={() => setIsRegisterModalOpen(true)}
+                    onClick={onRegisterClick}
                     className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
                   >
                     Join as Broker
@@ -126,7 +122,7 @@ const LandingNavbar = () => {
                   <>
                     <button 
                       onClick={() => {
-                        setIsRegisterModalOpen(true);
+                        onRegisterClick();
                         setIsMobileMenuOpen(false);
                       }}
                       className="w-full px-5 py-3 rounded-xl bg-[#c0922e] text-sm font-bold text-white"
@@ -140,23 +136,6 @@ const LandingNavbar = () => {
           </div>
         )}
       </nav>
-
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-        onSwitchToRegister={() => {
-          setIsLoginModalOpen(false);
-          setIsRegisterModalOpen(true);
-        }}
-      />
-      <RegisterModal 
-        isOpen={isRegisterModalOpen} 
-        onClose={() => setIsRegisterModalOpen(false)} 
-        onSwitchToLogin={() => {
-          setIsRegisterModalOpen(false);
-          setIsLoginModalOpen(true);
-        }}
-      />
     </>
   );
 };

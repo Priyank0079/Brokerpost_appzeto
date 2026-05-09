@@ -11,7 +11,7 @@ import {
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,6 +19,11 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const b = stats?.breakdown || {
+    residential: { sale: 0, rent: 0, purchase: 0, wantedRent: 0 },
+    commercial: { sale: 0, lease: 0, purchase: 0, wantedLease: 0 }
   };
 
   const menuSections = [
@@ -31,19 +36,19 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     {
       title: 'RESIDENTIAL',
       items: [
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/residential?intent=SALE', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Rental', path: '/residential?intent=RENT', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/residential?intent=PURCHASE', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Rent', path: '/residential?intent=WANTED_RENT', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/residential?intent=SALE', count: b.residential.sale },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Rental', path: '/residential?intent=RENT', count: b.residential.rent },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/residential?intent=PURCHASE', count: b.residential.purchase },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Rent', path: '/residential?intent=WANTED_RENT', count: b.residential.wantedRent },
       ]
     },
     {
       title: 'COMMERCIAL',
       items: [
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/commercial?intent=SALE', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Lease', path: '/commercial?intent=LEASE', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/commercial?intent=PURCHASE', count: 0 },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Lease', path: '/commercial?intent=WANTED_LEASE', count: 0 },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/commercial?intent=SALE', count: b.commercial.sale },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Lease', path: '/commercial?intent=LEASE', count: b.commercial.lease },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/commercial?intent=PURCHASE', count: b.commercial.purchase },
+        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Lease', path: '/commercial?intent=WANTED_LEASE', count: b.commercial.wantedLease },
       ]
     },
     {
@@ -112,10 +117,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
           <div className="flex items-center gap-3">
             <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
-              {user?.name?.split(' ').map(n => n[0]).join('') || 'SD'}
+              {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'SD'}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-bold text-white truncate">{user?.name || 'Sakshi Dwivedi'}</span>
+              <span className="text-[11px] font-bold text-white truncate">{user?.firstName ? `${user.firstName} ${user.lastName}` : (user?.name || 'User')}</span>
               <span className="text-[9.5px] text-slate-200 font-medium">Broker</span>
             </div>
           </div>

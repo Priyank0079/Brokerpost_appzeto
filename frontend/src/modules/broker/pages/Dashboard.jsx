@@ -23,11 +23,14 @@ const StatCard = ({ label, value, subtitle, icon: Icon }) => (
   </div>
 );
 
-const BreakdownRow = ({ label, value }) => (
-  <div className="group">
+const BreakdownRow = ({ label, value, onClick }) => (
+  <div 
+    className="group cursor-pointer hover:bg-slate-50 -mx-2 px-2 py-1 rounded-lg transition-colors"
+    onClick={onClick}
+  >
     <div className="flex items-center gap-4">
       <div className="flex flex-col min-w-[140px]">
-        <span className="text-[11px] font-medium text-slate-600">{label}</span>
+        <span className="text-[11px] font-bold text-slate-600 group-hover:text-[#1e3a8a]">{label}</span>
         <span className="text-[9px] text-slate-400 italic">Total active</span>
       </div>
       <div className="flex-1 h-[1px] bg-slate-100 relative top-1" />
@@ -78,7 +81,11 @@ const Dashboard = () => {
     totalBrokers: 0,
     availabilityCount: 0,
     requirementCount: 0,
-    breakdown: { residentialAvailable: 0, commercialAvailable: 0, residentialWanted: 0, commercialWanted: 0 },
+    groupCount: 0,
+    breakdown: { 
+      residential: { sale: 0, rent: 0, purchase: 0, wantedRent: 0 },
+      commercial: { sale: 0, lease: 0, purchase: 0, wantedLease: 0 }
+    },
     recentListings: []
   };
 
@@ -107,7 +114,7 @@ const Dashboard = () => {
         />
         <StatCard 
           label="MY GROUPS" 
-          value={user?.associatedGroup ? 1 : 0} 
+          value={s.groupCount || 0} 
           subtitle="Groups you belong to" 
           icon={Users}
         />
@@ -156,7 +163,11 @@ const Dashboard = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-50">
                     {displayListings.map(post => (
-                      <tr key={post._id} className="hover:bg-slate-50/50 transition-colors group">
+                      <tr 
+                        key={post._id} 
+                        className="hover:bg-slate-50/50 transition-colors group cursor-pointer"
+                        onClick={() => navigate(`/property/${post._id}`)}
+                      >
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
@@ -186,11 +197,9 @@ const Dashboard = () => {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <Link to={`/property/${post._id}`}>
-                            <button className="text-[10px] font-black text-[#c8962a] uppercase tracking-widest hover:underline">
-                              Details
-                            </button>
-                          </Link>
+                          <button className="text-[10px] font-black text-[#c8962a] uppercase tracking-widest hover:underline">
+                            Details
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -211,16 +220,20 @@ const Dashboard = () => {
             <div className="p-6 space-y-4">
               <div className="space-y-3">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Residential</p>
-                <BreakdownRow label="Available for Sale/Rent" value={s.breakdown.residentialAvailable} />
-                <BreakdownRow label="Wanted/Requirements" value={s.breakdown.residentialWanted} />
+                <BreakdownRow label="Available for Sale" value={s.breakdown.residential.sale} onClick={() => navigate('/residential?intent=SALE')} />
+                <BreakdownRow label="Available for Rental" value={s.breakdown.residential.rent} onClick={() => navigate('/residential?intent=RENT')} />
+                <BreakdownRow label="Wanted on Purchase" value={s.breakdown.residential.purchase} onClick={() => navigate('/residential?intent=PURCHASE')} />
+                <BreakdownRow label="Wanted on Rent" value={s.breakdown.residential.wantedRent} onClick={() => navigate('/residential?intent=WANTED_RENT')} />
               </div>
 
               <div className="h-[1px] bg-slate-100 my-4" />
 
               <div className="space-y-3">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Commercial</p>
-                <BreakdownRow label="Available for Lease/Sale" value={s.breakdown.commercialAvailable} />
-                <BreakdownRow label="Wanted/Requirements" value={s.breakdown.commercialWanted} />
+                <BreakdownRow label="Available for Sale" value={s.breakdown.commercial.sale} onClick={() => navigate('/commercial?intent=SALE')} />
+                <BreakdownRow label="Available for Lease" value={s.breakdown.commercial.lease} onClick={() => navigate('/commercial?intent=LEASE')} />
+                <BreakdownRow label="Wanted on Purchase" value={s.breakdown.commercial.purchase} onClick={() => navigate('/commercial?intent=PURCHASE')} />
+                <BreakdownRow label="Wanted on Lease" value={s.breakdown.commercial.wantedLease} onClick={() => navigate('/commercial?intent=WANTED_LEASE')} />
               </div>
             </div>
           </div>

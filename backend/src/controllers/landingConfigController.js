@@ -1,189 +1,84 @@
 const LandingPageConfig = require('../models/LandingPageConfig');
 
-// @desc    Get landing page config
-// @route   GET /api/v1/landing-config
-// @access  Public
+// Get current landing page configuration
 exports.getLandingConfig = async (req, res) => {
   try {
-    let config = await LandingPageConfig.findOne();
+    let config = await LandingPageConfig.findOne().sort({ updatedAt: -1 });
     
-    // If no config exists, create default one
     if (!config) {
-      config = await LandingPageConfig.create({
+      // Return default configuration if none exists
+      config = new LandingPageConfig({
         sections: {
           hero: {
-            title: "Inventory Management",
-            subtitle: "Real-time property network and CRM sync"
-          },
-          searchPhilosophy: { 
             visible: true,
-            title: "Search-Based. No Algorithm. Pure Matching.",
-            subtitle: "Unlike social media where posts get buried, Brokerspost is search-first. Connect directly with high-intent buyers without algorithmic interference.",
-            features: [
-              { title: 'Equal Visibility', color: 'primary', desc: ['No algorithm bias.', 'Every listing gets equal exposure.'] },
-              { title: 'Match Probability', color: 'emerald', desc: ['More listings = Higher match rate.', 'Direct inventory-demand connection.'] },
-              { title: 'Network Effect', color: 'blue', desc: ['Everyone wins as the network grows.', 'Power of a collective verified network.'] }
-            ],
-            matchingTitle: "How Pure Matching Works",
-            matchingSubtitle: "Our system operates on high-intent search queries that connect inventory directly to demand without interference.",
-            matchingBadge: "Guaranteed visibility for matching criteria.",
-            badgeText: "The Network Philosophy",
-            liveNetworkQueryLabel: "Live Network Query",
-            liveNetworkQueryExample: "\"3 BHK + Sector 45 + Below ₹1.5 Cr\"",
-            instantMatchLabel: "Instant Match",
-            instantMatchStats: "Found 12 properties from 8 verified brokers"
-          },
-          comparison: { 
-            visible: true,
-            badge: "The Ultimate Upgrade",
-            title: "Why Professionals Choose Brokerspost",
-            subtitle: "We've redesigned real estate networking from the ground up, moving away from noisy feeds to high-intent matching.",
-            benefits: [
-              { title: 'Pure Matching', desc: 'Search results based 100% on inventory match.', color: 'emerald' },
-              { title: 'Search-First Logic', desc: 'Instantly find exactly what matches your requirement.', color: 'blue' },
-              { title: 'Verified Only', desc: 'Connect exclusively with RERA-verified professionals.', color: 'primary' },
-              { title: 'No Feed Noise', desc: 'No algorithm bias. Your listings always get visibility.', color: 'emerald' }
-            ],
-            activeBrokers: "2.5k+"
-          },
-          howItWorks: { 
-            visible: true,
-            title: "How Brokerspost Works",
-            subtitle: "Streamlined for Professional Success",
-            steps: [
-              { title: "Register Free", description: "Create your profile in 2 minutes. No credit card required.", color: "blue" },
-              { title: "Post Listings", description: "Add inventory OR requirements. Fast & easy posting.", color: "indigo" },
-              { title: "Search & Match", description: "Enter what you need. Get instant matching results.", color: "purple" },
-              { title: "Collaborate", description: "Contact matched brokers and close deals together.", color: "emerald" }
+            badge: "Live Inventory Search",
+            title: "India's Most Trusted Broker-to-Broker Inventory Platform",
+            titlePart1: "India's Most Trusted",
+            titleHighlight: "Broker-to-Broker",
+            titlePart2: "Inventory Platform",
+            subtitle: "A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other.",
+            stats: [
+              { label: "Live Listings", value: "42" },
+              { label: "Verified Brokers", value: "15" },
+              { label: "Brokerage Charged", value: "₹0" },
+              { label: "Direct Deals", value: "100%" }
             ]
           },
-          campaignProgress: {
+          search: {
             visible: true,
-            title: "Platform Velocity",
-            subtitle: "Tracking our journey towards the network effect. Be part of the ecosystem that's redefining broker collaboration.",
-            brokersCurrent: 47,
-            brokersTotal: 100,
-            listingsCurrent: 705,
-            listingsTotal: 1500,
-            badgeText: "Growth Milestone",
-            footerTitle: "Join now and secure your status as a Founding Member.",
-            footerSubtitle: "Early access ends once milestones are achieved."
+            badge: "Live Network Query",
+            title: "Search the Network",
+            placeholder: "Location, Project or Type..."
           },
-          theMath: { 
+          inventory: {
             visible: true,
-            title: "The Math: Why 100 Brokers Changes Everything",
-            subtitle: "Network density = Match probability",
-            cards: [
-              { brokers: '20 Brokers', listings: '300 Listings', requirements: '100 Requirements', badge: 'Match Probability: LOW', badgeClass: 'bg-rose-500 text-white', description: 'Too fragmented. Not enough density in any micro-market.', accent: '#f97373', iconColor: '#f97373' },
-              { brokers: '50 Brokers', listings: '750 Listings', requirements: '250 Requirements', badge: 'Match Probability: MEDIUM', badgeClass: 'bg-amber-400 text-white', description: 'Some micro-markets have critical mass. Getting there.', accent: '#fb923c', iconColor: '#f97316' },
-              { brokers: '100 Brokers', listings: '1,500 Listings', requirements: '500 Requirements', badge: 'Match Probability: HIGH', badgeClass: 'bg-emerald-600 text-white', description: 'Every major micro-market has density. Platform takes off!', accent: '#4ade80', iconColor: '#22c55e', featured: true }
-            ]
+            badge: "Live Inventory",
+            title: "Explore Verified Listings"
           },
-          brokerBenefits: { 
+          features: {
             visible: true,
-            title: "How Different Brokers Benefit",
-            subtitle: "Tailored advantages for every professional profile.",
-            benefits: [
-              { title: "Inventory Heavy", description: "Find matching requirements faster. Close 3-4 extra deals/month.", color: "blue" },
-              { title: "Requirement Rich", description: "Get fresh inventory matches daily. Save 20+ hours searching.", color: "emerald" },
-              { title: "New Broker", description: "Build network from day one. Connect with 50+ established brokers.", color: "amber" },
-              { title: "Niche Specialist", description: "Find exact property matches. 5x higher match rate in your specialty.", color: "indigo" }
-            ]
-          },
-          networkEffect: {
-            visible: true,
-            title: "The Network Effect: Everyone Wins Together",
-            subtitle: "As the network grows, the value for every broker increases. Our matching engine thrives on collective intelligence.",
-            points: [
-              { id: 1, text: "You join", result: "Post 15 listings" },
-              { id: 2, text: "99 others join", result: "1,500 total listings" },
-              { id: 3, text: "Critical mass achieved", result: "Match probability hits 90%" },
-              { id: 4, text: "More brokers join", result: "Seen by the entire network" },
-              { id: 5, text: "YOU WIN", result: "More deals, more commissions" }
-            ],
-            testimonial: {
-              quote: "Joined when there were 50 brokers. Closed my first co-broking deal worth ₹85 Lakhs within 2 weeks!",
-              author: "Rajesh Sharma",
-              location: "Founding Member, Gurgaon",
-              avatar: "https://i.pravatar.cc/150?u=rajesh",
-              successRate: "94.2%"
-            }
-          },
-          foundingMember: {
-            visible: true,
-            title: "Be a Founding Member",
-            subtitle: "The first 100 brokers get exclusive lifetime benefits.",
-            slotsRemaining: 53,
-            benefits: [
-              "Free Lifetime Membership",
-              "25 Free Listings",
-              "Founding Member Badge",
-              "Priority Support",
-              "3 Months Featured Listings",
-              "Early Access to Features",
-              "Direct Intro to 20+ Brokers",
-              "Lifetime 10% Discount"
-            ],
-            ctaText: "Join Now — Completely Free",
-            footerNote: "No credit card required • No commitment • Cancel anytime"
-          },
-          faqs: {
-            visible: true,
-            title: "Frequently Asked Questions",
-            subtitle: "Concerns",
+            badge: "Platform Features",
+            title: "Everything a Broker Needs",
+            subtitle: "Built exclusively for verified real estate professionals who believe in transparent, direct dealings.",
             items: [
               {
-                question: "How is Brokerspost different from WhatsApp groups?",
-                answer: "Unlike WhatsApp where messages get buried, Brokerspost is search-first. You can find exactly what you need in seconds, and your listings are always discoverable by those who match your criteria."
+                title: 'Verified Broker Community',
+                description: 'Every member is a verified professional broker. No public users, no fake listings.',
+                icon: 'ShieldCheck',
+                color: 'bg-primary-50 text-primary-500'
               },
               {
-                question: "Is it really free for the first 100 brokers?",
-                answer: "Yes! The first 100 brokers get Lifetime Free access as part of our Founding Member program. No hidden fees, ever."
-              },
-              {
-                question: "How do I know the other brokers are verified?",
-                answer: "We verify every professional on our platform through RERA registrations and business credentials to ensure you only collaborate with legitimate experts."
+                title: 'Zero Brokerage Platform',
+                description: 'This platform does not charge any brokerage or commission. Connect directly.',
+                icon: 'Handshake',
+                color: 'bg-blue-50 text-blue-500'
               }
-            ],
-            footerText: "Still have questions? Connect with us"
-          },
-          navbar: {
-            links: [
-              { label: "Marketplace", url: "/inventory" },
-              { label: "Network", url: "/network" }
             ]
           },
-          contact: {
-            email: "connect@brokerspost.net",
-            phone: "+91 800-BROKERS",
-            whatsapp: "910000000000",
-            address: "Gurgaon, India"
+          process: {
+            visible: true,
+            badge: "Process",
+            title: "How BrokersPost Works",
+            subtitle: "Four simple steps to start sharing and closing deals with verified brokers.",
+            steps: [
+              { number: '01', title: 'Register & Get Verified', description: 'Submit your broker details and get instant access.' },
+              { number: '02', title: 'Post Your Inventory', description: 'Add available properties or client requirements.' }
+            ]
+          },
+          cta: {
+            visible: true,
+            title: "Join the Verified Broker Network",
+            subtitle: "Only serious, professional brokers. A community built on trust, transparency and real inventory.",
+            buttonText: "Register as a Verified Broker"
           },
           footer: {
             brandingDesc: "The trusted network for real estate professionals. Connecting verified brokers with premium global inventories.",
-            certifications: [
-              { label: "ISO Certified", icon: "ShieldCheck" },
-              { label: "Global Hubs", icon: "Globe" }
-            ],
             navigation: [
               {
-                title: "Core Navigation",
+                title: "Platform",
                 links: [
-                  { label: "Marketplace", url: "/" },
-                  { label: "Broker Network", url: "/" },
-                  { label: "Intelligence", url: "/" },
-                  { label: "Recent Listings", url: "/" },
-                  { label: "Events", url: "/" }
-                ]
-              },
-              {
-                title: "Business Verticals",
-                links: [
-                  { label: "Commercial Estates", url: "/" },
-                  { label: "Luxury Residential", url: "/" },
-                  { label: "Industrial Plots", url: "/" },
-                  { label: "Retail Spaces", url: "/" },
-                  { label: "Investment Portfolios", url: "/" }
+                  { label: "Browse Inventory", url: "#inventory" },
+                  { label: "Features", url: "#features" }
                 ]
               }
             ],
@@ -191,55 +86,56 @@ exports.getLandingConfig = async (req, res) => {
           },
           registrationTerms: {
             visible: true,
-            title: "Important Disclaimer & Terms of Use — BrokersPost",
+            title: "Important Disclaimer & Terms of Use",
             items: [
-              { title: "No Liability", content: "BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
-              { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
-              { title: "Genuine Listings Only", content: "Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination." }
+              { title: "Verification", content: "All users must be verified brokers." }
             ],
-            agreementText: "I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine."
+            agreementText: "I have read and understood all the above terms."
           }
         }
       });
+      await config.save();
     }
-
+    
     res.status(200).json({
       success: true,
       data: config
     });
   } catch (error) {
+    console.error('Error fetching landing config:', error);
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: 'Failed to fetch landing configuration',
       error: error.message
     });
   }
 };
 
-// @desc    Update landing page config
-// @route   PUT /api/v1/landing-config
-// @access  Private/Admin
+// Update landing page configuration
 exports.updateLandingConfig = async (req, res) => {
   try {
-    let config = await LandingPageConfig.findOne();
-
-    if (!config) {
-      config = await LandingPageConfig.create(req.body);
+    const configData = req.body;
+    
+    let config = await LandingPageConfig.findOne().sort({ updatedAt: -1 });
+    
+    if (config) {
+      config.sections = configData.sections;
+      config.updatedAt = Date.now();
+      await config.save();
     } else {
-      config = await LandingPageConfig.findOneAndUpdate({}, req.body, {
-        new: true,
-        runValidators: true
-      });
+      config = new LandingPageConfig(configData);
+      await config.save();
     }
-
+    
     res.status(200).json({
       success: true,
       data: config
     });
   } catch (error) {
+    console.error('Error updating landing config:', error);
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message: 'Failed to update landing configuration',
       error: error.message
     });
   }

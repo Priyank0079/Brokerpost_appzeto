@@ -27,6 +27,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       password: '',
       reraNumber: '',
       profileImage: '',
+      associatedGroup: '',
       agreeWithTerms: false
     };
   });
@@ -34,22 +35,31 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [errors, setErrors] = useState({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [dynamicTerms, setDynamicTerms] = useState(null);
+  const [availableGroups, setAvailableGroups] = useState([]);
 
-  // Fetch dynamic terms
+  // Fetch dynamic terms and groups
   React.useEffect(() => {
     if (isOpen) {
-      const fetchTerms = async () => {
+      const fetchInitialData = async () => {
         try {
-          const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/landing-config`);
-          const json = await res.json();
-          if (json.success && json.data?.sections?.registrationTerms) {
-            setDynamicTerms(json.data.sections.registrationTerms);
+          // Fetch Terms
+          const termsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/landing-config`);
+          const termsJson = await termsRes.json();
+          if (termsJson.success && termsJson.data?.sections?.registrationTerms) {
+            setDynamicTerms(termsJson.data.sections.registrationTerms);
+          }
+
+          // Fetch Groups
+          const groupsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/groups`);
+          const groupsJson = await groupsRes.json();
+          if (groupsJson.success) {
+            setAvailableGroups(groupsJson.data);
           }
         } catch (err) {
-          console.error('Failed to fetch terms:', err);
+          console.error('Failed to fetch initial registration data:', err);
         }
       };
-      fetchTerms();
+      fetchInitialData();
     }
   }, [isOpen]);
 
@@ -90,6 +100,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     else if (formData.password.length < 6) newErrors.password = 'Min 6 characters';
 
     if (!formData.profileImage) newErrors.profileImage = 'Profile photo is required';
+    if (!formData.associatedGroup) newErrors.associatedGroup = 'Please select a primary group';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -403,13 +414,38 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     RERA NUMBER
                   </label>
                   <input 
-                    type="text"
+                    type="text" 
                     name="reraNumber"
                     value={formData.reraNumber}
                     onChange={handleChange}
                     placeholder="Alphanumeric code"
                     className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400"
                   />
+                </div>
+
+                {/* Associated Group */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                    PRIMARY NETWORKING GROUP *
+                  </label>
+                  <div className="relative">
+                    <select 
+                      name="associatedGroup"
+                      required
+                      value={formData.associatedGroup}
+                      onChange={handleChange}
+                      className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.associatedGroup ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 appearance-none`}
+                    >
+                      <option value="" disabled>— Select Group —</option>
+                      {availableGroups.map(group => (
+                        <option key={group._id} value={group.name}>{group.name}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                      <ChevronRight size={14} className="rotate-90" />
+                    </div>
+                  </div>
+                  {errors.associatedGroup && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.associatedGroup}</p>}
                 </div>
 
                 {/* Password */}

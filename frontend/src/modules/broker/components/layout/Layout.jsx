@@ -14,6 +14,21 @@ const Layout = ({ children }) => {
   const isHomePage = location.pathname === '/';
   const isDashboard = location.pathname === '/dashboard';
   const { config } = useLandingConfig();
+  const [stats, setStats] = useState(null);
+
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { getPostingStats } = await import('../../services/postingService');
+        const res = await getPostingStats();
+        if (res.success) setStats(res.data);
+      } catch (err) {
+        console.error('Failed to fetch sidebar stats', err);
+      }
+    };
+    if (!isHomePage) fetchStats();
+  }, [isHomePage]);
+
   const contact = config?.contact || {
     whatsapp: "910000000000"
   };
@@ -33,6 +48,7 @@ const Layout = ({ children }) => {
             toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
             isCollapsed={isCollapsed}
             toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+            stats={stats}
           />
         </>
       )}

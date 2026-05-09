@@ -3,8 +3,7 @@ import { Trophy } from 'lucide-react';
 import RegisterModal from './RegisterModal';
 import LoginModal from './LoginModal';
 
-const CTASection = () => {
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+const CTASection = ({ onRegisterClick, config }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   return (
@@ -19,19 +18,19 @@ const CTASection = () => {
           </div>
           
           <h2 className="text-2xl lg:text-3xl font-serif text-[#0f172a] mb-4">
-            Join the Verified Broker Network
+            {config?.title || 'Join the Verified Broker Network'}
           </h2>
           
           <p className="text-slate-500 text-[14px] leading-relaxed mb-8 max-w-xl mx-auto">
-            Only serious, professional brokers. A community built on trust, transparency and real inventory. Register today and start accessing deals your competitors can't see.
+            {config?.subtitle || 'Only serious, professional brokers. A community built on trust, transparency and real inventory. Register today and start accessing deals your competitors can\'t see.'}
           </p>
           
           <div className="flex flex-col items-center gap-4">
             <button 
-              onClick={() => setIsRegisterModalOpen(true)}
+              onClick={onRegisterClick}
               className="bg-[#c8962a] text-white px-8 py-3.5 rounded-lg font-bold text-xs hover:bg-[#b08b35] transition-all shadow-lg shadow-[#c8962a]/20"
             >
-              Register as a Verified Broker
+              {config?.buttonText || 'Register as a Verified Broker'}
             </button>
             
             <p className="text-slate-400 text-xs">
@@ -42,10 +41,6 @@ const CTASection = () => {
       </div>
     </section>
 
-    <RegisterModal 
-      isOpen={isRegisterModalOpen} 
-      onClose={() => setIsRegisterModalOpen(false)} 
-    />
     <LoginModal 
       isOpen={isLoginModalOpen} 
       onClose={() => setIsLoginModalOpen(false)} 

@@ -132,6 +132,21 @@ exports.verifyOTP = async (req, res, next) => {
     user.otpExpires = undefined;
     await user.save();
 
+    // Auto-add to Group if associatedGroup was selected during registration
+    if (user.associatedGroup) {
+      try {
+        const Group = mongoose.model('Group');
+        const group = await Group.findOne({ name: user.associatedGroup });
+        if (group && !group.members.includes(user._id)) {
+          group.members.push(user._id);
+          await group.save();
+          console.log(`Auto-added user ${user._id} to group ${group.name}`);
+        }
+      } catch (err) {
+        console.error('Auto-group addition failed:', err);
+      }
+    }
+
     res.status(200).json({
       success: true,
       message: 'Email verified and password set successfully',

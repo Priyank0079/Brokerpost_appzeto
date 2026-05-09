@@ -59,6 +59,8 @@ const PropertyDetails = () => {
   const [item, setItem] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
 
+  const [selectedImage, setSelectedImage] = React.useState(0);
+
   const fetchDetails = async () => {
     setLoading(true);
     try {
@@ -84,10 +86,12 @@ const PropertyDetails = () => {
     window.open(whatsappUrl, '_blank');
   };
 
-
-
   if (loading) return <div className="min-h-screen flex items-center justify-center font-black uppercase tracking-widest text-slate-400">Syncing Details...</div>;
   if (!item) return <div className="min-h-screen flex items-center justify-center font-black uppercase tracking-widest text-red-400">Post Not Found</div>;
+
+  const images = item.images && item.images.length > 0 
+    ? item.images 
+    : ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=1200"];
 
   const displayPrice = item.totalAmount 
     ? `₹${item.totalAmount} ${item.totalAmountUnit}` 
@@ -124,42 +128,67 @@ const PropertyDetails = () => {
       <div className="max-w-7xl mx-auto px-4 lg:px-8 pt-5">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8">
           <div className="lg:col-span-8 space-y-5">
-            <section>
-              <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-2.5">
-                <div className="md:col-span-3 md:row-span-2 rounded-lg overflow-hidden shadow-lg relative group h-[240px] md:h-[360px]">
-                  <img
-                    src={item.images?.[0] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&q=80&w=1200"}
-                    alt={item.project}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute top-3 left-3 flex flex-wrap gap-2">
-                    <Badge variant="success" className="bg-emerald-500 text-white shadow-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest border-none">
-                      {item.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement'}
-                    </Badge>
-                    <Badge className="bg-white/90 backdrop-blur-md text-slate-900 shadow-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest border-none">
-                      {item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}
-                    </Badge>
-                  </div>
+            <section className="space-y-4">
+              {/* Main Image Slider */}
+              <div className="relative group rounded-[2rem] overflow-hidden shadow-2xl bg-slate-100 aspect-[16/10] md:aspect-[16/9]">
+                <img
+                  src={images[selectedImage]}
+                  alt={item.project}
+                  className="w-full h-full object-cover transition-all duration-500"
+                />
+                
+                {/* Image Navigation Arrows */}
+                {images.length > 1 && (
+                  <>
+                    <button 
+                      onClick={() => setSelectedImage(prev => (prev === 0 ? images.length - 1 : prev - 1))}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
+                    >
+                      <ArrowLeft size={20} />
+                    </button>
+                    <button 
+                      onClick={() => setSelectedImage(prev => (prev === images.length - 1 ? 0 : prev + 1))}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-slate-900 shadow-xl opacity-0 group-hover:opacity-100 transition-all hover:bg-white"
+                    >
+                      <ArrowLeft size={20} className="rotate-180" />
+                    </button>
+                  </>
+                )}
+
+                <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                  <Badge variant="success" className="bg-emerald-500 text-white shadow-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest border-none">
+                    {item.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement'}
+                  </Badge>
+                  <Badge className="bg-white/90 backdrop-blur-md text-slate-900 shadow-lg px-2.5 py-1 text-[8px] font-black uppercase tracking-widest border-none">
+                    {item.vertical === 'RESIDENTIAL' ? 'Residential' : 'Commercial'}
+                  </Badge>
                 </div>
-                {item.images?.[1] && (
-                  <div className="hidden md:block rounded-[1.5rem] overflow-hidden shadow-md border border-slate-100">
-                    <img
-                      src={item.images[1]}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                {item.images?.[2] && (
-                  <div className="hidden md:block rounded-[1.5rem] overflow-hidden shadow-md relative border border-slate-100">
-                    <img
-                      src={item.images[2]}
-                      alt=""
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
+
+                {/* Image Counter Badge */}
+                <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/50 backdrop-blur-md text-white text-[9px] font-black uppercase tracking-widest rounded-full border border-white/20">
+                  {selectedImage + 1} / {images.length}
+                </div>
               </div>
+
+              {/* Thumbnails Row */}
+              {images.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                  {images.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedImage(idx)}
+                      className={`relative flex-shrink-0 w-20 h-16 md:w-24 md:h-20 rounded-2xl overflow-hidden transition-all duration-300 ring-2 ${
+                        selectedImage === idx ? 'ring-[#c8962a] scale-95 shadow-lg' : 'ring-transparent opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      {selectedImage === idx && (
+                        <div className="absolute inset-0 bg-[#c8962a]/10" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </section>
 
             <section className="space-y-4">
@@ -291,6 +320,27 @@ const PropertyDetails = () => {
                 <p className="text-slate-600 text-sm md:text-base leading-relaxed font-medium">
                   {item.shortDescription}
                 </p>
+              </section>
+            )}
+
+            {item.videos && item.videos.length > 0 && item.videos[0] && (
+              <section className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <h3 className="text-lg md:text-xl font-black text-slate-900 uppercase tracking-tight">
+                    Cinematic Walkthrough
+                  </h3>
+                  <div className="h-[2px] flex-1 bg-slate-50" />
+                </div>
+                <div className="aspect-video w-full rounded-[2rem] overflow-hidden bg-black shadow-2xl ring-1 ring-slate-100">
+                  <video 
+                    controls 
+                    className="w-full h-full object-cover"
+                    poster={item.images?.[0]}
+                  >
+                    <source src={item.videos[0]} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
               </section>
             )}
 

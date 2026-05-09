@@ -321,6 +321,7 @@ exports.getPostingStats = async (req, res, next) => {
     const mongoose = require('mongoose');
     const PostingModel = mongoose.model('Posting');
     const UserModel = mongoose.model('User');
+    const GroupModel = mongoose.model('Group');
 
     const userId = req.user.id || req.user._id;
     console.log('Generating dashboard stats for User ID:', userId);
@@ -340,24 +341,43 @@ exports.getPostingStats = async (req, res, next) => {
 
     // Run breakdown and recent listings
     const [
-      residentialAvailable,
-      commercialAvailable,
-      residentialWanted,
-      commercialWanted,
+      resSale,
+      resRent,
+      resPurchase,
+      resWantedRent,
+      comSale,
+      comLease,
+      comPurchase,
+      comWantedLease,
       recentListings,
-      totalBrokers
+      totalBrokers,
+      groupCount
     ] = await Promise.all([
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', postType: 'AVAILABILITY', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', postType: 'REQUIREMENT', isActive: true }).catch(() => 0),
+      // Residential Breakdown
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'SALE', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'RENT', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'WANTED_RENT', isActive: true }).catch(() => 0),
+      // Commercial Breakdown
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'SALE', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'LEASE', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
+      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'WANTED_LEASE', isActive: true }).catch(() => 0),
+      
       PostingModel.find({ isActive: true })
         .populate('postedBy', 'firstName lastName companyName name')
         .sort({ createdAt: -1 })
         .limit(5)
         .lean()
         .catch(e => { console.error('Recent listings fetch failed', e); return []; }),
-      UserModel.countDocuments({ role: 'Broker' }).catch(() => 0)
+      UserModel.countDocuments({ role: 'Broker' }).catch(() => 0),
+      GroupModel.countDocuments({ 
+        $or: [
+          { members: userId },
+          { name: req.user.associatedGroup }
+        ],
+        isActive: true 
+      }).catch(() => 0)
     ]);
 
     res.status(200).json({
@@ -367,11 +387,20 @@ exports.getPostingStats = async (req, res, next) => {
         myListings,
         availabilityCount,
         requirementCount,
+        groupCount,
         breakdown: {
-          residentialAvailable,
-          commercialAvailable,
-          residentialWanted,
-          commercialWanted
+          residential: {
+            sale: resSale,
+            rent: resRent,
+            purchase: resPurchase,
+            wantedRent: resWantedRent
+          },
+          commercial: {
+            sale: comSale,
+            lease: comLease,
+            purchase: comPurchase,
+            wantedLease: comWantedLease
+          }
         },
         recentListings,
         totalBrokers

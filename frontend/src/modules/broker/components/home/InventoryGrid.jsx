@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Grid, Table, ChevronLeft, ChevronRight, Loader2, Home } from 'lucide-react';
+import { MapPin, Grid, Table, ChevronLeft, ChevronRight, Loader2, Home, Play } from 'lucide-react';
 import { getPostings } from '../../services/postingService';
+import { useAuth } from '../../context/AuthContext';
+import ListingDetailModal from './ListingDetailModal';
 
-const InventoryGrid = ({ filters }) => {
+const InventoryGrid = ({ filters, onLoginRequired, config }) => {
+  const { isAuthenticated } = useAuth();
   const [view, setView] = useState('grid');
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedItem, setSelectedItem] = useState(null);
   const limit = 8;
 
   const fetchListings = async () => {
@@ -43,11 +47,16 @@ const InventoryGrid = ({ filters }) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
           <div className="space-y-1">
-            <h2 className="text-3xl font-serif font-black text-[#0f172a] tracking-tight">Active Listings</h2>
+             <p className="text-[#c8962a] text-[10px] font-black uppercase tracking-[0.2em] mb-1">
+                {config?.badge || 'Live Inventory'}
+             </p>
+            <h2 className="text-3xl font-serif font-black text-[#0f172a] tracking-tight">
+                {config?.title || 'Active Listings'}
+            </h2>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#c8962a] animate-pulse"></span>
               <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                {total} Real-time {filters.vertical.toLowerCase()} opportunities
+                {total} Real-time {filters.vertical ? filters.vertical.toLowerCase() : 'inventory'} opportunities
               </p>
             </div>
           </div>
@@ -88,7 +97,11 @@ const InventoryGrid = ({ filters }) => {
             {view === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {listings.map((item) => (
-                  <div key={item._id} className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 group relative flex flex-col">
+                  <div 
+                    key={item._id} 
+                    onClick={() => setSelectedItem(item)}
+                    className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 group relative flex flex-col cursor-pointer"
+                  >
                     {/* Image Area */}
                     <div className="h-48 bg-slate-100 relative overflow-hidden">
                       {item.images && item.images.length > 0 ? (
@@ -108,6 +121,11 @@ const InventoryGrid = ({ filters }) => {
                           <span className="bg-[#1a365d] px-4 py-1.5 rounded-full text-white text-[9px] font-black uppercase tracking-widest shadow-xl">
                             Wanted
                           </span>
+                        )}
+                        {item.videos && item.videos.length > 0 && (
+                          <div className="bg-white/95 backdrop-blur w-8 h-8 rounded-full flex items-center justify-center text-primary-600 shadow-xl border border-primary-100">
+                            <Play size={12} className="fill-current ml-0.5" />
+                          </div>
                         )}
                       </div>
                     </div>
@@ -176,7 +194,11 @@ const InventoryGrid = ({ filters }) => {
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                       {listings.map((item, idx) => (
-                        <tr key={item._id} className="hover:bg-slate-50/80 transition-all group">
+                        <tr 
+                          key={item._id} 
+                          onClick={() => setSelectedItem(item)}
+                          className="hover:bg-slate-50/80 transition-all group cursor-pointer"
+                        >
                           <td className="py-6 px-10 text-[12px] font-black text-slate-300 tracking-widest">#{(page - 1) * limit + idx + 1}</td>
                           <td className="py-6 px-10">
                             <span className="px-4 py-1.5 rounded-full bg-[#c8962a]/10 text-[#c8962a] text-[10px] font-black uppercase tracking-widest">
@@ -279,6 +301,17 @@ const InventoryGrid = ({ filters }) => {
           </div>
         )}
       </div>
+
+      <ListingDetailModal 
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        item={selectedItem}
+        isAuthenticated={isAuthenticated}
+        onLogin={() => {
+          setSelectedItem(null);
+          onLoginRequired();
+        }}
+      />
     </section>
   );
 };

@@ -6,6 +6,8 @@ import { createPosting, uploadPropertyImages, uploadPropertyVideo } from '../../
 const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDENTIAL', onSuccess }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
   const [error, setError] = useState('');
   
   // Derived Classification
@@ -92,7 +94,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
-    setLoading(true);
+    setImageLoading(true);
     setError('');
     try {
       const result = await uploadPropertyImages(files);
@@ -105,7 +107,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     } catch (err) {
       setError('Media upload failed');
     } finally {
-      setLoading(false);
+      setImageLoading(false);
     }
   };
 
@@ -119,7 +121,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       return;
     }
 
-    setLoading(true);
+    setVideoLoading(true);
     setError('');
     try {
       const result = await uploadPropertyVideo(file);
@@ -132,7 +134,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     } catch (err) {
       setError('Video upload failed');
     } finally {
-      setLoading(false);
+      setVideoLoading(false);
     }
   };
 
@@ -446,8 +448,14 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   <label className="w-24 h-24 relative group cursor-pointer">
                     <input type="file" multiple accept="image/*" onChange={handleMediaUpload} className="hidden" />
                     <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition-all">
-                      <Camera size={20} className="text-slate-400" />
-                      <p className="text-[8px] font-black text-slate-400 uppercase">Add Photo</p>
+                      {imageLoading ? (
+                        <Loader2 size={20} className="text-[#c8962a] animate-spin" />
+                      ) : (
+                        <>
+                          <Camera size={20} className="text-slate-400" />
+                          <p className="text-[8px] font-black text-slate-400 uppercase">Add Photo</p>
+                        </>
+                      )}
                     </div>
                   </label>
                   
@@ -470,25 +478,44 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="space-y-3">
                 <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Video Walkthrough</p>
                 {!formData.videos[0] ? (
-                  <label className="w-full h-20 relative group cursor-pointer">
+                  <label className="w-full h-32 relative group cursor-pointer">
                     <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
-                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50 transition-all">
-                      <Video size={20} className="text-slate-400" />
-                      <p className="text-[9px] font-black text-slate-400 uppercase">Upload Video Walkthrough</p>
+                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-[#c8962a]/30 transition-all">
+                      {videoLoading ? (
+                        <div className="flex flex-col items-center gap-3">
+                          <Loader2 size={24} className="text-[#c8962a] animate-spin" />
+                          <p className="text-[10px] font-black text-[#c8962a] uppercase tracking-widest">Uploading Video...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Video size={24} className="text-slate-400 group-hover:text-[#c8962a]" />
+                          </div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Upload Video Walkthrough</p>
+                        </>
+                      )}
                     </div>
                   </label>
                 ) : (
-                  <div className="w-full h-20 bg-slate-900 rounded-xl relative overflow-hidden group shadow-md">
-                    <video className="w-full h-full object-cover opacity-60">
+                  <div className="w-full h-28 bg-slate-900 rounded-2xl relative overflow-hidden group shadow-lg border border-slate-800">
+                    <video className="w-full h-full object-cover opacity-70">
                       <source src={formData.videos[0]} type="video/mp4" />
                     </video>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                        <Play size={16} className="text-white fill-white ml-1" />
+                      </div>
+                    </div>
                     <button 
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, videos: [] }))}
-                      className="absolute top-2 right-2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-red-500 transition-all"
+                      className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center text-red-500 shadow-xl transition-transform hover:scale-110"
                     >
-                      <X size={14} />
+                      <X size={16} />
                     </button>
+                    <div className="absolute bottom-3 left-4">
+                      <p className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/40 px-2 py-1 rounded backdrop-blur-sm">Walkthrough Ready</p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -506,7 +533,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             </button>
             <button 
               type="submit"
-              disabled={loading}
+              disabled={loading || imageLoading || videoLoading}
               className="px-8 py-2 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 transition-all flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Listing'}

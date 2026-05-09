@@ -1,7 +1,7 @@
 import React from 'react';
 
-const ProcessFlow = () => {
-  const steps = [
+const ProcessFlow = ({ config }) => {
+  const steps = config?.steps || [
     {
       number: '01',
       title: 'Register & Get Verified',
@@ -11,16 +11,6 @@ const ProcessFlow = () => {
       number: '02',
       title: 'Post Your Inventory',
       description: 'Add available properties or client requirements. Upload photos, videos, pricing and all relevant details.'
-    },
-    {
-      number: '03',
-      title: 'Search & Discover',
-      description: 'Browse live listings by location, type, budget. Use group filters to find inventory within your trusted circle.'
-    },
-    {
-      number: '04',
-      title: 'Connect & Deal',
-      description: 'Click to connect with the listing broker. Exchange details and close deals — no platform in between.'
     }
   ];
 
@@ -30,13 +20,13 @@ const ProcessFlow = () => {
         {/* Header */}
         <div className="mb-10">
           <p className="text-[#c8962a] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
-            Process
+            {config?.badge || 'Process'}
           </p>
           <h2 className="text-4xl lg:text-5xl font-serif mb-4">
-            How BrokersPost Works
+            {config?.title || 'How BrokersPost Works'}
           </h2>
           <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
-            Four simple steps to start sharing and closing deals with verified brokers.
+            {config?.subtitle || 'Four simple steps to start sharing and closing deals with verified brokers.'}
           </p>
         </div>
 

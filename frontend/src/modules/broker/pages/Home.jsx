@@ -16,11 +16,16 @@ import PlatformFeatures from '../components/home/PlatformFeatures';
 import ProcessFlow from '../components/home/ProcessFlow';
 import CTASection from '../components/home/CTASection';
 import LandingFooter from '../components/home/LandingFooter';
+import LoginModal from '../components/home/LoginModal';
+import RegisterModal from '../components/home/RegisterModal';
 
 import { useLandingConfig } from '../../../hooks/useLandingConfig';
 
 const Home = () => {
   const { config, loading, error } = useLandingConfig();
+  const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false);
+  
   const [filters, setFilters] = React.useState({
     vertical: '',
     location: '',
@@ -55,22 +60,67 @@ const Home = () => {
 
   return (
     <div className="bg-[#FAF9F6] min-h-screen">
-      <LandingNavbar />
+      <LandingNavbar 
+        onLoginClick={() => setIsLoginModalOpen(true)}
+        onRegisterClick={() => setIsRegisterModalOpen(true)}
+      />
       
-      <LandingHero />
+      {sections.hero?.visible !== false && (
+        <LandingHero 
+          config={sections.hero} 
+          onRegisterClick={() => setIsRegisterModalOpen(true)} 
+        />
+      )}
       
-      <LandingSearch filters={filters} onFilterChange={setFilters} />
+      {sections.search?.visible !== false && (
+        <LandingSearch 
+          config={sections.search}
+          filters={filters} 
+          onFilterChange={setFilters} 
+        />
+      )}
       
-      <InventoryGrid filters={filters} />
+      {sections.inventory?.visible !== false && (
+        <InventoryGrid 
+          config={sections.inventory}
+          filters={filters} 
+          onLoginRequired={() => setIsLoginModalOpen(true)} 
+        />
+      )}
       
-      <PlatformFeatures />
+      {sections.features?.visible !== false && (
+        <PlatformFeatures config={sections.features} />
+      )}
       
-      <ProcessFlow />
+      {sections.process?.visible !== false && (
+        <ProcessFlow config={sections.process} />
+      )}
       
-      <CTASection />
+      {sections.cta?.visible !== false && (
+        <CTASection 
+          config={sections.cta}
+          onRegisterClick={() => setIsRegisterModalOpen(true)} 
+        />
+      )}
       
-      <LandingFooter />
+      <LandingFooter config={sections.footer} />
 
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onSwitchToRegister={() => {
+          setIsLoginModalOpen(false);
+          setIsRegisterModalOpen(true);
+        }}
+      />
+      <RegisterModal 
+        isOpen={isRegisterModalOpen} 
+        onClose={() => setIsRegisterModalOpen(false)} 
+        onSwitchToLogin={() => {
+          setIsRegisterModalOpen(false);
+          setIsLoginModalOpen(true);
+        }}
+      />
     </div>
   );
 };

@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import { Check, ArrowRight, Lock, Zap } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, ArrowRight, Lock, Zap, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RegisterModal from './RegisterModal';
+import { getPostings } from '../../services/postingService';
 
 const InventoryItem = ({ label, type, title, subtitle, details, price, color }) => (
-  <div className="p-3 border border-slate-200 rounded-lg bg-white">
+  <div className="p-3 border border-slate-200 rounded-lg bg-white hover:border-[#c8962a] transition-all cursor-default group">
     <div className="flex justify-between items-start">
       <div className="flex gap-4">
-        <div className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider h-fit ${color}`}>
+        <div className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider h-fit transition-colors ${color}`}>
           {label}
         </div>
         <div className="space-y-0.5">
           <p className="text-[9px] text-slate-400 font-medium uppercase tracking-tight">{type}</p>
-          <h4 className="text-xs font-bold text-slate-900">{title}</h4>
+          <h4 className="text-xs font-bold text-slate-900 group-hover:text-[#c8962a] transition-colors">{title}</h4>
           <p className="text-[9px] text-slate-500">{subtitle} • {details}</p>
         </div>
       </div>
@@ -23,8 +24,43 @@ const InventoryItem = ({ label, type, title, subtitle, details, price, color }) 
   </div>
 );
 
-const LandingHero = () => {
+const LandingHero = ({ onRegisterClick, config }) => {
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLatestListings = async () => {
+      try {
+        const response = await getPostings({ limit: 4, page: 1 });
+        if (response.success) {
+          setListings(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch hero listings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatestListings();
+  }, []);
+
+  const getLabelInfo = (item) => {
+    if (item.postType === 'REQUIREMENT') {
+      return { label: 'Wanted', color: 'bg-indigo-50 text-indigo-600' };
+    }
+    
+    switch (item.intent) {
+      case 'SALE':
+        return { label: 'For Sale', color: 'bg-emerald-50 text-emerald-600' };
+      case 'RENT':
+        return { label: 'For Rent', color: 'bg-blue-50 text-blue-600' };
+      case 'LEASE':
+        return { label: 'For Lease', color: 'bg-purple-50 text-purple-600' };
+      default:
+        return { label: 'Listing', color: 'bg-slate-50 text-slate-600' };
+    }
+  };
 
   return (
     <>
@@ -34,60 +70,62 @@ const LandingHero = () => {
 
         <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Side: Text Content */}
-          <div className="space-y-4 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
-              <div className="w-2 h-2 rounded-full bg-[#c8962a] animate-pulse" />
-              <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Live Inventory Search</span>
+          <div className="space-y-10 relative z-10">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
+                <div className="w-2 h-2 rounded-full bg-[#c8962a] animate-pulse" />
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{config?.badge || 'Live Inventory Search'}</span>
+              </div>
+
+              <h1 className="text-4xl lg:text-6xl font-serif font-bold text-[#1A1A1A] leading-[1.1] tracking-tight">
+                {config?.titlePart1 || "India's Most Trusted"} <br />
+                <span className="italic text-[#c8962a]">{config?.titleHighlight || "Broker-to-Broker"}</span> <br />
+                {config?.titlePart2 || "Inventory Platform"}
+              </h1>
+
+              <p className="text-base font-poppins text-slate-600 leading-relaxed max-w-xl">
+                {config?.subtitle || (
+                  <>
+                    A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br />
+                    <span className="font-semibold text-slate-700">No commission. No middlemen. No charges.</span>
+                  </>
+                )}
+              </p>
             </div>
 
-            <h1 className="text-3xl lg:text-5xl font-serif font-bold text-[#1A1A1A] leading-[1.2] tracking-tight">
-              India's Most Trusted <br />
-              <span className="italic text-[#c8962a]">Broker-to-Broker</span> <br />
-              Inventory Platform
-            </h1>
-
-            <p className="text-sm font-poppins text-slate-600 leading-relaxed max-w-xl">
-              A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br />
-              <span className="text-slate-600">No commission. No middlemen. No charges.</span>
-            </p>
-
-            <div className="flex flex-wrap gap-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-6">
               <button 
-                onClick={() => setIsRegisterModalOpen(true)}
-                className="px-4 py-3 rounded-xl bg-[#c8962a] text-white font-bold text-xs hover:bg-[#b08425] transition-all shadow-xl shadow-[#c8962a]/20 flex items-center gap-3 group"
+                onClick={onRegisterClick || (() => setIsRegisterModalOpen(true))}
+                className="px-8 py-4 rounded-xl bg-[#c8962a] text-white font-bold text-sm hover:bg-[#b08425] transition-all shadow-2xl shadow-[#c8962a]/40 flex items-center gap-3 group active:scale-95"
               >
                 Register as Broker
               </button>
-              <a href="#inventory">
-                <button className="px-4 py-3 rounded-xl border-2 border-slate-200 text-slate-900 font-bold text-xs hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all">
-                  Browse Inventory
-                </button>
-              </a>
+              <button 
+                onClick={() => document.getElementById('inventory')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-8 py-4 rounded-xl bg-slate-50/50 border border-slate-200 text-[#1A1A1A] font-bold text-sm hover:bg-white hover:border-[#c8962a]/30 transition-all active:scale-95"
+              >
+                Browse Inventory
+              </button>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 pt-14 border-t border-slate-200">
-            <div>
-              <p className="text-2xl font-serif font-bold text-[#1a365d]">42</p>
-              <p className="text-[10px] font-medium text-slate-500 mt-0">Live Listings</p>
-            </div>
-            <div>
-              <p className="text-2xl font-serif font-bold text-[#1a365d]">15</p>
-              <p className="text-[10px] font-medium text-slate-500 mt-0">Verified Brokers</p>
-            </div>
-            <div>
-              <p className="text-2xl font-serif font-bold text-[#1a365d]">₹0</p>
-              <p className="text-[10px] font-medium text-slate-500 mt-0">Brokerage Charged</p>
-            </div>
-            <div>
-              <p className="text-2xl font-serif font-bold text-[#1a365d]">100%</p>
-              <p className="text-[10px] font-medium text-slate-500 mt-0">Direct Deals</p>
+              {(config?.stats || [
+                { label: 'Live Listings', value: '42' },
+                { label: 'Verified Brokers', value: '15' },
+                { label: 'Brokerage Charged', value: '₹0' },
+                { label: 'Direct Deals', value: '100%' }
+              ]).map((stat, idx) => (
+                <div key={idx}>
+                  <p className="text-2xl font-serif font-bold text-[#1a365d]">{stat.value}</p>
+                  <p className="text-[10px] font-medium text-slate-500 mt-0">{stat.label}</p>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
 
         {/* Right Side: Inventory Preview Card */}
         <div className="relative z-10">
-          <div className="bg-white rounded-xl p-4 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-100">
+          <div className="bg-white rounded-xl p-4 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-100 min-h-[400px]">
             <div className="flex items-center justify-between mb-4 px-2">
               <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Inventory Preview</h3>
               <div className="flex items-center gap-1.5 px-3 py-1 bg-[#E8F5E9] rounded-full border border-emerald-100">
@@ -97,42 +135,35 @@ const LandingHero = () => {
             </div>
 
             <div className="space-y-2.5">
-              <InventoryItem 
-                label="For Sale"
-                type="Residential • Apartment"
-                title="3 BHK — Sector 62, Noida"
-                subtitle="Supertech Eco Village"
-                details="1,200 sqft"
-                price="₹66 L"
-                color="bg-emerald-50 text-emerald-600"
-              />
-              <InventoryItem 
-                label="Wanted"
-                type="Commercial • Office"
-                title="Office Space — Cyber City, Gurugram"
-                subtitle="2,200 sqft"
-                details="Budget ₹2.6 Cr"
-                price="₹2.6 Cr"
-                color="bg-primary-50 text-primary-600"
-              />
-              <InventoryItem 
-                label="For Rent"
-                type="Residential • Kothi/Villa"
-                title="5 BHK Villa — Golf Course Rd"
-                subtitle="Emaar Palm Hills"
-                details="3,500 sqft"
-                price="₹1.2L/mo"
-                color="bg-blue-50 text-blue-600"
-              />
-              <InventoryItem 
-                label="For Lease"
-                type="Commercial • Showroom"
-                title="Ground Floor — Connaught Place"
-                subtitle="600 sqft"
-                details="Prime Location"
-                price="₹65K/mo"
-                color="bg-purple-50 text-purple-600"
-              />
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-20">
+                  <Loader2 className="animate-spin text-[#c8962a]" size={32} />
+                  <p className="text-[8px] font-black uppercase tracking-widest text-slate-400">Updating Feed...</p>
+                </div>
+              ) : listings.length > 0 ? (
+                listings.map((item) => {
+                  const { label, color } = getLabelInfo(item);
+                  return (
+                    <InventoryItem 
+                      key={item._id}
+                      label={label}
+                      type={`${item.vertical} • ${item.subType?.replace('_', ' ')}`}
+                      title={item.project || 'Premium Property'}
+                      subtitle={item.location}
+                      details={item.size ? `${item.size} ${item.sizeUnit}` : 'Ref: #' + item._id.slice(-6).toUpperCase()}
+                      price={item.postType === 'REQUIREMENT' 
+                        ? `₹${item.budgetMax} ${item.budgetUnit}`
+                        : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
+                      }
+                      color={color}
+                    />
+                  );
+                })
+              ) : (
+                <div className="text-center py-20">
+                  <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">No live data</p>
+                </div>
+              )}
             </div>
           </div>
 
