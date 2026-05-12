@@ -4,6 +4,9 @@ const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
 const crypto = require('crypto');
+const Group = require('../models/Group');
+const Notification = require('../models/Notification');
+const mongoose = require('mongoose');
 
 // Generate JWT Token
 const generateToken = (id, model = 'User') => {
@@ -135,7 +138,6 @@ exports.verifyOTP = async (req, res, next) => {
     // Auto-add to Group if associatedGroup was selected during registration
     if (user.associatedGroup) {
       try {
-        const Group = mongoose.model('Group');
         const group = await Group.findOne({ name: user.associatedGroup });
         if (group && !group.members.includes(user._id)) {
           group.members.push(user._id);
@@ -473,7 +475,6 @@ exports.updateMe = async (req, res, next) => {
 // @access  Private
 exports.getNotifications = async (req, res, next) => {
   try {
-    const Notification = require('../models/Notification');
     const notifications = await Notification.find({ recipient: req.user._id })
       .sort({ createdAt: -1 })
       .limit(20);
@@ -492,7 +493,6 @@ exports.getNotifications = async (req, res, next) => {
 // @access  Private
 exports.markNotificationRead = async (req, res, next) => {
   try {
-    const Notification = require('../models/Notification');
     const notification = await Notification.findOneAndUpdate(
       { _id: req.params.id, recipient: req.user._id },
       { isRead: true },

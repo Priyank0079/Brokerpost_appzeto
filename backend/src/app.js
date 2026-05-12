@@ -12,11 +12,25 @@ app.use(cors({
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [process.env.CLIENT_URL, 'http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+    const allowedOrigins = [
+      process.env.CLIENT_URL, 
+      'http://localhost:5173', 
+      'http://localhost:5174', 
+      'http://localhost:5175',
+      'https://brokerpost-appzeto.vercel.app',
+      'https://brokerpost-appzeto.onrender.com'
+    ];
+    
+    // Check if origin is in allowedOrigins or if it's a development environment
+    const isAllowed = allowedOrigins.some(allowed => allowed && (origin === allowed || origin.startsWith(allowed)));
+    
+    if (isAllowed || process.env.NODE_ENV === 'development') {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.error(`CORS Error: Origin ${origin} not allowed`);
+      const error = new Error('Not allowed by CORS');
+      error.statusCode = 403;
+      callback(error);
     }
   },
   credentials: true

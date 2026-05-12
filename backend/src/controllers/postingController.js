@@ -1,6 +1,7 @@
 const Posting = require('../models/Posting');
 const User = require('../models/User');
 const Group = require('../models/Group');
+const Admin = require('../models/Admin');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Create a new posting (Requirement or Availability)
@@ -318,13 +319,21 @@ exports.getPostingStats = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Authentication required' });
     }
 
-    const mongoose = require('mongoose');
-    const PostingModel = mongoose.model('Posting');
-    const UserModel = mongoose.model('User');
-    const GroupModel = mongoose.model('Group');
-
     const userId = req.user.id || req.user._id;
-    console.log('Generating dashboard stats for User ID:', userId);
+    console.log(`Generating dashboard stats for [${req.userModel}] ID: ${userId}`);
+
+    // Use imported models directly instead of mongoose.model() to avoid MissingSchemaError
+    const PostingModel = Posting;
+    const UserModel = User;
+    const GroupModel = Group;
+
+    // Build the group filter dynamically
+    const groupQuery = { isActive: true };
+    const groupOrConditions = [{ members: userId }];
+    if (req.user.associatedGroup) {
+      groupOrConditions.push({ name: req.user.associatedGroup });
+    }
+    groupQuery.$or = groupOrConditions;
 
     // Run basic counts first (these are fast)
     const [
@@ -333,10 +342,10 @@ exports.getPostingStats = async (req, res, next) => {
       availabilityCount,
       requirementCount
     ] = await Promise.all([
-      PostingModel.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed', e); return 0; }),
-      PostingModel.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed', e); return 0; }),
-      PostingModel.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed', e); return 0; }),
-      PostingModel.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed', e); return 0; })
+      PostingModel.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
     ]);
 
     // Run breakdown and recent listings
@@ -369,15 +378,9 @@ exports.getPostingStats = async (req, res, next) => {
         .sort({ createdAt: -1 })
         .limit(5)
         .lean()
-        .catch(e => { console.error('Recent listings fetch failed', e); return []; }),
+        .catch(e => { console.error('Recent listings fetch failed:', e.message); return []; }),
       UserModel.countDocuments({ role: 'Broker' }).catch(() => 0),
-      GroupModel.countDocuments({ 
-        $or: [
-          { members: userId },
-          { name: req.user.associatedGroup }
-        ],
-        isActive: true 
-      }).catch(() => 0)
+      GroupModel.countDocuments(groupQuery).catch(e => { console.error('Group count failed:', e.message); return 0; })
     ]);
 
     res.status(200).json({
@@ -411,8 +414,8 @@ exports.getPostingStats = async (req, res, next) => {
     res.status(500).json({
       success: false,
       message: 'Failed to aggregate dashboard statistics',
-      error: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: error.message
     });
   }
 };
+
