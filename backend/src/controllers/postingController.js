@@ -330,7 +330,8 @@ exports.getPostingStats = async (req, res, next) => {
     // Build the group filter dynamically
     const groupQuery = { isActive: true };
     const groupOrConditions = [{ members: userId }];
-    if (req.user.associatedGroup) {
+    // Defensive check for associatedGroup - might be undefined in production
+    if (req.user && req.user.associatedGroup) {
       groupOrConditions.push({ name: req.user.associatedGroup });
     }
     groupQuery.$or = groupOrConditions;
@@ -348,40 +349,66 @@ exports.getPostingStats = async (req, res, next) => {
       PostingModel.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
     ]);
 
-    // Run breakdown and recent listings
-    const [
-      resSale,
-      resRent,
-      resPurchase,
-      resWantedRent,
-      comSale,
-      comLease,
-      comPurchase,
-      comWantedLease,
-      recentListings,
-      totalBrokers,
-      groupCount
-    ] = await Promise.all([
-      // Residential Breakdown
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'SALE', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'RENT', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'WANTED_RENT', isActive: true }).catch(() => 0),
-      // Commercial Breakdown
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'SALE', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'LEASE', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
-      PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'WANTED_LEASE', isActive: true }).catch(() => 0),
-      
-      PostingModel.find({ isActive: true })
-        .populate('postedBy', 'firstName lastName companyName name')
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .lean()
-        .catch(e => { console.error('Recent listings fetch failed:', e.message); return []; }),
-      UserModel.countDocuments({ role: 'Broker' }).catch(() => 0),
-      GroupModel.countDocuments(groupQuery).catch(e => { console.error('Group count failed:', e.message); return 0; })
-    ]);
+    // Run breakdown and recent listings - wrapped in try-catch to prevent single query failure from crashing
+    let breakdownResults = {
+      resSale: 0, resRent: 0, resPurchase: 0, resWantedRent: 0,
+      comSale: 0, comLease: 0, comPurchase: 0, comWantedLease: 0,
+      recentListings: [], totalBrokers: 0, groupCount: 0
+    };
+
+    try {
+      const [
+        resSale,
+        resRent,
+        resPurchase,
+        resWantedRent,
+        comSale,
+        comLease,
+        comPurchase,
+        comWantedLease,
+        recentListings,
+        totalBrokers,
+        groupCount
+      ] = await Promise.all([
+        // Residential Breakdown
+        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'SALE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'RENT', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'WANTED_RENT', isActive: true }).catch(() => 0),
+        // Commercial Breakdown
+        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'SALE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'LEASE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'WANTED_LEASE', isActive: true }).catch(() => 0),
+
+        // Recent listings - separate try-catch for populate
+        (async () => {
+          try {
+            return await PostingModel.find({ isActive: true })
+              .populate('postedBy', 'firstName lastName companyName name')
+              .sort({ createdAt: -1 })
+              .limit(5)
+              .lean();
+          } catch (e) {
+            console.error('Recent listings fetch failed:', e.message);
+            return [];
+          }
+        })(),
+        UserModel.countDocuments({ role: 'Broker' }).catch(() => 0),
+        GroupModel.countDocuments(groupQuery).catch(e => { console.error('Group count failed:', e.message); return 0; })
+      ]);
+
+      breakdownResults = {
+        resSale, resRent, resPurchase, resWantedRent,
+        comSale, comLease, comPurchase, comWantedLease,
+        recentListings: recentListings || [],
+        totalBrokers,
+        groupCount
+      };
+    } catch (breakdownError) {
+      console.error('Dashboard breakdown query failed:', breakdownError.message);
+      // Continue with default values
+    }
 
     res.status(200).json({
       success: true,
@@ -390,23 +417,23 @@ exports.getPostingStats = async (req, res, next) => {
         myListings,
         availabilityCount,
         requirementCount,
-        groupCount,
+        groupCount: breakdownResults.groupCount,
         breakdown: {
           residential: {
-            sale: resSale,
-            rent: resRent,
-            purchase: resPurchase,
-            wantedRent: resWantedRent
+            sale: breakdownResults.resSale,
+            rent: breakdownResults.resRent,
+            purchase: breakdownResults.resPurchase,
+            wantedRent: breakdownResults.resWantedRent
           },
           commercial: {
-            sale: comSale,
-            lease: comLease,
-            purchase: comPurchase,
-            wantedLease: comWantedLease
+            sale: breakdownResults.comSale,
+            lease: breakdownResults.comLease,
+            purchase: breakdownResults.comPurchase,
+            wantedLease: breakdownResults.comWantedLease
           }
         },
-        recentListings,
-        totalBrokers
+        recentListings: breakdownResults.recentListings,
+        totalBrokers: breakdownResults.totalBrokers
       }
     });
   } catch (error) {

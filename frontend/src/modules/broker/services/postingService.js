@@ -50,7 +50,12 @@ export const getPostingStats = async () => {
   const res = await fetch(`${API_BASE}/postings/stats`, {
     headers: authHeader()
   });
-  return res.json();
+  const data = await res.json();
+  // Return proper structure even on error
+  if (!res.ok) {
+    return { success: false, message: data.message || 'Request failed', data: null };
+  }
+  return data;
 };
 
 // ── READ ONE ────────────────────────────────────────────────────────────────

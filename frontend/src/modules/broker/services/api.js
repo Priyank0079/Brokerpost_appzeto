@@ -15,7 +15,12 @@ export const api = {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: getHeaders(null)
     });
-    return response.json();
+    const data = await response.json();
+    // Return proper structure even on error
+    if (!response.ok) {
+      return { success: false, message: data.message || 'Request failed', data: null };
+    }
+    return data;
   },
   post: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {

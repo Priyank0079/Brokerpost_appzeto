@@ -17,9 +17,18 @@ const Dashboard = () => {
           api.get('/postings/stats'),
           api.get('/auth/me')
         ]);
-        
-        if (statsRes.success) setStats(statsRes.data);
-        if (userRes.success) setUser(userRes.data);
+
+        // More robust null checking - handle case where statsRes exists but data is null
+        if (statsRes && statsRes.success && statsRes.data) {
+          setStats(statsRes.data);
+        } else {
+          console.warn('Stats API failed:', statsRes?.message);
+          // Set empty stats to prevent crashes
+          setStats(null);
+        }
+        if (userRes && userRes.success && userRes.data) {
+          setUser(userRes.data);
+        }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
       } finally {
@@ -30,17 +39,29 @@ const Dashboard = () => {
   }, []);
 
   const statCards = [
-    { label: 'ALL LISTINGS', value: stats?.totalListings || '0', sub: 'Total platform postings', color: 'text-slate-900', path: '/admin/listings' },
-    { label: 'ACTIVE BROKERS', value: stats?.totalBrokers || '0', sub: 'Verified professionals', color: 'text-slate-900', path: '/admin/brokers' },
-    { label: 'AVAILABILITY', value: stats?.availabilityCount || '0', sub: 'For sale / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=AVAILABILITY' },
-    { label: 'REQUIREMENTS', value: stats?.requirementCount || '0', sub: 'Wanted buy / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=REQUIREMENT' },
+    { label: 'ALL LISTINGS', value: stats?.totalListings ?? '0', sub: 'Total platform postings', color: 'text-slate-900', path: '/admin/listings' },
+    { label: 'ACTIVE BROKERS', value: stats?.totalBrokers ?? '0', sub: 'Verified professionals', color: 'text-slate-900', path: '/admin/brokers' },
+    { label: 'AVAILABILITY', value: stats?.availabilityCount ?? '0', sub: 'For sale / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=AVAILABILITY' },
+    { label: 'REQUIREMENTS', value: stats?.requirementCount ?? '0', sub: 'Wanted buy / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=REQUIREMENT' },
   ];
 
   const breakdownItems = [
-    { label: 'Residential Available', value: stats?.breakdown?.residentialAvailable || '0' },
-    { label: 'Residential Wanted', value: stats?.breakdown?.residentialWanted || '0' },
-    { label: 'Commercial Available', value: stats?.breakdown?.commercialAvailable || '0' },
-    { label: 'Commercial Wanted', value: stats?.breakdown?.commercialWanted || '0' },
+    { 
+      label: 'Residential Available', 
+      value: (stats?.breakdown?.residential?.sale || 0) + (stats?.breakdown?.residential?.rent || 0) 
+    },
+    { 
+      label: 'Residential Requirements', 
+      value: (stats?.breakdown?.residential?.purchase || 0) + (stats?.breakdown?.residential?.wantedRent || 0) 
+    },
+    { 
+      label: 'Commercial Available', 
+      value: (stats?.breakdown?.commercial?.sale || 0) + (stats?.breakdown?.commercial?.lease || 0) 
+    },
+    { 
+      label: 'Commercial Requirements', 
+      value: (stats?.breakdown?.commercial?.purchase || 0) + (stats?.breakdown?.commercial?.wantedLease || 0) 
+    },
   ];
 
   if (loading) {
@@ -48,6 +69,27 @@ const Dashboard = () => {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="animate-spin text-[#c0922e]" size={40} />
         <p className="text-sm font-bold text-slate-400">Syncing dashboard data...</p>
+      </div>
+    );
+  }
+
+  // If stats failed to load, show a fallback or error
+  if (!stats) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="p-8 bg-white rounded-2xl shadow-sm border border-slate-100 text-center max-w-md">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl text-red-500">⚠️</span>
+          </div>
+          <h2 className="text-lg font-bold text-slate-900">Connection Error</h2>
+          <p className="text-sm text-slate-500 mt-2">We couldn't reach the server to fetch dashboard statistics. Please check your internet connection or the server status.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-6 px-6 py-2 bg-[#c0922e] text-white rounded-lg font-bold text-sm"
+          >
+            Retry Connection
+          </button>
+        </div>
       </div>
     );
   }
@@ -107,7 +149,7 @@ const Dashboard = () => {
               </button>
             </div>
             <div className="flex-1 overflow-x-auto">
-              {stats?.recentListings?.length === 0 ? (
+              {!stats?.recentListings || stats.recentListings.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-10 md:py-16 text-center px-6">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-[#faf9f6] rounded-xl flex items-center justify-center mb-4">
                     <span className="text-xl md:text-2xl opacity-40">📋</span>
@@ -120,9 +162,9 @@ const Dashboard = () => {
                     <div key={listing._id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 flex-1 min-w-0">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                          listing.postType === 'Availability' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
+                          listing.postType === 'AVAILABILITY' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
                         }`}>
-                          <span className="text-xs font-bold uppercase">{listing.vertical[0]}</span>
+                          <span className="text-xs font-bold uppercase">{listing.vertical?.[0] || 'P'}</span>
                         </div>
                         <div className="min-w-0">
                           <p className="text-[11px] font-bold text-slate-900 truncate">
@@ -130,7 +172,7 @@ const Dashboard = () => {
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                              listing.postType === 'Availability' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                              listing.postType === 'AVAILABILITY' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
                             }`}>
                               {listing.postType}
                             </span>
@@ -146,7 +188,7 @@ const Dashboard = () => {
                            <p className="text-[10px] font-bold text-slate-600">{listing.postedBy?.firstName} {listing.postedBy?.lastName}</p>
                         </div>
                         <p className="text-[9px] text-slate-400 font-medium flex items-center justify-end gap-1">
-                           <Clock size={8} /> {new Date(listing.createdAt).toLocaleDateString()}
+                           <Clock size={8} /> {listing.createdAt ? new Date(listing.createdAt).toLocaleDateString() : 'N/A'}
                         </p>
                       </div>
                     </div>
@@ -172,7 +214,7 @@ const Dashboard = () => {
                     <div className="w-full h-[3px] bg-slate-100 rounded-full overflow-hidden">
                        <div 
                         className="h-full bg-[#c0922e] transition-all duration-700 ease-out" 
-                        style={{ width: `${Math.min((parseInt(item.value) / (stats?.totalListings || 1)) * 100, 100)}%` }}
+                        style={{ width: `${Math.min(((parseInt(item.value) || 0) / (stats?.totalListings || 1)) * 100, 100)}%` }}
                        />
                     </div>
                   </div>
