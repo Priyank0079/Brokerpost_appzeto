@@ -43,7 +43,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
           <div className="w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-lg shadow-slate-900/10 group-hover:scale-105 transition-transform">
             <Building2 size={20} />
           </div>
-          <span className="text-lg font-black text-[#1e3a5f] tracking-tighter hidden xs:block">
+          <span className="text-base font-black text-[#1e3a5f] tracking-tighter hidden xs:block">
             BROKERS<span className="text-primary-600">POST</span>
           </span>
         </Link>

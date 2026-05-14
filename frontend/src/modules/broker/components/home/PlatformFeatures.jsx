@@ -23,18 +23,28 @@ const PlatformFeatures = ({ config }) => {
   ];
 
   return (
-    <section id="features" className="bg-pink-50 pt-20 pb-28 px-6 lg:px-20">
+    <section id="features" className="bg-[#f0ebe0] pt-20 pb-10 px-6 lg:px-20">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
-        <div className="mb-12">
-          <p className="text-[#c8962a] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
+        <div className="mb-6">
+          <p className="text-[#c8962a] text-[9px] font-bold uppercase tracking-[0.1em] mb-3">
             {config?.badge || 'Platform Features'}
           </p>
-          <h2 className="text-2xl lg:text-3xl font-serif text-[#0f172a] mb-4">
+          <h2 className="text-3xl lg:text-4xl font-serif text-[#0f172a] mb-2">
             {config?.title || 'Everything a Broker Needs'}
           </h2>
           <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">
-            {config?.subtitle || 'Built exclusively for verified real estate professionals who believe in transparent, direct dealings.'}
+            {(() => {
+              const text = config?.subtitle || 'Built exclusively for verified real estate professionals who believe in transparent, direct dealings.';
+              if (text === 'Built exclusively for verified real estate professionals who believe in transparent, direct dealings.') {
+                return (
+                  <>
+                    Built exclusively for verified real estate professionals who believe in<br />transparent, direct dealings.
+                  </>
+                );
+              }
+              return text;
+            })()}
           </p>
         </div>
 
@@ -45,7 +55,7 @@ const PlatformFeatures = ({ config }) => {
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${feature.color || 'bg-primary-50 text-primary-500'}`}>
                 {getIcon(feature.icon)}
               </div>
-              <h3 className="text-sm font-bold text-[#0f172a] mb-1">
+              <h3 className="text-xs font-bold text-[#0f172a] mb-1">
                 {feature.title}
               </h3>
               <p className="text-slate-500 text-[12px] leading-relaxed">

@@ -22,7 +22,7 @@ const ProcessFlow = ({ config }) => {
           <p className="text-[#c8962a] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
             {config?.badge || 'Process'}
           </p>
-          <h2 className="text-4xl lg:text-5xl font-serif mb-4">
+          <h2 className="text-3xl lg:text-4xl font-serif mb-4">
             {config?.title || 'How BrokersPost Works'}
           </h2>
           <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
@@ -34,13 +34,13 @@ const ProcessFlow = ({ config }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {steps.map((step, idx) => (
             <div key={idx} className="group">
-              <span className="text-[#c8962a] text-4xl font-serif font-bold mb-6 block opacity-80 group-hover:opacity-100 transition-opacity">
+              <span className="text-[#c8962a] text-4xl font-serif font-bold mb-2 block opacity-80 group-hover:opacity-100 transition-opacity">
                 {step.number}
               </span>
-              <h3 className="text-lg font-bold mb-3">
+              <h3 className="text-xs font-bold mb-1">
                 {step.title}
               </h3>
-              <p className="text-slate-400 text-[13px] leading-relaxed">
+              <p className="text-slate-400 text-[13px] leading-relaxed tracking-tight">
                 {step.description}
               </p>
             </div>

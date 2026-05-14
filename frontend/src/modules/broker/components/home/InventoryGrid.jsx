@@ -42,43 +42,32 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <section id="inventory-grid" className="bg-pink-50/30 pt-12 pb-24 px-6 lg:px-20 scroll-mt-10">
+    <section id="inventory-grid" className="bg-pink-50/30 pt-6 pb-10 px-6 lg:px-20 scroll-mt-10">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
           <div className="space-y-1">
-             <p className="text-[#c8962a] text-[10px] font-black uppercase tracking-[0.2em] mb-1">
-                {config?.badge || 'Live Inventory'}
-             </p>
-            <h2 className="text-3xl font-serif font-black text-[#0f172a] tracking-tight">
-                {config?.title || 'Active Listings'}
+            <h2 className="text-xl font-serif font-thin text-[#481b2a] tracking-tight">
+              {config?.title || 'Active Listings'}
             </h2>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#c8962a] animate-pulse"></span>
-              <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                {total} Real-time {filters.vertical ? filters.vertical.toLowerCase() : 'inventory'} opportunities
-              </p>
-            </div>
           </div>
-          
-          <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-            <span className="text-[10px] font-black text-slate-400 ml-3 uppercase tracking-widest">Layout:</span>
-            <button 
+
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-600">View:</span>
+            <button
               onClick={() => setView('grid')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                view === 'grid' ? 'bg-[#1a365d] text-white shadow-xl shadow-[#1a365d]/20 scale-105' : 'text-slate-500 hover:bg-slate-50'
-              }`}
+              className={`flex items-center gap-2 px-1 py-2 rounded-lg text-sm font-medium transition-all ${view === 'grid' ? 'bg-[#1a365d] text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
             >
-              <Grid size={14} />
+              <Grid size={16} />
               Grid
             </button>
-            <button 
+            <button
               onClick={() => setView('table')}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                view === 'table' ? 'bg-[#1a365d] text-white shadow-xl shadow-[#1a365d]/20 scale-105' : 'text-slate-500 hover:bg-slate-50'
-              }`}
+              className={`flex items-center gap-2 px-1 py-2 rounded-lg text-sm font-medium transition-all ${view === 'table' ? 'bg-[#1a365d] text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
+                }`}
             >
-              <Table size={14} />
+              <Table size={16} />
               Table
             </button>
           </div>
@@ -97,83 +86,65 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             {view === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {listings.map((item) => (
-                  <div 
-                    key={item._id} 
+                  <div
+                    key={item._id}
                     onClick={() => setSelectedItem(item)}
-                    className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 group relative flex flex-col cursor-pointer"
+                    className="bg-white rounded-[0.5rem] overflow-hidden border border-slate-200 hover:shadow-lg transition-all duration-300 flex flex-col cursor-pointer"
                   >
-                    {/* Image Area */}
-                    <div className="h-48 bg-slate-100 relative overflow-hidden">
+                    {/* Top Area (Beige or Image) */}
+                    <div className="h-36 bg-[#f5ede3] relative overflow-hidden flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
                       {item.images && item.images.length > 0 ? (
-                        <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
+                        <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#fdfaf3]">
-                          <div className="text-[#c8962a]/10">
-                            <Home size={64} strokeWidth={1} />
-                          </div>
+                        <div className="w-20 h-20 flex items-center justify-center bg-transparent">
+                          <Home size={40} className="text-[#8c7a6b] stroke-1" />
                         </div>
                       )}
-                      <div className="absolute top-5 left-5 flex flex-col gap-2">
-                        <span className="bg-white/95 backdrop-blur px-4 py-1.5 rounded-full text-[#c8962a] text-[9px] font-black uppercase tracking-widest shadow-xl border border-[#c8962a]/10">
-                          {item.vertical}
-                        </span>
-                        {item.postType === 'REQUIREMENT' && (
-                          <span className="bg-[#1a365d] px-4 py-1.5 rounded-full text-white text-[9px] font-black uppercase tracking-widest shadow-xl">
-                            Wanted
-                          </span>
-                        )}
-                        {item.videos && item.videos.length > 0 && (
-                          <div className="bg-white/95 backdrop-blur w-8 h-8 rounded-full flex items-center justify-center text-primary-600 shadow-xl border border-primary-100">
-                            <Play size={12} className="fill-current ml-0.5" />
-                          </div>
-                        )}
-                      </div>
+                      <span className="absolute top-3 left-3 bg-[#dbeafe]/90 backdrop-blur text-[#1e40af] px-1 py-0 rounded-md text-[8px] font-medium">
+                        {item.vertical || 'Residential'}
+                      </span>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 flex-1 flex flex-col">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className={`w-2.5 h-2.5 rounded-full shadow-sm ${item.intent?.includes('SALE') ? 'bg-orange-500' : 'bg-blue-500'}`}></span>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                          {item.intent?.replace('_', ' ')} · {item.subType?.replace('_', ' ')}
-                        </p>
-                      </div>
+                    {/* Middle Area (White) */}
+                    <div className="p-1 pl-3 flex-1 flex flex-col bg-white">
+                      <p className="text-[9px] font-normal text-slate-400 uppercase tracking-wide mt-2 mb-2">
+                        {item.postType === 'REQUIREMENT' ? 'Looking for' : 'Available for'} {item.intent?.toLowerCase()} · {item.subType?.toLowerCase() || 'Apartments'}
+                      </p>
                       
-                      <h3 className="text-lg font-serif font-black text-[#0f172a] mb-1 line-clamp-1 group-hover:text-[#c8962a] transition-colors">{item.project || 'Unspecified Project'}</h3>
-                      <div className="flex items-center gap-1.5 text-slate-400 text-[11px] font-bold mb-6">
-                        <MapPin size={12} className="text-[#c8962a]" />
+                      <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
+                        {item.bedrooms ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
+                      </h3>
+                      
+                      <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-1">
+                        <MapPin size={12} className="text-pink-500" />
                         <span className="truncate">{item.location}</span>
                       </div>
 
                       {/* Chips */}
-                      <div className="flex flex-wrap gap-2 mb-8">
-                        <div className="px-3 py-1.5 bg-slate-50 text-slate-600 rounded-xl text-[10px] font-black uppercase tracking-tighter border border-slate-100">
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <div className="px-1 py-1 bg-slate-50 text-slate-600 rounded-md text-[9px] font-medium flex items-center gap-1 border border-slate-100 tracking-tighter">
                           {item.size} {item.sizeUnit}
                         </div>
-                        {item.bedrooms && (
-                          <div className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-tighter border border-emerald-100">
-                            {item.bedrooms} BHK
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Footer */}
-                      <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                            {item.postType === 'REQUIREMENT' ? 'Budget range' : 'Valuation'}
-                          </span>
-                          <p className="text-lg font-black text-[#0f172a] tracking-tight">
-                            {item.postType === 'REQUIREMENT' 
-                              ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
-                              : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
-                            }
-                          </p>
+                        <div className="px-1 py-1 bg-emerald-50 text-emerald-600 rounded-md text-[9px] font-medium">
+                          Ready to Move
                         </div>
-                        <button className="w-12 h-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 group-hover:scale-110 active:scale-95">
-                          <ChevronRight size={20} />
-                        </button>
+                        <div className="px-1 py-1 bg-blue-50 text-blue-600 rounded-md text-[9px] font-medium">
+                          FOR {item.intent?.toUpperCase() || 'RENT'}
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Bottom Area (Beige) */}
+                    <div className="p-4 bg-[#f5ede3] flex items-center justify-between">
+                      <div className="text-xs font-bold text-[#1e3a5f]">
+                        {item.postType === 'REQUIREMENT'
+                          ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
+                          : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
+                        }
+                      </div>
+                      <button className="px-2 py-2 bg-[#1a365d] text-white rounded-lg text-[10px] font-bold hover:bg-[#c8962a] transition-colors tracking-wide">
+                        Connect
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -194,8 +165,8 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                       {listings.map((item, idx) => (
-                        <tr 
-                          key={item._id} 
+                        <tr
+                          key={item._id}
                           onClick={() => setSelectedItem(item)}
                           className="hover:bg-slate-50/80 transition-all group cursor-pointer"
                         >
@@ -222,7 +193,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                           <td className="py-6 px-10">
                             <div className="flex flex-col">
                               <span className="text-[14px] font-black text-emerald-600 tracking-tight">
-                                {item.postType === 'REQUIREMENT' 
+                                {item.postType === 'REQUIREMENT'
                                   ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
                                   : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'N/A'
                                 }
@@ -247,37 +218,36 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="mt-20 flex items-center justify-center gap-6">
-                <button 
+              <div className="mt-10 flex items-center justify-center gap-4">
+                <button
                   onClick={() => setPage(prev => Math.max(1, prev - 1))}
                   disabled={page === 1}
-                  className="w-14 h-14 rounded-[1.25rem] border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
+                  className="w-10 h-10 rounded-[0.75rem] border-2 border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
                 >
-                  <ChevronLeft size={24} />
+                  <ChevronLeft size={16} />
                 </button>
-                
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-2">
                   {[...Array(totalPages)].map((_, i) => (
                     <button
                       key={i}
                       onClick={() => setPage(i + 1)}
-                      className={`w-14 h-14 rounded-[1.25rem] text-[13px] font-black transition-all ${
-                        page === i + 1 
-                          ? 'bg-[#c8962a] text-white shadow-[0_15px_30px_rgba(200,150,42,0.3)] scale-110 z-10' 
-                          : 'bg-white border-2 border-slate-50 text-slate-400 hover:border-slate-200 active:scale-90'
-                      }`}
+                      className={`w-10 h-10 rounded-[0.75rem] text-[11px] font-black transition-all ${page === i + 1
+                          ? 'bg-[#c8962a] text-white shadow-[0_10px_20px_rgba(200,150,42,0.2)] scale-105 z-10'
+                          : 'bg-white border-2 border-slate-200 text-slate-400 hover:border-slate-300 active:scale-90'
+                        }`}
                     >
                       {i + 1}
                     </button>
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => setPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={page === totalPages}
-                  className="w-14 h-14 rounded-[1.25rem] border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
+                  className="w-10 h-10 rounded-[0.75rem] border-2 border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all shadow-sm bg-white active:scale-90"
                 >
-                  <ChevronRight size={24} />
+                  <ChevronRight size={16} />
                 </button>
               </div>
             )}
@@ -292,7 +262,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             <p className="text-[11px] font-black text-slate-400 mt-2 uppercase tracking-[0.25em] max-w-sm leading-relaxed">
               Try broadening your search or clearing filters to explore other verified opportunities.
             </p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="mt-10 px-10 py-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 active:scale-95"
             >
@@ -302,7 +272,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         )}
       </div>
 
-      <ListingDetailModal 
+      <ListingDetailModal
         isOpen={!!selectedItem}
         onClose={() => setSelectedItem(null)}
         item={selectedItem}

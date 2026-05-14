@@ -14,29 +14,29 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
         <div className="max-w-[1200px] mx-auto w-full h-full flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-1" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
-              <span className="text-3xl font-bold text-[#1e3a5f] tracking-tight">Brokers</span>
-              <span className="text-3xl font-bold text-[#c8962a] tracking-tight">Post</span>
+              <span className="text-[27px] font-bold text-[#1e3a5f] tracking-tight">Brokers</span>
+              <span className="text-[27px] font-bold text-[#c8962a] tracking-tight">Post</span>
             </Link>
           </div>
 
           <div className="hidden lg:flex items-center gap-8 ml-auto mr-12">
-            <a href="/#inventory" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">Browse Inventory</a>
-            <a href="/#features" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">Features</a>
-            <a href="/#how-it-works" className="text-sm font-medium text-[#4A4A4A] hover:text-[#c8962a] transition-colors">How It Works</a>
+            <a href="/#inventory" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">Browse Inventory</a>
+            <a href="/#features" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">Features</a>
+            <a href="/#how-it-works" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">How It Works</a>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-3">
               {user ? (
                 <>
-                  <button 
+                  <button
                     onClick={logout}
                     className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all flex items-center gap-2"
                   >
                     <LogOut size={14} />
                     Logout
                   </button>
-                  <button 
+                  <button
                     onClick={() => navigate('/dashboard')}
                     className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20 flex items-center gap-2"
                   >
@@ -46,7 +46,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
                 </>
               ) : (
                 <>
-                  <button 
+                  <button
                     onClick={onRegisterClick}
                     className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
                   >
@@ -57,7 +57,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
             </div>
 
             {/* Mobile Menu Button */}
-            <button 
+            <button
               className="lg:hidden p-2 text-[#4A4A4A]"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
@@ -70,34 +70,34 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
         {isMobileMenuOpen && (
           <div className="lg:hidden absolute top-20 left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50 animate-in slide-in-from-top duration-300">
             <div className="flex flex-col p-6 gap-4">
-              <a 
-                href="/#inventory" 
+              <a
+                href="/#inventory"
                 className="text-base font-medium text-[#4A4A4A] py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Browse Inventory
               </a>
-              <a 
-                href="/#features" 
+              <a
+                href="/#features"
                 className="text-base font-medium text-[#4A4A4A] py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Features
               </a>
-              <a 
-                href="/#how-it-works" 
+              <a
+                href="/#how-it-works"
                 className="text-base font-medium text-[#4A4A4A] py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 How It Works
               </a>
-              
+
               <div className="h-[1px] bg-slate-100 my-2" />
-              
+
               <div className="flex flex-col gap-3 sm:hidden">
                 {user ? (
                   <>
-                    <button 
+                    <button
                       onClick={() => {
                         logout();
                         setIsMobileMenuOpen(false);
@@ -107,7 +107,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
                       <LogOut size={16} />
                       Logout
                     </button>
-                    <button 
+                    <button
                       onClick={() => {
                         navigate('/dashboard');
                         setIsMobileMenuOpen(false);
@@ -120,7 +120,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
                   </>
                 ) : (
                   <>
-                    <button 
+                    <button
                       onClick={() => {
                         onRegisterClick();
                         setIsMobileMenuOpen(false);

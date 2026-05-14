@@ -8,9 +8,9 @@ const CTASection = ({ onRegisterClick, config }) => {
 
   return (
     <>
-    <section className="bg-[#FAF9F6] py-12 px-6">
-      <div className="max-w-[720px] mx-auto">
-        <div className="bg-white rounded-[40px] p-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
+    <section className="bg-[#f0ebe0] py-12 px-6">
+      <div className="max-w-[660px] mx-auto">
+        <div className="bg-white rounded-[20px] py-6 px-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center">
               <Trophy size={32} className="text-[#c8962a]" />
