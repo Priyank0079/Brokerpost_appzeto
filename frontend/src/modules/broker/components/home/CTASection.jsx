@@ -44,6 +44,10 @@ const CTASection = ({ onRegisterClick, config }) => {
     <LoginModal 
       isOpen={isLoginModalOpen} 
       onClose={() => setIsLoginModalOpen(false)} 
+      onSwitchToRegister={() => {
+        setIsLoginModalOpen(false);
+        if (onRegisterClick) onRegisterClick();
+      }}
     />
     </>
   );

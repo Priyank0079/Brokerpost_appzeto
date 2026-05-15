@@ -88,30 +88,30 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       />
       
       {/* Modal Card */}
-      <div className="relative w-full max-w-[400px] bg-white rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-[400px] bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all"
+          className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[#f0ebe0] text-slate-400 hover:bg-[#e6ddcd] hover:text-slate-600 transition-all"
         >
           <X size={20} />
         </button>
 
-        <div className="p-5 lg:p-6 pb-2">
+        <div className="px-4 pt-5 lg:px-5 lg:pt-6 pb-4">
           {/* Header */}
           <div className="">
-            <h2 className="text-2xl font-serif font-medium text-[#273a60] mb-1">
+            <h2 className="text-xl font-serif font-medium text-[#6b515f] mb-1">
               {isOtpLogin && otpStep === 2 ? 'Verify OTP' : 'Broker Login'}
             </h2>
-            <p className="text-slate-400 text-xs">
+            <p className="text-[#738192] text-[11px] tracking-tight">
               {isOtpLogin && otpStep === 2 ? `OTP sent to ${email}` : 'Access your inventory dashboard'}
             </p>
           </div>
         </div>
 
-        <div className="h-[1px] bg-slate-100 w-full" />
+        <div className="h-[1px] bg-[#f0ede6] w-full" />
 
-        <div className="p-5 lg:p-6 pt-2">
+        <div className="p-4 lg:p-5 pt-2">
           {error && (
             <p className="text-[10px] font-bold text-red-500 text-center bg-red-50 py-2 rounded-lg mb-4 animate-shake">
               {error}
@@ -120,11 +120,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
 
           {!isOtpLogin ? (
             /* Password Login Form */
-            <form onSubmit={handlePasswordLogin} className="space-y-4">
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    EMAIL ADDRESS
+            <form onSubmit={handlePasswordLogin} className="space-y-3">
+              <div className="space-y-2">
+                <div className="space-y-1.5">
+                  <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
+                    EMAIL ADDRESS *
                   </label>
                   <input 
                     type="email"
@@ -132,13 +132,13 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    PASSWORD
+                <div className="space-y-1.5">
+                  <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
+                    PASSWORD *
                   </label>
                   <input 
                     type="password"
@@ -146,33 +146,39 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Your password"
-                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 pt-2">
+              <div className="text-center pt-2">
+                <p className="text-xs font-medium text-[#748295]">
+                  Not registered? <button type="button" onClick={onSwitchToRegister} className="font-bold text-[#1a365d] hover:underline">Register here</button>
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-6">
+                <button 
+                  type="button"
+                  onClick={onClose}
+                  className="px-3 py-3 rounded-lg border border-[#1a365d] text-xs font-bold text-[#1a365d] hover:bg-slate-50 transition-all"
+                >
+                  Cancel
+                </button>
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 rounded-xl bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
+                  className="px-4 py-3 rounded-lg bg-[#c8962a] text-white text-xs font-bold hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center justify-center gap-2"
                 >
-                  {loading ? 'Logging in...' : 'Login with Password'}
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setIsOtpLogin(true)}
-                  className="text-xs font-bold text-[#1a365d] hover:underline"
-                >
-                  Login with OTP instead
+                  {loading ? 'Logging in...' : 'Login'}
                 </button>
               </div>
             </form>
           ) : otpStep === 1 ? (
             /* OTP Login - Step 1: Email */
             <form onSubmit={handleSendOtp} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
+              <div className="space-y-1.5">
+                <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
                   EMAIL ADDRESS
                 </label>
                 <input 
@@ -181,7 +187,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter registered email"
-                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-300"
+                  className="w-full px-4 py-3 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
                 />
               </div>
 
@@ -205,7 +211,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           ) : (
             /* OTP Login - Step 2: Verify OTP */
             <form onSubmit={handleVerifyOtp} className="space-y-4">
-               <div className="space-y-1">
+               <div className="space-y-1.5">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                   ENTER 6-DIGIT OTP
                 </label>
@@ -216,7 +222,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                   placeholder="000000"
-                  className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200"
+                  className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-[#919190]"
                 />
               </div>
 
@@ -239,12 +245,7 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
             </form>
           )}
 
-          {/* Registration Link */}
-          <div className="text-center pt-6 pb-2">
-            <p className="text-xs font-medium text-slate-400">
-              Not registered? <button type="button" onClick={onSwitchToRegister} className="font-bold text-[#1a365d] hover:underline">Register here</button>
-            </p>
-          </div>
+
         </div>
       </div>
     </div>

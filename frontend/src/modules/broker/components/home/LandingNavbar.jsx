@@ -20,13 +20,13 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
           </div>
 
           <div className="hidden lg:flex items-center gap-8 ml-auto mr-12">
-            <a href="/#inventory" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">Browse Inventory</a>
-            <a href="/#features" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">Features</a>
-            <a href="/#how-it-works" className="text-xs font-medium text-[#6e7d90] hover:text-[#c8962a] transition-colors">How It Works</a>
+            <a href="/#inventory" className="text-xs font-bold text-[#6e7d90] hover:text-[#c8962a] transition-colors">Browse Inventory</a>
+            <a href="/#features" className="text-xs font-bold text-[#6e7d90] hover:text-[#c8962a] transition-colors">Features</a>
+            <a href="/#how-it-works" className="text-xs font-bold text-[#6e7d90] hover:text-[#c8962a] transition-colors">How It Works</a>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2">
               {user ? (
                 <>
                   <button
@@ -47,8 +47,14 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
               ) : (
                 <>
                   <button
+                    onClick={onLoginClick}
+                    className="px-3 py-2 rounded-lg border border-[#1a365d] text-xs font-bold tracking-tight text-[#1a365d] hover:bg-[#1e3a5f] hover:text-white transition-all"
+                  >
+                    Login
+                  </button>
+                  <button
                     onClick={onRegisterClick}
-                    className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
+                    className="px-5 py-2.5 rounded-lg bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
                   >
                     Join as Broker
                   </button>
@@ -125,7 +131,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
                         onRegisterClick();
                         setIsMobileMenuOpen(false);
                       }}
-                      className="w-full px-5 py-3 rounded-xl bg-[#c0922e] text-sm font-bold text-white"
+                      className="w-full px-5 py-3 rounded-md bg-[#c0922e] text-sm font-bold text-white"
                     >
                       Join as Broker
                     </button>

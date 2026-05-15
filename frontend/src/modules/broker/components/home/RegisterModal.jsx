@@ -205,23 +205,23 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       
       {/* Modal Card */}
       <div className="relative w-full max-w-[580px] max-h-[90vh] overflow-y-auto bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 scrollbar-hide">
-        {/* Close Button */}
-        <button 
-          onClick={onClose}
-          className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[#fdf8f3] text-slate-400 hover:bg-[#f5ebd8] hover:text-slate-600 transition-all z-10"
-        >
-          <X size={20} />
-        </button>
-
-        <div className="p-8 pt-10">
+        <div className="px-8 pb-4">
           {/* Header */}
-          <div className="mb-6">
-            <h2 className="text-2xl font-serif text-[#1a365d] mb-1">
+          <div className="sticky top-0 bg-white z-10 -mx-8 px-8 pt-6 mb-4">
+            {/* Close Button */}
+            <button 
+              onClick={onClose}
+              className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[#fdf8f3] text-slate-400 hover:bg-[#f5ebd8] hover:text-slate-600 transition-all z-20"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-serif font-normal text-[#1a365d] mb-1">
               {step === 3 ? 'Verify Your Email' : 'Register as a Broker'}
             </h2>
-            <p className="text-slate-500 text-sm font-medium">
+            <p className="text-slate-500 text-[11px] font-normal">
               {step === 3 ? `Enter the OTP sent to ${formData.email}` : 'Join the verified broker network — no brokerage charged'}
             </p>
+            <hr className="border-[#ddd6c8] -mx-8 mt-4" />
           </div>
 
           {authError && (
@@ -232,16 +232,16 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           )}
 
           {step === 1 ? (
-            <form onSubmit={handleNext} className="space-y-6">
+            <form onSubmit={handleNext} className="space-y-2">
               {/* Photo Upload Area */}
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
-                  PROFILE PHOTO / LOGO 
+              <div className="space-y-2 pt-2">
+                <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1 flex items-center gap-2">
+                  PROFILE PHOTO / LOGO (Optional)
                   {errors.profileImage && <span className="text-red-500 lowercase font-bold flex items-center gap-1"><AlertCircle size={10} /> {errors.profileImage}</span>}
                 </label>
                 <div 
                   onClick={() => fileInputRef.current?.click()}
-                  className={`w-full border-2 border-dashed ${errors.profileImage ? 'border-red-200 bg-red-50/30' : 'border-slate-200 bg-white'} rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer relative overflow-hidden`}
+                  className={`w-full border-2 border-dashed ${errors.profileImage ? 'border-red-200 bg-red-50/30' : 'border-[#ddd6c8] bg-white'} rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer relative overflow-hidden`}
                 >
                   <input 
                     type="file"
@@ -269,58 +269,43 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* First Name */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                    FIRST NAME *
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
+                    FULL NAME *
                   </label>
                   <input 
                     type="text"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
-                    placeholder="Your first name"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.firstName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    placeholder="Your full name"
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.firstName ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.firstName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.firstName}</p>}
                 </div>
 
                 {/* Last Name */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                    LAST NAME *
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
+                    COMPANY / FIRM NAME *
                   </label>
                   <input 
                     type="text"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    placeholder="Your last name"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.lastName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    placeholder="Your realty firm"
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.lastName ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.lastName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.lastName}</p>}
                 </div>
 
-                {/* Company Name */}
-                <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                    COMPANY / FIRM NAME *
-                  </label>
-                  <input 
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    placeholder="Your realty firm name"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.companyName ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
-                  />
-                  {errors.companyName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.companyName}</p>}
-                </div>
 
                 {/* Address */}
                 <div className="space-y-1.5 md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     STREET / OFFICE ADDRESS *
                   </label>
                   <input 
@@ -329,14 +314,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.address}
                     onChange={handleChange}
                     placeholder="Office address (street, locality)"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.address ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.address ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.address && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.address}</p>}
                 </div>
 
                 {/* City */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     CITY *
                   </label>
                   <div className="relative">
@@ -344,7 +329,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.city ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 appearance-none`}
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.city ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-xs font-medium text-[#252832] appearance-none`}
                     >
                       <option value="" disabled>— Select City —</option>
                       <option value="Gurugram">Gurugram</option>
@@ -354,15 +339,15 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                       <option value="Greater Noida">Greater Noida</option>
                     </select>
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                      <X size={12} className="rotate-45" />
+                      <ChevronRight size={14} className="rotate-90" />
                     </div>
                   </div>
                   {errors.city && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.city}</p>}
                 </div>
 
                 {/* Pin Code */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     PIN CODE *
                   </label>
                   <input 
@@ -371,14 +356,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.pinCode}
                     onChange={handleChange}
                     placeholder="6-digit pin code"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.pinCode ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.pinCode ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.pinCode && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.pinCode}</p>}
                 </div>
 
                 {/* Phone Number */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     PHONE NUMBER *
                   </label>
                   <input 
@@ -387,14 +372,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="10-digit mobile number"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.phoneNumber ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.phoneNumber ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.phoneNumber && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.phoneNumber}</p>}
                 </div>
 
                 {/* Email Address */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     EMAIL ADDRESS *
                   </label>
                   <input 
@@ -403,14 +388,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="your@email.com"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.email ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.email ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.email && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.email}</p>}
                 </div>
 
                 {/* RERA Number */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     RERA NUMBER
                   </label>
                   <input 
@@ -419,38 +404,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.reraNumber}
                     onChange={handleChange}
                     placeholder="Alphanumeric code"
-                    className="w-full px-4 py-2.5 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400"
+                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal"
                   />
                 </div>
 
-                {/* Associated Group */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
-                    PRIMARY NETWORKING GROUP *
-                  </label>
-                  <div className="relative">
-                    <select 
-                      name="associatedGroup"
-                      required
-                      value={formData.associatedGroup}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.associatedGroup ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 appearance-none`}
-                    >
-                      <option value="" disabled>— Select Group —</option>
-                      {availableGroups.map(group => (
-                        <option key={group._id} value={group.name}>{group.name}</option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                      <ChevronRight size={14} className="rotate-90" />
-                    </div>
-                  </div>
-                  {errors.associatedGroup && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.associatedGroup}</p>}
-                </div>
 
                 {/* Password */}
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     PASSWORD *
                   </label>
                   <input 
@@ -459,41 +420,36 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Min 6 characters"
-                    className={`w-full px-4 py-2.5 bg-[#fdf8f3] border ${errors.password ? 'border-red-200' : 'border-transparent'} rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-bold text-slate-900 placeholder:text-slate-400`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.password ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
                   {errors.password && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.password}</p>}
                 </div>
               </div>
 
-              {/* Login Link */}
-              <div className="text-center pt-2">
-                <p className="text-xs font-medium text-slate-400">
-                  Already have an account? <button type="button" onClick={onSwitchToLogin} className="font-bold text-[#1a365d] hover:underline">Login here</button>
-                </p>
-              </div>
+
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-between gap-3 pt-4 pb-2">
+              <div className="flex items-center justify-end gap-2 pt-10 pb-0">
                 <button 
                   type="button"
                   onClick={onClose}
-                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
+                  className="px-3 py-2.5 rounded-lg border border-[#1a365d] text-xs font-black text-[#1a365d] hover:bg-[#1e3a5f] hover:text-white transition-all"
                 >
-                  Discard
+                  ← Back
                 </button>
                 <button 
                   type="submit"
                   disabled={uploading}
-                  className={`px-8 py-3 rounded-xl bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`px-4 py-2.5 rounded-lg bg-[#c8962a] text-white text-xs font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  Next Step <ChevronRight size={16} strokeWidth={3} />
+                  Next: Review Terms →
                 </button>
               </div>
             </form>
           ) : step === 2 ? (
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
               {/* Blue Info Box */}
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3">
+              <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex gap-3">
                 <span className="text-lg">📋</span>
                 <p className="text-xs text-blue-700 font-bold leading-relaxed">
                   Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersPost.
@@ -501,7 +457,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               </div>
 
               {/* Scrollable Terms Content */}
-              <div className="p-5 border border-slate-200 rounded-xl bg-[#FAF9F6] max-h-[300px] overflow-y-auto space-y-5 custom-scrollbar">
+              <div className="p-5 border border-slate-200 rounded-lg bg-[#FAF9F6] max-h-[300px] overflow-y-auto space-y-5 custom-scrollbar">
                 <h3 className="text-sm font-black text-[#1a365d]">
                   {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersPost"}
                 </h3>
@@ -523,7 +479,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               </div>
 
               {/* Checkbox */}
-              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-xl bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors group">
+              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors group">
                 <div className="relative flex items-center mt-0.5">
                   <input 
                     type="checkbox" 
@@ -545,19 +501,19 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               </label>
 
               {/* Footer Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4">
+              <div className="flex items-center justify-between gap-3 pt-4">
                 <button 
                   onClick={handleBack}
-                  className="px-8 py-3 rounded-xl border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
+                  className="px-5 py-3 rounded-lg border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
                 >
                   ← Previous Step
                 </button>
                 <button 
                   onClick={handleSubmit}
                   disabled={!agreedToTerms || uploading}
-                  className={`px-8 py-3 rounded-xl flex items-center gap-2 text-sm font-black transition-all shadow-xl ${
+                  className={`px-5 py-3 rounded-lg flex items-center gap-2 text-xs font-black transition-all shadow-xl ${
                     agreedToTerms 
-                    ? 'bg-[#c8962a] text-[#0F172A] hover:bg-[#b48c35] shadow-[#c8962a]/20' 
+                    ? 'bg-[#c8962a] text-white hover:bg-[#b48c35] shadow-[#c8962a]/20' 
                     : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
                   }`}
                 >
@@ -567,8 +523,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             </div>
           ) : (
             /* Step 3: OTP Verification */
-            <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-               <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex gap-3">
+            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+               <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
                 <span className="text-lg">📧</span>
                 <p className="text-xs text-amber-700 font-bold leading-relaxed">
                   Check your email for a 6-digit verification code. (Development: Use 123456)
@@ -577,7 +533,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
               <form onSubmit={handleVerifyOTP} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">
+                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     ENTER OTP CODE
                   </label>
                   <input 
@@ -586,22 +542,22 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                     placeholder="000000"
-                    className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-xl outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200"
+                    className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200 placeholder:font-normal"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4">
+                <div className="flex items-center justify-between gap-3 pt-4">
                    <button 
                     type="button"
                     onClick={() => setStep(2)}
-                    className="px-8 py-3 rounded-xl border border-slate-200 text-sm font-black text-slate-400 hover:bg-slate-50 transition-all"
+                    className="px-5 py-3 rounded-lg border border-slate-200 text-sm font-black text-slate-400 hover:bg-slate-50 transition-all"
                   >
                     Back
                   </button>
                   <button 
                     type="submit"
                     disabled={verifying || otp.length < 6}
-                    className={`px-10 py-3 rounded-xl bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${verifying || otp.length < 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`px-10 py-3 rounded-lg bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${verifying || otp.length < 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {verifying ? <Loader2 size={16} className="animate-spin" /> : 'Verify & Finish'}
                   </button>
