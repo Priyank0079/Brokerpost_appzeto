@@ -62,7 +62,7 @@ const Layout = ({ children }) => {
           />
         )}
         
-        <main className={`flex-1 ${isHomePage ? 'p-0' : (isDashboard ? 'p-6 lg:p-10 bg-[#FAF9F6]' : 'p-4 md:p-6 lg:p-10')} animate-fade-in max-w-[1600px] mx-auto w-full`}>
+        <main className={`flex-1 ${isHomePage ? 'p-0' : (isDashboard ? 'p-6 lg:p-5 bg-[#FAF9F6]' : 'p-4 md:p-6 lg:p-5')} animate-fade-in max-w-[1600px] mx-auto w-full`}>
           {children}
         </main>
       </div>

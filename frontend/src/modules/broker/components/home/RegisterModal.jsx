@@ -77,11 +77,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const pinRegex = /^\d{6}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!formData.firstName) newErrors.firstName = 'First name is required';
+    if (!formData.firstName) newErrors.firstName = 'Full name is required';
     else if (!nameRegex.test(formData.firstName)) newErrors.firstName = 'Only alphabetic characters allowed';
-
-    if (!formData.lastName) newErrors.lastName = 'Last name is required';
-    else if (!nameRegex.test(formData.lastName)) newErrors.lastName = 'Only alphabetic characters allowed';
 
     if (!formData.companyName) newErrors.companyName = 'Company name is required';
     if (!formData.address) newErrors.address = 'Address is required';
@@ -98,9 +95,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6) newErrors.password = 'Min 6 characters';
-
-    if (!formData.profileImage) newErrors.profileImage = 'Profile photo is required';
-    if (!formData.associatedGroup) newErrors.associatedGroup = 'Please select a primary group';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -286,20 +280,20 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   {errors.firstName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.firstName}</p>}
                 </div>
 
-                {/* Last Name */}
+                {/* Company Name */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     COMPANY / FIRM NAME *
                   </label>
                   <input 
                     type="text"
-                    name="lastName"
-                    value={formData.lastName}
+                    name="companyName"
+                    value={formData.companyName}
                     onChange={handleChange}
                     placeholder="Your realty firm"
-                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.lastName ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.companyName ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
                   />
-                  {errors.lastName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.lastName}</p>}
+                  {errors.companyName && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.companyName}</p>}
                 </div>
 
 
@@ -449,75 +443,109 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           ) : step === 2 ? (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
               {/* Blue Info Box */}
-              <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex gap-3">
-                <span className="text-lg">📋</span>
-                <p className="text-xs text-blue-700 font-bold leading-relaxed">
-                  Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersPost.
+              <div className="px-4 py-3 bg-[#dbeafe] border border-[#8ab4f8] rounded-lg">
+                <p className="text-[12px] text-[#2d4eb5] font-normal tracking-tight leading-relaxed">
+                  <span className="mr-1.5 text-[12px]">📋</span>
+                  Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersLink.
                 </p>
               </div>
 
               {/* Scrollable Terms Content */}
-              <div className="p-5 border border-slate-200 rounded-lg bg-[#FAF9F6] max-h-[300px] overflow-y-auto space-y-5 custom-scrollbar">
-                <h3 className="text-sm font-black text-[#1a365d]">
-                  {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersPost"}
+              <style>{`
+                .terms-scrollbar::-webkit-scrollbar {
+                  width: 14px;
+                }
+                .terms-scrollbar::-webkit-scrollbar-track {
+                  background: #faf7f2;
+                  border-radius: 8px;
+                }
+                .terms-scrollbar::-webkit-scrollbar-thumb {
+                  background-color: #9ca3af;
+                  border-radius: 10px;
+                  border: 4px solid #faf7f2;
+                }
+                .terms-scrollbar::-webkit-scrollbar-button:single-button {
+                  background-color: #faf7f2;
+                  display: block;
+                  height: 14px;
+                }
+                .terms-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+                  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%239ca3af"><path d="M12 8l8 8H4z"/></svg>');
+                  background-size: 10px;
+                  background-position: center bottom;
+                  background-repeat: no-repeat;
+                }
+                .terms-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+                  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%239ca3af"><path d="M12 16l-8-8h16z"/></svg>');
+                  background-size: 10px;
+                  background-position: center top;
+                  background-repeat: no-repeat;
+                }
+              `}</style>
+              <div className="p-5 border border-slate-200 rounded-lg bg-[#faf7f2] max-h-[300px] overflow-y-auto space-y-3 terms-scrollbar">
+                <h3 className="text-[12px] font-bold text-[#314a6b]">
+                  {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersLink"}
                 </h3>
                 
                 <div className="space-y-4">
                   {(dynamicTerms?.items || [
-                    { title: "No Liability", content: "BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
-                    { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
+                    { title: "No Liability", content: "BrokersLink is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
+                    { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersLink does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
                     { title: "Genuine Listings Only", content: "Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination." }
-                  ]).map((item, idx) => (
-                    <div key={idx} className="flex gap-2">
-                      <span className="text-xs font-black text-[#1a365d]">{idx + 1}.</span>
-                      <p className="text-xs text-slate-600 font-medium leading-relaxed">
-                        <span className="font-black text-[#1a365d]">{item.title}:</span> {item.content}
-                      </p>
-                    </div>
-                  ))}
+                  ]).map((item, idx) => {
+                    const cleanTitle = (item.title || "").replace(/^\d+\.\s*/, '').replace(/:*\s*$/, '');
+                    return (
+                      <div key={idx} className="flex gap-1.5">
+                        <span className="text-[11px] font-bold text-[#314a6b] mt-0.5">{idx + 1}.</span>
+                        <p className="text-[11px] font-medium text-[#111827] leading-loose">
+                          <span className="font-bold text-[#314a6b]">{cleanTitle}:</span> {item.content}
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Checkbox */}
-              <label className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg bg-white cursor-pointer hover:border-[#c8962a]/30 transition-colors group">
-                <div className="relative flex items-center mt-0.5">
+              <label className="flex items-start gap-3 p-4 border border-[#eeeae3] rounded-lg bg-white cursor-pointer group">
+                <div className="relative flex items-center mt-3.5">
                   <input 
                     type="checkbox" 
                     checked={agreedToTerms}
                     onChange={(e) => setAgreedToTerms(e.target.checked)}
-                    className="w-5 h-5 rounded-lg border-slate-300 text-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10 transition-all cursor-pointer appearance-none checked:bg-[#c8962a] checked:border-[#c8962a]"
+                    className="w-[18px] h-[18px] rounded border-2 border-slate-500 bg-white text-[#c8962a] focus:ring-4 focus:ring-[#c8962a]/10 transition-all cursor-pointer appearance-none checked:bg-[#c8962a] checked:border-[#c8962a]"
                   />
                   {agreedToTerms && (
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <svg className="w-3.5 h-3.5 text-[#0F172A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
+                      <svg className="w-3 h-3 text-[#0F172A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4">
                         <path d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                   )}
                 </div>
-                <span className="text-[11px] text-slate-600 font-bold leading-relaxed">
+                <span className="text-[11px] text-slate-600 font-semibold tracking-wide leading-relaxed">
                   {dynamicTerms?.agreementText || "I have read and understood all the above terms. I agree to the Disclaimer & Terms of Use of BrokersPost. I confirm that I am a registered professional broker and all listings I post will be genuine."}
                 </span>
               </label>
 
               {/* Footer Buttons */}
-              <div className="flex items-center justify-between gap-3 pt-4">
+              <div className="flex items-center justify-end gap-3 pt-4">
                 <button 
                   onClick={handleBack}
-                  className="px-5 py-3 rounded-lg border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
+                  className="px-2 py-2 rounded-lg border border-[#1a365d] text-sm font-black text-[#1a365d] hover:bg-slate-50 transition-all"
                 >
-                  ← Previous Step
+                  ← back
                 </button>
                 <button 
                   onClick={handleSubmit}
                   disabled={!agreedToTerms || uploading}
-                  className={`px-5 py-3 rounded-lg flex items-center gap-2 text-xs font-black transition-all shadow-xl ${
+                  className={`px-5 py-3 rounded-lg flex items-center gap-2 text-xs font-black transition-all shadow-xl bg-[#c8962a] text-white shadow-[#c8962a]/20 ${
                     agreedToTerms 
-                    ? 'bg-[#c8962a] text-white hover:bg-[#b48c35] shadow-[#c8962a]/20' 
-                    : 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none'
+                    ? 'hover:bg-[#b48c35]' 
+                    : 'cursor-not-allowed'
                   }`}
                 >
-                  {uploading ? <Loader2 size={16} className="animate-spin" /> : '✔ Submit'}
+                  {uploading ? <Loader2 size={16} className="animate-spin" /> : '✓ Accept & Register'}
                 </button>
               </div>
             </div>

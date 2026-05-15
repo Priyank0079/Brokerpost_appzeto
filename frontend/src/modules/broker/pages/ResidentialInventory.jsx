@@ -58,28 +58,28 @@ const ResidentialInventory = () => {
           title: 'Available for Rental · Residential',
           heading: 'Available for Rental — Residential',
           subheading: 'Residential properties for rent',
-          bg: 'bg-[#faf9f6]'
+          bg: 'bg-[#faf7f2]'
         };
       case 'PURCHASE':
         return {
           title: 'Wanted on Purchase · Residential',
           heading: 'Wanted on Purchase — Residential',
           subheading: 'Buyer requirements for residential',
-          bg: 'bg-[#faf9f6]'
+          bg: 'bg-[#faf7f2]'
         };
       case 'WANTED_RENT':
         return {
           title: 'Wanted on Rent · Residential',
           heading: 'Wanted on Rent — Residential',
           subheading: 'Tenant requirements for residential',
-          bg: 'bg-[#faf9f6]'
+          bg: 'bg-[#faf7f2]'
         };
       default:
         return {
           title: 'Available for Sale · Residential',
           heading: 'Available for Sale — Residential',
           subheading: 'Residential properties listed for sale',
-          bg: 'bg-[#fff9fa]'
+          bg: 'bg-[#faf7f2]'
         };
     }
   };
@@ -89,6 +89,10 @@ const ResidentialInventory = () => {
   return (
     <div className={`-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
       <div className="space-y-6 pb-10">
+        <div>
+          <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">{config.heading}</h1>
+          <p className="text-sm text-[#718199] mt-1">{config.subheading}</p>
+        </div>
         {/* Unified Card Container */}
         <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm overflow-hidden min-h-[60vh]">
           {/* Card Header (Filter Bar) */}
@@ -128,7 +132,7 @@ const ResidentialInventory = () => {
                 )}
               </div>
 
-              <span className="text-[11px] md:text-[12px] text-slate-400 font-medium italic">{listings.length} listings</span>
+              <span className="text-[10px] text-slate-400 font-medium">{listings.length} listings</span>
             </div>
             
             <button 

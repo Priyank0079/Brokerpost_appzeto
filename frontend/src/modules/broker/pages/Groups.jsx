@@ -40,30 +40,17 @@ const Groups = () => {
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="max-w-6xl mx-auto space-y-8 pb-20">
+      <div className="space-y-6 pb-10">
         
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-200 pb-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#c8962a] rounded-xl flex items-center justify-center shadow-lg shadow-[#c8962a]/20">
-                <Users size={20} className="text-white" />
-              </div>
-              <h1 className="text-3xl font-serif font-black text-slate-900 tracking-tight">Official Groups</h1>
-            </div>
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-13">Collaborate with fellow verified brokers</p>
-          </div>
-          
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search groups..."
-              className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-[12px] font-bold outline-none focus:border-[#c8962a]/30 transition-all shadow-sm"
-            />
-          </div>
+
+
+        {/* Page Title & Subtitle */}
+        <div className="space-y-1">
+          <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">My Groups</h1>
+          <p className="text-sm text-[#718199]">Live inventory from your assigned broker groups</p>
         </div>
 
+        {/* Content Area */}
         {groups.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Groups List */}
@@ -178,21 +165,13 @@ const Groups = () => {
             </div>
           </div>
         ) : (
-          /* Empty State */
-          <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-[3rem] border border-slate-100 shadow-sm">
-            <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8">
-              <Users size={40} className="text-slate-200" />
+          /* New Empty State matching screenshot */
+          <div className="flex flex-col items-center justify-center py-32 text-center bg-white/50 rounded-[2rem] border border-slate-200 shadow-sm mt-6">
+            <div className="w-16 h-16 bg-[#e2e8f0] rounded-full flex items-center justify-center mb-4">
+              <Users size={32} className="text-[#94a3b8]" />
             </div>
-            <h3 className="text-2xl font-serif font-bold text-slate-900">No official groups yet</h3>
-            <p className="text-[11px] font-black text-slate-400 mt-3 uppercase tracking-[0.2em] max-w-md mx-auto leading-relaxed">
-              Groups are managed by official administrators. You will be notified once you are added to a territory or category group.
-            </p>
-            <button 
-              onClick={fetchGroups}
-              className="mt-10 px-8 py-3 bg-[#c8962a] text-white rounded-full text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 hover:scale-105 transition-all"
-            >
-              Refresh Status
-            </button>
+            <h3 className="text-sm font-bold text-[#0f172a]">No groups assigned</h3>
+            <p className="text-xs text-[#718199] mt-1">Contact admin to be added to a group</p>
           </div>
         )}
       </div>

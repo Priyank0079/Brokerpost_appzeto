@@ -36,19 +36,19 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
     {
       title: 'RESIDENTIAL',
       items: [
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/residential?intent=SALE', count: b.residential.sale },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Rental', path: '/residential?intent=RENT', count: b.residential.rent },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/residential?intent=PURCHASE', count: b.residential.purchase },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Rent', path: '/residential?intent=WANTED_RENT', count: b.residential.wantedRent },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Available for Sale', path: '/residential?intent=SALE', count: b.residential.sale },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Available for Rental', path: '/residential?intent=RENT', count: b.residential.rent },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Wanted on Purchase', path: '/residential?intent=PURCHASE', count: b.residential.purchase },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Wanted on Rent', path: '/residential?intent=WANTED_RENT', count: b.residential.wantedRent },
       ]
     },
     {
       title: 'COMMERCIAL',
       items: [
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Sale', path: '/commercial?intent=SALE', count: b.commercial.sale },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Available for Lease', path: '/commercial?intent=LEASE', count: b.commercial.lease },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Purchase', path: '/commercial?intent=PURCHASE', count: b.commercial.purchase },
-        { icon: <div className="w-2 h-2 rounded-full bg-slate-400" />, label: 'Wanted on Lease', path: '/commercial?intent=WANTED_LEASE', count: b.commercial.wantedLease },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Available for Sale', path: '/commercial?intent=SALE', count: b.commercial.sale },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Available for Lease', path: '/commercial?intent=LEASE', count: b.commercial.lease },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Wanted on Purchase', path: '/commercial?intent=PURCHASE', count: b.commercial.purchase },
+        { icon: <div className="w-2 h-2 rounded-full bg-[#56606a]" />, label: 'Wanted on Lease', path: '/commercial?intent=WANTED_LEASE', count: b.commercial.wantedLease },
       ]
     },
     {
@@ -64,8 +64,8 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span></span>
-          <span className="text-[9.5px] font-bold text-slate-200 uppercase tracking-[0.2em] mt-1">MY DASHBOARD</span>
+          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Post</span></span>
+          <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">MY DASHBOARD</span>
         </div>
         <button 
           onClick={toggleSidebar}
@@ -79,7 +79,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       <nav className="flex-1 px-4 py-1 space-y-4 overflow-y-auto scrollbar-hide">
         {menuSections.map((section, idx) => (
           <div key={idx} className="space-y-0.5">
-            <h3 className="px-4 text-[9.5px] font-bold text-slate-200 uppercase tracking-widest mb-0.5">{section.title}</h3>
+            <h3 className="px-4 text-[9.5px] font-bold text-[#989da3] uppercase tracking-[0.2em] mb-0.5">{section.title}</h3>
             <div className="space-y-0.5">
               {section.items.map((item) => (
                 <NavLink
@@ -89,7 +89,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
                     const isActuallyActive = (location.pathname + location.search) === item.path;
                     return `
                       flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
-                      ${isActuallyActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                      ${isActuallyActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-[#c1c0c8] hover:text-white hover:bg-slate-800/50'}
                     `;
                   }}
                   onClick={() => {
