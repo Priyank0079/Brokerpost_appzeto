@@ -183,12 +183,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-serif text-[#1a365d]">Add Listing</h2>
-            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+            <p className="text-[12px] text-slate-400 font-medium uppercase tracking-wider">
               {intent.replace('_', ' ')} · {vertical}
             </p>
           </div>
@@ -198,43 +198,92 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         </div>
 
         {/* Scrollable Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-600 text-xs font-bold items-center">
+            <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-600 text-xs font-medium items-center">
               <AlertCircle size={16} /> {error}
             </div>
           )}
 
-          {/* Classification Section */}
-          <section className="space-y-4">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Classification</h3>
+          {/* Category Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Category</h3>
+            <div className="space-y-1">
+              <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Sub-type *</label>
+              <div className="relative">
+                <select 
+                  name="subType"
+                  value={formData.subType}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
+                >
+                  {subTypeOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+            </div>
+          </section>
+
+          {/* Property Details Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Sub-type *</label>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Location / Area *</label>
+                <input 
+                  type="text" 
+                  name="location"
+                  required
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="Sector, locality, area..." 
+                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">City *</label>
                 <div className="relative">
                   <select 
-                    name="subType"
-                    value={formData.subType}
+                    name="city"
+                    required
+                    value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg cursor-not-allowed opacity-80"
                   >
-                    {subTypeOptions.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
+                    <option value="Gurgaon">Gurgaon</option>
+                    <option value="Noida">Noida</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Faridabad">Faridabad</option>
+                    <option value="Greater Noida">Greater Noida</option>
                   </select>
-                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <Lock size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 </div>
+                <p className="flex items-center gap-1 text-[9px] text-[#c8962a] font-medium ml-1 mt-0.5">
+                  <Lock size={10} /> Auto-filled from profile
+                </p>
               </div>
-
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Project / Society</label>
+                <input 
+                  type="text" 
+                  name="project"
+                  value={formData.project}
+                  onChange={handleChange}
+                  placeholder="Project or Society name" 
+                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
+                />
+              </div>
               {vertical === 'RESIDENTIAL' && formData.subType !== 'PLOTS' && (
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Configuration (BHK)</label>
+                  <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Bedrooms</label>
                   <div className="relative">
                     <select 
                       name="bedrooms"
                       value={formData.bedrooms}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
+                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
                     >
                       {['1', '2', '3', '4', '5+'].map(v => (
                         <option key={v} value={v}>{v} BHK</option>
@@ -247,137 +296,101 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             </div>
           </section>
 
-          {/* Location Section */}
-          <section className="space-y-4">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Location Details</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Location / Area *</label>
+          {/* Area Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Area</h3>
+            <div className="grid grid-cols-5 gap-4">
+              <div className="col-span-3 space-y-1">
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Area / Size *</label>
                 <input 
-                  type="text" 
-                  name="location"
+                  type="number" 
+                  name="size"
                   required
-                  value={formData.location}
+                  value={formData.size}
                   onChange={handleChange}
-                  placeholder="Sector or Locality" 
-                  className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none placeholder:text-slate-400" 
+                  placeholder="e.g. 1200" 
+                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
                 />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">City *</label>
-                <div className="relative">
-                  <select 
-                    name="city"
-                    required
-                    value={formData.city}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
-                  >
-                    <option value="Gurgaon">Gurgaon</option>
-                    <option value="Noida">Noida</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Faridabad">Faridabad</option>
-                    <option value="Greater Noida">Greater Noida</option>
-                  </select>
-                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                </div>
               </div>
               <div className="col-span-2 space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Project / Society</label>
-                <input 
-                  type="text" 
-                  name="project"
-                  value={formData.project}
-                  onChange={handleChange}
-                  placeholder="e.g. DLF Magnolias" 
-                  className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none placeholder:text-slate-400" 
-                />
-              </div>
-            </div>
-          </section>
-
-          {/* Area & Pricing Section */}
-          <section className="space-y-4">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Area & Pricing</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Area / Size *</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="number" 
-                    name="size"
-                    required
-                    value={formData.size}
-                    onChange={handleChange}
-                    placeholder="Size" 
-                    className="flex-1 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
-                  />
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Unit</label>
+                <div className="relative">
                   <select 
                     name="sizeUnit"
                     value={formData.sizeUnit}
                     onChange={handleChange}
-                    className="w-24 px-2 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-xs font-black text-slate-700 outline-none"
+                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
                   >
                     <option value="SQ_FT">Sq.Ft</option>
                     <option value="SQ_YD">Sq.Yd</option>
                     <option value="SQ_MT">Sq.Mt</option>
                   </select>
+                  <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
+            </div>
+          </section>
 
-              {!isRequirement ? (
+          {/* Pricing Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Pricing</h3>
+            {!isRequirement ? (
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Rate / Price (₹)</label>
-                  <div className="flex gap-2">
-                    <input 
-                      type="number" 
-                      name="priceRate"
-                      value={formData.priceRate}
-                      onChange={handleChange}
-                      placeholder="Rate" 
-                      className="flex-1 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
-                    />
+                  <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Price Type</label>
+                  <div className="relative">
                     <select 
                       name="priceRateType"
                       value={formData.priceRateType}
                       onChange={handleChange}
-                      className="w-24 px-2 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[10px] font-black text-slate-700 outline-none"
+                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
                     >
-                      <option value="PER_SQFT">/SqFt</option>
-                      <option value="PER_SQYD">/SqYd</option>
-                      <option value="LUMPSUM">Fixed</option>
+                      <option value="PER_SQFT">Per Sq.Ft / Sq.Yd / Sq.Mt</option>
+                      <option value="LUMPSUM">Fixed Amount</option>
                     </select>
+                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
-              ) : (
                 <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Budget Range (Lakhs)</label>
-                  <div className="flex gap-2 items-center">
-                    <input 
-                      type="number" 
-                      name="budgetMin"
-                      value={formData.budgetMin}
-                      onChange={handleChange}
-                      placeholder="Min" 
-                      className="w-1/2 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
-                    />
-                    <span className="text-slate-300">-</span>
-                    <input 
-                      type="number" 
-                      name="budgetMax"
-                      value={formData.budgetMax}
-                      onChange={handleChange}
-                      placeholder="Max" 
-                      className="w-1/2 px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 rounded-xl outline-none" 
-                    />
-                  </div>
+                  <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Rate / Price (₹)</label>
+                  <input 
+                    type="number" 
+                    name="priceRate"
+                    value={formData.priceRate}
+                    onChange={handleChange}
+                    placeholder="e.g. 5500" 
+                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
+                  />
                 </div>
-              )}
-            </div>
-
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Budget Range (Lakhs)</label>
+                <div className="flex gap-2 items-center">
+                  <input 
+                    type="number" 
+                    name="budgetMin"
+                    value={formData.budgetMin}
+                    onChange={handleChange}
+                    placeholder="Min" 
+                    className="w-1/2 px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
+                  />
+                  <span className="text-slate-300">-</span>
+                  <input 
+                    type="number" 
+                    name="budgetMax"
+                    value={formData.budgetMax}
+                    onChange={handleChange}
+                    placeholder="Max" 
+                    className="w-1/2 px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
+                  />
+                </div>
+              </div>
+            )}
+            
             {!isRequirement && (
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex flex-col gap-1">
-                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Estimated Total</p>
+              <div className="mt-4 p-4 bg-[#faf7f2] rounded-lg border border-slate-100 flex flex-col gap-1">
+                <p className="text-[9px] font-black text-slate-400 uppercase tracking-normal">Calculated Total Price</p>
                 <span className="text-xl font-serif text-[#1a365d]">
                   {formData.totalAmount ? `₹ ${formData.totalAmount.toLocaleString()}` : 'On Request'}
                 </span>
@@ -385,136 +398,122 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             )}
           </section>
 
-          {/* Status & Remarks Section */}
-          <section className="space-y-4">
-            <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Status & Remarks</h3>
-            <div className="grid grid-cols-2 gap-4">
+          {/* Status Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Status</h3>
+            <div className="space-y-1">
+              <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Property Status</label>
+              <div className="relative">
+                <select 
+                  name="constructionStatus"
+                  value={formData.constructionStatus}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
+                >
+                  <option value="READY">Ready to Move</option>
+                  <option value="UNDER_CONSTRUCTION">Under Construction</option>
+                </select>
+                <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              </div>
+            </div>
+            
+            {vertical === 'COMMERCIAL' && !isRequirement && (
               <div className="space-y-1">
-                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Construction Status</label>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Occupancy</label>
                 <div className="relative">
                   <select 
-                    name="constructionStatus"
-                    value={formData.constructionStatus}
+                    name="occupancy"
+                    value={formData.occupancy}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
+                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
                   >
-                    <option value="READY">Ready to Move</option>
-                    <option value="UNDER_CONSTRUCTION">Under Construction</option>
+                    <option value="VACANT">Vacant</option>
+                    <option value="RENTED">Rented / ROI</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                 </div>
               </div>
-              
-              {vertical === 'COMMERCIAL' && !isRequirement && (
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Occupancy</label>
-                  <div className="relative">
-                    <select 
-                      name="occupancy"
-                      value={formData.occupancy}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 outline-none appearance-none rounded-xl"
-                    >
-                      <option value="VACANT">Vacant</option>
-                      <option value="RENTED">Rented / ROI</option>
-                    </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Short Description / Notes</label>
-              <textarea 
-                name="shortDescription"
-                value={formData.shortDescription}
-                onChange={handleChange}
-                placeholder="Add any specific details or preferences..." 
-                className="w-full px-4 py-3 bg-[#fefce8] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-sm font-bold text-slate-700 h-24 resize-none rounded-xl outline-none placeholder:text-slate-400"
-              />
-            </div>
+            )}
           </section>
+
+
 
           {/* Media Section */}
           {!isRequirement && (
             <section className="space-y-4">
-              <h3 className="text-[11px] font-black text-[#284366] uppercase tracking-widest border-b border-slate-200 pb-2">Property Media</h3>
+              <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Media</h3>
               
               {/* Photos */}
-              <div className="space-y-3">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (Up to 5)</p>
-                <div className="flex flex-wrap gap-3">
-                  <label className="w-24 h-24 relative group cursor-pointer">
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (JPG/PNG)</p>
+                <div className="space-y-3">
+                  <label className="w-full h-32 relative group cursor-pointer block">
                     <input type="file" multiple accept="image/*" onChange={handleMediaUpload} className="hidden" />
-                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-1 hover:bg-slate-50 transition-all">
-                      {imageLoading ? (
-                        <Loader2 size={20} className="text-[#c8962a] animate-spin" />
-                      ) : (
-                        <>
-                          <Camera size={20} className="text-slate-400" />
-                          <p className="text-[8px] font-black text-slate-400 uppercase">Add Photo</p>
-                        </>
-                      )}
+                    <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 transition-transform">
+                        <Camera size={20} className="text-slate-400" />
+                      </div>
+                      <p className="text-[13px] font-bold text-[#1a365d]">Click to upload photos</p>
+                      <p className="text-[11px] text-slate-400">JPG, PNG — multiple allowed</p>
                     </div>
                   </label>
-                  
-                  {formData.images.map((img, idx) => (
-                    <div key={idx} className="w-24 h-24 rounded-xl overflow-hidden border border-slate-100 relative group shadow-sm">
-                      <img src={img} alt="Property" className="w-full h-full object-cover" />
-                      <button 
-                        type="button"
-                        onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
-                        className="absolute top-1 right-1 w-6 h-6 bg-white/90 rounded-full flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        <X size={12} />
-                      </button>
+
+                  {formData.images.length > 0 && (
+                    <div className="flex flex-wrap gap-3">
+                      {formData.images.map((img, idx) => (
+                        <div key={idx} className="w-20 h-20 relative group rounded-xl overflow-hidden border border-slate-100 shadow-sm">
+                          <img src={img} alt="Property" className="w-full h-full object-cover" />
+                          <button 
+                            type="button"
+                            onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
+                            className="absolute top-1 right-1 p-1 bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 
               {/* Video */}
-              <div className="space-y-3">
-                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Video Walkthrough</p>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Videos (MP4/MOV)</p>
                 {!formData.videos[0] ? (
-                  <label className="w-full h-32 relative group cursor-pointer">
+                  <label className="w-full h-32 relative group cursor-pointer block">
                     <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
-                    <div className="w-full h-full border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-[#c8962a]/30 transition-all">
+                    <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
                       {videoLoading ? (
                         <div className="flex flex-col items-center gap-3">
                           <Loader2 size={24} className="text-[#c8962a] animate-spin" />
-                          <p className="text-[10px] font-black text-[#c8962a] uppercase tracking-widest">Uploading Video...</p>
+                          <p className="text-[11px] font-bold text-[#c8962a] uppercase tracking-normal">Uploading Video...</p>
                         </div>
                       ) : (
                         <>
-                          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Video size={24} className="text-slate-400 group-hover:text-[#c8962a]" />
+                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 transition-transform">
+                            <Video size={20} className="text-slate-400" />
                           </div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest group-hover:text-slate-600">Upload Video Walkthrough</p>
+                          <p className="text-[13px] font-bold text-[#1a365d]">Click to upload videos</p>
+                          <p className="text-[11px] text-slate-400">MP4, MOV — multiple allowed</p>
                         </>
                       )}
                     </div>
                   </label>
                 ) : (
-                  <div className="w-full h-28 bg-slate-900 rounded-2xl relative overflow-hidden group shadow-lg border border-slate-800">
-                    <video className="w-full h-full object-cover opacity-70">
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden border border-slate-200 shadow-lg group">
+                    <video className="w-full h-full object-cover">
                       <source src={formData.videos[0]} type="video/mp4" />
                     </video>
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
-                        <Play size={16} className="text-white fill-white ml-1" />
-                      </div>
-                    </div>
                     <button 
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, videos: [] }))}
-                      className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center text-red-500 shadow-xl transition-transform hover:scale-110"
+                      className="absolute top-3 right-3 p-2 bg-black/40 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm hover:bg-red-500"
                     >
                       <X size={16} />
                     </button>
                     <div className="absolute bottom-3 left-4">
-                      <p className="text-[10px] font-bold text-white uppercase tracking-widest bg-black/40 px-2 py-1 rounded backdrop-blur-sm">Walkthrough Ready</p>
+                      <p className="text-[10px] font-medium text-white uppercase tracking-normal bg-black/40 px-2 py-1 rounded backdrop-blur-sm">Walkthrough Ready</p>
                     </div>
                   </div>
                 )}
@@ -522,19 +521,35 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             </section>
           )}
 
+          {/* Remarks Section */}
+          <section className="space-y-1.5">
+            <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Remarks</h3>
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Notes / Additional Info</label>
+              <textarea 
+                name="remarks"
+                value={formData.remarks || ''}
+                onChange={handleChange}
+                placeholder="Any extra details..." 
+                rows="1"
+                className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px] resize-none" 
+              />
+            </div>
+          </section>
+
           {/* Footer Actions */}
-          <div className="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+          <div className="pt-6 border-t border-slate-200 flex items-center justify-end gap-3">
             <button 
               type="button"
               onClick={onClose}
-              className="px-6 py-2 rounded-xl border border-slate-200 text-slate-500 text-[11px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"
+              className="px-2 py-2 rounded-md border border-slate-200 text-slate-500 text-[12px] font-black tracking-normal hover:bg-slate-50 transition-all"
             >
               Cancel
             </button>
             <button 
               type="submit"
               disabled={loading || imageLoading || videoLoading}
-              className="px-8 py-2 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-[#c8962a]/20 transition-all flex items-center gap-2"
+              className="px-3 py-2 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-md text-[11px] font-black tracking-normal shadow-lg shadow-[#c8962a]/20 transition-all flex items-center gap-2"
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : 'Save Listing'}
             </button>

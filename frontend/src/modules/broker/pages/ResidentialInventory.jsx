@@ -94,22 +94,22 @@ const ResidentialInventory = () => {
           <p className="text-sm text-[#718199] mt-1">{config.subheading}</p>
         </div>
         {/* Unified Card Container */}
-        <div className="bg-white rounded-[1.5rem] border border-slate-200 shadow-sm overflow-hidden min-h-[60vh]">
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-h-[60vh]">
           {/* Card Header (Filter Bar) */}
           <div className="p-3 md:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4 border-b border-slate-200">
             <div className="flex flex-wrap items-center gap-2 md:gap-4 flex-1">
-              <div className="relative flex-1 min-w-[180px] sm:max-w-64">
+              <div className="relative flex-1 min-w-[180px] sm:max-w-56">
                 <input 
                   type="text" 
                   placeholder="Search location/project..."
-                  className="w-full pl-4 pr-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder:text-slate-600"
+                  className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder-[#9c7f84] tracking-tighter"
                 />
               </div>
               
               <div className="relative">
                 <button 
                   onClick={() => setShowSubTypes(!showSubTypes)}
-                  className="px-4 py-2 bg-[#fefce8] border border-slate-200 rounded-lg text-[12px] font-medium text-slate-600 flex items-center justify-between gap-4 hover:bg-[#fefce8]/80 transition-all min-w-[140px]"
+                  className="px-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium text-[#26296c] flex items-center justify-between gap-4 hover:bg-[#faf7f2]/80 transition-all min-w-[120px] tracking-tighter"
                 >
                   {selectedSubType} <ChevronDown size={14} className="text-slate-400" />
                 </button>
