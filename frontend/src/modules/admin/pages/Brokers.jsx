@@ -120,9 +120,9 @@ const Brokers = () => {
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-6 md:space-y-8 pb-10">
+      <div className="space-y-4 md:space-y-5 pb-10">
         {/* Custom Header */}
-        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 mb-4 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4 md:gap-6">
             <h1 className="text-base md:text-lg font-serif text-black">Manage Brokers</h1>
             <div className="relative hidden md:block">
@@ -130,7 +130,7 @@ const Brokers = () => {
               <input 
                 type="text" 
                 placeholder="Search listings..."
-                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
               />
             </div>
           </div>
@@ -143,28 +143,34 @@ const Brokers = () => {
           </button>
         </div>
 
-        {/* Action Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 px-2 md:px-0">
-          <button 
-            onClick={() => {
-              setEditingBroker(null);
-              setFormData({
-                fullName: '', company: '', phone: '', email: '', password: '', city: '', address: '', role: 'Broker', listingLimit: '25'
-              });
-              setIsAddModalOpen(true);
-            }}
-            className="w-full sm:w-auto bg-[#c0922e] text-white px-5 py-2.5 sm:py-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
-          >
-            <Plus size={14} /> Add Broker
-          </button>
+        <div className="space-y-4 md:space-y-5">
+          {/* Page Header */}
+          <div className="flex items-start justify-between gap-4 px-2 md:px-0">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">Broker Directory</h1>
+              <p className="text-[12px] text-[#718199] mt-0 tracking-tighter font-normal">Manage registered professionals and their permissions</p>
+            </div>
+            <button 
+              onClick={() => {
+                setEditingBroker(null);
+                setFormData({
+                  fullName: '', company: '', phone: '', email: '', password: '', city: '', address: '', role: 'Broker', listingLimit: '25'
+                });
+                setIsAddModalOpen(true);
+              }}
+              className="bg-[#c8962a] text-white px-4 py-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20 shrink-0"
+            >
+              <Plus size={14} /> Add Broker
+            </button>
+          </div>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 px-2 md:px-0">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm text-center">
-              <span className="text-xl md:text-3xl font-serif text-black">{stat.value}</span>
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1.5 md:mt-2">{stat.label}</p>
+            <div key={idx} className="bg-white p-2.5 md:p-3 rounded-xl border border-slate-200 shadow-sm text-center">
+              <span className="text-xl md:text-2xl font-serif text-[#1e3a8a] leading-none">{stat.value}</span>
+              <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 md:mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -260,7 +266,7 @@ const Brokers = () => {
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[9px] text-slate-400 font-medium italic">None</span>
+                        <span className="text-[9px] text-slate-400 font-medium">None</span>
                       )}
                     </td>
                     <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{new Date(broker.createdAt).toLocaleDateString()}</td>
@@ -302,64 +308,72 @@ const Brokers = () => {
 
       {/* Add/Edit Broker Modal */}
       {(isAddModalOpen || isEditModalOpen) && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <div className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} />
-          <div className="relative w-full max-w-[700px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} />
+          <div className="relative w-full max-w-[700px] bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
             {/* Modal Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-serif text-black">{isEditModalOpen ? `Edit Broker: ${editingBroker?.name}` : 'Add Broker'}</h3>
-                <p className="text-[11px] text-slate-400 font-medium">{isEditModalOpen ? 'Update profile and group assignment' : 'Add a verified broker manually'}</p>
+            <div className="p-3 md:p-4 border-b border-[#ddd6c8] flex items-center justify-between sticky top-0 bg-white z-10">
+              <div className="space-y-0">
+                <h3 className="text-lg md:text-xl font-normal font-serif text-[#254063]">{isEditModalOpen ? `Edit Broker` : 'Add Broker'}</h3>
+                <p className="text-[13px] text-[#718199] tracking-tight font-normal">{isEditModalOpen ? 'Update profile and group assignment' : 'Add a verified broker manually'}</p>
               </div>
               <button 
                 onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all shadow-sm"
               >
                 <Plus size={20} className="rotate-45" />
               </button>
             </div>
 
             {/* Modal Form */}
-            <div className="p-6 space-y-5">
-              <div className="grid grid-cols-2 gap-5">
+            <div className="p-3 md:p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">FULL NAME *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">FULL NAME *</label>
                   <input 
                     type="text" name="fullName" placeholder="Full name"
                     value={formData.fullName} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">COMPANY *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">COMPANY *</label>
                   <input 
                     type="text" name="company" placeholder="Firm name"
                     value={formData.company} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">PHONE *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PHONE *</label>
                   <input 
                     type="text" name="phone" placeholder="10-digit mobile"
                     value={formData.phone} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">EMAIL *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">EMAIL *</label>
                   <input 
                     type="email" name="email" placeholder="Email address"
                     value={formData.email} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                     disabled={isEditModalOpen}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">CITY</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PASSWORD *</label>
+                  <input 
+                    type="password" name="password" placeholder="Min 6 characters"
+                    value={formData.password} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">CITY</label>
                   <select 
                     name="city" value={formData.city} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all appearance-none"
                   >
                     <option value="">— Select —</option>
                     <option value="Gurugram">Gurugram</option>
@@ -367,63 +381,42 @@ const Brokers = () => {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ADDRESS</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ADDRESS</label>
                   <input 
                     type="text" name="address" placeholder="Office address"
                     value={formData.address} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">ROLE</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ROLE</label>
                   <select 
                     name="role" value={formData.role} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all appearance-none"
                   >
                     <option value="Broker">Broker</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">STATUS</label>
-                  <select 
-                    name="status" value={formData.status} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all appearance-none"
-                  >
-                    <option value="Active">Active</option>
-                    <option value="Blocked">Blocked</option>
-                  </select>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">LISTING LIMIT</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LISTING LIMIT</label>
                   <input 
                     type="text" name="listingLimit" 
                     value={formData.listingLimit} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-bold outline-none focus:border-[#eab308]/40 transition-all"
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-bold outline-none focus:border-[#c8962a]/40 transition-all"
                   />
                 </div>
               </div>
 
-              {/* Group Assignment Section */}
-              <div className="space-y-3 pt-2">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest ml-1">GROUP ASSIGNMENT</label>
-                <div className="p-4 bg-white border border-slate-100 rounded-xl shadow-sm">
-                   <label className="flex items-center gap-3 cursor-pointer group">
-                      <input type="checkbox" className="w-4 h-4 rounded border-slate-200 text-[#c0922e] focus:ring-[#c0922e]" defaultChecked={formData.groupAssignment?.includes('GURGAON REALTORS GROUP (GRG)')} />
-                      <span className="text-[11px] font-bold text-slate-900 group-hover:text-black transition-colors uppercase tracking-tight">GURGAON REALTORS GROUP (GRG)</span>
-                   </label>
-                </div>
-              </div>
-
               {/* Footer Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#ddd6c8]">
                 <button 
                   onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }}
-                  className="px-6 py-2 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+                  className="px-4 py-2 rounded-lg border border-[#ddd6c8] text-[11px] font-bold text-[#2b4669] hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </button>
                 <button 
-                  className="px-6 py-2 rounded-lg bg-[#c0922e] text-white text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
+                  className="px-4 py-2 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
                 >
                   Save Listing
                 </button>

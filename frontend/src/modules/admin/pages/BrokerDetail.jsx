@@ -145,7 +145,7 @@ const BrokerDetail = () => {
             <div className="space-y-6">
               <div className="p-6 bg-slate-50 rounded-xl border border-slate-100">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Registered Office Address</p>
-                <p className="text-lg font-bold text-slate-700 leading-relaxed italic">
+                <p className="text-lg font-bold text-slate-700 leading-relaxed">
                   "{broker.officeAddress}, {broker.officeCity} - {broker.pinCode}"
                 </p>
               </div>

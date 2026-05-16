@@ -185,9 +185,9 @@ const ManageGroups = () => {
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-6 md:space-y-8 pb-10">
+      <div className="space-y-4 md:space-y-5 pb-10">
         {/* Custom Header */}
-        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 mb-4 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4 md:gap-6">
             <h1 className="text-base md:text-lg font-serif text-black">Manage Groups</h1>
             <div className="relative hidden md:block">
@@ -197,7 +197,7 @@ const ManageGroups = () => {
                 placeholder="Search groups..."
                 value={tableSearchQuery}
                 onChange={(e) => setTableSearchQuery(e.target.value)}
-                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
               />
             </div>
           </div>
@@ -210,19 +210,25 @@ const ManageGroups = () => {
           </button>
         </div>
 
-        {/* Action Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 px-2 md:px-0">
-          <button 
-            onClick={() => {
-              setFormData({ name: '', description: '' });
-              setSelectedMembers([]);
-              setCreateSearchQuery('');
-              setIsCreateModalOpen(true);
-            }}
-            className="w-full sm:w-auto bg-[#c0922e] text-white px-5 py-2.5 sm:py-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
-          >
-            <Plus size={14} /> Create Group
-          </button>
+        <div className="space-y-4 md:space-y-5">
+          {/* Page Header */}
+          <div className="flex items-start justify-between gap-4 px-2 md:px-0">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">Community Groups</h1>
+              <p className="text-[12px] text-[#718199] mt-0 tracking-tighter font-normal">Organize brokers into collaborative networks</p>
+            </div>
+            <button 
+              onClick={() => {
+                setSelectedGroup(null);
+                setFormData({ name: '', description: '' });
+                setSelectedMembers([]);
+                setIsCreateModalOpen(true);
+              }}
+              className="bg-[#c8962a] text-white px-4 py-2 rounded-lg text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20 shrink-0"
+            >
+              <Plus size={14} /> Create Group
+            </button>
+          </div>
         </div>
 
         {/* Table Container */}
@@ -311,88 +317,98 @@ const ManageGroups = () => {
       {(isCreateModalOpen || isEditModalOpen) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} />
-          <div className="relative w-full max-w-[600px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between flex-shrink-0">
-              <h3 className="text-lg font-serif text-black">{isCreateModalOpen ? 'Create New Group' : 'Edit Group'}</h3>
-              <button onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all">
+          <div className="relative w-full max-w-[680px] bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="p-3 md:p-4 border-b border-[#ddd6c8] flex items-center justify-between sticky top-0 bg-white z-10">
+              <div className="space-y-0">
+                <h3 className="text-lg md:text-xl font-normal font-serif text-[#254063]">{isEditModalOpen ? `Edit Group` : 'Create New Group'}</h3>
+                <p className="text-[13px] text-[#718199] tracking-tight font-normal">{isEditModalOpen ? 'Modify group details and members' : 'Organize your broker network'}</p>
+              </div>
+              <button 
+                onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all shadow-sm"
+              >
                 <Plus size={20} className="rotate-45" />
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-6 space-y-6">
-              <div className="space-y-4">
+            <div className="overflow-y-auto flex-1 p-3 md:p-4 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">GROUP NAME *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">GROUP NAME *</label>
                   <input 
-                    type="text" name="name" required value={formData.name} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all"
+                    type="text" name="name" required placeholder="e.g. NCR Residential Brokers"
+                    value={formData.name} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">DESCRIPTION</label>
-                  <textarea 
-                    name="description" rows="2" value={formData.description} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#fefce8] border border-slate-200 rounded-xl text-[12px] font-medium outline-none focus:border-[#eab308]/40 transition-all resize-none"
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">DESCRIPTION</label>
+                  <input 
+                    type="text" name="description" placeholder="Short description"
+                    value={formData.description} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LEADER NAME</label>
+                  <input 
+                    type="text" name="leaderName" placeholder="Leader's full name"
+                    value={formData.leaderName || ''} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LEADER MOBILE</label>
+                  <input 
+                    type="text" name="leaderMobile" placeholder="10-digit number"
+                    value={formData.leaderMobile || ''} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
               </div>
 
-              {isCreateModalOpen && (
-                <div className="space-y-4 pt-4 border-t border-slate-100">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-widest">ADD BROKERS ({selectedMembers.length} selected)</label>
-                  </div>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-                    <input 
-                      type="text" 
-                      placeholder="Search brokers..."
-                      value={createSearchQuery}
-                      onChange={(e) => setCreateSearchQuery(e.target.value)}
-                      className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-100 rounded-lg text-[11px] font-medium outline-none"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-slate-200">
-                    {filteredBrokersForCreateModal.map(broker => {
-                      const isSelected = selectedMembers.includes(broker._id);
-                      return (
-                        <div 
-                          key={broker._id} 
-                          onClick={() => toggleMemberSelection(broker._id)}
-                          className={`flex items-center justify-between p-2.5 rounded-xl border transition-all cursor-pointer group ${
-                            isSelected ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-white border-slate-100 hover:border-slate-200'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-[10px] shrink-0 ${
-                              isSelected ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500'
-                            }`}>
-                              {isSelected ? <Check size={14} /> : broker.firstName?.[0]}
-                            </div>
-                            <div className="min-w-0">
-                              <p className={`text-[10px] font-bold truncate ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>
-                                {broker.firstName} {broker.lastName}
-                              </p>
-                              <p className="text-[8px] text-slate-400 font-medium truncate">{broker.companyName}</p>
-                            </div>
-                          </div>
-                          <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                            isSelected ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 group-hover:border-slate-300'
+              <div className="space-y-3 pt-2 pb-4">
+                <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ASSIGN MEMBERS</label>
+                <div className="border border-[#e4ded2] rounded-lg overflow-hidden max-h-[250px] overflow-y-auto">
+                  {brokers.map(broker => {
+                    const isSelected = selectedMembers.includes(broker._id);
+                    return (
+                      <div 
+                        key={broker._id}
+                        onClick={() => toggleMemberSelection(broker._id)}
+                        className="flex items-center gap-6 p-4 border-b border-[#e4ded2] last:border-0 hover:bg-slate-50 transition-all cursor-pointer group"
+                      >
+                        <div className="flex-shrink-0">
+                          <div className={`w-10 h-10 border-2 rounded flex items-center justify-center transition-all ${
+                            isSelected ? 'bg-[#c8962a] border-[#c8962a] text-white' : 'border-[#8894a4] bg-white'
                           }`}>
-                            {isSelected && <Check size={12} />}
+                            {isSelected && <Check size={16} strokeWidth={3} />}
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="flex-1 flex items-baseline justify-end gap-2 text-right">
+                          <span className="text-[12px] font-bold text-slate-700 uppercase tracking-tight">{broker.firstName} {broker.lastName}</span>
+                          <span className="text-[10px] font-bold text-[#8894a4] uppercase tracking-tight">({broker.companyName})</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
             </div>
 
-            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex items-center justify-end gap-3 flex-shrink-0">
-              <button type="button" onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} className="px-6 py-2 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50">Cancel</button>
-              <button onClick={isCreateModalOpen ? handleCreateGroup : handleUpdateGroup} className="px-6 py-2 rounded-lg bg-[#c0922e] text-white text-[11px] font-bold hover:bg-[#a67d26] shadow-lg">
-                {isCreateModalOpen ? 'Create Group' : 'Save Changes'}
+            <div className="p-3 md:p-4 border-t border-[#ddd6c8] bg-white flex items-center justify-end gap-3 flex-shrink-0">
+              <button 
+                type="button" 
+                onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} 
+                className="px-4 py-2 rounded-lg border border-[#ddd6c8] text-[11px] font-bold text-[#2b4669] hover:bg-slate-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={isCreateModalOpen ? handleCreateGroup : handleUpdateGroup} 
+                className="px-4 py-2.5 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
+              >
+                Save Listing
               </button>
             </div>
           </div>
@@ -414,7 +430,7 @@ const ManageGroups = () => {
             </div>
             <div className="space-y-2 max-h-[350px] overflow-y-auto pr-2">
               {selectedGroup?.members?.length === 0 ? (
-                <p className="text-[11px] text-slate-400 italic text-center py-8">No members in this group yet.</p>
+                <p className="text-[11px] text-slate-400 text-center py-8">No members in this group yet.</p>
               ) : selectedGroup?.members?.map(member => (
                 <div key={member._id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group">
                   <div className="flex items-center gap-3">

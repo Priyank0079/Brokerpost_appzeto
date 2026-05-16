@@ -214,10 +214,10 @@ const LandingPageManager = () => {
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-bold text-[#c8962a] uppercase tracking-widest font-black">Title Highlight (Italic Gold)</label>
+                          <label className="text-[10px] font-bold text-[#c8962a] uppercase tracking-widest font-black">Title Highlight (Gold)</label>
                           <input 
                             type="text" 
-                            className="w-full px-4 py-3 bg-[#c8962a]/5 border border-[#c8962a]/30 rounded-xl font-bold italic text-[#c8962a] text-sm focus:border-[#c8962a] outline-none transition-all"
+                            className="w-full px-4 py-3 bg-[#c8962a]/5 border border-[#c8962a]/30 rounded-xl font-bold text-[#c8962a] text-sm focus:border-[#c8962a] outline-none transition-all"
                             value={config.sections.hero.titleHighlight || ''}
                             onChange={(e) => updateSectionField('hero', 'titleHighlight', e.target.value)}
                             placeholder="Broker-to-Broker"

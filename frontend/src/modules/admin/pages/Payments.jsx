@@ -35,9 +35,9 @@ const Payments = () => {
 
   return (
     <div className="-mx-6 lg:-mx-10 -my-6 lg:-my-10 px-6 lg:px-10 py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-8 animate-fade-in pb-20">
+      <div className="space-y-4 md:space-y-5 animate-fade-in pb-20">
         {/* Custom Header */}
-        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 mb-4 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="-mx-6 lg:-mx-10 -mt-6 lg:-mt-10 px-6 lg:px-10 py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-6">
             <h1 className="text-lg font-serif text-[#1e3a8a]">Financial Ledger</h1>
             <div className="relative">
@@ -45,7 +45,7 @@ const Payments = () => {
               <input 
                 type="text" 
                 placeholder="Search brokerage..."
-                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+                className="w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -58,16 +58,16 @@ const Payments = () => {
           </button>
         </div>
 
-        {/* Title Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2 md:px-0">
           <div className="space-y-1">
-            <h2 className="text-2xl font-serif text-[#1e3a8a]">Financial Ledger</h2>
-            <p className="text-[11px] text-slate-400 font-medium tracking-tight">Full audit trail of all platform-wide payments and subscriptions.</p>
+            <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">Financial Ledger</h1>
+            <p className="text-[13px] text-[#718199] mt-0 tracking-tight font-normal">Audit trail of all platform-wide transactions</p>
           </div>
           <div className="flex items-center gap-3">
              <button 
                onClick={handleExport}
-               className="flex items-center gap-2 px-6 py-2 bg-[#c0922e] text-white rounded-xl text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20"
+               className="flex items-center gap-2 px-6 py-2 bg-[#c8962a] text-white rounded-lg text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
              >
                 <FileSpreadsheet size={16} />
                 Export CSV
@@ -111,16 +111,16 @@ const Payments = () => {
       
       {/* Summary Mini Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Weekly Volume</p>
+         <div className="p-6 bg-white border border-slate-200 rounded-lg shadow-sm group hover:border-[#c8962a]/30 transition-all">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-[#c8962a] transition-colors">Weekly Volume</p>
             <h4 className="text-2xl font-serif text-[#1e3a8a] tracking-tight">₹1.54L</h4>
          </div>
-         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Active Subscriptions</p>
+         <div className="p-6 bg-white border border-slate-200 rounded-lg shadow-sm group hover:border-[#c8962a]/30 transition-all">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-[#c8962a] transition-colors">Active Subscriptions</p>
             <h4 className="text-2xl font-serif text-[#1e3a8a] tracking-tight">842</h4>
          </div>
-         <div className="p-6 bg-white border border-slate-100 rounded-lg shadow-sm">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Failed Payments</p>
+         <div className="p-6 bg-white border border-slate-200 rounded-lg shadow-sm group hover:border-[#c8962a]/30 transition-all">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-[#c8962a] transition-colors">Failed Payments</p>
             <h4 className="text-2xl font-serif text-red-700 tracking-tight">1.2%</h4>
          </div>
       </div>

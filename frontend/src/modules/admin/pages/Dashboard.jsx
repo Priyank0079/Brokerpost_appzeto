@@ -96,9 +96,9 @@ const Dashboard = () => {
 
   return (
     <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-6 md:space-y-8 pb-10">
+      <div className="space-y-4 md:space-y-5 pb-10">
         {/* Custom Header */}
-        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 mb-4 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4 md:gap-6">
             <h1 className="text-base md:text-lg font-serif text-black">Dashboard</h1>
             <div className="relative hidden md:block">
@@ -106,7 +106,7 @@ const Dashboard = () => {
               <input 
                 type="text" 
                 placeholder="Search listings..."
-                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
+                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
               />
             </div>
           </div>
@@ -119,21 +119,29 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
-          {statCards.map((card, idx) => (
-            <div 
-              key={idx} 
-              onClick={() => navigate(card.path)}
-              className="bg-white p-4 md:p-6 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md cursor-pointer group"
-            >
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 md:mb-3 group-hover:text-[#c0922e] transition-colors">{card.label}</p>
-              <div className="flex flex-col">
-                <span className="text-2xl md:text-4xl font-serif text-[#1e3a8a] leading-none">{card.value}</span>
-                <span className="text-[10px] md:text-[11px] text-slate-400 font-medium mt-1.5 md:mt-2 truncate">{card.sub}</span>
+        <div className="space-y-4 md:space-y-5">
+          {/* Page Header */}
+          <div className="px-2 md:px-0">
+            <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">Welcome back, Admin</h1>
+            <p className="text-[13px] text-[#718199] mt-0 tracking-tight font-normal">Platform-wide activity & system health overview</p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
+            {statCards.map((card, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => navigate(card.path)}
+                className="bg-white p-2.5 md:p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer"
+              >
+                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-0.5 md:mb-1">{card.label}</p>
+                <div className="flex flex-col">
+                  <span className="text-xl md:text-2xl font-serif text-[#1e3a8a] leading-none">{card.value}</span>
+                  <span className="text-[10px] md:text-[11px] text-slate-400 font-medium mt-1 md:mt-1 truncate tracking-tight">{card.sub}</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 px-2 md:px-0">
@@ -213,7 +221,7 @@ const Dashboard = () => {
                     </div>
                     <div className="w-full h-[3px] bg-slate-100 rounded-full overflow-hidden">
                        <div 
-                        className="h-full bg-[#c0922e] transition-all duration-700 ease-out" 
+                        className="h-full bg-[#c8962a] transition-all duration-700 ease-out" 
                         style={{ width: `${Math.min(((parseInt(item.value) || 0) / (stats?.totalListings || 1)) * 100, 100)}%` }}
                        />
                     </div>

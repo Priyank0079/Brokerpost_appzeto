@@ -58,8 +58,8 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-xl font-bold tracking-tight font-serif"><span className="text-[#1e3a5f]">Brokers</span><span className="text-[#c8962a]">Post</span></span>
-          <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">ADMIN CONSOLE</span>
+          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Post</span></span>
+          <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">ADMIN CONSOLE</span>
         </div>
         <button 
           onClick={toggleSidebar}
@@ -73,7 +73,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       <nav className="flex-1 px-4 py-1 space-y-4 overflow-y-auto scrollbar-hide">
         {menuSections.map((section, idx) => (
           <div key={idx} className="space-y-0.5">
-            <h3 className="px-4 text-[8.5px] font-bold text-slate-500 uppercase tracking-widest mb-0.5">{section.title}</h3>
+            <h3 className="px-4 text-[9.5px] font-bold text-[#989da3] uppercase tracking-[0.2em] mb-0.5">{section.title}</h3>
             <div className="space-y-0.5">
               {section.items.map((item) => (
                 <NavLink
@@ -84,8 +84,8 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
                     if (window.innerWidth < 1024) toggleSidebar();
                   }}
                   className={({ isActive }) => `
-                    flex items-center justify-between px-4 py-2 rounded-lg transition-all text-[10px] font-bold uppercase tracking-tight
-                    ${isActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-slate-200 hover:text-white hover:bg-slate-800/50'}
+                    flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
+                    ${isActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-[#c1c0c8] hover:text-white hover:bg-slate-800/50'}
                   `}
                 >
                   <div className="flex items-center gap-3">

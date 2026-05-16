@@ -126,7 +126,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-slate-900">Registration Terms & Conditions</h2>
-                  <p className="text-[10px] text-slate-400 font-medium italic">Dynamically updated on the broker registration modal</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Dynamically updated on the broker registration modal</p>
                 </div>
               </div>
               <label className="flex items-center gap-2 cursor-pointer">
