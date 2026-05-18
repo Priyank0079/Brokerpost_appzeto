@@ -31,6 +31,21 @@ const Brokers = () => {
     groupAssignment: []
   });
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredBrokers = brokers.filter(broker => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (broker.firstName || '').toLowerCase().includes(term) ||
+      (broker.lastName || '').toLowerCase().includes(term) ||
+      (broker.companyName || '').toLowerCase().includes(term) ||
+      (broker.phoneNumber || '').toLowerCase().includes(term) ||
+      (broker.email || '').toLowerCase().includes(term) ||
+      (broker.operatingCity || '').toLowerCase().includes(term)
+    );
+  });
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -130,6 +145,8 @@ const Brokers = () => {
               <input 
                 type="text" 
                 placeholder="Search listings..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
               />
             </div>
@@ -203,13 +220,13 @@ const Brokers = () => {
                       </div>
                     </td>
                   </tr>
-                ) : brokers.length === 0 ? (
+                ) : filteredBrokers.length === 0 ? (
                   <tr>
                     <td colSpan="10" className="px-4 py-12 text-center text-[11px] font-bold text-slate-400">
                       No brokers found.
                     </td>
                   </tr>
-                ) : brokers.map((broker, idx) => (
+                ) : filteredBrokers.map((broker, idx) => (
                   <tr key={broker._id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-4 py-4 text-[11px] text-slate-400 font-bold">{idx + 1}</td>
                     <td className="px-4 py-4">
@@ -299,7 +316,8 @@ const Brokers = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                ))
+              }
               </tbody>
             </table>
           </div>

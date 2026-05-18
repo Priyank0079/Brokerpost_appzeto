@@ -13,13 +13,28 @@ const ResidentialInventory = () => {
   const searchParams = new URLSearchParams(location.search);
   const intent = searchParams.get('intent') || 'SALE';
 
+  const urlSearch = searchParams.get('search') || '';
+
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSubTypes, setShowSubTypes] = useState(false);
   const [selectedSubType, setSelectedSubType] = useState('All Sub-types');
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(urlSearch);
+
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
 
   const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchTerm]);
   
   const subTypes = isRequirement
     ? ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas', 'Plots']
@@ -35,6 +50,9 @@ const ResidentialInventory = () => {
       if (selectedSubType !== 'All Sub-types') {
         params.subType = selectedSubType.toUpperCase().replace(' ', '_').replace('/', '_');
       }
+      if (debouncedSearch.trim() !== '') {
+        params.location = debouncedSearch.trim();
+      }
       
       const result = await getPostings(params);
       if (result.success) {
@@ -49,7 +67,7 @@ const ResidentialInventory = () => {
 
   useEffect(() => {
     fetchListings();
-  }, [intent, selectedSubType]);
+  }, [intent, selectedSubType, debouncedSearch]);
 
   const getPageConfig = () => {
     switch (intent) {
@@ -102,6 +120,8 @@ const ResidentialInventory = () => {
                 <input 
                   type="text" 
                   placeholder="Search location/project..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder-[#9c7f84] tracking-tighter"
                 />
               </div>

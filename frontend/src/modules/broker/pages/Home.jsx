@@ -18,6 +18,7 @@ import CTASection from '../components/home/CTASection';
 import LandingFooter from '../components/home/LandingFooter';
 import LoginModal from '../components/home/LoginModal';
 import RegisterModal from '../components/home/RegisterModal';
+import TermsModal from '../components/home/TermsModal';
 
 import { useLandingConfig } from '../../../hooks/useLandingConfig';
 
@@ -25,12 +26,14 @@ const Home = () => {
   const { config, loading, error } = useLandingConfig();
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
   
   const [filters, setFilters] = React.useState({
     vertical: '',
     location: '',
     intent: '',
     subType: '',
+    city: '',
   });
 
   if (loading) return (
@@ -103,7 +106,10 @@ const Home = () => {
         />
       )}
       
-      <LandingFooter config={sections.footer} />
+      <LandingFooter 
+        config={sections.footer} 
+        onTermsClick={() => setIsTermsModalOpen(true)}
+      />
 
       <LoginModal 
         isOpen={isLoginModalOpen} 
@@ -120,6 +126,10 @@ const Home = () => {
           setIsRegisterModalOpen(false);
           setIsLoginModalOpen(true);
         }}
+      />
+      <TermsModal 
+        isOpen={isTermsModalOpen} 
+        onClose={() => setIsTermsModalOpen(false)} 
       />
     </div>
   );

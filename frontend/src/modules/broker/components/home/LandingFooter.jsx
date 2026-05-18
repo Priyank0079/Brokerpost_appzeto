@@ -1,7 +1,7 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
-const LandingFooter = ({ config }) => {
+const LandingFooter = ({ config, onTermsClick }) => {
   return (
     <footer>
       {/* Disclaimer Bar */}
@@ -10,7 +10,7 @@ const LandingFooter = ({ config }) => {
           <AlertTriangle size={14} className="text-[#B08B35] shrink-0" />
           <p className="text-[10px] text-[#84682A]">
             <span className="font-bold uppercase tracking-wider mr-2">Disclaimer:</span>
-            BrokersPost is a networking platform only. We do not participate in, mediate, or take responsibility for any transaction, dispute, or loss arising between brokers. All listings must be genuine. By using this platform, you agree to our <button className="font-bold underline hover:text-[#c8962a]">Terms & Disclaimer Policy</button>.
+            BrokersPost is a networking platform only. We do not participate in, mediate, or take responsibility for any transaction, dispute, or loss arising between brokers. All listings must be genuine. By using this platform, you agree to our <button onClick={onTermsClick} className="font-bold underline hover:text-[#c8962a]">Terms & Disclaimer Policy</button>.
           </p>
         </div>
       </div>
@@ -28,7 +28,7 @@ const LandingFooter = ({ config }) => {
             
             <div className="flex flex-col items-center md:items-start">
               <p className="text-slate-300 text-[10px] mb-1">
-                {config?.copyright || '© 2026 Brokerspost Network Platform.'} - <button className="hover:text-white transition-colors underline decoration-slate-600">Disclaimer & Terms</button>
+                {config?.copyright || '© 2026 Brokerspost Network Platform.'} - <button onClick={onTermsClick} className="hover:text-white transition-colors underline decoration-slate-600">Disclaimer & Terms</button>
               </p>
             </div>
           </div>

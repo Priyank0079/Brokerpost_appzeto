@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Home, BedDouble, Square, Tag, Calendar, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const PropertyCard = ({ listing }) => {
   const {
@@ -33,8 +34,13 @@ const PropertyCard = ({ listing }) => {
     return `${val} ${unit}`;
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div className="bg-white rounded border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#c8962a]/20 transition-all duration-300 overflow-hidden flex flex-col group">
+    <div 
+      onClick={() => navigate(`/property/${listing._id}`)}
+      className="bg-white rounded border border-slate-100 shadow-sm hover:shadow-xl hover:border-[#c8962a]/20 transition-all duration-300 overflow-hidden flex flex-col group cursor-pointer"
+    >
       {/* Media / Type Header */}
       <div className="relative h-48 bg-slate-100 overflow-hidden">
         {mainImage ? (

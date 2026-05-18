@@ -28,6 +28,11 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const location = useLocation();
+  const [searchValue, setSearchValue] = useState(new URLSearchParams(location.search).get('search') || '');
+
+  React.useEffect(() => {
+    setSearchValue(new URLSearchParams(location.search).get('search') || '');
+  }, [location.search]);
   const isHomePage = location.pathname === '/';
 
   const handleLogout = () => {
@@ -72,6 +77,24 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
                <input 
                  type="text" 
                  placeholder="Search listings..."
+                 value={searchValue}
+                 onChange={(e) => setSearchValue(e.target.value)}
+                 onKeyDown={(e) => {
+                   if (e.key === 'Enter') {
+                     const query = encodeURIComponent(searchValue);
+                     if (location.pathname === '/residential') {
+                       navigate(`/residential?intent=${new URLSearchParams(location.search).get('intent') || 'SALE'}&search=${query}`);
+                     } else if (location.pathname === '/commercial') {
+                       navigate(`/commercial?intent=${new URLSearchParams(location.search).get('intent') || 'SALE'}&search=${query}`);
+                     } else if (location.pathname === '/my-listings') {
+                       navigate(`/my-listings?search=${query}`);
+                     } else if (location.pathname === '/my-requirements') {
+                       navigate(`/my-requirements?search=${query}`);
+                     } else {
+                       navigate(`/residential?intent=SALE&search=${query}`);
+                     }
+                   }
+                 }}
                  className="w-full pl-11 pr-4 py-3 bg-[#faf7f2] border border-[#ede8df] focus:border-primary-100 rounded-lg text-xs text-slate-700 placeholder:text-[#94827c] transition-all outline-none shadow-sm"
                />
              </div>

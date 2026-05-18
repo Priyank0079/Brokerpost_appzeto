@@ -6,8 +6,11 @@ import { getMyPostings, getPostingStats } from '../services/postingService';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 
-const StatCard = ({ label, value, subtitle, icon: Icon }) => (
-  <div className="bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm relative overflow-hidden">
+const StatCard = ({ label, value, subtitle, icon: Icon, onClick }) => (
+  <div 
+    onClick={onClick}
+    className={`bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm relative overflow-hidden ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}`}
+  >
     <div className="flex justify-between items-start">
       <div className="space-y-1">
         <p className="text-[11px] font-normal text-[#9ba6ae] tracking-wider mb-2">{label}</p>
@@ -117,6 +120,7 @@ const Dashboard = () => {
           value={s.groupCount || 0} 
           subtitle="Groups you belong to" 
           icon={Users}
+          onClick={() => navigate('/groups')}
         />
         <StatCard 
           label="ACTIVE BROKERS" 

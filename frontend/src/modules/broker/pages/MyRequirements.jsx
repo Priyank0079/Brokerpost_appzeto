@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Eye, Filter, Search } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -40,7 +40,15 @@ const phoneByBroker = {
 };
 
 const MyRequirements = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const urlSearch = queryParams.get('search') || '';
+
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+
+  React.useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState('All Property Types');
   const [transactionFilter, setTransactionFilter] = useState('All Transactions');

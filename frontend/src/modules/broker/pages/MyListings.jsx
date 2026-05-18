@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, Filter, Search, SlidersHorizontal } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
@@ -41,7 +41,15 @@ const MyListings = ({
   subtitle = 'Manage your residential posts and requirements.',
 }) => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const urlSearch = queryParams.get('search') || '';
+
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+
+  React.useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [propertyTypeFilter, setPropertyTypeFilter] = useState('All Property Types');
   const [transactionFilter, setTransactionFilter] = useState('All Transactions');

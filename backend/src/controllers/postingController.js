@@ -75,7 +75,11 @@ exports.getPostings = async (req, res, next) => {
     if (city)               filter.city               = city;
 
     if (location) {
-      filter.location = { $regex: location.trim(), $options: 'i' };
+      const searchRegex = { $regex: location.trim(), $options: 'i' };
+      filter.$or = [
+        { location: searchRegex },
+        { project: searchRegex }
+      ];
     }
 
     // If groupId is provided, filter by its members
@@ -329,12 +333,24 @@ exports.getPostingStats = async (req, res, next) => {
 
     // Build the group filter dynamically
     const groupQuery = { isActive: true };
-    const groupOrConditions = [{ members: userId }];
+    const groupOrConditions = [];
+    
+    if (req.user && req.user._id) {
+      groupOrConditions.push({ members: req.user._id });
+    }
+    if (req.user && req.user.id) {
+      groupOrConditions.push({ members: req.user.id });
+    }
+    
     // Defensive check for associatedGroup - might be undefined in production
     if (req.user && req.user.associatedGroup) {
       groupOrConditions.push({ name: req.user.associatedGroup });
+      groupOrConditions.push({ name: req.user.associatedGroup.trim() });
     }
-    groupQuery.$or = groupOrConditions;
+    
+    if (groupOrConditions.length > 0) {
+      groupQuery.$or = groupOrConditions;
+    }
 
     // Run basic counts first (these are fast)
     const [
@@ -395,7 +411,18 @@ exports.getPostingStats = async (req, res, next) => {
           }
         })(),
         UserModel.countDocuments({ role: 'Broker' }).catch(() => 0),
-        GroupModel.countDocuments(groupQuery).catch(e => { console.error('Group count failed:', e.message); return 0; })
+        (async () => {
+          try {
+            if (req.userModel === 'Admin') {
+              return await GroupModel.countDocuments({ isActive: true });
+            } else {
+              return await GroupModel.countDocuments(groupQuery);
+            }
+          } catch (e) {
+            console.error('Group count failed:', e.message);
+            return 0;
+          }
+        })()
       ]);
 
       breakdownResults = {

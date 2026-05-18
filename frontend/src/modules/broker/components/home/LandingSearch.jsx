@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, MapPin, Building2, Home as HomeIcon, LayoutGrid } from 'lucide-react';
 
 const LandingSearch = ({ filters, onFilterChange, config }) => {
   const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleSearch = () => {
     onFilterChange(localFilters);
@@ -18,6 +22,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
       location: '',
       intent: '',
       subType: '',
+      city: '',
     };
     setLocalFilters(cleared);
     onFilterChange(cleared);
@@ -80,7 +85,11 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
           {/* Tabs */}
           <div className="inline-flex border border-slate-200 rounded-lg overflow-hidden mb-4">
             <button
-              onClick={() => setLocalFilters({ ...localFilters, vertical: '', subType: '', intent: '' })}
+              onClick={() => {
+                const updated = { ...localFilters, vertical: '', subType: '', intent: '' };
+                setLocalFilters(updated);
+                onFilterChange(updated);
+              }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === ''
                   ? 'bg-[#1a365d] text-white'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -90,7 +99,11 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
               All
             </button>
             <button
-              onClick={() => setLocalFilters({ ...localFilters, vertical: 'RESIDENTIAL', subType: '', intent: '' })}
+              onClick={() => {
+                const updated = { ...localFilters, vertical: 'RESIDENTIAL', subType: '', intent: '' };
+                setLocalFilters(updated);
+                onFilterChange(updated);
+              }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'RESIDENTIAL'
                   ? 'bg-[#1a365d] text-white'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -100,7 +113,11 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
               Residential
             </button>
             <button
-              onClick={() => setLocalFilters({ ...localFilters, vertical: 'COMMERCIAL', subType: '', intent: '' })}
+              onClick={() => {
+                const updated = { ...localFilters, vertical: 'COMMERCIAL', subType: '', intent: '' };
+                setLocalFilters(updated);
+                onFilterChange(updated);
+              }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'COMMERCIAL'
                   ? 'bg-[#1a365d] text-white'
                   : 'bg-white text-slate-600 hover:bg-slate-50'
@@ -122,10 +139,15 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
               />
             </div>
             <div className="lg:col-span-4 relative">
-              <select className="w-full h-10 pl-6 pr-10 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-bold focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] appearance-none transition-all cursor-pointer">
-                <option>Noida</option>
-                <option>Gurgaon</option>
-                <option>Delhi</option>
+              <select
+                value={localFilters.city || ''}
+                onChange={(e) => setLocalFilters({ ...localFilters, city: e.target.value })}
+                className="w-full h-10 pl-6 pr-10 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-bold focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] appearance-none transition-all cursor-pointer"
+              >
+                <option value="">All Cities</option>
+                <option value="Noida">Noida</option>
+                <option value="Gurgaon">Gurgaon</option>
+                <option value="Delhi">Delhi</option>
               </select>
               <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
             </div>

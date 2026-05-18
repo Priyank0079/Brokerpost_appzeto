@@ -15,6 +15,9 @@ const Groups = () => {
       const response = await getGroups();
       if (response.success) {
         setGroups(response.data);
+        if (response.data && response.data.length > 0) {
+          setSelectedGroup(response.data[0]);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch groups:', error);

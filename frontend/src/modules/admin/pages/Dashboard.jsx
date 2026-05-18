@@ -106,6 +106,11 @@ const Dashboard = () => {
               <input 
                 type="text" 
                 placeholder="Search listings..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    navigate(`/admin/listings?search=${encodeURIComponent(e.target.value)}`);
+                  }
+                }}
                 className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
               />
             </div>

@@ -4,6 +4,20 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 import Modal from '../../broker/components/ui/Modal';
 
+const formatEnum = (str) => {
+  if (!str) return '';
+  return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+};
+
+const getStatusText = (listing) => {
+  const intent = formatEnum(listing.intent);
+  const postType = formatEnum(listing.postType);
+  if (listing.postType === 'AVAILABILITY') {
+    return `Available for ${intent}`;
+  }
+  return `Wanted for ${intent}`;
+};
+
 const Listings = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +31,13 @@ const Listings = () => {
   // Parse query params
   const queryParams = new URLSearchParams(location.search);
   const postTypeFilter = queryParams.get('postType');
+  const urlSearch = queryParams.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+
+  useEffect(() => {
+    setSearchTerm(urlSearch);
+  }, [urlSearch]);
+
   const [formData, setFormData] = useState({
     subType: '',
     location: '',
@@ -52,6 +73,36 @@ const Listings = () => {
     fetchListings();
   }, [postTypeFilter]);
 
+  const filteredListings = listings.filter(listing => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    const subType = (listing.subType || '').toLowerCase();
+    const subTypeFormatted = formatEnum(listing.subType).toLowerCase();
+    const locationStr = (listing.location || '').toLowerCase();
+    const project = (listing.project || '').toLowerCase();
+    const postedByName = `${listing.postedBy?.firstName || ''} ${listing.postedBy?.lastName || ''}`.toLowerCase();
+    const companyName = (listing.postedBy?.companyName || '').toLowerCase();
+    const intent = (listing.intent || '').toLowerCase();
+    const intentFormatted = formatEnum(listing.intent).toLowerCase();
+    const postType = (listing.postType || '').toLowerCase();
+    const statusText = getStatusText(listing).toLowerCase();
+    const bedrooms = (listing.bedrooms || '').toLowerCase();
+    const size = `${listing.size || ''}`.toLowerCase();
+    
+    return subType.includes(term) ||
+           subTypeFormatted.includes(term) ||
+           locationStr.includes(term) ||
+           project.includes(term) ||
+           postedByName.includes(term) ||
+           companyName.includes(term) ||
+           intent.includes(term) ||
+           intentFormatted.includes(term) ||
+           postType.includes(term) ||
+           statusText.includes(term) ||
+           bedrooms.includes(term) ||
+           size.includes(term);
+  });
+
   const handleDeleteConfirm = async () => {
     if (!listingToDelete) return;
     try {
@@ -65,19 +116,7 @@ const Listings = () => {
     }
   };
 
-  const formatEnum = (str) => {
-    if (!str) return '';
-    return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
-  };
 
-  const getStatusText = (listing) => {
-    const intent = formatEnum(listing.intent);
-    const postType = formatEnum(listing.postType);
-    if (listing.postType === 'AVAILABILITY') {
-      return `Available for ${intent}`;
-    }
-    return `Wanted for ${intent}`;
-  };
 
   const handleEditClick = (listing) => {
     setEditingListing(listing);
@@ -115,6 +154,13 @@ const Listings = () => {
               <input 
                 type="text" 
                 placeholder="Search listings..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    navigate(`/admin/listings?search=${encodeURIComponent(searchTerm)}`);
+                  }
+                }}
                 className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
               />
             </div>
@@ -161,13 +207,13 @@ const Listings = () => {
                       </div>
                     </td>
                   </tr>
-                ) : listings.length === 0 ? (
+                ) : filteredListings.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="px-6 py-12 text-center text-[11px] font-bold text-slate-400">
                       No listings found.
                     </td>
                   </tr>
-                ) : listings.map((listing) => (
+                ) : filteredListings.map((listing) => (
                   <tr 
                     key={listing._id} 
                     onClick={() => navigate(`/admin/listings/${listing._id}`)}
@@ -228,7 +274,8 @@ const Listings = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
+                ))
+              }
               </tbody>
             </table>
           </div>
