@@ -35,9 +35,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [errors, setErrors] = useState({});
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [dynamicTerms, setDynamicTerms] = useState(null);
-  const [availableGroups, setAvailableGroups] = useState([]);
 
-  // Fetch dynamic terms and groups
+  // Fetch dynamic terms
   React.useEffect(() => {
     if (isOpen) {
       const fetchInitialData = async () => {
@@ -47,13 +46,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           const termsJson = await termsRes.json();
           if (termsJson.success && termsJson.data?.sections?.registrationTerms) {
             setDynamicTerms(termsJson.data.sections.registrationTerms);
-          }
-
-          // Fetch Groups
-          const groupsRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/groups`);
-          const groupsJson = await groupsRes.json();
-          if (groupsJson.success) {
-            setAvailableGroups(groupsJson.data);
           }
         } catch (err) {
           console.error('Failed to fetch initial registration data:', err);
