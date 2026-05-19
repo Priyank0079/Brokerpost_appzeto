@@ -63,21 +63,27 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-600">View:</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">View:</span>
             <button
               onClick={() => setView('grid')}
-              className={`flex items-center gap-2 px-1 py-2 rounded-lg text-sm font-medium transition-all ${view === 'grid' ? 'bg-[#1a365d] text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                }`}
+              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${
+                view === 'grid'
+                  ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              }`}
             >
-              <Grid size={16} />
+              <Grid size={14} className="stroke-[3]" />
               Grid
             </button>
             <button
               onClick={() => setView('table')}
-              className={`flex items-center gap-2 px-1 py-2 rounded-lg text-sm font-medium transition-all ${view === 'table' ? 'bg-[#1a365d] text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-                }`}
+              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${
+                view === 'table'
+                  ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
+                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              }`}
             >
-              <Table size={16} />
+              <Table size={14} className="stroke-[3]" />
               Table
             </button>
           </div>

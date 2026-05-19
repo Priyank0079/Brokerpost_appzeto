@@ -64,7 +64,7 @@ const LandingHero = ({ onRegisterClick, config }) => {
 
   return (
     <>
-      <section className="relative px-6 lg:px-20 pt-12 pb-16 lg:pt-16 lg:pb-24 bg-[#FAF9F6] overflow-hidden">
+      <section className="relative px-6 lg:px-20 pt-12 pb-0 lg:pt-16 lg:pb-24 bg-[#FAF9F6] overflow-hidden">
         {/* Decorative Blur Background */}
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#c8962a]/5 blur-[120px] rounded-full pointer-events-none" />
 
@@ -148,7 +148,7 @@ const LandingHero = ({ onRegisterClick, config }) => {
           </div>
 
           {/* Right Side: Inventory Preview Card */}
-          <div className="relative z-10">
+          <div className="relative z-10 hidden lg:block">
             <div className="bg-white rounded-xl p-4 shadow-[0_40px_80px_rgba(0,0,0,0.06)] border border-slate-300 min-h-[400px]">
               <div className="flex items-center justify-between mb-4 px-2">
                 <h3 className="text-[11px] font-normal text-[#abb4be] uppercase tracking-[0.1em]">Live Inventory Preview</h3>
@@ -201,7 +201,7 @@ const LandingHero = ({ onRegisterClick, config }) => {
           </div>
         </div>
         {/* Bottom Features Bar */}
-        <div className="absolute lg:absolute bottom-0 left-0 right-0 bg-[#1a365d] py-3 lg:py-4">
+        <div className="relative -mx-6 mt-12 lg:mx-0 lg:absolute lg:bottom-0 lg:left-0 lg:right-0 lg:mt-0 bg-[#1a365d] py-3 lg:py-4">
           <div
             style={{
               maxWidth: '1280px',
