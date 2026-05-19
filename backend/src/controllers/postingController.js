@@ -90,17 +90,12 @@ exports.getPostings = async (req, res, next) => {
       }
     }
 
-    if (req.userModel === 'User') {
-      filter.postedBy = req.user._id;
-    }
-
     const skip = (Number(page) - 1) * Number(limit);
 
-    // If user is a broker, they only see their own listings
     let postings;
     let total;
 
-    if (req.userModel === 'User') {
+    if (req.userModel === 'Admin') {
       [postings, total] = await Promise.all([
         Posting.find(filter)
           .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
@@ -109,40 +104,14 @@ exports.getPostings = async (req, res, next) => {
           .limit(Number(limit)),
         Posting.countDocuments(filter)
       ]);
-    } else if (req.userModel === 'User' && !groupId) {
-      const userGroups = await Group.find({ members: req.user._id });
-      const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
-      
-      // Use aggregation to prioritize
-      const aggregation = [
-        { $match: filter },
-        {
-          $addFields: {
-            isGroupMember: {
-              $cond: {
-                if: { $in: [{ $toString: "$postedBy" }, memberIds] },
-                then: 1,
-                else: 0
-              }
-            }
-          }
-        },
-        { $sort: { isGroupMember: -1, createdAt: -1 } },
-        { $skip: skip },
-        { $limit: Number(limit) }
-      ];
-
-      [postings, total] = await Promise.all([
-        Posting.aggregate(aggregation),
-        Posting.countDocuments(filter)
-      ]);
-
-      // Manually populate since aggregate doesn't do it as easily as find
-      postings = await Posting.populate(postings, {
-        path: 'postedBy',
-        select: 'firstName lastName name phoneNumber companyName operatingCity'
-      });
     } else {
+      // User (Broker) - Retrieve posts of all members of the group(s) they are in
+      if (!groupId) {
+        const userGroups = await Group.find({ members: req.user._id });
+        const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
+        filter.postedBy = { $in: memberIds };
+      }
+
       [postings, total] = await Promise.all([
         Posting.find(filter)
           .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
@@ -313,7 +282,7 @@ exports.deletePosting = async (req, res, next) => {
     }
 
     posting.isActive = false;
-    await posting.save();
+    await posting.save({ validateBeforeSave: false });
 
     res.status(200).json({
       success: true,

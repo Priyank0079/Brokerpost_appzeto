@@ -8,7 +8,7 @@ import {
   Building,
   X
 } from 'lucide-react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
@@ -81,32 +81,34 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
           <div key={idx} className="space-y-0.5">
             <h3 className="px-4 text-[9.5px] font-bold text-[#989da3] uppercase tracking-[0.2em] mb-0.5">{section.title}</h3>
             <div className="space-y-0.5">
-              {section.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={() => {
-                    const isActuallyActive = (location.pathname + location.search) === item.path;
-                    return `
-                      flex items-center justify-between px-4 py-1.5 rounded-lg transition-all text-[12.5px] font-medium
-                      ${isActuallyActive ? 'bg-[#c6952a] text-[#0F172A] shadow-lg' : 'text-[#c1c0c8] hover:text-white hover:bg-slate-800/50'}
-                    `;
-                  }}
-                  onClick={() => {
-                    if (window.innerWidth < 1024) toggleSidebar();
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </div>
-                  {item.count !== undefined && (
-                    <span className="text-[9.5px] font-bold px-1.5 py-0.5 rounded-full bg-[#c8962a] text-[#0F172A] min-w-[18px] text-center">
-                      {item.count}
-                    </span>
-                  )}
-                </NavLink>
-              ))}
+              {section.items.map((item) => {
+                const isActuallyActive = (location.pathname + location.search) === item.path;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`sb-item justify-between ${isActuallyActive ? 'active' : ''}`}
+                    onClick={() => {
+                      if (window.innerWidth < 1024) toggleSidebar();
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* Dynamic active bullet dot color matching mockup */}
+                      {section.title === 'RESIDENTIAL' || section.title === 'COMMERCIAL' ? (
+                        <div className={`w-2 h-2 rounded-full transition-all ${isActuallyActive ? 'bg-[#c8962a]' : 'bg-[#56606a]'}`} />
+                      ) : (
+                        item.icon
+                      )}
+                      <span>{item.label}</span>
+                    </div>
+                    {item.count !== undefined && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-[#c8962a] text-white min-w-[18px] text-center shadow-sm shrink-0">
+                        {item.count}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         ))}

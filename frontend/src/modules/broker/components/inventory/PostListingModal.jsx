@@ -1,23 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { X, Camera, Video, ChevronDown, Lock, Loader2, AlertCircle, Play } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { createPosting, uploadPropertyImages, uploadPropertyVideo } from '../../services/postingService';
+import { createPosting, updatePosting, uploadPropertyImages, uploadPropertyVideo } from '../../services/postingService';
 
-const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDENTIAL', onSuccess }) => {
+const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDENTIAL', posting = null, onSuccess }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Derived Classification
-  const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
-  const isRental = ['RENT', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
-  const postType = isRequirement ? 'REQUIREMENT' : 'AVAILABILITY';
+  const isEdit = !!posting;
 
   const [formData, setFormData] = useState({
     vertical,
-    postType,
+    postType: 'AVAILABILITY',
     intent,
     subType: vertical === 'RESIDENTIAL' ? 'APARTMENTS' : 'OFFICE',
     location: '',
@@ -36,9 +33,15 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     constructionStatus: 'READY',
     occupancy: 'VACANT',
     shortDescription: '',
+    remarks: '',
     images: [],
     videos: []
   });
+
+  // Derived Classification
+  const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(formData.intent || intent);
+  const isRental = ['RENT', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(formData.intent || intent);
+  const postType = isRequirement ? 'REQUIREMENT' : 'AVAILABILITY';
 
   const resetForm = () => {
     setFormData({
@@ -62,18 +65,48 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       constructionStatus: 'READY',
       occupancy: 'VACANT',
       shortDescription: '',
+      remarks: '',
       images: [],
       videos: []
     });
     setError('');
   };
 
-  // Reset form when modal opens with new context
+  // Reset or populate form when modal state changes
   useEffect(() => {
     if (isOpen) {
-      resetForm();
+      if (posting) {
+        setFormData({
+          vertical: posting.vertical || vertical,
+          postType: posting.postType || 'AVAILABILITY',
+          intent: posting.intent || intent,
+          subType: posting.subType || 'APARTMENTS',
+          location: posting.location || '',
+          project: posting.project || '',
+          city: posting.city || 'Gurgaon',
+          size: posting.size || '',
+          sizeUnit: posting.sizeUnit || 'SQ_FT',
+          bedrooms: posting.bedrooms || '2',
+          priceRate: posting.priceRate || '',
+          priceRateType: posting.priceRateType || 'LUMPSUM',
+          totalAmount: posting.totalAmount || '',
+          totalAmountUnit: posting.totalAmountUnit || 'LAKH',
+          budgetMin: posting.budgetMin || '',
+          budgetMax: posting.budgetMax || '',
+          budgetUnit: posting.budgetUnit || 'LAKH',
+          constructionStatus: posting.constructionStatus || 'READY',
+          occupancy: posting.occupancy || 'VACANT',
+          shortDescription: posting.shortDescription || '',
+          remarks: posting.remarks || '',
+          images: posting.images || [],
+          videos: posting.videos || []
+        });
+        setError('');
+      } else {
+        resetForm();
+      }
     }
-  }, [isOpen, vertical, intent]);
+  }, [isOpen, posting, vertical, intent]);
 
   // Auto-calculate Total Price/Budget
   useEffect(() => {
@@ -134,7 +167,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     } catch (err) {
       setError('Video upload failed');
     } finally {
-      setVideoLoading(false);
+      videoLoading(false);
     }
   };
 
@@ -149,13 +182,19 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     setError('');
 
     try {
-      const result = await createPosting(formData);
+      let result;
+      if (isEdit) {
+        result = await updatePosting(posting._id, formData);
+      } else {
+        result = await createPosting(formData);
+      }
+      
       if (result.success) {
         resetForm();
         onSuccess?.();
         onClose();
       } else {
-        setError(result.message || 'Failed to create listing');
+        setError(result.message || `Failed to ${isEdit ? 'update' : 'create'} listing`);
       }
     } catch (err) {
       setError('Server connection failed');
@@ -187,9 +226,9 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-serif text-[#1a365d]">Add Listing</h2>
+            <h2 className="text-2xl font-serif text-[#1a365d]">{isEdit ? 'Edit Listing' : 'Add Listing'}</h2>
             <p className="text-[12px] text-slate-400 font-medium uppercase tracking-wider">
-              {intent.replace('_', ' ')} · {vertical}
+              {(formData.intent || intent).replace('_', ' ')} · {formData.vertical || vertical}
             </p>
           </div>
           <button onClick={onClose} className="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-slate-600 rounded-full transition-all">
