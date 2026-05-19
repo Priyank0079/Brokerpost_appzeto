@@ -66,9 +66,7 @@ const BrokerRegistration = () => {
       newErrors.firstName = 'Invalid characters in name';
     }
 
-    if (!formData.lastName) {
-      newErrors.lastName = 'Last name is required';
-    } else if (!/^[A-Za-z\s]+$/.test(formData.lastName)) {
+    if (formData.lastName && !/^[A-Za-z\s]+$/.test(formData.lastName)) {
       newErrors.lastName = 'Invalid characters in name';
     }
 
