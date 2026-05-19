@@ -11,18 +11,28 @@ const ProcessFlow = ({ config }) => {
       number: '02',
       title: 'Post Your Inventory',
       description: 'Add available properties or client requirements. Upload photos, videos, pricing and all relevant details.'
+    },
+    {
+      number: '03',
+      title: 'Search & Discover',
+      description: 'Browse live listings by location, type, budget. Use group filters to find inventory within your trusted circle.'
+    },
+    {
+      number: '04',
+      title: 'Connect & Deal',
+      description: 'Click to connect with the listing broker. Exchange details and close deals — no platform in between.'
     }
   ];
 
   return (
-    <section id="how-it-works" className="bg-[#1a365d] py-10 px-6 lg:px-20 text-white">
+    <section id="how-it-works" className="bg-[#1a365d] py-16 px-6 lg:px-20 text-white">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="mb-10">
-          <p className="text-[#c8962a] text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
+          <p className="section-tag">
             {config?.badge || 'Process'}
           </p>
-          <h2 className="text-3xl lg:text-4xl font-serif mb-4">
+          <h2 className="section-title text-left" style={{ color: '#ffffff' }}>
             {config?.title || 'How BrokersPost Works'}
           </h2>
           <p className="text-slate-300 text-sm max-w-2xl leading-relaxed">
@@ -31,16 +41,16 @@ const ProcessFlow = ({ config }) => {
         </div>
 
         {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="steps">
           {steps.map((step, idx) => (
-            <div key={idx} className="group">
-              <span className="text-[#c8962a] text-4xl font-serif font-bold mb-2 block opacity-80 group-hover:opacity-100 transition-opacity">
+            <div key={idx} className="step">
+              <div className="step-num">
                 {step.number}
-              </span>
-              <h3 className="text-xs font-bold mb-1">
+              </div>
+              <h3 className="step-title">
                 {step.title}
               </h3>
-              <p className="text-slate-400 text-[13px] leading-relaxed tracking-tight">
+              <p className="step-desc">
                 {step.description}
               </p>
             </div>

@@ -72,19 +72,47 @@ const LandingHero = ({ onRegisterClick, config }) => {
           {/* Left Side: Text Content */}
           <div className="space-y-4 relative z-10">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-white rounded-full border border-slate-200 shadow-sm">
+              <div
+                className="inline-flex items-center"
+                style={{
+                  gap: '8px',
+                  background: '#fff',
+                  border: '1px solid #e4ded2',
+                  borderRadius: '40px',
+                  padding: '6px 14px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#c8962a',
+                  marginBottom: '20px'
+                }}
+              >
                 <div className="w-1.5 h-1.5 rounded-full bg-[#c8962a] animate-pulse" />
-                <span className="text-[10px] font-bold text-[#c8962a] uppercase tracking-widest">{config?.badge || 'Live Inventory Search'}</span>
+                <span className="">{config?.badge || 'Live Inventory Search'}</span>
               </div>
 
-              <h1 className="text-3xl lg:text-5xl font-serif font-semibold text-[#1A1A1A] leading-[1.3] tracking-tight">
+              <h1 className="text-[#1A1A1A]" style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(30px, 3.5vw, 48px)",
+                lineHeight: "1.15",
+                fontWeight: "700",
+                marginBottom: "18px"
+              }}>
                 {config?.titlePart1 || "India's Most Trusted"} <br />
                 <span className="italic text-[#c8962a]">{config?.titleHighlight || "Broker-to-Broker"}</span> <br />
                 {config?.titlePart2 || "Inventory Platform"}
               </h1>
 
-              <p className="text-sm font-poppins text-slate-600 leading-loose max-w-xl">
-                A private, verified community where professional real estate brokers <br /> share live inventory and requirements — deal directly with each other. <br />
+              <p
+                style={{
+                  fontSize: '15px',
+                  color: '#6e7d90',
+                  maxWidth: '480px',
+                  lineHeight: '1.75',
+                  marginBottom: '24px'
+                }}
+                className="font-poppins w-full"
+              >
+                A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br className="hidden md:inline" />
                 No commission. No middlemen. No charges.
               </p>
             </div>
@@ -174,26 +202,92 @@ const LandingHero = ({ onRegisterClick, config }) => {
         </div>
         {/* Bottom Features Bar */}
         <div className="absolute lg:absolute bottom-0 left-0 right-0 bg-[#1a365d] py-3 lg:py-4">
-          <div className="max-w-[1300px] mx-auto px-6 flex items-center lg:justify-center gap-x-8 lg:gap-x-10 gap-y-3 overflow-x-auto no-scrollbar whitespace-nowrap">
-            <div className="flex items-center gap-2 shrink-0">
+          <div
+            style={{
+              maxWidth: '1280px',
+              margin: '0 auto',
+              display: 'flex',
+              gap: '32px',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexWrap: 'wrap'
+            }}
+            className="px-6"
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '13px',
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: '400'
+              }}
+              className="shrink-0 tracking-wider"
+            >
               <Check size={14} className="text-[#c8962a]" strokeWidth={3} />
-              <span className="text-[#abb4be] text-[11px] lg:text-[12px] font-semibold uppercase tracking-wider">Verified Brokers Only</span>
+              <span>Verified Brokers Only</span>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '13px',
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: '400'
+              }}
+              className="shrink-0 tracking-wider"
+            >
               <Lock size={12} className="text-[#c8962a]" fill="#c8962a" />
-              <span className="text-[#abb4be] text-[11px] lg:text-[12px] font-semibold uppercase tracking-wider">No Brokerage Charged</span>
+              <span>No Brokerage Charged</span>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '13px',
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: '400'
+              }}
+              className="shrink-0 tracking-wider"
+            >
               <Zap size={12} className="text-[#c8962a]" fill="#c8962a" />
-              <span className="text-[#abb4be] text-[11px] lg:text-[12px] font-semibold uppercase tracking-wider">Direct Broker Deals</span>
+              <span>Direct Broker Deals</span>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[12px] lg:text-[14px]">🏙️</span>
-              <span className="text-[#abb4be] text-[11px] lg:text-[12px] font-semibold uppercase tracking-wider">NCR • Delhi • Noida</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '13px',
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: '400'
+              }}
+              className="shrink-0 tracking-wider"
+            >
+              <span className="text-[14px]">🏙️</span>
+              <span>NCR • Delhi • Noida</span>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-[12px] lg:text-[14px]">📋</span>
-              <span className="text-[#abb4be] text-[11px] lg:text-[12px] font-semibold uppercase tracking-wider">Genuine Inventory Only</span>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontSize: '13px',
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: '400'
+              }}
+              className="shrink-0 tracking-wider"
+            >
+              <span className="text-[14px]">📋</span>
+              <span>Genuine Inventory Only</span>
             </div>
           </div>
         </div>

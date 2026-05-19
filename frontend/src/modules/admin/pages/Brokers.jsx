@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus, Loader2, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 
@@ -8,6 +8,8 @@ const Brokers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [brokers, setBrokers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [stats, setStats] = useState([
     { label: 'Total Brokers', value: '0' },
     { label: 'Pending', value: '0' },
@@ -69,11 +71,12 @@ const Brokers = () => {
     setIsEditModalOpen(true);
   };
 
-  const fetchBrokers = async () => {
+  const fetchBrokers = async (page = 1) => {
     try {
-      const response = await api.get('/auth/brokers');
+      const response = await api.get(`/auth/brokers?page=${page}&limit=8`);
       if (response.success) {
         setBrokers(response.data);
+        setTotalPages(response.pages || 1);
       }
     } catch (err) {
       console.error('Error fetching brokers:', err);
@@ -99,18 +102,18 @@ const Brokers = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchBrokers(), fetchStats()]);
+      await Promise.all([fetchBrokers(currentPage), fetchStats()]);
       setLoading(false);
     };
     loadData();
-  }, []);
+  }, [currentPage]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this broker?')) {
       try {
         const response = await api.delete(`/auth/brokers/${id}`);
         if (response.success) {
-          setBrokers(prev => prev.filter(b => b._id !== id));
+          fetchBrokers(currentPage);
           fetchStats();
         }
       } catch (err) {
@@ -249,12 +252,20 @@ const Brokers = () => {
                       <div className="space-y-1.5">
                         <p className="text-[10px] font-bold text-slate-900">{broker.phoneNumber}</p>
                         <div className="flex gap-1">
-                          <button className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100/50">
+                          <a 
+                            href={`https://wa.me/${broker.phoneNumber.replace(/[^0-9]/g, '').length === 10 ? '91' + broker.phoneNumber.replace(/[^0-9]/g, '') : broker.phoneNumber.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100/50"
+                          >
                             WA
-                          </button>
-                          <button className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold hover:bg-blue-100 transition-all border border-blue-100/50">
+                          </a>
+                          <a 
+                            href={`tel:${broker.phoneNumber}`}
+                            className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold hover:bg-blue-100 transition-all border border-blue-100/50"
+                          >
                             Call
-                          </button>
+                          </a>
                         </div>
                       </div>
                     </td>
@@ -263,11 +274,13 @@ const Brokers = () => {
                     </td>
                     <td className="px-4 py-4">
                       <div className="space-y-1 w-full">
-                        <p className="text-[10px] font-bold text-slate-900">0/25</p>
+                        <p className="text-[10px] font-bold text-slate-900">
+                          {broker.listingCount || 0}/{broker.listingLimit || 25}
+                        </p>
                         <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-slate-400 rounded-full" 
-                            style={{ width: `0%` }}
+                            className="h-full bg-[#c8962a] rounded-full animate-pulse-subtle" 
+                            style={{ width: `${Math.min(((broker.listingCount || 0) / (broker.listingLimit || 25)) * 100, 100)}%` }}
                           />
                         </div>
                         <button className="text-[8px] font-bold text-primary-500 flex items-center gap-1 hover:underline">
@@ -276,11 +289,17 @@ const Brokers = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      {broker.associatedGroup ? (
-                        <div className="flex flex-wrap gap-1">
-                          <span className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[7px] font-bold leading-tight">
-                            {broker.associatedGroup.split(' ')[0]}...
-                          </span>
+                      {broker.groups && broker.groups.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 max-w-[120px]">
+                          {broker.groups.map((groupName, i) => (
+                            <span 
+                              key={i} 
+                              title={groupName}
+                              className="px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[7px] font-bold leading-tight truncate max-w-[90px]"
+                            >
+                              {groupName}
+                            </span>
+                          ))}
                         </div>
                       ) : (
                         <span className="text-[9px] text-slate-400 font-medium">None</span>
@@ -321,6 +340,41 @@ const Brokers = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="py-3.5 border-t border-slate-100 flex items-center justify-center gap-4 bg-slate-50/50">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all bg-white active:scale-95 shadow-sm"
+              >
+                <ChevronLeft size={14} />
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${currentPage === i + 1
+                        ? 'bg-[#c8962a] text-white shadow-md shadow-[#c8962a]/20 scale-105 z-10'
+                        : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 active:scale-95'
+                      }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all bg-white active:scale-95 shadow-sm"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

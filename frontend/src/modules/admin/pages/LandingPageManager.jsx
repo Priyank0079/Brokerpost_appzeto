@@ -258,6 +258,40 @@ const LandingPageManager = () => {
                      </div>
                    )}
 
+                    {activeContentSection === 'footer' && (
+                      <div className="space-y-6 pt-2 animate-fade-in">
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Branding Description</label>
+                          <input 
+                            type="text" 
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:border-[#c8962a] outline-none transition-all"
+                            value={config.sections.footer.brandingDesc || ''}
+                            onChange={(e) => updateSectionField('footer', 'brandingDesc', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Copyright Text</label>
+                          <input 
+                            type="text" 
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 text-sm focus:border-[#c8962a] outline-none transition-all"
+                            value={config.sections.footer.copyright || ''}
+                            onChange={(e) => updateSectionField('footer', 'copyright', e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="space-y-1.5">
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Disclaimer Bar Text</label>
+                          <textarea 
+                            rows={4}
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-600 text-sm focus:border-[#c8962a] outline-none transition-all"
+                            value={config.sections.footer.disclaimer || ''}
+                            onChange={(e) => updateSectionField('footer', 'disclaimer', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+
                    {/* Custom Array Editors */}
                    {activeContentSection === 'hero' && config.sections.hero.stats && (
                      <div className="pt-6 border-t border-slate-100">

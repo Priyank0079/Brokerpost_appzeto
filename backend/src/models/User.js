@@ -87,6 +87,10 @@ const userSchema = new mongoose.Schema({
   agreeWithTerms: {
     type: Boolean,
     default: false
+  },
+  listingLimit: {
+    type: Number,
+    default: 25
   }
 }, {
   timestamps: true

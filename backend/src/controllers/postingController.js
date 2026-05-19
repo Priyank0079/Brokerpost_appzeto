@@ -90,13 +90,26 @@ exports.getPostings = async (req, res, next) => {
       }
     }
 
+    if (req.userModel === 'User') {
+      filter.postedBy = req.user._id;
+    }
+
     const skip = (Number(page) - 1) * Number(limit);
 
-    // If user is a broker, we might want to prioritize their group members
+    // If user is a broker, they only see their own listings
     let postings;
     let total;
 
-    if (req.userModel === 'User' && !groupId) {
+    if (req.userModel === 'User') {
+      [postings, total] = await Promise.all([
+        Posting.find(filter)
+          .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit)),
+        Posting.countDocuments(filter)
+      ]);
+    } else if (req.userModel === 'User' && !groupId) {
       const userGroups = await Group.find({ members: req.user._id });
       const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
       
@@ -352,6 +365,11 @@ exports.getPostingStats = async (req, res, next) => {
       groupQuery.$or = groupOrConditions;
     }
 
+    const baseQuery = { isActive: true };
+    if (req.userModel === 'User') {
+      baseQuery.postedBy = userId;
+    }
+
     // Run basic counts first (these are fast)
     const [
       totalListings,
@@ -359,10 +377,10 @@ exports.getPostingStats = async (req, res, next) => {
       availabilityCount,
       requirementCount
     ] = await Promise.all([
-      PostingModel.countDocuments({ isActive: true }).catch(e => { console.error('Count totalListings failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ ...baseQuery }).catch(e => { console.error('Count totalListings failed:', e.message); return 0; }),
       PostingModel.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed:', e.message); return 0; }),
-      PostingModel.countDocuments({ postType: 'AVAILABILITY', isActive: true }).catch(e => { console.error('Count availabilityCount failed:', e.message); return 0; }),
-      PostingModel.countDocuments({ postType: 'REQUIREMENT', isActive: true }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
+      PostingModel.countDocuments({ ...baseQuery, postType: 'AVAILABILITY' }).catch(e => { console.error('Count availabilityCount failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ ...baseQuery, postType: 'REQUIREMENT' }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
     ]);
 
     // Run breakdown and recent listings - wrapped in try-catch to prevent single query failure from crashing
@@ -387,20 +405,20 @@ exports.getPostingStats = async (req, res, next) => {
         groupCount
       ] = await Promise.all([
         // Residential Breakdown
-        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'SALE', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'RENT', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'RESIDENTIAL', intent: 'WANTED_RENT', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'RENT' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'WANTED_RENT' }).catch(() => 0),
         // Commercial Breakdown
-        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'SALE', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'LEASE', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'PURCHASE', isActive: true }).catch(() => 0),
-        PostingModel.countDocuments({ vertical: 'COMMERCIAL', intent: 'WANTED_LEASE', isActive: true }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
 
         // Recent listings - separate try-catch for populate
         (async () => {
           try {
-            return await PostingModel.find({ isActive: true })
+            return await PostingModel.find(baseQuery)
               .populate('postedBy', 'firstName lastName companyName name')
               .sort({ createdAt: -1 })
               .limit(5)

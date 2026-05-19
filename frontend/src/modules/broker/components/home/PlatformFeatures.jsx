@@ -27,10 +27,10 @@ const PlatformFeatures = ({ config }) => {
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <p className="text-[#c8962a] text-[9px] font-bold uppercase tracking-[0.1em] mb-3">
+          <p className="section-tag">
             {config?.badge || 'Platform Features'}
           </p>
-          <h2 className="text-3xl lg:text-4xl font-serif text-[#0f172a] mb-2">
+          <h2 className="section-title text-left">
             {config?.title || 'Everything a Broker Needs'}
           </h2>
           <p className="text-slate-500 text-sm max-w-2xl leading-relaxed">

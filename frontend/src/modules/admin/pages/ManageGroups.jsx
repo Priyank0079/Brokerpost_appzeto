@@ -87,9 +87,12 @@ const ManageGroups = () => {
   const handleUpdateGroup = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.put(`/groups/${selectedGroup._id}`, formData);
+      const response = await api.put(`/groups/${selectedGroup._id}`, {
+        ...formData,
+        members: selectedMembers
+      });
       if (response.success) {
-        setGroups(groups.map(g => g._id === selectedGroup._id ? { ...g, ...response.data } : g));
+        setGroups(groups.map(g => g._id === selectedGroup._id ? response.data : g));
         setIsEditModalOpen(false);
       }
     } catch (err) {
@@ -291,6 +294,7 @@ const ManageGroups = () => {
                           onClick={() => {
                             setSelectedGroup(group);
                             setFormData({ name: group.name, description: group.description || '' });
+                            setSelectedMembers(group.members ? group.members.map(m => m._id || m) : []);
                             setIsEditModalOpen(true);
                           }}
                           className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all shadow-sm"

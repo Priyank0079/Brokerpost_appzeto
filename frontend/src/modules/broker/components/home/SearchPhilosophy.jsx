@@ -34,10 +34,10 @@ const SearchPhilosophy = ({ data }) => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full border border-slate-100"
+            className="inline-flex items-center gap-2"
           >
-            <Sparkles className="text-primary-500" size={14} />
-            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{data.badgeText || "The Network Philosophy"}</span>
+            <Sparkles className="text-primary-500" style={{ marginBottom: '8px' }} size={14} />
+            <span className="section-tag">{data.badgeText || "The Network Philosophy"}</span>
           </motion.div>
           
           <motion.h2 
@@ -45,7 +45,7 @@ const SearchPhilosophy = ({ data }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight"
+            className="section-title text-center"
           >
             {title || "Search-Based. No Algorithm. Pure Matching."}
           </motion.h2>

@@ -342,12 +342,42 @@ exports.getMe = async (req, res, next) => {
 // @access  Private/Admin
 exports.getBrokers = async (req, res, next) => {
   try {
-    const brokers = await User.find({ role: 'Broker' });
+    const { page = 1, limit = 8 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const total = await User.countDocuments({ role: 'Broker' });
+    const brokers = await User.find({ role: 'Broker' })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit))
+      .lean();
+
+    const Posting = require('../models/Posting');
+    const Group = require('../models/Group');
+
+    const data = await Promise.all(
+      brokers.map(async (broker) => {
+        const listingCount = await Posting.countDocuments({
+          postedBy: broker._id,
+          isActive: true
+        });
+        const brokerGroups = await Group.find({ members: broker._id }, 'name');
+        return {
+          ...broker,
+          listingCount,
+          listingLimit: broker.listingLimit || 25,
+          groups: brokerGroups.map(g => g.name)
+        };
+      })
+    );
 
     res.status(200).json({
       success: true,
-      count: brokers.length,
-      data: brokers
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / Number(limit)),
+      count: data.length,
+      data: data
     });
   } catch (error) {
     next(error);

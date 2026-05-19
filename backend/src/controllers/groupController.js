@@ -93,7 +93,7 @@ exports.updateGroup = async (req, res, next) => {
     const group = await Group.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
-    });
+    }).populate('members', 'firstName lastName email companyName');
 
     if (!group) {
       return res.status(404).json({ success: false, message: 'Group not found' });

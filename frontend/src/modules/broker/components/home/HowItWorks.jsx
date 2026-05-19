@@ -18,23 +18,23 @@ const HowItWorks = ({ data }) => {
       <div className="w-full px-4 md:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center space-y-2 mb-8">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight"
-          >
-            {title || "How Brokerspost Works"}
-          </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-slate-400 font-bold uppercase tracking-widest text-[10px]"
+            className="section-tag block text-center"
           >
             {subtitle || "Streamlined for Professional Success"}
           </motion.p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="section-title text-center"
+          >
+            {title || "How Brokerspost Works"}
+          </motion.h2>
         </div>
 
         {/* Steps Grid */}

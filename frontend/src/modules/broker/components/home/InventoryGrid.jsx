@@ -47,7 +47,17 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
           <div className="space-y-1">
-            <h2 className="text-xl font-serif font-thin text-[#481b2a] tracking-tight">
+            <p className="section-tag">
+              {config?.badge || 'Inventory'}
+            </p>
+            <h2 
+              className="section-title text-left"
+              style={{ 
+                fontSize: '20px', 
+                color: '#481b2a', 
+                fontWeight: 300 
+              }}
+            >
               {config?.title || 'Active Listings'}
             </h2>
           </div>

@@ -81,7 +81,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl p-4 lg:p-5 shadow-2xl max-w-4xl border border-white/5">
+        <div className="search-box mx-auto lg:mx-0">
           {/* Tabs */}
           <div className="inline-flex border border-slate-200 rounded-lg overflow-hidden mb-4">
             <button
@@ -91,8 +91,8 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 onFilterChange(updated);
               }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === ''
-                  ? 'bg-[#1a365d] text-white'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                ? 'bg-[#1a365d] text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
             >
               <span>📁</span>
@@ -105,8 +105,8 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 onFilterChange(updated);
               }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'RESIDENTIAL'
-                  ? 'bg-[#1a365d] text-white'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                ? 'bg-[#1a365d] text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
             >
               <span>🏡</span>
@@ -119,8 +119,8 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 onFilterChange(updated);
               }}
               className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'COMMERCIAL'
-                  ? 'bg-[#1a365d] text-white'
-                  : 'bg-white text-slate-600 hover:bg-slate-50'
+                ? 'bg-[#1a365d] text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
             >
               <span>🏢</span>
@@ -128,37 +128,37 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-2">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-2 search-row">
             <div className="lg:col-span-8 relative">
               <input
                 type="text"
                 value={localFilters.location}
                 onChange={(e) => setLocalFilters({ ...localFilters, location: e.target.value })}
                 placeholder="Enter location or project name.."
-                className="w-full h-10 pl-6 pr-4 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-medium focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] transition-all placeholder:text-slate-400"
+                className="w-full placeholder:text-slate-400"
               />
             </div>
             <div className="lg:col-span-4 relative">
               <select
                 value={localFilters.city || ''}
                 onChange={(e) => setLocalFilters({ ...localFilters, city: e.target.value })}
-                className="w-full h-10 pl-6 pr-10 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-bold focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] appearance-none transition-all cursor-pointer"
+                className="w-full pl-3 pr-10 appearance-none cursor-pointer"
               >
                 <option value="">All Cities</option>
                 <option value="Noida">Noida</option>
                 <option value="Gurgaon">Gurgaon</option>
                 <option value="Delhi">Delhi</option>
               </select>
-              <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-4 mb-4">
+          <div className="flex flex-col lg:flex-row gap-4 mb-4 search-row">
             <div className="flex-1 relative">
               <select
                 value={localFilters.intent}
                 onChange={(e) => setLocalFilters({ ...localFilters, intent: e.target.value })}
-                className="w-full h-10 pl-6 pr-10 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-bold focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] appearance-none transition-all cursor-pointer"
+                className="w-full pl-3 pr-10 appearance-none cursor-pointer"
               >
                 <option value="">All Categories</option>
                 {(localFilters.vertical === 'RESIDENTIAL' ? residentialIntents :
@@ -166,13 +166,13 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
               </select>
-              <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
             <div className="flex-1 relative">
               <select
                 value={localFilters.subType}
                 onChange={(e) => setLocalFilters({ ...localFilters, subType: e.target.value })}
-                className="w-full h-10 pl-6 pr-10 rounded-lg bg-pink-50/50 border border-slate-200 text-xs font-bold focus:outline-none focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a] appearance-none transition-all cursor-pointer"
+                className="w-full pl-3 pr-10 appearance-none cursor-pointer"
               >
                 <option value="">All Property Types</option>
                 {localFilters.vertical === 'RESIDENTIAL' && residentialSubTypes.map(opt => (
@@ -185,19 +185,19 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleSearch}
-                className="px-3 h-10 flex items-center justify-center gap-2 rounded-lg bg-[#c8962a] text-white font-bold text-[10px] uppercase tracking-wider hover:bg-[#b08425] transition-all shadow-xl shadow-[#c8962a]/20 active:scale-95"
+                className="px-4 h-[38px] flex items-center justify-center gap-2 rounded-lg bg-[#c8962a] text-white font-bold text-[11px] uppercase tracking-wider hover:bg-[#b08425] transition-all shadow-xl shadow-[#c8962a]/20 active:scale-95"
               >
                 <span>🔍</span>
                 Search
               </button>
               <button
                 onClick={handleClear}
-                className="px-3 h-10 rounded-lg border-2 border-slate-100 text-slate-400 font-bold text-[10px] uppercase tracking-wider hover:bg-slate-50 transition-all active:scale-95"
+                className="px-4 h-[38px] rounded-lg border border-slate-200 text-slate-400 font-bold text-[11px] uppercase tracking-wider hover:bg-slate-50 transition-all active:scale-95"
               >
                 Clear
               </button>
@@ -211,9 +211,9 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 setLocalFilters(updated);
                 onFilterChange(updated);
               }}
-              className={`px-2 py-2 rounded-full font-medium text-[10px] uppercase tracking-wider transition-all ${localFilters.intent === ''
-                  ? 'bg-[#1a365d] text-white shadow-md'
-                  : 'bg-slate-50 text-slate-400 border border-slate-200 hover:border-slate-300'
+              className={`chip   ${localFilters.intent === ''
+                ? '!bg-[#1a365d] !text-white shadow-md'
+                : ''
                 }`}
             >
               All {localFilters.vertical === 'RESIDENTIAL' ? 'Residential' : localFilters.vertical === 'COMMERCIAL' ? 'Commercial' : 'Inventory'}
@@ -227,9 +227,9 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                     setLocalFilters(updated);
                     onFilterChange(updated);
                   }}
-                  className={`px-2 py-2 rounded-full border font-medium text-[10px] uppercase tracking-wider transition-all ${localFilters.intent === opt.value
-                      ? 'bg-[#c8962a] border-[#c8962a] text-white shadow-md'
-                      : 'bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:bg-slate-50'
+                  className={`chip   ${localFilters.intent === opt.value
+                    ? '!bg-[#c8962a] !border-[#c8962a] !text-white shadow-md'
+                    : ''
                     }`}
                 >
                   {opt.label}

@@ -64,7 +64,8 @@ const LandingPageConfigSchema = new mongoose.Schema({
           url: { type: String }
         }]
       }],
-      copyright: { type: String, default: "© 2026 Brokerspost Network Platform." }
+      copyright: { type: String, default: "© 2026 Brokerspost Network Platform." },
+      disclaimer: { type: String, default: "BrokersPost is a networking platform only. We do not participate in, mediate, or take responsibility for any transaction, dispute, or loss arising between brokers. All listings must be genuine. By using this platform, you agree to our" }
     },
     registrationTerms: {
       visible: { type: Boolean, default: true },

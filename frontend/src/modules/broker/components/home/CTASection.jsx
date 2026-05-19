@@ -10,18 +10,18 @@ const CTASection = ({ onRegisterClick, config }) => {
     <>
     <section className="bg-[#f0ebe0] py-12 px-6">
       <div className="max-w-[660px] mx-auto">
-        <div className="bg-white rounded-[20px] py-6 px-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
+        <div className="cta-card bg-white rounded-[20px] py-6 px-10 text-center shadow-2xl shadow-slate-200/50 border border-slate-100">
           <div className="flex justify-center mb-6">
             <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center">
               <Trophy size={32} className="text-[#c8962a]" />
             </div>
           </div>
           
-          <h2 className="text-2xl lg:text-3xl font-serif text-[#0f172a] mb-4">
+          <h2>
             {config?.title || 'Join the Verified Broker Network'}
           </h2>
           
-          <p className="text-slate-500 text-[14px] leading-relaxed mb-8 max-w-xl mx-auto">
+          <p className="leading-relaxed max-w-xl mx-auto">
             {config?.subtitle || 'Only serious, professional brokers. A community built on trust, transparency and real inventory. Register today and start accessing deals your competitors can\'t see.'}
           </p>
           
