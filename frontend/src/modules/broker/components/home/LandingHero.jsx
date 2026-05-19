@@ -198,10 +198,12 @@ const LandingHero = ({ onRegisterClick, config }) => {
           </div>
         </div>
       </section>
-      <RegisterModal
-        isOpen={isRegisterModalOpen}
-        onClose={() => setIsRegisterModalOpen(false)}
-      />
+      {isRegisterModalOpen && (
+        <RegisterModal
+          isOpen={isRegisterModalOpen}
+          onClose={() => setIsRegisterModalOpen(false)}
+        />
+      )}
     </>
   );
 };
