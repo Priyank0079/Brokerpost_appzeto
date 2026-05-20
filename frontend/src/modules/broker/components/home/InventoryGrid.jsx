@@ -4,6 +4,24 @@ import { getPostings } from '../../services/postingService';
 import { useAuth } from '../../context/AuthContext';
 import ListingDetailModal from './ListingDetailModal';
 
+const formatNum = (num) => new Intl.NumberFormat('en-IN').format(num);
+
+const renderListingType = (item) => {
+  const postType = item.postType;
+  const intent = item.intent?.toUpperCase() || '';
+  if (postType === 'REQUIREMENT') {
+    if (intent === 'SALE' || intent === 'PURCHASE') return 'Wanted on Purchase';
+    if (intent === 'RENT') return 'Wanted on Rent';
+    if (intent === 'LEASE' || intent === 'WANTED_LEASE') return 'Wanted on Lease';
+    return `Wanted on ${item.intent || 'Purchase'}`;
+  } else {
+    if (intent === 'SALE') return 'Available for Sale';
+    if (intent === 'RENT') return 'Available for Rental';
+    if (intent === 'LEASE') return 'Available for Lease';
+    return `Available for ${item.intent || 'Sale'}`;
+  }
+};
+
 const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const { isAuthenticated } = useAuth();
   const [view, setView] = useState('grid');
@@ -124,7 +142,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                     {/* Middle Area (White) */}
                     <div className="p-1 pl-3 flex-1 flex flex-col bg-white">
                       <p className="text-[9px] font-normal text-slate-400 uppercase tracking-wide mt-2 mb-2">
-                        {item.postType === 'REQUIREMENT' ? 'Looking for' : 'Available for'} {item.intent?.toLowerCase()} · {item.subType?.toLowerCase() || 'Apartments'}
+                        {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
                       </p>
                       
                       <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
@@ -154,8 +172,8 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                     <div className="p-4 bg-[#f5ede3] flex items-center justify-between">
                       <div className="text-xs font-bold text-[#1e3a5f]">
                         {item.postType === 'REQUIREMENT'
-                          ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
-                          : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
+                          ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
+                          : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
                         }
                       </div>
                       <button className="px-2 py-2 bg-[#1a365d] text-white rounded-lg text-[10px] font-bold hover:bg-[#c8962a] transition-colors tracking-wide">
@@ -210,8 +228,8 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                             <div className="flex flex-col">
                               <span className="text-[14px] font-black text-emerald-600 tracking-tight">
                                 {item.postType === 'REQUIREMENT'
-                                  ? `₹${item.budgetMin}-${item.budgetMax} ${item.budgetUnit}`
-                                  : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'N/A'
+                                  ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
+                                  : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
                                 }
                               </span>
                               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">

@@ -103,7 +103,11 @@ const postingSchema = new mongoose.Schema({
   // Used as: total_cost (Availability), total_rent (Lease Availability)
   totalAmount: {
     type: Number,
-    min: 0
+    min: 0,
+    required: [
+      function() { return this.postType === 'AVAILABILITY'; },
+      'Total Amount is mandatory for Availability listings'
+    ]
   },
   totalAmountUnit: {
     type: String,
@@ -115,11 +119,19 @@ const postingSchema = new mongoose.Schema({
   // Used as: budget_rent (Res Rent Req), total_budget (Purchase/Lease Req)
   budgetMin: {
     type: Number,
-    min: 0
+    min: 0,
+    required: [
+      function() { return this.postType === 'REQUIREMENT'; },
+      'Minimum Budget is mandatory for Requirement listings'
+    ]
   },
   budgetMax: {
     type: Number,
-    min: 0
+    min: 0,
+    required: [
+      function() { return this.postType === 'REQUIREMENT'; },
+      'Maximum Budget is mandatory for Requirement listings'
+    ]
   },
   budgetUnit: {
     type: String,

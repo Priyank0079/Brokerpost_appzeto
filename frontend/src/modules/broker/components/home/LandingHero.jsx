@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import RegisterModal from './RegisterModal';
 import { getPostings } from '../../services/postingService';
 
+const formatNum = (num) => new Intl.NumberFormat('en-IN').format(num);
+
 const InventoryItem = ({ label, type, title, subtitle, details, price, color }) => (
   <div className="p-3 border border-slate-300 rounded-lg bg-white transition-all cursor-default">
     <div className="flex justify-between items-start">
@@ -179,8 +181,8 @@ const LandingHero = ({ onRegisterClick, config }) => {
                         subtitle={item.location}
                         details={item.size ? `${item.size} ${item.sizeUnit}` : 'Ref: #' + item._id.slice(-6).toUpperCase()}
                         price={item.postType === 'REQUIREMENT'
-                          ? `₹${item.budgetMax} ${item.budgetUnit}`
-                          : item.totalAmount ? `₹${item.totalAmount} ${item.totalAmountUnit}` : 'On Request'
+                          ? (item.budgetMax ? `₹${formatNum(item.budgetMax)}` : '₹ 0')
+                          : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
                         }
                         color={color}
                       />
