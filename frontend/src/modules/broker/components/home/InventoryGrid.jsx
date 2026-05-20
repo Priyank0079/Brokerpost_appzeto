@@ -22,6 +22,84 @@ const renderListingType = (item) => {
   }
 };
 
+const renderCategoryBadge = (vertical) => {
+  const v = vertical?.toUpperCase() || 'RESIDENTIAL';
+  const bg = v === 'RESIDENTIAL' ? 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
+  const label = v === 'RESIDENTIAL' ? 'Residential' : 'Commercial';
+  return (
+    <span className={`px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
+      {label}
+    </span>
+  );
+};
+
+const renderSubTypeBadge = (subType) => {
+  const s = subType ? subType.toUpperCase() : '';
+  let bg = 'bg-slate-50 text-slate-600 border border-slate-200';
+  let label = subType || '';
+  if (s.includes('PLOT')) {
+    bg = 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]';
+    label = s === 'PLOT' ? 'Plot' : 'Plots';
+  } else if (s.includes('APARTMENT')) {
+    bg = 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]';
+    label = 'Apartments';
+  } else if (s.includes('FLOOR')) {
+    bg = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+    label = 'Low Rise Floors';
+  } else if (s.includes('VILLA') || s.includes('KOTHI')) {
+    bg = 'bg-[#fff7ed] text-[#c2410c] border border-[#ffedd5]';
+    label = 'Kothi/Villas';
+  } else if (s.includes('SHOP') || s.includes('SHOWROOM')) {
+    bg = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+    label = 'Shops/Showroom';
+  } else if (s.includes('OFFICE')) {
+    bg = 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]';
+    label = 'Office';
+  } else if (s.includes('WAREHOUSE')) {
+    bg = 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
+    label = 'Warehouse';
+  } else if (s.includes('BUILDING')) {
+    bg = 'bg-[#fdf2f8] text-[#be185d] border border-[#fce7f3]';
+    label = 'Standalone Building';
+  }
+  return (
+    <span className={`px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
+      {label}
+    </span>
+  );
+};
+
+const formatArea = (listing) => {
+  if (!listing.size) return 'N/A';
+  const unit = listing.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (listing.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : (listing.sizeUnit === 'SQ_MT' ? 'Sq.Mt' : listing.sizeUnit));
+  return `${listing.size} ${unit}`;
+};
+
+const formatTotalPrice = (listing) => {
+  if (listing.totalAmount) {
+    return `₹${formatNum(listing.totalAmount)}`;
+  }
+  if (listing.budgetMin || listing.budgetMax) {
+    if (listing.budgetMin && listing.budgetMax) {
+      return `₹${formatNum(listing.budgetMin)} - ₹${formatNum(listing.budgetMax)}`;
+    }
+    return `₹${formatNum(listing.budgetMin || listing.budgetMax)}`;
+  }
+  return 'On Request';
+};
+
+const renderStatusBadge = (listing) => {
+  if (!listing.constructionStatus) return null;
+  const isReady = listing.constructionStatus === 'READY' || listing.constructionStatus === 'Ready to Move';
+  const label = isReady ? 'Ready to Move' : 'Under Construction';
+  const bg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
+  return (
+    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${bg}`}>
+      {label}
+    </span>
+  );
+};
+
 const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const { isAuthenticated } = useAuth();
   const [view, setView] = useState('grid');
@@ -64,20 +142,19 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
-          <div className="space-y-1">
-            <p className="section-tag">
-              {config?.badge || 'Inventory'}
-            </p>
+          <div className="space-y-0.5">
             <h2 
-              className="section-title text-left"
+              className="section-title text-left font-serif text-[#0d1b2a]"
               style={{ 
-                fontSize: '20px', 
-                color: '#481b2a', 
-                fontWeight: 300 
+                fontSize: '24px', 
+                fontWeight: 'normal' 
               }}
             >
-              {config?.title || 'Active Listings'}
+              All Listed Inventory
             </h2>
+            <p className="text-xs text-slate-500 font-medium mt-1">
+              {total} listings found
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -184,61 +261,80 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.1)]">
+              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left">
+                  <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-100">
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] w-24">Order</th>
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Type</th>
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Sub-Type</th>
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Asset Context</th>
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em]">Commercials</th>
-                        <th className="py-6 px-10 text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] text-center">Action</th>
+                      <tr className="bg-[#FAF9F6] border-b border-slate-200 text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+                        <th className="py-4 px-6 text-center w-12">#</th>
+                        <th className="py-4 px-6">Category</th>
+                        <th className="py-4 px-6">Sub-Type</th>
+                        <th className="py-4 px-6">Section</th>
+                        <th className="py-4 px-6">Location</th>
+                        <th className="py-4 px-6">Area</th>
+                        <th className="py-4 px-6">Total Price</th>
+                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6 text-center w-36">Connect</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-50">
+                    <tbody className="divide-y divide-slate-100 bg-white">
                       {listings.map((item, idx) => (
                         <tr
                           key={item._id}
                           onClick={() => setSelectedItem(item)}
-                          className="hover:bg-slate-50/80 transition-all group cursor-pointer"
+                          className="hover:bg-slate-50/50 transition-all group cursor-pointer text-[12.5px] text-slate-700"
                         >
-                          <td className="py-6 px-10 text-[12px] font-black text-slate-300 tracking-widest">#{(page - 1) * limit + idx + 1}</td>
-                          <td className="py-6 px-10">
-                            <span className="px-4 py-1.5 rounded-full bg-[#c8962a]/10 text-[#c8962a] text-[10px] font-black uppercase tracking-widest">
-                              {item.vertical}
-                            </span>
+                          {/* Index */}
+                          <td className="py-4 px-6 text-center font-bold text-slate-400">
+                            {(page - 1) * limit + idx + 1}
                           </td>
-                          <td className="py-6 px-10">
-                            <span className="px-4 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest">
-                              {item.subType?.replace('_', ' ')}
-                            </span>
+                          
+                          {/* Category Badge */}
+                          <td className="py-4 px-6">
+                            {renderCategoryBadge(item.vertical)}
                           </td>
-                          <td className="py-6 px-10">
+                          
+                          {/* Sub-Type Badge */}
+                          <td className="py-4 px-6">
+                            {renderSubTypeBadge(item.subType)}
+                          </td>
+                          
+                          {/* Section */}
+                          <td className="py-4 px-6 text-slate-500 font-medium">
+                            {renderListingType(item)}
+                          </td>
+                          
+                          {/* Location */}
+                          <td className="py-4 px-6">
                             <div className="flex flex-col">
-                              <span className="text-[14px] font-black text-[#0f172a] tracking-tight group-hover:text-[#c8962a] transition-colors">{item.project || 'Premium Listing'}</span>
-                              <div className="flex items-center gap-1.5 mt-1.5 opacity-50">
-                                <MapPin size={12} className="text-[#c8962a]" />
-                                <span className="text-[11px] font-bold">{item.location}</span>
-                              </div>
+                              <span className="font-bold text-slate-900">{item.location || 'N/A'}</span>
+                              {item.project && (
+                                <span className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{item.project}</span>
+                              )}
                             </div>
                           </td>
-                          <td className="py-6 px-10">
-                            <div className="flex flex-col">
-                              <span className="text-[14px] font-black text-emerald-600 tracking-tight">
-                                {item.postType === 'REQUIREMENT'
-                                  ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
-                                  : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
-                                }
-                              </span>
-                              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                                {item.postType === 'REQUIREMENT' ? 'Budget Target' : 'Liquidity Ask'}
-                              </span>
-                            </div>
+                          
+                          {/* Area */}
+                          <td className="py-4 px-6 text-slate-800 font-semibold">
+                            {formatArea(item)}
                           </td>
-                          <td className="py-6 px-10 text-center">
-                            <button className="px-8 py-3 rounded-2xl bg-slate-900 text-white text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#c8962a] transition-all shadow-xl shadow-slate-900/10 active:scale-95">
+                          
+                          {/* Total Price */}
+                          <td className="py-4 px-6 font-bold text-slate-900">
+                            {formatTotalPrice(item)}
+                          </td>
+                          
+                          {/* Status */}
+                          <td className="py-4 px-6">
+                            {renderStatusBadge(item)}
+                          </td>
+                          
+                          {/* Connect Button */}
+                          <td className="py-4 px-6 text-center">
+                            <button 
+                              onClick={() => setSelectedItem(item)}
+                              className="px-6 py-2.5 rounded-lg bg-slate-900 hover:bg-[#c8962a] text-white text-[11px] font-black uppercase tracking-wider transition-all shadow-md active:scale-95"
+                            >
                               Connect
                             </button>
                           </td>

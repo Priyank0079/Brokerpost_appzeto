@@ -801,12 +801,19 @@ const PropertyPostingFlow = () => {
             </div>
           </div>
         );
-      case 'SUBTYPE':
+      case 'SUBTYPE': {
+        const isRentalIntent = ['RENT', 'RENTALS', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(selections.intent);
+        const filteredTypes = CONFIG[selections.propertyType].types.filter(t => {
+          if (isRentalIntent && (t === 'Plots' || t === 'Plot')) {
+            return false;
+          }
+          return true;
+        });
         return (
           <div className="max-w-4xl mx-auto">
             {renderHeader("Property Category", "What type of property is this?", "INTENT")}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {CONFIG[selections.propertyType].types.map(t => (
+              {filteredTypes.map(t => (
                 <button key={t} onClick={() => handleSelect('subType', t, 'FORM')} className="p-4 rounded-xl border border-slate-200 bg-white hover:border-primary-500 hover:shadow-lg transition-all text-center">
                   <span className="text-[11px] font-bold uppercase tracking-tight text-slate-800">{t}</span>
                 </button>
@@ -814,6 +821,7 @@ const PropertyPostingFlow = () => {
             </div>
           </div>
         );
+      }
       case 'FORM':
         return (
           <DynamicPropertyForm

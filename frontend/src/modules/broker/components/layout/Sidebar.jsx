@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Post</span></span>
+          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Link</span></span>
           <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">MY DASHBOARD</span>
         </div>
         <button 
@@ -116,22 +116,22 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
 
       {/* User Footer */}
       <div className="p-4 border-t border-slate-800/50">
-        <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
+        <div 
+          onClick={() => navigate('/profile')}
+          title="View and Edit profile"
+          className="flex items-center bg-slate-900/50 rounded-xl p-3 border border-slate-800/50 cursor-pointer hover:bg-slate-800/60 transition-all group"
+        >
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px] shrink-0 group-hover:scale-105 transition-all">
               {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'SD'}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-bold text-white truncate">{user?.firstName ? `${user.firstName} ${user.lastName}` : (user?.name || 'User')}</span>
-              <span className="text-[9.5px] text-slate-200 font-medium">Broker</span>
+              <span className="text-[11px] font-bold text-white truncate group-hover:text-[#c8962a] transition-all">
+                {user?.firstName ? `${user.firstName} ${user.lastName}` : (user?.name || 'User')}
+              </span>
+              <span className="text-[9.5px] text-slate-400 font-medium">Broker</span>
             </div>
           </div>
-          <button 
-            onClick={handleLogout}
-            className="p-2 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
-          >
-            <LogOut size={16} />
-          </button>
         </div>
       </div>
     </aside>

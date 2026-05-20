@@ -106,7 +106,7 @@ exports.getPostings = async (req, res, next) => {
       ]);
     } else {
       // User (Broker) - Retrieve posts of all members of the group(s) they are in
-      if (!groupId) {
+      if (!groupId && req.user) {
         const userGroups = await Group.find({ members: req.user._id });
         const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
         filter.postedBy = { $in: memberIds };

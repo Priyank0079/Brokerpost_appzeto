@@ -43,14 +43,23 @@ const CommercialInventory = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
 
-  const subTypes = [
-    'All Sub-types', 
-    'Shops/Showroom', 
-    'Office', 
-    'Warehouse', 
-    'Standalone Building', 
-    'Plot'
-  ];
+  const isRentIntent = ['RENT', 'WANTED_RENT', 'RENTALS', 'LEASE', 'WANTED_LEASE'].includes(intent);
+  const subTypes = isRentIntent
+    ? [
+        'All Sub-types', 
+        'Shops/Showroom', 
+        'Office', 
+        'Warehouse', 
+        'Standalone Building'
+      ]
+    : [
+        'All Sub-types', 
+        'Shops/Showroom', 
+        'Office', 
+        'Warehouse', 
+        'Standalone Building', 
+        'Plot'
+      ];
 
   const fetchListings = async () => {
     setLoading(true);

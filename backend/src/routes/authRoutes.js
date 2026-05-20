@@ -14,6 +14,7 @@ const {
   getBrokerById, 
   getStats, 
   updateMe,
+  updatePassword,
   getNotifications,
   markNotificationRead
 } = require('../controllers/authController');
@@ -29,6 +30,7 @@ router.post('/admin/login', adminLogin);
 
 router.get('/me', protect, getMe);
 router.put('/updateme', protect, updateMe);
+router.put('/updatepassword', protect, updatePassword);
 router.get('/stats', protect, authorize('Admin'), getStats);
 router.get('/brokers', protect, authorize('Admin'), getBrokers);
 router.get('/brokers/:id', protect, authorize('Admin'), getBrokerById);

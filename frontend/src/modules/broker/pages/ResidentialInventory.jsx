@@ -45,8 +45,11 @@ const ResidentialInventory = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
   
+  const isRentIntent = ['RENT', 'WANTED_RENT', 'RENTALS', 'LEASE', 'WANTED_LEASE'].includes(intent);
   const subTypes = isRequirement
-    ? ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas', 'Plots']
+    ? (isRentIntent 
+        ? ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas'] 
+        : ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas', 'Plots'])
     : ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas'];
 
   const fetchListings = async () => {

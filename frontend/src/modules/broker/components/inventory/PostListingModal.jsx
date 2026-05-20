@@ -40,7 +40,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
   // Derived Classification
   const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(formData.intent || intent);
-  const isRental = ['RENT', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(formData.intent || intent);
+  const isRental = ['RENT', 'LEASE', 'WANTED_RENT', 'WANTED_LEASE', 'RENTALS'].includes(formData.intent || intent);
   const postType = isRequirement ? 'REQUIREMENT' : 'AVAILABILITY';
 
   const resetForm = () => {
@@ -208,14 +208,14 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         { label: 'Apartments', value: 'APARTMENTS' },
         { label: 'Low Rise Floors', value: 'LOW_RISE_FLOORS' },
         { label: 'Kothi/Villas', value: 'KOTHI_VILLAS' },
-        { label: 'Plots', value: 'PLOTS' }
+        ...(isRental ? [] : [{ label: 'Plots', value: 'PLOTS' }])
       ]
     : [
         { label: 'Shops/Showroom', value: 'SHOP_SHOWROOM' },
         { label: 'Office', value: 'OFFICE' },
         { label: 'Warehouse', value: 'WAREHOUSE' },
         { label: 'Standalone Building', value: 'STANDALONE_BUILDING' },
-        { label: 'Plot', value: 'PLOT' }
+        ...(isRental ? [] : [{ label: 'Plot', value: 'PLOT' }])
       ];
 
   return (
