@@ -203,7 +203,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     }
   };
 
-  const subTypeOptions = vertical === 'RESIDENTIAL' 
+  const subTypeOptions = formData.vertical === 'RESIDENTIAL' 
     ? [
         { label: 'Apartments', value: 'APARTMENTS' },
         { label: 'Low Rise Floors', value: 'LOW_RISE_FLOORS' },
@@ -314,7 +314,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
                 />
               </div>
-              {vertical === 'RESIDENTIAL' && formData.subType !== 'PLOTS' && (
+              {formData.vertical === 'RESIDENTIAL' && formData.subType !== 'PLOTS' && (
                 <div className="space-y-1">
                   <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Bedrooms</label>
                   <div className="relative">
@@ -456,7 +456,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               </div>
             </div>
             
-            {vertical === 'COMMERCIAL' && !isRequirement && (
+            {formData.vertical === 'COMMERCIAL' && !isRequirement && (
               <div className="space-y-1">
                 <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Occupancy</label>
                 <div className="relative">

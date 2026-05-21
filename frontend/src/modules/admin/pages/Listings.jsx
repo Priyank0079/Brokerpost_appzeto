@@ -3,6 +3,7 @@ import { Search, ArrowLeft, Edit2, Trash2, Plus, Loader2, AlertCircle } from 'lu
 import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 import Modal from '../../broker/components/ui/Modal';
+import PostListingModal from '../../broker/components/inventory/PostListingModal';
 
 const formatEnum = (str) => {
   if (!str) return '';
@@ -38,20 +39,7 @@ const Listings = () => {
     setSearchTerm(urlSearch);
   }, [urlSearch]);
 
-  const [formData, setFormData] = useState({
-    subType: '',
-    location: '',
-    city: 'Gurugram',
-    project: '',
-    bedrooms: '',
-    areaSize: '',
-    unit: 'Sq.Ft',
-    priceType: 'Sumpsum (Lump Sum)',
-    ratePrice: '',
-    propertyStatus: 'Ready to Move',
-    monthlyRent: '',
-    remarks: ''
-  });
+
 
   const fetchListings = async () => {
     try {
@@ -120,26 +108,7 @@ const Listings = () => {
 
   const handleEditClick = (listing) => {
     setEditingListing(listing);
-    setFormData({
-      subType: listing.subType,
-      location: listing.location,
-      city: 'Gurugram',
-      project: listing.building,
-      bedrooms: '3 BHK',
-      areaSize: listing.area,
-      unit: listing.areaUnit,
-      priceType: 'Sumpsum (Lump Sum)',
-      ratePrice: listing.price,
-      propertyStatus: 'Ready to Move',
-      monthlyRent: listing.status.includes('Rental') ? listing.price : '',
-      remarks: 'Fully Furnished Apartment Open for all kind of Tenents'
-    });
     setIsEditModalOpen(true);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -243,9 +212,9 @@ const Listings = () => {
                     <td className="px-6 py-4 text-[10px] font-bold text-slate-900 whitespace-nowrap">{listing.size} {formatEnum(listing.sizeUnit)}</td>
                     <td className="px-6 py-4 text-[11px] font-bold text-emerald-600 whitespace-nowrap">
                       {listing.postType === 'AVAILABILITY' ? (
-                        `₹${(listing.totalAmount || 0).toLocaleString()} ${formatEnum(listing.totalAmountUnit)}`
+                        `₹${(listing.totalAmount || 0).toLocaleString('en-IN')}`
                       ) : (
-                        `Budget: ₹${(listing.budgetMax || 0).toLocaleString()} ${formatEnum(listing.budgetUnit)}`
+                        `Budget: ₹${(listing.budgetMax || 0).toLocaleString('en-IN')}`
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -283,264 +252,45 @@ const Listings = () => {
       </div>
     </div>
 
-      {/* Edit Listing Modal */}
-      {isEditModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => setIsEditModalOpen(false)} />
-          <div className="relative w-full max-w-[700px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white z-10">
-              <div>
-                <h3 className="text-lg font-serif text-black">Edit Listing</h3>
-                <p className="text-[10px] text-slate-400 font-medium">{editingListing?.status} - {editingListing?.section}</p>
-              </div>
-              <button 
-                onClick={() => setIsEditModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all"
-              >
-                <Plus size={20} className="rotate-45" />
-              </button>
-            </div>
-
-            {/* Modal Form */}
-            <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-              {/* Category */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">CATEGORY</label>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">SUB-TYPE *</label>
-                  <select 
-                    name="subType" value={formData.subType} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none appearance-none"
-                  >
-                    <option value="Apartments">Apartments</option>
-                    <option value="Standalone Building">Standalone Building</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Property Details */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">PROPERTY DETAILS</label>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">LOCATION / AREA *</label>
-                    <input 
-                      type="text" name="location" value={formData.location} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none placeholder:text-[#7f7f7f]"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">CITY</label>
-                    <div className="relative">
-                      <input 
-                        type="text" value={formData.city} readOnly
-                        className="w-full px-4 py-2.5 bg-[#f1f5f9] border border-slate-200 rounded-lg text-[12px] font-medium outline-none text-slate-500 cursor-not-allowed"
-                      />
-                      <span className="absolute -bottom-4 left-0 text-[8px] text-slate-400">🔒 Auto-filled from profile</span>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5 mt-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">PROJECT / SOCIETY</label>
-                    <input 
-                      type="text" name="project" value={formData.project} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none placeholder:text-[#7f7f7f]"
-                    />
-                  </div>
-                  <div className="space-y-1.5 mt-2">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">BEDROOMS</label>
-                    <select 
-                      name="bedrooms" value={formData.bedrooms} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none appearance-none"
-                    >
-                      <option value="1 BHK">1 BHK</option>
-                      <option value="2 BHK">2 BHK</option>
-                      <option value="3 BHK">3 BHK</option>
-                      <option value="4 BHK">4 BHK</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Area */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">AREA</label>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">AREA / SIZE</label>
-                    <input 
-                      type="text" name="areaSize" value={formData.areaSize} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none"
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">UNIT</label>
-                    <select 
-                      name="unit" value={formData.unit} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none appearance-none"
-                    >
-                      <option value="Sq.Ft">Sq.Ft</option>
-                      <option value="Sq.Yd">Sq.Yd</option>
-                      <option value="Sq.Mt">Sq.Mt</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Pricing */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">PRICING</label>
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">PRICE TYPE</label>
-                    <select 
-                      name="priceType" value={formData.priceType} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none appearance-none"
-                    >
-                      <option value="Sumpsum (Lump Sum)">Sumpsum (Lump Sum)</option>
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">RATE / PRICE (₹)</label>
-                    <input 
-                      type="text" name="ratePrice" value={formData.ratePrice} onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Calculated Total Price Box */}
-                <div className="p-4 bg-[#f5f1e8] rounded-lg border border-[#e5e0d4] space-y-1">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">CALCULATED TOTAL PRICE</p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-serif font-bold text-black">₹ {parseInt(formData.ratePrice || 0).toLocaleString()}</span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 font-medium">Lump sum price</p>
-                </div>
-              </div>
-
-              {/* Status */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">STATUS</label>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">PROPERTY STATUS</label>
-                  <select 
-                    name="propertyStatus" value={formData.propertyStatus} onChange={handleInputChange}
-                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none appearance-none"
-                  >
-                    <option value="Ready to Move">Ready to Move</option>
-                    <option value="Under Construction">Under Construction</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Rent amount */}
-              {editingListing?.status.includes('Rental') && (
-                <div className="space-y-4">
-                  <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">RENT / LEASE AMOUNT</label>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">MONTHLY RENT / LEASE (₹)</label>
-                    <input 
-                      type="text" name="monthlyRent" value={formData.monthlyRent} onChange={handleInputChange}
-                      placeholder="e.g. 45000"
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium outline-none placeholder:text-[#7f7f7f]"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Media */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">MEDIA</label>
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">PHOTOS (JPG/PNG)</label>
-                    <div className="border-2 border-dotted border-[#ddd6c8] rounded-lg py-8 flex flex-col items-center justify-center gap-2 group hover:bg-[#faf7f2] transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-900">Click to upload photos</p>
-                      <p className="text-[9px] text-slate-400 font-medium">JPG, PNG — multiple allowed</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">VIDEOS (MP4/MOV)</label>
-                    <div className="border-2 border-dotted border-[#ddd6c8] rounded-lg py-8 flex flex-col items-center justify-center gap-2 group hover:bg-[#faf7f2] transition-all cursor-pointer">
-                      <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
-                      </div>
-                      <p className="text-[11px] font-bold text-slate-900">Click to upload videos</p>
-                      <p className="text-[9px] text-slate-400 font-medium">MP4, MOV — multiple allowed</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Remarks */}
-              <div className="space-y-4">
-                <label className="text-[10px] font-bold text-[#1e3a8a] uppercase tracking-[0.2em]">REMARKS</label>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase">NOTES / ADDITIONAL INFO</label>
-                  <textarea 
-                    name="remarks" value={formData.remarks} onChange={handleInputChange}
-                    placeholder="Any extra details..."
-                    rows="1"
-                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[12px] font-medium text-[#2d3748] outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px] resize-none"
-                  />
-                </div>
-              </div>
-
-              {/* Footer Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-6 sticky bottom-0 bg-white pb-2 z-10 border-t border-slate-200 mt-6">
-                <button 
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="px-2 py-2 rounded-md border border-slate-200 text-[12px] font-black text-slate-500 hover:bg-slate-50 transition-all"
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="px-3 py-2 rounded-md bg-[#c8962a] text-white text-[11px] font-black hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
-                >
-                  Save Listing
-                </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      )}
+      {/* Dynamic Edit Listing Modal */}
+      <PostListingModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingListing(null);
+        }} 
+        intent={editingListing?.intent || 'SALE'} 
+        vertical={editingListing?.vertical || 'RESIDENTIAL'}
+        posting={editingListing}
+        onSuccess={fetchListings}
+      />
 
       {/* Delete Confirmation Modal */}
       <Modal 
         isOpen={!!listingToDelete} 
         onClose={() => setListingToDelete(null)}
-        title="Confirm Deletion"
+        title="Confirm Delete"
         footer={(
           <div className="flex gap-3">
             <button 
               onClick={() => setListingToDelete(null)}
-              className="px-6 py-2 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
+              className="px-5 py-2 rounded-lg border border-[#e4ded2] text-[#254063] text-[13px] font-bold hover:bg-slate-50 transition-all"
             >
               Cancel
             </button>
             <button 
               onClick={handleDeleteConfirm}
-              className="px-6 py-2 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-600/20"
+              className="px-5 py-2 rounded-lg bg-[#991b1b] text-white text-[13px] font-bold hover:bg-[#7f1d1d] transition-all"
             >
-              Delete Posting
+              Delete
             </button>
           </div>
         )}
       >
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-600 shrink-0">
-            <AlertCircle size={24} />
-          </div>
-          <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-1">Delete this listing?</h4>
-            <p className="text-[11px] text-slate-500 font-medium leading-relaxed">
-              Are you sure you want to remove this posting from the platform? This action cannot be undone and the posting will no longer be visible to any brokers.
-            </p>
-          </div>
+        <div className="pt-2 pb-4">
+          <p className="text-[14px] text-[#718199] font-medium leading-relaxed">
+            Are you sure you want to delete this listing? This cannot be undone.
+          </p>
         </div>
       </Modal>
     </div>

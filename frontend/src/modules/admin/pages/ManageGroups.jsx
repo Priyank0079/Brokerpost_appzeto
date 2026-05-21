@@ -62,6 +62,10 @@ const ManageGroups = () => {
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
+    if (formData.leaderMobile && formData.leaderMobile.length !== 10) {
+      alert("Leader mobile must be exactly 10 digits");
+      return;
+    }
     try {
       const response = await api.post('/groups', {
         ...formData,
@@ -86,6 +90,10 @@ const ManageGroups = () => {
 
   const handleUpdateGroup = async (e) => {
     e.preventDefault();
+    if (formData.leaderMobile && formData.leaderMobile.length !== 10) {
+      alert("Leader mobile must be exactly 10 digits");
+      return;
+    }
     try {
       const response = await api.put(`/groups/${selectedGroup._id}`, {
         ...formData,
@@ -146,6 +154,16 @@ const ManageGroups = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    if (name === 'leaderName') {
+      if (value !== '' && !/^[a-zA-Z\s]+$/.test(value)) return;
+    }
+    
+    if (name === 'leaderMobile') {
+      if (value !== '' && !/^\d+$/.test(value)) return;
+      if (value.length > 10) return;
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
