@@ -404,7 +404,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               </div>
             ) : (
               <div className="space-y-1">
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Budget Range (Lakhs)</label>
+                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Budget Range</label>
                 <div className="flex gap-2 items-center">
                   <input 
                     type="number" 

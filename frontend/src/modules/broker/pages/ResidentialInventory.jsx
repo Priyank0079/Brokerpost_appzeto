@@ -142,11 +142,11 @@ const ResidentialInventory = () => {
     }
     if (listing.budgetMin || listing.budgetMax) {
       if (listing.budgetMin && listing.budgetMax) {
-        return `₹${listing.budgetMin}-${listing.budgetMax} L`;
+        return `₹${listing.budgetMin}-${listing.budgetMax}`;
       }
-      return `₹${listing.budgetMin || listing.budgetMax} L`;
+      return `₹${listing.budgetMin || listing.budgetMax}`;
     }
-    return 'On Request';
+    return '₹0';
   };
 
   const renderStatusBadge = (listing) => {
@@ -291,8 +291,7 @@ const ResidentialInventory = () => {
                     <th className="py-4 px-4 w-36">Sub-Type</th>
                     <th className="py-4 px-4">Location / Project</th>
                     <th className="py-4 px-4">Area</th>
-                    <th className="py-4 px-4">Price</th>
-                    <th className="py-4 px-4">Total Price</th>
+                    <th className="py-4 px-4">{isRequirement ? 'Budget Range' : 'Total Price'}</th>
                     <th className="py-4 px-4">Status</th>
                     <th className="py-4 px-4 text-center">Media</th>
                     <th className="py-4 px-4">Date</th>
@@ -323,9 +322,6 @@ const ResidentialInventory = () => {
                       
                       {/* Area */}
                       <td className="py-4 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
-                      
-                      {/* Price */}
-                      <td className="py-4 px-4 font-bold text-slate-800">{formatPrice(listing)}</td>
                       
                       {/* Total Price / Budget */}
                       <td className="py-4 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
