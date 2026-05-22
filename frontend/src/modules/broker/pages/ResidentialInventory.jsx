@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, Plus, ChevronDown, Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -23,6 +23,20 @@ const ResidentialInventory = () => {
   // Edit State
   const [selectedPosting, setSelectedPosting] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowSubTypes(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Delete State
   const [postingToDelete, setPostingToDelete] = useState(null);
@@ -117,7 +131,7 @@ const ResidentialInventory = () => {
       label = 'Kothi/Villas';
     }
     return (
-      <span className={`px-3 py-1 rounded-full text-[10.5px] font-bold tracking-tight ${bg}`}>
+      <span className={`px-3 py-1 rounded-full text-[10.5px] font-bold tracking-tight whitespace-nowrap inline-block ${bg}`}>
         {label}
       </span>
     );
@@ -142,9 +156,9 @@ const ResidentialInventory = () => {
     }
     if (listing.budgetMin || listing.budgetMax) {
       if (listing.budgetMin && listing.budgetMax) {
-        return `₹${listing.budgetMin}-${listing.budgetMax}`;
+        return `₹${Number(listing.budgetMin).toLocaleString('en-IN')} - ₹${Number(listing.budgetMax).toLocaleString('en-IN')}`;
       }
-      return `₹${listing.budgetMin || listing.budgetMax}`;
+      return `₹${Number(listing.budgetMin || listing.budgetMax).toLocaleString('en-IN')}`;
     }
     return '₹0';
   };
@@ -232,14 +246,14 @@ const ResidentialInventory = () => {
               <div className="relative flex-1 min-w-[180px] sm:max-w-56">
                 <input 
                   type="text" 
-                  placeholder="Search location/project..."
+                  placeholder="Search ID, location, or project..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder-[#9c7f84] tracking-tighter"
                 />
               </div>
               
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button 
                   onClick={() => setShowSubTypes(!showSubTypes)}
                   className="px-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium text-[#26296c] flex items-center justify-between gap-4 hover:bg-[#faf7f2]/80 transition-all min-w-[120px] tracking-tighter"
@@ -301,8 +315,13 @@ const ResidentialInventory = () => {
                 <tbody className="divide-y divide-slate-100">
                   {listings.map((listing, idx) => (
                     <tr key={listing._id} className="hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
-                      {/* Index */}
-                      <td className="py-4 px-6 text-center font-bold text-slate-400">{idx + 1}</td>
+                      {/* Index & ID */}
+                      <td className="py-4 px-6 text-center">
+                        <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
+                        <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider group-hover:text-slate-400 transition-colors">
+                          ID: {listing._id?.toString().slice(-6)}
+                        </div>
+                      </td>
                       
                       {/* Sub-type Bubble */}
                       <td className="py-4 px-4">{renderSubTypeBadge(listing.subType)}</td>

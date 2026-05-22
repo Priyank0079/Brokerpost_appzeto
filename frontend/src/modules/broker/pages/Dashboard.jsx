@@ -166,9 +166,9 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div className="space-y-6">
         {/* Modern Recent Listings Column */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="space-y-6">
           <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-[#ede8df] flex items-center justify-between bg-white">
               <h3 className="text-sm font-bold text-[#1e3a5f]">My Recent Listings</h3>
@@ -186,133 +186,127 @@ const Dashboard = () => {
                 <p className="text-xs text-slate-400 mt-1">Use "+ Add Listing" in each section</p>
               </div>
             ) : (
-              <div className="divide-y divide-[#ede8df]">
-                {displayListings.map(post => {
-                  const subTypeDisplay = getSubtypeDisplay(post.subType);
-                  let typeDetail = '';
-                  if (post.postType === 'AVAILABILITY') {
-                    typeDetail = `${subTypeDisplay} • Available for ${post.intent === 'SALE' ? 'Sale' : (post.intent === 'RENT' ? 'Rental' : 'Lease')}`;
-                  } else {
-                    typeDetail = `${subTypeDisplay} • Wanted on ${post.intent === 'RENT' || post.intent === 'WANTED_RENT' ? 'Rent' : (post.intent === 'LEASE' || post.intent === 'WANTED_LEASE' ? 'Lease' : 'Purchase')}`;
-                  }
-                  
-                  let priceDisplay = 'On Request';
-                  if (post.totalAmount) {
-                    priceDisplay = `₹${Number(post.totalAmount).toLocaleString('en-IN')}`;
-                    if (post.totalAmountUnit) {
-                      priceDisplay += ` ${post.totalAmountUnit}`;
-                    }
-                  } else if (post.budgetMin || post.budgetMax) {
-                    if (post.budgetMin && post.budgetMax) {
-                      priceDisplay = `₹${post.budgetMin}-${post.budgetMax} L`;
-                    } else {
-                      priceDisplay = `₹${post.budgetMin || post.budgetMax} L`;
-                    }
-                  }
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-[#FAF9F6] border-b border-slate-200">
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16 text-center">#</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION / PROJECT</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">STATUS</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">MEDIA</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
+                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white">
+                    {displayListings.map((post, idx) => {
+                      const subTypeDisplay = getSubtypeDisplay(post.subType);
+                      
+                      let priceDisplay = 'On Request';
+                      if (post.totalAmount) {
+                        priceDisplay = `₹${Number(post.totalAmount).toLocaleString('en-IN')}`;
+                      } else if (post.budgetMin || post.budgetMax) {
+                        if (post.budgetMin && post.budgetMax) {
+                          priceDisplay = `₹${Number(post.budgetMin).toLocaleString('en-IN')} - ₹${Number(post.budgetMax).toLocaleString('en-IN')}`;
+                        } else {
+                          priceDisplay = `₹${Number(post.budgetMin || post.budgetMax).toLocaleString('en-IN')}`;
+                        }
+                      }
+                      
+                      const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
+                      const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
+                      const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857]' : 'bg-[#fffbeb] text-[#b45309]';
+                      
+                      const mediaCount = (post.images?.length || 0) + (post.videos?.length || 0);
 
-                  return (
-                    <div 
-                      key={post._id} 
-                      onClick={() => routerNavigate(`/property/${post._id}`)}
-                      className="flex items-center justify-between p-4 hover:bg-slate-50/30 transition-all cursor-pointer group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg bg-[#FAF9F6] border border-[#ede8df] flex items-center justify-center text-lg shadow-sm shrink-0">
-                          🏠
-                        </div>
-                        <div>
-                          <h4 className="text-xs md:text-sm font-bold text-slate-900 group-hover:text-[#c8962a] transition-colors line-clamp-1">
-                            {post.project || post.location}
-                          </h4>
-                          <p className="text-[10px] md:text-[11px] text-slate-500 mt-0.5">
-                            {typeDetail}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 md:gap-6 shrink-0">
-                        <span className="text-xs md:text-sm font-bold text-slate-900">
-                          {priceDisplay}
-                        </span>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
+                      return (
+                        <tr 
+                          key={post._id} 
+                          onClick={() => {
                             setSelectedPosting(post);
                             setIsEditModalOpen(true);
                           }}
-                          className="px-4 py-1.5 rounded-lg border border-[#ede8df] text-xs font-bold text-slate-600 hover:bg-[#FAF9F6] transition-all"
+                          className="hover:bg-slate-50/50 transition-all cursor-pointer group text-[12.5px] text-slate-700"
                         >
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                          <td className="px-6 py-4 text-center">
+                            <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
+                            <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider">
+                              ID: {post._id?.toString().slice(-6)}
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 whitespace-nowrap">
+                              {subTypeDisplay}
+                            </span>
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <div className="min-w-[120px]">
+                              <p className="text-[12px] font-bold text-slate-900 leading-none mb-1 group-hover:text-[#c8962a] transition-colors">
+                                {post.project || post.location} <span className="text-slate-400 font-normal">· {post.city}</span>
+                              </p>
+                              <p className="text-[10px] text-slate-400 font-medium">
+                                {post.location}
+                              </p>
+                            </div>
+                          </td>
+                          
+                          <td className="px-6 py-4 text-[11px] font-bold text-slate-900 whitespace-nowrap">
+                            {post.size ? `${Number(post.size).toLocaleString('en-IN')} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : 'Sq.Mt')}` : 'N/A'}
+                          </td>
+                          
+                          <td className="px-6 py-4 text-[12px] font-bold text-slate-900 whitespace-nowrap">
+                            {priceDisplay}
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            {post.postType === 'AVAILABILITY' ? (
+                              <span className={`px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap ${statusBg}`}>
+                                {statusLabel}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] font-bold text-slate-400">-</span>
+                            )}
+                          </td>
+                          
+                          <td className="px-6 py-4">
+                            <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
+                              {mediaCount} files
+                            </span>
+                          </td>
+                          
+                          <td className="px-6 py-4 text-[10px] font-bold text-slate-400 whitespace-nowrap">
+                            {new Date(post.createdAt || Date.now()).toLocaleDateString('en-GB')}
+                          </td>
+                          
+                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-center">
+                              <button 
+                                onClick={() => {
+                                  setSelectedPosting(post);
+                                  setIsEditModalOpen(true);
+                                }}
+                                className="px-4 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-50 transition-all"
+                              >
+                                Edit
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
         </div>
 
-        {/* Breakdown Column with Modern Meter Bars */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#ede8df] bg-white">
-              <h3 className="text-sm font-bold text-[#1e3a5f]">My Listing Breakdown</h3>
-            </div>
-            
-            <div className="px-6 pt-4 pb-6 space-y-2.5">
-              <BreakdownRow 
-                label="Residential Available" 
-                value={s.breakdown.residential.sale} 
-                colorClass="bg-[#1a365d]" 
-                onClick={() => routerNavigate('/residential?intent=SALE')} 
-              />
-              <BreakdownRow 
-                label="Residential Available" 
-                value={s.breakdown.residential.rent} 
-                colorClass="bg-[#1a365d]" 
-                onClick={() => routerNavigate('/residential?intent=RENT')} 
-              />
-              <BreakdownRow 
-                label="Residential Wanted on" 
-                value={s.breakdown.residential.purchase} 
-                colorClass="bg-[#c8962a]" 
-                onClick={() => routerNavigate('/residential?intent=PURCHASE')} 
-              />
-              <BreakdownRow 
-                label="Residential Wanted on" 
-                value={s.breakdown.residential.wantedRent} 
-                colorClass="bg-[#c8962a]" 
-                onClick={() => routerNavigate('/residential?intent=WANTED_RENT')} 
-              />
-              
-              <BreakdownRow 
-                label="Commercial Available" 
-                value={s.breakdown.commercial.sale} 
-                colorClass="bg-emerald-600" 
-                onClick={() => routerNavigate('/commercial?intent=SALE')} 
-              />
-              <BreakdownRow 
-                label="Commercial Available" 
-                value={s.breakdown.commercial.lease} 
-                colorClass="bg-emerald-600" 
-                onClick={() => routerNavigate('/commercial?intent=LEASE')} 
-              />
-              <BreakdownRow 
-                label="Commercial Wanted on" 
-                value={s.breakdown.commercial.purchase} 
-                colorClass="bg-[#c8962a]" 
-                onClick={() => routerNavigate('/commercial?intent=PURCHASE')} 
-              />
-              <BreakdownRow 
-                label="Commercial Wanted on" 
-                value={s.breakdown.commercial.wantedLease} 
-                colorClass="bg-[#c8962a]" 
-                onClick={() => routerNavigate('/commercial?intent=WANTED_LEASE')} 
-              />
-            </div>
-          </div>
-        </div>
+
       </div>
       <PostListingModal 
         isOpen={isEditModalOpen} 

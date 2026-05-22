@@ -11,7 +11,7 @@ const renderListingType = (item) => {
   const intent = item.intent?.toUpperCase() || '';
   if (postType === 'REQUIREMENT') {
     if (intent === 'SALE' || intent === 'PURCHASE') return 'Wanted on Purchase';
-    if (intent === 'RENT') return 'Wanted on Rent';
+    if (intent === 'RENT' || intent === 'WANTED_RENT') return 'Wanted on Rent';
     if (intent === 'LEASE' || intent === 'WANTED_LEASE') return 'Wanted on Lease';
     return `Wanted on ${item.intent || 'Purchase'}`;
   } else {
@@ -27,7 +27,7 @@ const renderCategoryBadge = (vertical) => {
   const bg = v === 'RESIDENTIAL' ? 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
   const label = v === 'RESIDENTIAL' ? 'Residential' : 'Commercial';
   return (
-    <span className={`px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
+    <span className={`whitespace-nowrap px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
       {label}
     </span>
   );
@@ -63,7 +63,7 @@ const renderSubTypeBadge = (subType) => {
     label = 'Standalone Building';
   }
   return (
-    <span className={`px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
+    <span className={`whitespace-nowrap px-3 py-1 rounded-md text-[10.5px] font-bold tracking-tight border ${bg}`}>
       {label}
     </span>
   );
@@ -81,9 +81,9 @@ const formatTotalPrice = (listing) => {
   }
   if (listing.budgetMin || listing.budgetMax) {
     if (listing.budgetMin && listing.budgetMax) {
-      return `₹${formatNum(listing.budgetMin)} - ₹${formatNum(listing.budgetMax)}`;
+      return `₹${Number(listing.budgetMin).toLocaleString('en-IN')} - ₹${Number(listing.budgetMax).toLocaleString('en-IN')}`;
     }
-    return `₹${formatNum(listing.budgetMin || listing.budgetMax)}`;
+    return `₹${Number(listing.budgetMin || listing.budgetMax).toLocaleString('en-IN')}`;
   }
   return 'On Request';
 };
@@ -94,14 +94,14 @@ const renderStatusBadge = (listing) => {
   const label = isReady ? 'Ready to Move' : 'Under Construction';
   const bg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
   return (
-    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${bg}`}>
+    <span className={`whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${bg}`}>
       {label}
     </span>
   );
 };
 
 const InventoryGrid = ({ filters, onLoginRequired, config }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [view, setView] = useState('grid');
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -273,7 +273,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                         <th className="py-4 px-6">Location</th>
                         <th className="py-4 px-6">Area</th>
                         <th className="py-4 px-6">Total Price</th>
-                        <th className="py-4 px-6">Status</th>
+                        <th className="py-4 px-6">Broker</th>
                         <th className="py-4 px-6 text-center w-36">Connect</th>
                       </tr>
                     </thead>
@@ -284,9 +284,14 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                           onClick={() => setSelectedItem(item)}
                           className="hover:bg-slate-50/50 transition-all group cursor-pointer text-[12.5px] text-slate-700"
                         >
-                          {/* Index */}
-                          <td className="py-4 px-6 text-center font-bold text-slate-400">
-                            {(page - 1) * limit + idx + 1}
+                          {/* Index & ID */}
+                          <td className="py-4 px-6 text-center">
+                            <div className="font-bold text-slate-400 text-[13px]">
+                              {(page - 1) * limit + idx + 1}
+                            </div>
+                            <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider group-hover:text-slate-400 transition-colors">
+                              ID: {item._id?.toString().slice(-6)}
+                            </div>
                           </td>
                           
                           {/* Category Badge */}
@@ -324,16 +329,16 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                             {formatTotalPrice(item)}
                           </td>
                           
-                          {/* Status */}
-                          <td className="py-4 px-6">
-                            {renderStatusBadge(item)}
+                          {/* Broker */}
+                          <td className="py-4 px-6 font-semibold text-slate-800 whitespace-nowrap">
+                            {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name'}
                           </td>
                           
                           {/* Connect Button */}
                           <td className="py-4 px-6 text-center">
                             <button 
                               onClick={() => setSelectedItem(item)}
-                              className="px-6 py-2.5 rounded-lg bg-slate-900 hover:bg-[#c8962a] text-white text-[11px] font-black uppercase tracking-wider transition-all shadow-md active:scale-95"
+                              className="px-2.5 py-1 rounded-[4px] bg-slate-900 hover:bg-[#c8962a] text-white text-[8.5px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
                             >
                               Connect
                             </button>
@@ -407,6 +412,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         onClose={() => setSelectedItem(null)}
         item={selectedItem}
         isAuthenticated={isAuthenticated}
+        user={user}
         onLogin={() => {
           setSelectedItem(null);
           onLoginRequired();

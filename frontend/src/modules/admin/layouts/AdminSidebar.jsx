@@ -103,8 +103,12 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       <div className="p-4 border-t border-slate-800/50">
         <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px]">
-              {user?.name?.split(' ').map(n => n[0]).join('') || 'AD'}
+            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px] overflow-hidden">
+              {user?.profileImage ? (
+                <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.split(' ').map(n => n[0]).join('') || 'AD'
+              )}
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] font-bold text-white truncate">{user?.name || 'Administrator'}</span>

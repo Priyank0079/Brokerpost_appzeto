@@ -131,9 +131,9 @@ const Groups = () => {
     }
     if (listing.budgetMin || listing.budgetMax) {
       if (listing.budgetMin && listing.budgetMax) {
-        return `₹${listing.budgetMin}-${listing.budgetMax} L`;
+        return `₹${Number(listing.budgetMin).toLocaleString('en-IN')} - ₹${Number(listing.budgetMax).toLocaleString('en-IN')} L`;
       }
-      return `₹${listing.budgetMin || listing.budgetMax} L`;
+      return `₹${Number(listing.budgetMin || listing.budgetMax).toLocaleString('en-IN')} L`;
     }
     return 'On Request';
   };

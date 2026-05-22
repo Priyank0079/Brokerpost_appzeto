@@ -383,7 +383,7 @@ const HomeInventorySection = ({ data }) => {
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search by location, society, broker..."
+                placeholder="Search by ID, location, or project..."
                 className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-slate-900 outline-none focus:border-primary-400"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {

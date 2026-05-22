@@ -85,7 +85,7 @@ const Payments = () => {
                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2 font-mono">TXN-{91000 + p.id}</p>
                   </AdminTableCell>
                   <AdminTableCell className="font-black text-slate-900">
-                     {p.amount > 0 ? `₹${(p.amount).toLocaleString()}` : <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 uppercase font-bold">Free</span>}
+                     {p.amount > 0 ? `₹${(p.amount).toLocaleString('en-IN')}` : <span className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 uppercase font-bold">Free</span>}
                   </AdminTableCell>
                   <AdminTableCell><StatusBadge type={p.plan}>{p.plan}</StatusBadge></AdminTableCell>
                   <AdminTableCell className="text-xs text-slate-500 font-bold">{p.date}</AdminTableCell>

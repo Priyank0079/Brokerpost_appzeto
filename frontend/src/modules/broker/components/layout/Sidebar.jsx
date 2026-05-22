@@ -122,8 +122,12 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
           className="flex items-center bg-slate-900/50 rounded-xl p-3 border border-slate-800/50 cursor-pointer hover:bg-slate-800/60 transition-all group"
         >
           <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px] shrink-0 group-hover:scale-105 transition-all">
-              {user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'SD'}
+            <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px] shrink-0 group-hover:scale-105 transition-all overflow-hidden">
+              {user?.profileImage ? (
+                <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
+              ) : (
+                user?.firstName?.charAt(0) || user?.name?.charAt(0) || 'SD'
+              )}
             </div>
             <div className="flex flex-col min-w-0">
               <span className="text-[11px] font-bold text-white truncate group-hover:text-[#c8962a] transition-all">

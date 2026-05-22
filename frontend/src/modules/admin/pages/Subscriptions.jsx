@@ -183,7 +183,7 @@ const Subscriptions = () => {
                    </div>
 
                    <div className="flex items-baseline gap-1 mb-8">
-                      <span className="text-3xl font-serif text-[#1e3a8a]">₹{plan.price.toLocaleString()}</span>
+                      <span className="text-3xl font-serif text-[#1e3a8a]">₹{plan.price.toLocaleString('en-IN')}</span>
                       <span className="text-[10px] font-bold text-slate-400 uppercase">/ {plan.duration}</span>
                    </div>
 

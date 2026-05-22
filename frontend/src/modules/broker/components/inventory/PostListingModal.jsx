@@ -9,6 +9,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   const [imageLoading, setImageLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   
   const isEdit = !!posting;
 
@@ -110,9 +111,16 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
   // Auto-calculate Total Price/Budget
   useEffect(() => {
-    if (!isRequirement && formData.size && formData.priceRate && formData.priceRateType !== 'LUMPSUM') {
-      const total = parseFloat(formData.size) * parseFloat(formData.priceRate);
+    if (!isRequirement && formData.priceRate) {
+      let total = 0;
+      if (formData.priceRateType === 'LUMPSUM') {
+        total = parseFloat(formData.priceRate) || 0;
+      } else if (formData.size) {
+        total = (parseFloat(formData.size) || 0) * (parseFloat(formData.priceRate) || 0);
+      }
       setFormData(prev => ({ ...prev, totalAmount: total }));
+    } else {
+      setFormData(prev => ({ ...prev, totalAmount: '' }));
     }
   }, [formData.size, formData.priceRate, formData.priceRateType, isRequirement]);
 
@@ -173,11 +181,22 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.location || !formData.subType || !formData.city) {
-      setError('Please fill in required fields (Location, City, Sub-type)');
+    
+    // Custom inline validation
+    const errors = {};
+    if (!formData.subType) errors.subType = 'Please select a sub-type.';
+    if (!formData.location) errors.location = 'Location / Area is required.';
+    if (!formData.city) errors.city = 'City is required.';
+    if (!isRequirement && !formData.size) errors.size = 'Area / Size is required.';
+    if (!isRequirement && !formData.priceRate) errors.priceRate = 'Rate / Price is required.';
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setError('Please fill in all required fields.');
       return;
     }
 
+    setFieldErrors({});
     setLoading(true);
     setError('');
 
@@ -220,7 +239,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
       
       <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
@@ -237,7 +256,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         </div>
 
         {/* Scrollable Content */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+        <form onSubmit={handleSubmit} noValidate className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
           {error && (
             <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex gap-3 text-red-600 text-xs font-medium items-center">
               <AlertCircle size={16} /> {error}
@@ -270,16 +289,19 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Property Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Location / Area *</label>
+                <label className={`text-[10px] font-medium uppercase tracking-wider ml-1 ${fieldErrors.location ? 'text-red-500' : 'text-slate-500'}`}>Location / Area *</label>
                 <input 
                   type="text" 
                   name="location"
-                  required
                   value={formData.location}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (fieldErrors.location) setFieldErrors(prev => ({ ...prev, location: null }));
+                  }}
                   placeholder="Sector, locality, area..." 
-                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
+                  className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.location ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]`} 
                 />
+                {fieldErrors.location && <p className="text-[10px] text-red-500 font-medium ml-1">{fieldErrors.location}</p>}
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">City *</label>
@@ -340,16 +362,19 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Area</h3>
             <div className="grid grid-cols-5 gap-4">
               <div className="col-span-3 space-y-1">
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Area / Size *</label>
+                <label className={`text-[10px] font-medium uppercase tracking-wider ml-1 ${fieldErrors.size ? 'text-red-500' : 'text-slate-500'}`}>Area / Size *</label>
                 <input 
                   type="number" 
                   name="size"
-                  required
                   value={formData.size}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    if (fieldErrors.size) setFieldErrors(prev => ({ ...prev, size: null }));
+                  }}
                   placeholder="e.g. 1200" 
-                  className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
+                  className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.size ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
                 />
+                {fieldErrors.size && <p className="text-[10px] text-red-500 font-medium ml-1">{fieldErrors.size}</p>}
               </div>
               <div className="col-span-2 space-y-1">
                 <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Unit</label>
@@ -391,15 +416,19 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Rate / Price (₹)</label>
+                  <label className={`text-[10px] font-medium uppercase tracking-wider ml-1 ${fieldErrors.priceRate ? 'text-red-500' : 'text-slate-500'}`}>Rate / Price (₹) *</label>
                   <input 
                     type="number" 
                     name="priceRate"
                     value={formData.priceRate}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      handleChange(e);
+                      if (fieldErrors.priceRate) setFieldErrors(prev => ({ ...prev, priceRate: null }));
+                    }}
                     placeholder="e.g. 5500" 
-                    className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.priceRate ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
                   />
+                  {fieldErrors.priceRate && <p className="text-[10px] text-red-500 font-medium ml-1">{fieldErrors.priceRate}</p>}
                 </div>
               </div>
             ) : (
@@ -431,7 +460,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="mt-4 p-4 bg-[#faf7f2] rounded-lg border border-slate-100 flex flex-col gap-1">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-normal">Calculated Total Price</p>
                 <span className="text-xl font-serif text-[#1a365d]">
-                  {formData.totalAmount ? `₹ ${formData.totalAmount.toLocaleString()}` : 'On Request'}
+                  {formData.totalAmount ? `₹ ${formData.totalAmount.toLocaleString('en-IN')}` : '₹ 0'}
                 </span>
               </div>
             )}

@@ -134,7 +134,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 type="text"
                 value={localFilters.location}
                 onChange={(e) => setLocalFilters({ ...localFilters, location: e.target.value })}
-                placeholder="Enter location or project name.."
+                placeholder="Search ID, location, or project..."
                 className="w-full placeholder:text-slate-400"
               />
             </div>

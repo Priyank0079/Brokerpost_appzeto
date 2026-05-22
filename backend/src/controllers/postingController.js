@@ -78,7 +78,8 @@ exports.getPostings = async (req, res, next) => {
       const searchRegex = { $regex: location.trim(), $options: 'i' };
       filter.$or = [
         { location: searchRegex },
-        { project: searchRegex }
+        { project: searchRegex },
+        { $expr: { $regexMatch: { input: { $toString: '$_id' }, regex: location.trim(), options: 'i' } } }
       ];
     }
 
@@ -109,6 +110,10 @@ exports.getPostings = async (req, res, next) => {
       if (!groupId && req.user) {
         const userGroups = await Group.find({ members: req.user._id });
         const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
+        // Always include the user's own ID so they can see their own listings
+        if (!memberIds.includes(req.user._id.toString())) {
+          memberIds.push(req.user._id.toString());
+        }
         filter.postedBy = { $in: memberIds };
       }
 

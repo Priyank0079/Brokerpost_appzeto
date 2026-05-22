@@ -331,7 +331,7 @@ const InventoryView = ({
                       </div>
                     </TableCell>
                     <TableCell className="font-black text-slate-600">{item.beds > 0 ? `${item.beds} BHK` : 'N/A'}</TableCell>
-                    <TableCell className="text-sm font-bold text-slate-500">{item.sqft.toLocaleString()} Sq Ft</TableCell>
+                    <TableCell className="text-sm font-bold text-slate-500">{item.sqft.toLocaleString('en-IN')} Sq Ft</TableCell>
                     <TableCell className="font-black text-slate-900">
                       {item.price > 0 ? (
                         item.price >= 10000000 ? `₹${(item.price / 10000000).toFixed(2)} Cr` : `₹${(item.price / 100000).toFixed(2)} L`
@@ -394,7 +394,7 @@ const InventoryView = ({
                     </div>
                     <div className="text-center border-x border-slate-50">
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Area</p>
-                       <p className="text-xs font-black text-slate-700 mt-0.5">{item.sqft.toLocaleString()}</p>
+                       <p className="text-xs font-black text-slate-700 mt-0.5">{item.sqft.toLocaleString('en-IN')}</p>
                     </div>
                     <div className="text-center">
                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Type</p>
