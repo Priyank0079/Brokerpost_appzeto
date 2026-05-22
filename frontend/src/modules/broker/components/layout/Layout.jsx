@@ -4,8 +4,10 @@ import { Menu, MessageCircle } from 'lucide-react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import ListingDetailModal from '../home/ListingDetailModal';
 
 import { useLandingConfig } from '../../../../hooks/useLandingConfig';
+import { useAuth } from '../../context/AuthContext';
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,7 +16,10 @@ const Layout = ({ children }) => {
   const isHomePage = location.pathname === '/';
   const isDashboard = location.pathname === '/dashboard';
   const { config } = useLandingConfig();
+  const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  
+  const [modalItem, setModalItem] = useState(null);
 
   React.useEffect(() => {
     const fetchStats = async () => {
@@ -27,7 +32,7 @@ const Layout = ({ children }) => {
       }
     };
     if (!isHomePage) fetchStats();
-  }, [isHomePage]);
+  }, [isHomePage, location.pathname]);
 
   const contact = config?.contact || {
     whatsapp: "910000000000"

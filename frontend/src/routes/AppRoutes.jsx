@@ -22,6 +22,7 @@ const Feed = lazy(() => import('../modules/broker/pages/Feed'));
 const Groups = lazy(() => import('../modules/broker/pages/Groups'));
 const Subscription = lazy(() => import('../modules/broker/pages/Subscription'));
 const Profile = lazy(() => import('../modules/broker/pages/Profile'));
+const Matches = lazy(() => import('../modules/broker/pages/Matches'));
 const PropertyDetails = lazy(() => import('../modules/broker/pages/PropertyDetails'));
 const Login = lazy(() => import('../modules/broker/pages/Login'));
 const BrokerRegistration = lazy(() => import('../modules/broker/pages/BrokerRegistration'));
@@ -64,6 +65,7 @@ const AppRoutes = () => {
                 <Route path="/my-requirements" element={<MyRequirements />} />
                 <Route path="/feed" element={<Feed />} />
                 <Route path="/groups" element={<Groups />} />
+                <Route path="/matches" element={<Matches />} />
                 <Route path="/subscription" element={<Subscription />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<Profile title="Account Settings" />} />

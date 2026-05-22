@@ -16,6 +16,7 @@ const {
   updateMe,
   updatePassword,
   getNotifications,
+  getUnreadNotificationCount,
   markNotificationRead
 } = require('../controllers/authController');
 
@@ -38,6 +39,7 @@ router.patch('/brokers/:id/status', protect, authorize('Admin'), updateBrokerSta
 router.delete('/brokers/:id', protect, authorize('Admin'), deleteBroker);
 
 router.get('/notifications', protect, getNotifications);
+router.get('/notifications/unread-count', protect, getUnreadNotificationCount);
 router.patch('/notifications/:id/read', protect, markNotificationRead);
 
 module.exports = router;

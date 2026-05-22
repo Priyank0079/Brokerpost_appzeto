@@ -77,10 +77,20 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   useEffect(() => {
     if (isOpen) {
       if (posting) {
+        // Handle legacy intent conversions
+        let mappedIntent = posting.intent || intent;
+        if (posting.postType === 'REQUIREMENT' && posting.intent === 'LEASE') {
+          mappedIntent = 'WANTED_LEASE';
+        } else if (posting.postType === 'REQUIREMENT' && posting.intent === 'RENT') {
+          mappedIntent = 'WANTED_RENT';
+        } else if (posting.postType === 'AVAILABILITY' && posting.intent === 'RENTALS') {
+          mappedIntent = 'RENT';
+        }
+
         setFormData({
           vertical: posting.vertical || vertical,
           postType: posting.postType || 'AVAILABILITY',
-          intent: posting.intent || intent,
+          intent: mappedIntent,
           subType: posting.subType || 'APARTMENTS',
           location: posting.location || '',
           project: posting.project || '',

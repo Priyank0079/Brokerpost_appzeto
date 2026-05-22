@@ -2,6 +2,7 @@ const Posting = require('../models/Posting');
 const User = require('../models/User');
 const Group = require('../models/Group');
 const Admin = require('../models/Admin');
+const { findAndNotifyMatches } = require('../services/matchingService');
 
 // ─────────────────────────────────────────────────────────────────────────────
 // @desc    Create a new posting (Requirement or Availability)
@@ -35,6 +36,11 @@ exports.createPosting = async (req, res, next) => {
       budgetMin, budgetMax, budgetUnit,
       occupancy, constructionStatus,
       tenantPreference, shortDescription, images, videos, city
+    });
+
+    // Fire and forget matching process
+    findAndNotifyMatches(posting).catch(err => {
+      console.error('Failed to run matching service:', err);
     });
 
     res.status(201).json({
@@ -232,6 +238,7 @@ exports.updatePosting = async (req, res, next) => {
 
     // Whitelist updatable fields (classification fields are NOT updatable — create a new posting instead)
     const allowedUpdates = [
+      'vertical', 'postType', 'intent', 'subType',
       'location', 'project',
       'size', 'sizeUnit',
       'bedrooms',
@@ -240,7 +247,7 @@ exports.updatePosting = async (req, res, next) => {
       'budgetMin', 'budgetMax', 'budgetUnit',
       'occupancy', 'constructionStatus',
       'tenantPreference', 'shortDescription', 'images', 'videos',
-      'isActive'
+      'isActive', 'city'
     ];
 
     const updates = {};

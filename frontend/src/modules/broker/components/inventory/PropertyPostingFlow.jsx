@@ -56,7 +56,7 @@ const CONFIG = {
               'short_description'
             ]
           },
-          RENT: { 
+          WANTED_RENT: { 
             label: 'Wanted on Rent',
             fields: ['location', 'project', 'bedrooms', 'size', 'budget_rent', 'tenant_status', 'short_description']
           }
@@ -70,7 +70,7 @@ const CONFIG = {
             label: 'Available on Sale',
             fields: ['location', 'project', 'size', 'bedrooms', 'price_sqft', 'total_cost', 'status_res']
           },
-          RENTALS: { 
+          RENT: { 
             label: 'Available on Rentals',
             fields: ['location', 'project', 'size', 'bedrooms', 'rent']
           }
@@ -91,7 +91,7 @@ const CONFIG = {
             label: 'Wanted on Purchase',
             fields: ['location', 'project', 'size', 'budget_type', 'total_budget', 'status_com']
           },
-          LEASE: { 
+          WANTED_LEASE: { 
             label: 'Wanted on Lease',
             fields: ['location', 'project', 'size', 'budget_type', 'total_budget']
           }
@@ -252,7 +252,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         } else if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
           fields = ['location', 'project', 'size', 'bedrooms', 'total_budget', 'status_res'];
         }
-      } else if (intent === 'RENT') {
+      } else if (intent === 'WANTED_RENT') {
         if (subType === 'Low Rise Floors' || subType === 'Kothi / Villas') {
           fields = ['location', 'project', 'size', 'bedrooms', 'budget_rent'];
         }
@@ -266,7 +266,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         } else {
           fields = ['location', 'project', 'size', 'bedrooms', 'total_cost', 'status_res', 'images'];
         }
-      } else if (intent === 'RENTALS') {
+      } else if (intent === 'RENT') {
         fields = ['location', 'project', 'size', 'bedrooms', 'rent', 'images'];
       }
     }
@@ -280,7 +280,7 @@ const DynamicPropertyForm = ({ selections, onCancel, onBack, onSubmit }) => {
         } else {
           fields = ['location', 'project', 'size', 'budget_type', 'total_budget', 'vacant_rented', 'status_com'];
         }
-      } else if (intent === 'LEASE') {
+      } else if (intent === 'WANTED_LEASE') {
         fields = ['location', 'project', 'size', 'budget_type', 'total_budget'];
       }
     } else if (flowType === 'AVAILABILITY') {

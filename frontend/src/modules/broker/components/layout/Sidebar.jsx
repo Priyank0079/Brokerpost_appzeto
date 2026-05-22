@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   LayoutDashboard, 
   Home, 
@@ -6,15 +6,30 @@ import {
   LogOut,
   Building2,
   Building,
-  X
+  X,
+  Bell
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 
 const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnread = async () => {
+      try {
+        const res = await api.get('/auth/notifications/unread-count');
+        if (res.success) setUnreadCount(res.count);
+      } catch (e) {}
+    };
+    fetchUnread();
+    const int = setInterval(fetchUnread, 30000);
+    return () => clearInterval(int);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -55,6 +70,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       title: 'NETWORK',
       items: [
         { icon: <Users size={18} />, label: 'My Groups', path: '/groups' },
+        { icon: <Bell size={18} />, label: 'Your Matches', path: '/matches', count: unreadCount > 0 ? unreadCount : undefined },
       ]
     }
   ];

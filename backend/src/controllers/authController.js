@@ -512,12 +512,36 @@ exports.updateMe = async (req, res, next) => {
 exports.getNotifications = async (req, res, next) => {
   try {
     const notifications = await Notification.find({ recipient: req.user._id })
+      .populate({
+        path: 'relatedId',
+        model: 'Posting',
+        populate: {
+          path: 'postedBy',
+          select: 'firstName lastName name phoneNumber companyName operatingCity'
+        }
+      })
       .sort({ createdAt: -1 })
       .limit(20);
 
     res.status(200).json({
       success: true,
       data: notifications
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get unread notification count
+// @route   GET /api/v1/auth/notifications/unread-count
+// @access  Private
+exports.getUnreadNotificationCount = async (req, res, next) => {
+  try {
+    const count = await Notification.countDocuments({ recipient: req.user._id, isRead: false });
+
+    res.status(200).json({
+      success: true,
+      count
     });
   } catch (error) {
     next(error);
