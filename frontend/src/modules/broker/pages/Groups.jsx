@@ -317,31 +317,6 @@ const Groups = () => {
                             <div>
                               <div className="font-bold text-slate-900">{brokerName}</div>
                               <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{broker.companyName || 'Private Broker'}</div>
-                              
-                              {/* Extra contact tags matching mockup */}
-                              <div className="flex gap-1.5 mt-1.5">
-                                <button
-                                  onClick={() => {
-                                    if (brokerPhone) {
-                                      window.open(`https://wa.me/91${brokerPhone.replace(/\D/g, '')}`, '_blank');
-                                    }
-                                  }}
-                                  className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#25D366] hover:bg-[#20ba56] text-white text-[9.5px] font-extrabold rounded-full transition-all tracking-tight shadow-sm"
-                                >
-                                  <span className="w-1 h-1 bg-white rounded-full"></span>
-                                  WA
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    if (brokerPhone) {
-                                      window.open(`tel:${brokerPhone}`, '_self');
-                                    }
-                                  }}
-                                  className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#e6f4fe] hover:bg-[#d0ebfe] text-[#0066cc] border border-[#b3dbfc] text-[9.5px] font-extrabold rounded-full transition-all tracking-tight"
-                                >
-                                  📞 Call
-                                </button>
-                              </div>
                             </div>
                           </td>
 

@@ -145,9 +145,11 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 className="w-full pl-3 pr-10 appearance-none cursor-pointer"
               >
                 <option value="">All Cities</option>
-                <option value="Noida">Noida</option>
                 <option value="Gurgaon">Gurgaon</option>
+                <option value="Noida">Noida</option>
                 <option value="Delhi">Delhi</option>
+                <option value="Faridabad">Faridabad</option>
+                <option value="Greater Noida">Greater Noida</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
             </div>

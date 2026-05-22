@@ -225,7 +225,8 @@ exports.verifyLoginOTP = async (req, res, next) => {
         isVerified: user.isVerified,
         companyName: user.companyName,
         operatingCity: user.operatingCity,
-        phoneNumber: user.phoneNumber
+        phoneNumber: user.phoneNumber,
+        profileImage: user.profileImage
       }
     });
   } catch (error) {
@@ -269,7 +270,8 @@ exports.login = async (req, res, next) => {
         officeAddress: user.officeAddress,
         officeCity: user.officeCity,
         pinCode: user.pinCode,
-        reraNumber: user.reraNumber
+        reraNumber: user.reraNumber,
+        profileImage: user.profileImage
       }
     });
   } catch (error) {
@@ -485,6 +487,10 @@ exports.updateMe = async (req, res, next) => {
       pinCode: req.body.pinCode,
       reraNumber: req.body.reraNumber
     };
+
+    if (req.body.profileImage !== undefined) {
+      fieldsToUpdate.profileImage = req.body.profileImage;
+    }
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
       new: true,

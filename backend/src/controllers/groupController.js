@@ -50,7 +50,7 @@ exports.getGroups = async (req, res, next) => {
     if (req.userModel === 'Admin') {
       query = Group.find().populate('members', 'firstName lastName email companyName');
     } else {
-      query = Group.find({ members: req.user._id }).populate('members', 'firstName lastName email companyName');
+      query = Group.find({ members: { $in: [req.user._id] } }).populate('members', 'firstName lastName email companyName');
     }
 
     const groups = await query;
