@@ -116,10 +116,10 @@ const Dashboard = () => {
   const requirementCountVal = s.breakdown.residential.purchase + s.breakdown.residential.wantedRent + s.breakdown.commercial.purchase + s.breakdown.commercial.wantedLease;
   
   // Connect dynamically to DB counts, fall back to default template baseline for visual richness
-  const activeMyListings = s.myListings || 17;
-  const activeAvailability = availabilityCountVal || 30;
-  const activeRequirements = requirementCountVal || 15;
-  const activeNetworkListings = (activeAvailability + activeRequirements) || 45;
+  const activeMyListings = s.myListings ?? 0;
+  const activeAvailability = availabilityCountVal ?? 0;
+  const activeRequirements = requirementCountVal ?? 0;
+  const activeNetworkListings = (activeAvailability + activeRequirements) ?? 0;
   const slotsRemaining = Math.max(0, 25 - activeMyListings);
 
   const displayListings = s.recentListings || [];
