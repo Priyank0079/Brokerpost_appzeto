@@ -77,3 +77,125 @@
 
 [getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"WANTED_RENT","postedBy":{"$in":["6a1419fea5a9f9a454edfdb2"]}} | total: 0
 [getPostingStats] networkBaseQuery: {"isActive":true,"postedBy":{"$in":["6a1419fea5a9f9a454edfdb2"]}} | LEASE count: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a14230793906324e59afa82"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a14230793906324e59afa82"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a14230793906324e59afa82"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a14230793906324e59afa82"]}} | total: 0
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"LEASE","postedBy":{"$in":["6a1182589cc5f5c8139dac76"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"LEASE","postedBy":{"$in":["6a1182589cc5f5c8139dac76"]}} | total: 0
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 1
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 1
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 2
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"RENT","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 1
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"RENT","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 1
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"RENT","postedBy":{"$in":["6a0c22dc976ec65914d473b2","6a0c0f9bed2361149070c30d","6a0c28703ccd2892f3f5ec0f","6a0c129ced2361149070c46e","6a11f92533d3613fa7546dde","6a14187074bef330618a8d7f","6a1189b79cc5f5c8139db43d"]}} | total: 1
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"SALE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"RENT","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"RESIDENTIAL","intent":"PURCHASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"LEASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"LEASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"SALE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"PURCHASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"LEASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"WANTED_LEASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"vertical":"COMMERCIAL","intent":"PURCHASE","postedBy":{"$in":["6a1438f4dc7c15aec936453e"]}} | total: 0
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true} | total: 8

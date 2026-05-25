@@ -401,15 +401,15 @@ exports.getPostingStats = async (req, res, next) => {
         groupCount
       ] = await Promise.all([
         // Residential Breakdown
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'SALE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'RENT' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'PURCHASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'WANTED_RENT' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'RESIDENTIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'RESIDENTIAL', intent: 'RENT' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'RESIDENTIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'RESIDENTIAL', intent: 'WANTED_RENT' }).catch(() => 0),
         // Commercial Breakdown
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'SALE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'COMMERCIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...myBaseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
         
         // Recent listings - separate try-catch for populate
         (async () => {

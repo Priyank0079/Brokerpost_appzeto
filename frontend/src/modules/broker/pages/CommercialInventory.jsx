@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, Plus, ChevronDown, Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getPostings, deletePosting } from '../services/postingService';
+import { getMyPostings, deletePosting } from '../services/postingService';
 
 import PostListingModal from '../components/inventory/PostListingModal';
 import Modal from '../components/ui/Modal';
 
 const CommercialInventory = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -90,7 +91,7 @@ const CommercialInventory = () => {
         params.location = debouncedSearch.trim();
       }
       
-      const result = await getPostings(params);
+      const result = await getMyPostings(params);
       if (result.success) {
         setListings(result.data);
       }
@@ -369,26 +370,34 @@ const CommercialInventory = () => {
                       
                       {/* Actions */}
                       <td className="py-2 px-6 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button 
-                            onClick={() => {
-                              setSelectedPosting(listing);
-                              setIsEditModalOpen(true);
-                            }}
-                            className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-[#FAF9F6] transition-all bg-white"
-                          >
-                            Edit
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setPostingToDelete(listing);
-                              setIsDeleteModalOpen(true);
-                            }}
-                            className="px-3 py-1.5 rounded-lg bg-[#8b1a1a] hover:bg-[#a02020] text-white text-xs font-bold transition-all"
-                          >
-                            Del
-                          </button>
-                        </div>
+                        {user && listing.postedBy && user._id === (typeof listing.postedBy === 'object' ? listing.postedBy._id : listing.postedBy) ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <button 
+                              onClick={() => {
+                                setSelectedPosting(listing);
+                                setIsEditModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold text-slate-600 hover:bg-[#FAF9F6] transition-all bg-white"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setPostingToDelete(listing);
+                                setIsDeleteModalOpen(true);
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-[#8b1a1a] hover:bg-[#a02020] text-white text-xs font-bold transition-all"
+                            >
+                              Del
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center">
+                            <span className="px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase text-indigo-600 bg-indigo-50 border border-indigo-100">
+                              Network
+                            </span>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
