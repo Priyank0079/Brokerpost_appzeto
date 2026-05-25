@@ -61,6 +61,14 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const faqRoutes = require('./routes/faqRoutes');
 const landingConfigRoutes = require('./routes/landingConfigRoutes');
 
+// Prevent browser caching for all API responses
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/postings', postingRoutes);
 app.use('/api/v1/upload', uploadRoutes);

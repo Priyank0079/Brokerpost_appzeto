@@ -7,10 +7,6 @@ const authHeader = (includeContentType = true) => {
   if (token && token !== 'null' && token !== 'undefined') {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  // Prevent browser/CDN from caching user-specific responses
-  headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
-  headers['Pragma'] = 'no-cache';
-  headers['Expires'] = '0';
   return headers;
 };
 
