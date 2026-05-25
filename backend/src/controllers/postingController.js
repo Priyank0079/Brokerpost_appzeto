@@ -103,6 +103,7 @@ exports.getPostings = async (req, res, next) => {
     let total;
 
     if (req.userModel === 'Admin') {
+      // Admin sees all postings with no user filter
       [postings, total] = await Promise.all([
         Posting.find(filter)
           .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
@@ -111,12 +112,12 @@ exports.getPostings = async (req, res, next) => {
           .limit(Number(limit)),
         Posting.countDocuments(filter)
       ]);
-    } else {
-      // User (Broker) - Retrieve posts of all members of the group(s) they are in
-      if (!groupId && req.user) {
+    } else if (req.user) {
+      // Logged-in Broker: show own posts + group members' posts only
+      if (!groupId) {
         const userGroups = await Group.find({ members: req.user._id });
         const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
-        // Always include the user's own ID so they can see their own listings
+        // Always include the logged-in user's own ID
         if (!memberIds.includes(req.user._id.toString())) {
           memberIds.push(req.user._id.toString());
         }
@@ -131,11 +132,18 @@ exports.getPostings = async (req, res, next) => {
           .limit(Number(limit)),
         Posting.countDocuments(filter)
       ]);
-      
-      require('fs').appendFileSync('C:/Users/HP/Desktop/appzeto_first/Brokerpost_appzeto/backend/debug_log.txt', 
-        `\n[getPostings] filter: ${JSON.stringify(filter)} | total: ${total}\n`
-      );
+    } else {
+      // Public (no token) — used only by the public landing page
+      [postings, total] = await Promise.all([
+        Posting.find(filter)
+          .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(Number(limit)),
+        Posting.countDocuments(filter)
+      ]);
     }
+
 
     res.status(200).json({
       success: true,
