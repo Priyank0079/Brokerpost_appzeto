@@ -131,6 +131,10 @@ exports.getPostings = async (req, res, next) => {
           .limit(Number(limit)),
         Posting.countDocuments(filter)
       ]);
+      
+      require('fs').appendFileSync('C:/Users/HP/Desktop/appzeto_first/Brokerpost_appzeto/backend/debug_log.txt', 
+        `\n[getPostings] filter: ${JSON.stringify(filter)} | total: ${total}\n`
+      );
     }
 
     res.status(200).json({
@@ -346,9 +350,20 @@ exports.getPostingStats = async (req, res, next) => {
       groupQuery.$or = groupOrConditions;
     }
 
-    const baseQuery = { isActive: true };
+    const networkBaseQuery = { isActive: true };
+    const myBaseQuery = { isActive: true };
     if (req.userModel === 'User') {
-      baseQuery.postedBy = userId;
+      myBaseQuery.postedBy = userId;
+      
+      // Calculate network visibility (own posts + group members' posts)
+      const userGroups = await GroupModel.find({ members: userId });
+      const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
+      if (!memberIds.includes(userId.toString())) {
+        memberIds.push(userId.toString());
+      }
+      networkBaseQuery.postedBy = { $in: memberIds };
+    } else {
+      // Admins see all for "myBaseQuery" in stats, or we can restrict it if needed
     }
 
     // Run basic counts first (these are fast)
@@ -358,10 +373,10 @@ exports.getPostingStats = async (req, res, next) => {
       availabilityCount,
       requirementCount
     ] = await Promise.all([
-      PostingModel.countDocuments({ ...baseQuery }).catch(e => { console.error('Count totalListings failed:', e.message); return 0; }),
-      PostingModel.countDocuments({ postedBy: userId, isActive: true }).catch(e => { console.error('Count myListings failed:', e.message); return 0; }),
-      PostingModel.countDocuments({ ...baseQuery, postType: 'AVAILABILITY' }).catch(e => { console.error('Count availabilityCount failed:', e.message); return 0; }),
-      PostingModel.countDocuments({ ...baseQuery, postType: 'REQUIREMENT' }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
+      PostingModel.countDocuments(networkBaseQuery).catch(e => { console.error('Count totalListings failed:', e.message); return 0; }),
+      PostingModel.countDocuments(myBaseQuery).catch(e => { console.error('Count myListings failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ ...networkBaseQuery, postType: 'AVAILABILITY' }).catch(e => { console.error('Count availabilityCount failed:', e.message); return 0; }),
+      PostingModel.countDocuments({ ...networkBaseQuery, postType: 'REQUIREMENT' }).catch(e => { console.error('Count requirementCount failed:', e.message); return 0; })
     ]);
 
     // Run breakdown and recent listings - wrapped in try-catch to prevent single query failure from crashing
@@ -386,20 +401,28 @@ exports.getPostingStats = async (req, res, next) => {
         groupCount
       ] = await Promise.all([
         // Residential Breakdown
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'SALE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'RENT' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'PURCHASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'RESIDENTIAL', intent: 'WANTED_RENT' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'RENT' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'RESIDENTIAL', intent: 'WANTED_RENT' }).catch(() => 0),
         // Commercial Breakdown
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'SALE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
-        PostingModel.countDocuments({ ...baseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'SALE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
+        PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
+        
+        (async () => {
+          const c = await PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0);
+          require('fs').appendFileSync('C:/Users/HP/Desktop/appzeto_first/Brokerpost_appzeto/backend/debug_log.txt', 
+            `[getPostingStats] networkBaseQuery: ${JSON.stringify(networkBaseQuery)} | LEASE count: ${c}\n`
+          );
+          return 0; // dummy
+        })(),
 
         // Recent listings - separate try-catch for populate
         (async () => {
           try {
-            return await PostingModel.find(baseQuery)
+            return await PostingModel.find(myBaseQuery)
               .populate('postedBy', 'firstName lastName companyName name')
               .sort({ createdAt: -1 })
               .limit(5)

@@ -199,10 +199,26 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     if (!formData.city) errors.city = 'City is required.';
     if (!isRequirement && !formData.size) errors.size = 'Area / Size is required.';
     if (!isRequirement && !formData.priceRate) errors.priceRate = 'Rate / Price is required.';
+    
+    if (isRequirement) {
+      if (!formData.budgetMin) errors.budgetMin = 'Minimum Budget is mandatory for Requirement listings.';
+      if (!formData.budgetMax) errors.budgetMax = 'Maximum Budget is mandatory for Requirement listings.';
+    }
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       setError('Please fill in all required fields.');
+      
+      // Find the first field with an error and scroll to it
+      setTimeout(() => {
+        const firstErrorName = Object.keys(errors)[0];
+        const firstErrorField = document.querySelector(`[name="${firstErrorName}"]`);
+        if (firstErrorField) {
+          firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstErrorField.focus();
+        }
+      }, 50);
+      
       return;
     }
 
@@ -246,6 +262,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         { label: 'Standalone Building', value: 'STANDALONE_BUILDING' },
         ...(isRental ? [] : [{ label: 'Plot', value: 'PLOT' }])
       ];
+
+  const currentIntent = formData.intent || intent;
+  const currentVertical = formData.vertical || vertical;
+  const hideUnderConstruction = 
+    (currentIntent === 'WANTED_LEASE' && currentVertical === 'COMMERCIAL') ||
+    (currentIntent === 'WANTED_RENT' && currentVertical === 'RESIDENTIAL');
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -443,25 +465,37 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               </div>
             ) : (
               <div className="space-y-1">
-                <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Budget Range</label>
-                <div className="flex gap-2 items-center">
-                  <input 
-                    type="number" 
-                    name="budgetMin"
-                    value={formData.budgetMin}
-                    onChange={handleChange}
-                    placeholder="Min" 
-                    className="w-1/2 px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
-                  />
-                  <span className="text-slate-300">-</span>
-                  <input 
-                    type="number" 
-                    name="budgetMax"
-                    value={formData.budgetMax}
-                    onChange={handleChange}
-                    placeholder="Max" 
-                    className="w-1/2 px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]" 
-                  />
+                <label className={`text-[10px] font-medium uppercase tracking-wider ml-1 ${fieldErrors.budgetMin || fieldErrors.budgetMax ? 'text-red-500' : 'text-slate-500'}`}>Budget Range *</label>
+                <div className="flex gap-2 items-start">
+                  <div className="w-1/2 flex flex-col gap-1">
+                    <input 
+                      type="number" 
+                      name="budgetMin"
+                      value={formData.budgetMin}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (fieldErrors.budgetMin) setFieldErrors(prev => ({ ...prev, budgetMin: null }));
+                      }}
+                      placeholder="Min" 
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMin ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                    />
+                    {fieldErrors.budgetMin && <p className="text-[10px] text-red-500 font-medium ml-1 leading-tight">{fieldErrors.budgetMin}</p>}
+                  </div>
+                  <span className="text-slate-300 mt-2.5">-</span>
+                  <div className="w-1/2 flex flex-col gap-1">
+                    <input 
+                      type="number" 
+                      name="budgetMax"
+                      value={formData.budgetMax}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (fieldErrors.budgetMax) setFieldErrors(prev => ({ ...prev, budgetMax: null }));
+                      }}
+                      placeholder="Max" 
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMax ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                    />
+                    {fieldErrors.budgetMax && <p className="text-[10px] text-red-500 font-medium ml-1 leading-tight">{fieldErrors.budgetMax}</p>}
+                  </div>
                 </div>
               </div>
             )}
@@ -489,7 +523,9 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
                 >
                   <option value="READY">Ready to Move</option>
-                  <option value="UNDER_CONSTRUCTION">Under Construction</option>
+                  {!hideUnderConstruction && (
+                    <option value="UNDER_CONSTRUCTION">Under Construction</option>
+                  )}
                 </select>
                 <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               </div>

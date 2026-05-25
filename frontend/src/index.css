@@ -220,34 +220,34 @@
 }
 
 footer {
-    background: #0f172a;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 24px 5vw;
-    font-size: 12px;
+  background: #0f172a;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 24px 5vw;
+  font-size: 12px;
 }
 
 .sb-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 13px;
-    transition: .15s;
-    position: relative;
-    text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  transition: .15s;
+  position: relative;
+  text-decoration: none;
 }
 
 .sb-item.active {
-    background: rgba(200, 150, 42, 0.2);
-    color: #fff;
+  background: rgba(200, 150, 42, 0.2);
+  color: #fff;
 }
 
 .sb-item:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
 }
 
 .premium-gradient {
@@ -278,4 +278,36 @@ footer {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Modal specific wider scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.tbl-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+tr {
+  display: table-row;
+  vertical-align: inherit;
+  unicode-bidi: isolate;
+  border-color: #ddd6c8 !important;
 }

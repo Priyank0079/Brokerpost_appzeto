@@ -143,11 +143,11 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
           <div className="space-y-0.5">
-            <h2 
+            <h2
               className="section-title text-left font-serif text-[#0d1b2a]"
-              style={{ 
-                fontSize: '24px', 
-                fontWeight: 'normal' 
+              style={{
+                fontSize: '24px',
+                fontWeight: 'normal'
               }}
             >
               All Listed Inventory
@@ -161,22 +161,20 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">View:</span>
             <button
               onClick={() => setView('grid')}
-              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${
-                view === 'grid'
+              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${view === 'grid'
                   ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-              }`}
+                }`}
             >
               <Grid size={14} className="stroke-[3]" />
               Grid
             </button>
             <button
               onClick={() => setView('table')}
-              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${
-                view === 'table'
+              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${view === 'table'
                   ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
                   : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-              }`}
+                }`}
             >
               <Table size={14} className="stroke-[3]" />
               Table
@@ -221,11 +219,11 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                       <p className="text-[9px] font-normal text-slate-400 uppercase tracking-wide mt-2 mb-2">
                         {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
                       </p>
-                      
+
                       <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
                         {item.bedrooms ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
                       </h3>
-                      
+
                       <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-1">
                         <MapPin size={12} className="text-pink-500" />
                         <span className="truncate">{item.location}</span>
@@ -265,7 +263,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-[#FAF9F6] border-b border-slate-200 text-[10px] font-bold uppercase text-slate-500 tracking-wider">
+                      <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-bold uppercase text-slate-500 tracking-wider">
                         <th className="py-4 px-6 text-center w-12">#</th>
                         <th className="py-4 px-6">Category</th>
                         <th className="py-4 px-6">Sub-Type</th>
@@ -277,7 +275,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                         <th className="py-4 px-6 text-center w-36">Connect</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 bg-white">
+                    <tbody className="divide-y divide-[#ddd6c8] bg-white">
                       {listings.map((item, idx) => (
                         <tr
                           key={item._id}
@@ -293,22 +291,22 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                               ID: {item._id?.toString().slice(-6)}
                             </div>
                           </td>
-                          
+
                           {/* Category Badge */}
                           <td className="py-4 px-6">
                             {renderCategoryBadge(item.vertical)}
                           </td>
-                          
+
                           {/* Sub-Type Badge */}
                           <td className="py-4 px-6">
                             {renderSubTypeBadge(item.subType)}
                           </td>
-                          
+
                           {/* Section */}
                           <td className="py-4 px-6 text-slate-500 font-medium">
                             {renderListingType(item)}
                           </td>
-                          
+
                           {/* Location */}
                           <td className="py-4 px-6">
                             <div className="flex flex-col">
@@ -318,25 +316,25 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                               )}
                             </div>
                           </td>
-                          
+
                           {/* Area */}
                           <td className="py-4 px-6 text-slate-800 font-semibold">
                             {formatArea(item)}
                           </td>
-                          
+
                           {/* Total Price */}
                           <td className="py-4 px-6 font-bold text-slate-900">
                             {formatTotalPrice(item)}
                           </td>
-                          
+
                           {/* Broker */}
                           <td className="py-4 px-6 font-semibold text-slate-800 whitespace-nowrap">
                             {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name'}
                           </td>
-                          
+
                           {/* Connect Button */}
                           <td className="py-4 px-6 text-center">
-                            <button 
+                            <button
                               onClick={() => setSelectedItem(item)}
                               className="px-2.5 py-1 rounded-[4px] bg-slate-900 hover:bg-[#c8962a] text-white text-[8.5px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
                             >
@@ -368,8 +366,8 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                       key={i}
                       onClick={() => setPage(i + 1)}
                       className={`w-10 h-10 rounded-[0.75rem] text-[11px] font-black transition-all ${page === i + 1
-                          ? 'bg-[#c8962a] text-white shadow-[0_10px_20px_rgba(200,150,42,0.2)] scale-105 z-10'
-                          : 'bg-white border-2 border-slate-200 text-slate-400 hover:border-slate-300 active:scale-90'
+                        ? 'bg-[#c8962a] text-white shadow-[0_10px_20px_rgba(200,150,42,0.2)] scale-105 z-10'
+                        : 'bg-white border-2 border-slate-200 text-slate-400 hover:border-slate-300 active:scale-90'
                         }`}
                     >
                       {i + 1}

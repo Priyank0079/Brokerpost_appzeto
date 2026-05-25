@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, ArrowLeft, Loader2, Users, List, Building, MapPin, Globe } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getMyPostings, getPostingStats } from '../services/postingService';
+import { getMyPostings, getPostingStats, deletePosting } from '../services/postingService';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import PostListingModal from '../components/inventory/PostListingModal';
@@ -61,6 +61,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPosting, setSelectedPosting] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -73,6 +75,30 @@ const Dashboard = () => {
       console.error('Error fetching dashboard data', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (e, id) => {
+    e.stopPropagation();
+    setDeleteConfirmId(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
+    setIsDeleting(true);
+    try {
+      const res = await deletePosting(deleteConfirmId);
+      if (res.success) {
+        fetchData();
+        setDeleteConfirmId(null);
+      } else {
+        alert(res.message || 'Failed to delete listing');
+      }
+    } catch (err) {
+      console.error('Error deleting listing', err);
+      alert('An error occurred while deleting the listing');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -190,15 +216,15 @@ const Dashboard = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-[#FAF9F6] border-b border-slate-200">
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16 text-center">#</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION / PROJECT</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">STATUS</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">MEDIA</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
-                      <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
+                      <th className="px-3 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-12 text-center">#</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION / PROJECT</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">STATUS</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">MEDIA</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
+                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 bg-white">
@@ -231,21 +257,21 @@ const Dashboard = () => {
                           }}
                           className="hover:bg-slate-50/50 transition-all cursor-pointer group text-[12.5px] text-slate-700"
                         >
-                          <td className="px-6 py-4 text-center">
+                          <td className="px-3 py-2 text-center">
                             <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
                             <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider">
                               ID: {post._id?.toString().slice(-6)}
                             </div>
                           </td>
                           
-                          <td className="px-6 py-4">
+                          <td className="px-2 py-2">
                             <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 whitespace-nowrap">
                               {subTypeDisplay}
                             </span>
                           </td>
                           
-                          <td className="px-6 py-4">
-                            <div className="min-w-[120px]">
+                          <td className="px-2 py-2">
+                            <div className="flex flex-col">
                               <p className="text-[12px] font-bold text-slate-900 leading-none mb-1 group-hover:text-[#c8962a] transition-colors">
                                 {post.project || post.location} <span className="text-slate-400 font-normal">· {post.city}</span>
                               </p>
@@ -255,15 +281,15 @@ const Dashboard = () => {
                             </div>
                           </td>
                           
-                          <td className="px-6 py-4 text-[11px] font-bold text-slate-900 whitespace-nowrap">
+                          <td className="px-2 py-2 text-[11px] font-bold text-slate-900 whitespace-nowrap">
                             {post.size ? `${Number(post.size).toLocaleString('en-IN')} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : 'Sq.Mt')}` : 'N/A'}
                           </td>
                           
-                          <td className="px-6 py-4 text-[12px] font-bold text-slate-900 whitespace-nowrap">
+                          <td className="px-2 py-2 text-[12px] font-bold text-slate-900 whitespace-nowrap">
                             {priceDisplay}
                           </td>
                           
-                          <td className="px-6 py-4">
+                          <td className="px-2 py-2">
                             {post.postType === 'AVAILABILITY' ? (
                               <span className={`px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap ${statusBg}`}>
                                 {statusLabel}
@@ -273,26 +299,32 @@ const Dashboard = () => {
                             )}
                           </td>
                           
-                          <td className="px-6 py-4">
+                          <td className="px-2 py-2">
                             <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
                               {mediaCount} files
                             </span>
                           </td>
                           
-                          <td className="px-6 py-4 text-[10px] font-bold text-slate-400 whitespace-nowrap">
+                          <td className="px-2 py-2 text-[10px] font-bold text-slate-400 whitespace-nowrap">
                             {new Date(post.createdAt || Date.now()).toLocaleDateString('en-GB')}
                           </td>
                           
-                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-center">
+                          <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center justify-center gap-2">
                               <button 
                                 onClick={() => {
                                   setSelectedPosting(post);
                                   setIsEditModalOpen(true);
                                 }}
-                                className="px-4 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-[11px] font-bold hover:bg-slate-50 transition-all"
+                                className="px-3.5 py-1.5 border border-slate-200 text-[#1e3a5f] bg-white rounded-lg text-[12px] font-bold hover:bg-slate-50 transition-all"
                               >
                                 Edit
+                              </button>
+                              <button 
+                                onClick={(e) => handleDeleteClick(e, post._id)}
+                                className="px-3.5 py-1.5 bg-[#991b1b] text-white rounded-lg text-[12px] font-bold hover:bg-[#7f1d1d] transition-all border border-[#991b1b]"
+                              >
+                                Del
                               </button>
                             </div>
                           </td>
@@ -317,6 +349,39 @@ const Dashboard = () => {
         posting={selectedPosting}
         onSuccess={fetchData}
       />
+
+      {/* Custom Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-100 mb-4 mx-auto">
+                <span className="text-red-500 text-xl font-bold">!</span>
+              </div>
+              <h3 className="text-lg font-bold text-center text-slate-900 mb-2">Delete Listing?</h3>
+              <p className="text-sm text-center text-slate-500 mb-6">
+                Are you sure you want to delete this listing? This action cannot be undone.
+              </p>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setDeleteConfirmId(null)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={confirmDelete}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2.5 bg-[#991b1b] hover:bg-[#7f1d1d] text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isDeleting ? <Loader2 size={16} className="animate-spin" /> : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

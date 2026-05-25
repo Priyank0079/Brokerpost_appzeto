@@ -205,7 +205,7 @@ const Groups = () => {
 
         {/* Selected Group Card View */}
         {selectedGroup ? (
-          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div className="tbl-wrapper shadow-sm flex flex-col">
                    {/* Card Header (Dynamic Group Metadata & Members) */}
              <div className="card-head flex items-center justify-between border-b border-slate-200 px-[18px] py-[12px] gap-4">
                <div className="space-y-1">
@@ -265,38 +265,38 @@ const Groups = () => {
               ) : filteredListings.length > 0 ? (
                 <table className="w-full text-left border-collapse min-w-[1000px]">
                   <thead>
-                    <tr className="bg-[#FAF9F6] border-b border-slate-150 text-[10px] font-black uppercase text-slate-500 tracking-wider">
-                      <th className="py-4 px-6 text-center w-12">#</th>
-                      <th className="py-4 px-4 w-36">Sub-Type ↕</th>
-                      <th className="py-4 px-4">Section ↕</th>
-                      <th className="py-4 px-4">Location ↕</th>
-                      <th className="py-4 px-4">Project</th>
-                      <th className="py-4 px-4">Area</th>
-                      <th className="py-4 px-4">Total Price ↕</th>
-                      <th className="py-4 px-4">Broker</th>
-                      <th className="py-4 px-4">Date ↕</th>
-                      <th className="py-4 px-6 text-center w-40">Connect</th>
+                    <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                      <th className="py-2.5 px-6 text-center w-12">#</th>
+                      <th className="py-2.5 px-4 w-36">Sub-Type ↕</th>
+                      <th className="py-2.5 px-4">Section ↕</th>
+                      <th className="py-2.5 px-4">Location ↕</th>
+                      <th className="py-2.5 px-4">Project</th>
+                      <th className="py-2.5 px-4">Area</th>
+                      <th className="py-2.5 px-4">Total Price ↕</th>
+                      <th className="py-2.5 px-4">Broker</th>
+                      <th className="py-2.5 px-4">Date ↕</th>
+                      <th className="py-2.5 px-6 text-center w-40">Connect</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody>
                     {filteredListings.map((listing, idx) => {
                       const broker = listing.postedBy || {};
                       const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
                       const brokerPhone = broker.phoneNumber || '';
                       
                       return (
-                        <tr key={listing._id} className="hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
+                        <tr key={listing._id} className="border-b border-[#ddd6c8] hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
                           {/* Index */}
-                          <td className="py-4 px-6 text-center font-bold text-slate-400">{idx + 1}</td>
+                          <td className="py-2 px-6 text-center font-bold text-slate-400">{idx + 1}</td>
                           
                           {/* Sub-type Badge */}
-                          <td className="py-4 px-4">{renderSubTypeBadge(listing.subType)}</td>
+                          <td className="py-2 px-4">{renderSubTypeBadge(listing.subType)}</td>
                           
                           {/* Section */}
-                          <td className="py-4 px-4 text-slate-500 font-medium">{formatSection(listing)}</td>
+                          <td className="py-2 px-4 text-slate-500 font-medium">{formatSection(listing)}</td>
 
                           {/* Location */}
-                          <td className="py-4 px-4">
+                          <td className="py-2 px-4">
                             <div>
                               <div className="font-bold text-slate-900">{listing.location || 'N/A'}</div>
                               <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{listing.city || 'Gurugram'}</div>
@@ -304,16 +304,16 @@ const Groups = () => {
                           </td>
                           
                           {/* Project */}
-                          <td className="py-4 px-4 font-semibold text-slate-800">{listing.project || '—'}</td>
+                          <td className="py-2 px-4 font-semibold text-slate-800">{listing.project || '—'}</td>
 
                           {/* Area */}
-                          <td className="py-4 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
+                          <td className="py-2 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
 
                           {/* Price */}
-                          <td className="py-4 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
+                          <td className="py-2 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
 
                           {/* Broker Profile */}
-                          <td className="py-4 px-4">
+                          <td className="py-2 px-4">
                             <div>
                               <div className="font-bold text-slate-900">{brokerName}</div>
                               <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{broker.companyName || 'Private Broker'}</div>
@@ -321,10 +321,10 @@ const Groups = () => {
                           </td>
 
                           {/* Date */}
-                          <td className="py-4 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
+                          <td className="py-2 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
 
                           {/* Connect Actions */}
-                          <td className="py-4 px-6 text-center">
+                          <td className="py-2 px-6 text-center">
                             <div className="flex flex-col gap-1.5 w-28 mx-auto">
                               {/* WhatsApp Button */}
                               <button 

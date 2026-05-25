@@ -239,7 +239,7 @@ const ResidentialInventory = () => {
           <p className="text-sm text-[#718199] mt-1">{config.subheading}</p>
         </div>
         {/* Unified Card Container */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="tbl-wrapper shadow-sm flex flex-col">
           {/* Card Header (Filter Bar) */}
           <div className="p-3 md:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 md:gap-4 border-b border-slate-200 bg-white">
             <div className="flex flex-wrap items-center gap-2 md:gap-4 flex-1">
@@ -300,34 +300,34 @@ const ResidentialInventory = () => {
             ) : listings.length > 0 ? (
               <table className="w-full text-left border-collapse min-w-[950px]">
                 <thead>
-                  <tr className="bg-[#FAF9F6] border-b border-slate-150 text-[10px] font-black uppercase text-slate-500 tracking-wider">
-                    <th className="py-4 px-6 text-center w-12">#</th>
-                    <th className="py-4 px-4 w-36">Sub-Type</th>
-                    <th className="py-4 px-4">Location / Project</th>
-                    <th className="py-4 px-4">Area</th>
-                    <th className="py-4 px-4">{isRequirement ? 'Budget Range' : 'Total Price'}</th>
-                    <th className="py-4 px-4">Status</th>
-                    <th className="py-4 px-4 text-center">Media</th>
-                    <th className="py-4 px-4">Date</th>
-                    <th className="py-4 px-6 text-center w-40">Actions</th>
+                  <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                    <th className="py-2.5 px-6 text-center w-12">#</th>
+                    <th className="py-2.5 px-4 w-36">Sub-Type</th>
+                    <th className="py-2.5 px-4">Location / Project</th>
+                    <th className="py-2.5 px-4">Area</th>
+                    <th className="py-2.5 px-4">{isRequirement ? 'Budget Range' : 'Total Price'}</th>
+                    <th className="py-2.5 px-4">Status</th>
+                    <th className="py-2.5 px-4 text-center">Media</th>
+                    <th className="py-2.5 px-4">Date</th>
+                    <th className="py-2.5 px-6 text-center w-40">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody>
                   {listings.map((listing, idx) => (
-                    <tr key={listing._id} className="hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
+                    <tr key={listing._id} className="border-b border-[#ddd6c8] hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
                       {/* Index & ID */}
-                      <td className="py-4 px-6 text-center">
+                      <td className="py-2 px-6 text-center">
                         <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
                         <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider group-hover:text-slate-400 transition-colors">
-                          ID: {listing._id?.toString().slice(-6)}
+                          {listing._id?.toString().slice(-6)}
                         </div>
                       </td>
                       
                       {/* Sub-type Bubble */}
-                      <td className="py-4 px-4">{renderSubTypeBadge(listing.subType)}</td>
+                      <td className="py-2 px-4">{renderSubTypeBadge(listing.subType)}</td>
                       
                       {/* Location & Project */}
-                      <td className="py-4 px-4">
+                      <td className="py-2 px-4">
                         <div>
                           <div className="font-bold text-slate-900 flex items-center gap-1.5">
                             <span>{listing.location || 'N/A'}</span>
@@ -340,22 +340,22 @@ const ResidentialInventory = () => {
                       </td>
                       
                       {/* Area */}
-                      <td className="py-4 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
+                      <td className="py-2 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
                       
                       {/* Total Price / Budget */}
-                      <td className="py-4 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
+                      <td className="py-2 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
                       
                       {/* Status */}
-                      <td className="py-4 px-4">{renderStatusBadge(listing)}</td>
+                      <td className="py-2 px-4">{renderStatusBadge(listing)}</td>
                       
                       {/* Media */}
-                      <td className="py-4 px-4 text-center">{renderMediaBadge(listing)}</td>
+                      <td className="py-2 px-4 text-center">{renderMediaBadge(listing)}</td>
                       
                       {/* Date */}
-                      <td className="py-4 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
+                      <td className="py-2 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
                       
                       {/* Actions */}
-                      <td className="py-4 px-6 text-center">
+                      <td className="py-2 px-6 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button 
                             onClick={() => {
