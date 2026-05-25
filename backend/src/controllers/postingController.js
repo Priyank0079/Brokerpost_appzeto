@@ -411,14 +411,6 @@ exports.getPostingStats = async (req, res, next) => {
         PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'PURCHASE' }).catch(() => 0),
         PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'WANTED_LEASE' }).catch(() => 0),
         
-        (async () => {
-          const c = await PostingModel.countDocuments({ ...networkBaseQuery, vertical: 'COMMERCIAL', intent: 'LEASE' }).catch(() => 0);
-          require('fs').appendFileSync('C:/Users/HP/Desktop/appzeto_first/Brokerpost_appzeto/backend/debug_log.txt', 
-            `[getPostingStats] networkBaseQuery: ${JSON.stringify(networkBaseQuery)} | LEASE count: ${c}\n`
-          );
-          return 0; // dummy
-        })(),
-
         // Recent listings - separate try-catch for populate
         (async () => {
           try {
