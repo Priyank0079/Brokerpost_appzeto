@@ -131,10 +131,6 @@ exports.getPostings = async (req, res, next) => {
           .limit(Number(limit)),
         Posting.countDocuments(filter)
       ]);
-      
-      require('fs').appendFileSync('C:/Users/HP/Desktop/appzeto_first/Brokerpost_appzeto/backend/debug_log.txt', 
-        `\n[getPostings] filter: ${JSON.stringify(filter)} | total: ${total}\n`
-      );
     }
 
     res.status(200).json({
