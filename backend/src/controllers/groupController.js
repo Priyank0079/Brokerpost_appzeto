@@ -6,12 +6,15 @@ const User = require('../models/User');
 // @access  Private/Admin
 exports.createGroup = async (req, res, next) => {
   try {
-    const { name, description, members } = req.body;
+    const { name, description, focusArea, leaderName, leaderMobile, members } = req.body;
     const Notification = require('../models/Notification');
 
     const group = await Group.create({
       name,
       description,
+      focusArea,
+      leaderName,
+      leaderMobile,
       members,
       createdBy: req.user._id
     });

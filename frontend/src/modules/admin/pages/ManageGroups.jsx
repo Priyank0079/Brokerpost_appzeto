@@ -241,7 +241,7 @@ const ManageGroups = () => {
             <button 
               onClick={() => {
                 setSelectedGroup(null);
-                setFormData({ name: '', description: '' });
+                setFormData({ name: '', description: '', focusArea: '', leaderName: '', leaderMobile: '' });
                 setSelectedMembers([]);
                 setIsCreateModalOpen(true);
               }}
@@ -311,7 +311,13 @@ const ManageGroups = () => {
                         <button 
                           onClick={() => {
                             setSelectedGroup(group);
-                            setFormData({ name: group.name, description: group.description || '' });
+                            setFormData({ 
+                              name: group.name, 
+                              description: group.description || '',
+                              focusArea: group.focusArea || '',
+                              leaderName: group.leaderName || '',
+                              leaderMobile: group.leaderMobile || ''
+                            });
                             setSelectedMembers(group.members ? group.members.map(m => m._id || m) : []);
                             setIsEditModalOpen(true);
                           }}
@@ -339,98 +345,130 @@ const ManageGroups = () => {
       {(isCreateModalOpen || isEditModalOpen) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <div className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} />
-          <div className="relative w-full max-w-[680px] bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden max-h-[90vh] flex flex-col">
-            <div className="p-3 md:p-4 border-b border-[#ddd6c8] flex items-center justify-between sticky top-0 bg-white z-10">
-              <div className="space-y-0">
-                <h3 className="text-lg md:text-xl font-normal font-serif text-[#254063]">{isEditModalOpen ? `Edit Group` : 'Create New Group'}</h3>
-                <p className="text-[13px] text-[#718199] tracking-tight font-normal">{isEditModalOpen ? 'Modify group details and members' : 'Organize your broker network'}</p>
+          <div className="relative w-full max-w-[600px] bg-white rounded-xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden max-h-[90vh] flex flex-col">
+            
+            <div className="p-5 border-b border-slate-200 flex items-start justify-between bg-white z-10 shrink-0">
+              <div className="space-y-1">
+                <h3 className="text-xl font-medium text-slate-800">{isEditModalOpen ? `Edit Group` : 'Create New Group'}</h3>
+                <p className="text-[12px] text-slate-400 font-medium">{isEditModalOpen ? 'Update group details, leader & members' : 'Fill group details, assign leader & add members'}</p>
               </div>
               <button 
                 onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 text-slate-400 hover:text-slate-600 transition-all shadow-sm"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all shadow-sm"
               >
-                <Plus size={20} className="rotate-45" />
+                <X size={16} />
               </button>
             </div>
 
-            <div className="overflow-y-auto flex-1 p-3 md:p-4 space-y-4">
+            <div className="overflow-y-auto flex-1 p-5 space-y-5">
+              
+              {/* Blue Alert Box */}
+              <div className="bg-[#eff6ff] border border-[#bfdbfe] rounded-lg p-3 text-[11px] text-[#1e40af] font-medium leading-relaxed">
+                The group leader is the designated broker who coordinates this group. Admin acts on their instruction only.
+              </div>
+
+              {/* Basic Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">GROUP NAME *</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">GROUP NAME *</label>
                   <input 
-                    type="text" name="name" required placeholder="e.g. NCR Residential Brokers"
+                    type="text" name="name" required placeholder="South Delhi Premium"
                     value={formData.name} onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                    className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/50 transition-all placeholder:text-slate-400"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">DESCRIPTION</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">FOCUS AREA</label>
                   <input 
-                    type="text" name="description" placeholder="Short description"
-                    value={formData.description} onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LEADER NAME</label>
-                  <input 
-                    type="text" name="leaderName" placeholder="Leader's full name"
-                    value={formData.leaderName || ''} onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LEADER MOBILE</label>
-                  <input 
-                    type="text" name="leaderMobile" placeholder="10-digit number"
-                    value={formData.leaderMobile || ''} onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                    type="text" name="focusArea" placeholder="South Delhi, Saket"
+                    value={formData.focusArea || ''} onChange={handleInputChange}
+                    className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/50 transition-all placeholder:text-slate-400"
                   />
                 </div>
               </div>
 
-              <div className="space-y-3 pt-2 pb-4">
-                <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ASSIGN MEMBERS</label>
-                <div className="border border-[#e4ded2] rounded-lg overflow-hidden max-h-[250px] overflow-y-auto">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">DESCRIPTION</label>
+                <input 
+                  type="text" name="description" placeholder="Premium residential & luxury commercial"
+                  value={formData.description} onChange={handleInputChange}
+                  className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/50 transition-all placeholder:text-slate-400"
+                />
+              </div>
+
+              {/* Group Leader Details (Yellow Box) */}
+              <div className="bg-[#fffbeb] border border-[#fde047] rounded-lg p-4 space-y-4">
+                <h4 className="text-[10px] font-bold text-[#ca8a04] uppercase tracking-widest">GROUP LEADER DETAILS</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">LEADER NAME *</label>
+                    <input 
+                      type="text" name="leaderName" placeholder="Priya Verma"
+                      value={formData.leaderName || ''} onChange={handleInputChange}
+                      className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#fde047] transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">LEADER MOBILE *</label>
+                    <input 
+                      type="text" name="leaderMobile" placeholder="9810000020"
+                      value={formData.leaderMobile || ''} onChange={handleInputChange}
+                      className="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-lg text-[12px] font-medium outline-none focus:border-[#fde047] transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+
+                <p className="text-[10px] font-medium text-[#d97706] leading-relaxed">
+                  Admin will take add/remove actions only on this leader's instruction. Leader's contact is shown to all group members.
+                </p>
+              </div>
+
+              {/* Add Members */}
+              <div className="space-y-3 pt-2">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ADD MEMBERS</label>
+                <div className="border border-slate-200 rounded-lg overflow-hidden max-h-[180px] overflow-y-auto">
                   {brokers.map(broker => {
                     const isSelected = selectedMembers.includes(broker._id);
+                    const location = broker.operatingCity || broker.city || 'N/A';
+                    
                     return (
                       <div 
                         key={broker._id}
                         onClick={() => toggleMemberSelection(broker._id)}
-                        className="flex items-center gap-6 p-4 border-b border-[#e4ded2] last:border-0 hover:bg-slate-50 transition-all cursor-pointer group"
+                        className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-all cursor-pointer group"
                       >
                         <div className="flex-shrink-0">
-                          <div className={`w-10 h-10 border-2 rounded flex items-center justify-center transition-all ${
-                            isSelected ? 'bg-[#c8962a] border-[#c8962a] text-white' : 'border-[#8894a4] bg-white'
+                          <div className={`w-4 h-4 border rounded flex items-center justify-center transition-all ${
+                            isSelected ? 'bg-[#c8962a] border-[#c8962a] text-white' : 'border-slate-300 bg-white'
                           }`}>
-                            {isSelected && <Check size={16} strokeWidth={3} />}
+                            {isSelected && <Check size={12} strokeWidth={3} />}
                           </div>
                         </div>
-                        <div className="flex-1 flex items-baseline justify-end gap-2 text-right">
-                          <span className="text-[12px] font-bold text-slate-700 uppercase tracking-tight">{broker.firstName} {broker.lastName}</span>
-                          <span className="text-[10px] font-bold text-[#8894a4] uppercase tracking-tight">({broker.companyName})</span>
+                        <div className="flex-1 text-[11px] font-medium text-slate-600 tracking-wide uppercase">
+                          {broker.firstName} {broker.lastName} — {Array.isArray(location) ? location[0] : location}
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
+
             </div>
 
-            <div className="p-3 md:p-4 border-t border-[#ddd6c8] bg-white flex items-center justify-end gap-3 flex-shrink-0">
+            <div className="p-4 border-t border-slate-200 bg-white flex items-center justify-end gap-3 shrink-0">
               <button 
                 type="button" 
                 onClick={() => { setIsCreateModalOpen(false); setIsEditModalOpen(false); }} 
-                className="px-4 py-2 rounded-lg border border-[#ddd6c8] text-[11px] font-bold text-[#2b4669] hover:bg-slate-50 transition-all"
+                className="px-5 py-2 rounded-lg border border-slate-200 text-[12px] font-medium text-slate-600 hover:bg-slate-50 transition-all"
               >
                 Cancel
               </button>
               <button 
                 onClick={isCreateModalOpen ? handleCreateGroup : handleUpdateGroup} 
-                className="px-4 py-2.5 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
+                className="px-5 py-2.5 rounded-lg bg-[#c8962a] text-white text-[12px] font-medium hover:bg-[#B48C35] transition-all shadow-sm"
               >
-                Save Listing
+                {isEditModalOpen ? 'Save Changes' : 'Create Group'}
               </button>
             </div>
           </div>

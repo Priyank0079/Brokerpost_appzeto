@@ -11,6 +11,18 @@ const groupSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  focusArea: {
+    type: String,
+    trim: true
+  },
+  leaderName: {
+    type: String,
+    trim: true
+  },
+  leaderMobile: {
+    type: String,
+    trim: true
+  },
   members: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

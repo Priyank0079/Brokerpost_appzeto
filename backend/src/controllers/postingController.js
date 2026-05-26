@@ -441,6 +441,59 @@ exports.getPostingStats = async (req, res, next) => {
       // Continue with default values
     }
 
+    let adminStats = {};
+    if (req.userModel === 'Admin') {
+      try {
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const [brokersByCityAgg, listingsByCityAgg, monthWiseAgg] = await Promise.all([
+          UserModel.aggregate([
+            { $match: { role: 'Broker', operatingCity: { $exists: true, $ne: [] } } },
+            { $unwind: '$operatingCity' },
+            { $match: { operatingCity: { $ne: '' } } },
+            { $group: { _id: { $toLower: '$operatingCity' }, count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+          ]),
+          PostingModel.aggregate([
+            { $match: { isActive: true, city: { $exists: true, $ne: '' } } },
+            { $group: { _id: { $toLower: '$city' }, count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+            { $limit: 10 }
+          ]),
+          PostingModel.aggregate([
+            { $match: { isActive: true, createdAt: { $gte: sixMonthsAgo } } },
+            {
+              $group: {
+                _id: {
+                  month: { $month: '$createdAt' },
+                  year: { $year: '$createdAt' },
+                  vertical: '$vertical',
+                  intent: '$intent'
+                },
+                count: { $sum: 1 }
+              }
+            }
+          ])
+        ]);
+
+        adminStats = {
+          brokersByCity: brokersByCityAgg.map(i => ({ city: i._id ? (i._id.charAt(0).toUpperCase() + i._id.slice(1)) : 'Unknown', count: i.count })),
+          listingsByCity: listingsByCityAgg.map(i => ({ city: i._id ? (i._id.charAt(0).toUpperCase() + i._id.slice(1)) : 'Unknown', count: i.count })),
+          monthWiseListings: monthWiseAgg.map(i => ({
+            month: i._id.month,
+            year: i._id.year,
+            vertical: i._id.vertical,
+            intent: i._id.intent,
+            count: i.count
+          }))
+        };
+      } catch (adminAggErr) {
+        console.error('Admin aggregations failed:', adminAggErr);
+      }
+    }
+
     res.status(200).json({
       success: true,
       data: {
@@ -464,7 +517,8 @@ exports.getPostingStats = async (req, res, next) => {
           }
         },
         recentListings: breakdownResults.recentListings,
-        totalBrokers: breakdownResults.totalBrokers
+        totalBrokers: breakdownResults.totalBrokers,
+        ...adminStats
       }
     });
   } catch (error) {

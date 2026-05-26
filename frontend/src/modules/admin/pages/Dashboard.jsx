@@ -1,33 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ArrowLeft, Loader2, Clock, MapPin, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 import { api } from '../../broker/services/api';
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [statsRes, userRes] = await Promise.all([
-          api.get('/postings/stats'),
-          api.get('/auth/me')
-        ]);
-
-        // More robust null checking - handle case where statsRes exists but data is null
+        const statsRes = await api.get('/postings/stats');
+        
         if (statsRes && statsRes.success && statsRes.data) {
           setStats(statsRes.data);
         } else {
-          console.warn('Stats API failed:', statsRes?.message);
-          // Set empty stats to prevent crashes
           setStats(null);
-        }
-        if (userRes && userRes.success && userRes.data) {
-          setUser(userRes.data);
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -38,42 +26,15 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  const statCards = [
-    { label: 'ALL LISTINGS', value: stats?.totalListings ?? '0', sub: 'Total platform postings', color: 'text-slate-900', path: '/admin/listings' },
-    { label: 'ACTIVE BROKERS', value: stats?.totalBrokers ?? '0', sub: 'Verified professionals', color: 'text-slate-900', path: '/admin/brokers' },
-    { label: 'AVAILABILITY', value: stats?.availabilityCount ?? '0', sub: 'For sale / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=AVAILABILITY' },
-    { label: 'REQUIREMENTS', value: stats?.requirementCount ?? '0', sub: 'Wanted buy / rent / lease', color: 'text-slate-900', path: '/admin/listings?postType=REQUIREMENT' },
-  ];
-
-  const breakdownItems = [
-    { 
-      label: 'Residential Available', 
-      value: (stats?.breakdown?.residential?.sale || 0) + (stats?.breakdown?.residential?.rent || 0) 
-    },
-    { 
-      label: 'Residential Requirements', 
-      value: (stats?.breakdown?.residential?.purchase || 0) + (stats?.breakdown?.residential?.wantedRent || 0) 
-    },
-    { 
-      label: 'Commercial Available', 
-      value: (stats?.breakdown?.commercial?.sale || 0) + (stats?.breakdown?.commercial?.lease || 0) 
-    },
-    { 
-      label: 'Commercial Requirements', 
-      value: (stats?.breakdown?.commercial?.purchase || 0) + (stats?.breakdown?.commercial?.wantedLease || 0) 
-    },
-  ];
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="animate-spin text-[#c0922e]" size={40} />
-        <p className="text-sm font-bold text-slate-400">Syncing dashboard data...</p>
+        <p className="text-sm font-bold text-slate-400">Loading dashboard...</p>
       </div>
     );
   }
 
-  // If stats failed to load, show a fallback or error
   if (!stats) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
@@ -82,161 +43,304 @@ const Dashboard = () => {
             <span className="text-2xl text-red-500">⚠️</span>
           </div>
           <h2 className="text-lg font-bold text-slate-900">Connection Error</h2>
-          <p className="text-sm text-slate-500 mt-2">We couldn't reach the server to fetch dashboard statistics. Please check your internet connection or the server status.</p>
+          <p className="text-sm text-slate-500 mt-2">Failed to load statistics.</p>
           <button 
             onClick={() => window.location.reload()} 
             className="mt-6 px-6 py-2 bg-[#c0922e] text-white rounded-lg font-bold text-sm"
           >
-            Retry Connection
+            Retry
           </button>
         </div>
       </div>
     );
   }
 
+  // --- Calculations for "Listings by category" ---
+  const breakdown = stats.breakdown || { residential: {}, commercial: {} };
+  const resiSale = breakdown.residential.sale || 0;
+  const resiRent = breakdown.residential.rent || 0;
+  const resiWant = (breakdown.residential.purchase || 0) + (breakdown.residential.wantedRent || 0);
+  const comSale = breakdown.commercial.sale || 0;
+  const comLease = breakdown.commercial.lease || 0;
+  const comWant = (breakdown.commercial.purchase || 0) + (breakdown.commercial.wantedLease || 0);
+
+  const totalListed = resiSale + resiRent + resiWant + comSale + comLease + comWant;
+
+  const categories = [
+    { name: 'Resi Sale', count: resiSale, color: '#1e3a8a', dot: '#1e3a8a' },
+    { name: 'Resi Rent', count: resiRent, color: '#3b82f6', dot: '#3b82f6' },
+    { name: 'Resi Want', count: resiWant, color: '#93c5fd', dot: '#93c5fd' },
+    { name: 'Com Sale', count: comSale, color: '#d97706', dot: '#eab308' },
+    { name: 'Com Lease', count: comLease, color: '#b45309', dot: '#d97706' },
+    { name: 'Com Want', count: comWant, color: '#78350f', dot: '#92400e' },
+  ];
+
+  // --- Colors for Cities ---
+  const cityColors = {
+    'Gurugram': '#eab308',
+    'Noida': '#1e3a8a',
+    'Delhi': '#15803d',
+    'Faridabad': '#7e22ce'
+  };
+
+  const getCityColor = (city, index) => {
+    if (cityColors[city]) return cityColors[city];
+    const fallbackColors = ['#eab308', '#1e3a8a', '#15803d', '#7e22ce', '#db2777', '#0ea5e9'];
+    return fallbackColors[index % fallbackColors.length];
+  };
+
+  // Safe fetch for dynamic admin data
+  const brokersByCity = stats.brokersByCity || [];
+  const maxBrokers = Math.max(...brokersByCity.map(b => b.count), 1);
+
+  const listingsByCity = stats.listingsByCity || [];
+  const maxListings = Math.max(...listingsByCity.map(l => l.count), 1);
+
+  const monthWiseData = stats.monthWiseListings || [];
+  
+  // Build month-wise chart data
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const last6Months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    last6Months.push({ month: d.getMonth() + 1, year: d.getFullYear(), label: monthNames[d.getMonth()] });
+  }
+
+  const getMonthCount = (month, year, vertical, intentType) => {
+    let count = 0;
+    monthWiseData.forEach(item => {
+      if (item.month === month && item.year === year && item.vertical === vertical) {
+        if (intentType === 'SALE' && item.intent === 'SALE') count += item.count;
+        if (intentType === 'RENT' && (item.intent === 'RENT' || item.intent === 'LEASE')) count += item.count;
+        if (intentType === 'WANT' && ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(item.intent)) count += item.count;
+      }
+    });
+    return count;
+  };
+
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf9f6] min-h-screen">
-      <div className="space-y-4 md:space-y-5 pb-10">
-        {/* Custom Header */}
-        <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center gap-4 md:gap-6">
-            <h1 className="text-base md:text-lg font-serif text-black">Dashboard</h1>
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
-              <input 
-                type="text" 
-                placeholder="Search listings..."
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    navigate(`/admin/listings?search=${encodeURIComponent(e.target.value)}`);
-                  }
-                }}
-                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
-              />
-            </div>
-          </div>
-          <button 
-            onClick={() => navigate('/')}
-            className="px-3 md:px-4 py-1.5 rounded-full border border-slate-200 text-black text-[10px] md:text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2 shrink-0"
-          >
-            <ArrowLeft size={14} /> 
-            <span className="hidden xs:inline">Public Site</span>
-          </button>
+    <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-6 md:py-8 lg:py-10 bg-[#faf9f6] min-h-screen font-sans">
+      
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-[28px] text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>
+          Welcome back, Admin
+        </h1>
+        <p className="text-[13px] text-slate-500 mt-1 tracking-tight">Platform-wide activity & system health overview</p>
+      </div>
+
+      {/* Top Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">NETWORK LISTINGS</p>
+          <p className="text-3xl font-serif text-[#1e3a8a]">{stats.totalListings || 0}</p>
+          <p className="text-[11px] text-slate-400 mt-1">All brokers combined</p>
         </div>
+        
+        <div className="bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">ACTIVE BROKERS</p>
+          <p className="text-3xl font-serif text-[#1e3a8a]">{stats.totalBrokers || 0}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Verified professionals</p>
+        </div>
+        
+        <div className="bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">AVAILABILITY</p>
+          <p className="text-3xl font-serif text-[#1e3a8a]">{stats.availabilityCount || 0}</p>
+          <p className="text-[11px] text-slate-400 mt-1">For sale / rent / lease</p>
+        </div>
+        
+        <div className="bg-white p-5 rounded-xl border border-[#ede8df] shadow-sm">
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">REQUIREMENTS</p>
+          <p className="text-3xl font-serif text-[#1e3a8a]">{stats.requirementCount || 0}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Wanted buy / rent / lease</p>
+        </div>
+      </div>
 
-        <div className="space-y-4 md:space-y-5">
-          {/* Page Header */}
-          <div className="px-2 md:px-0">
-            <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">Welcome back, Admin</h1>
-            <p className="text-[13px] text-[#718199] mt-0 tracking-tight font-normal">Platform-wide activity & system health overview</p>
+      {/* Middle Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+        
+        {/* Listings by Category (Left 7 cols) */}
+        <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm lg:col-span-7 overflow-hidden flex flex-col">
+          <div className="p-5 pb-3 border-b border-[#ede8df] flex items-center justify-between">
+            <h3 className="text-[14px] font-medium text-slate-700">Listings by category</h3>
+            <span className="text-[10px] text-slate-400">Count • % share</span>
           </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
-            {statCards.map((card, idx) => (
-              <div 
-                key={idx} 
-                onClick={() => navigate(card.path)}
-                className="bg-white p-2.5 md:p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer"
-              >
-                <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-0.5 md:mb-1">{card.label}</p>
-                <div className="flex flex-col">
-                  <span className="text-xl md:text-2xl font-serif text-[#1e3a8a] leading-none">{card.value}</span>
-                  <span className="text-[10px] md:text-[11px] text-slate-400 font-medium mt-1 md:mt-1 truncate tracking-tight">{card.sub}</span>
-                </div>
+          
+          <div className="p-5 pt-3">
+            {/* Legend */}
+            <div className="flex items-center gap-4 mb-4 text-[11px] text-slate-500">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-[#1e3a8a]"></div>
+                <span>Residential</span>
               </div>
-            ))}
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-[#eab308]"></div>
+                <span>Commercial</span>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div className="w-full">
+              <div className="flex text-[10px] font-bold text-slate-400 tracking-wider uppercase mb-3 px-2">
+                <div className="w-1/3">CATEGORY</div>
+                <div className="w-1/6 text-center">COUNT</div>
+                <div className="w-1/6 text-center">SHARE</div>
+                <div className="w-1/3 text-right">BAR</div>
+              </div>
+              
+              <div className="space-y-3">
+                {categories.map((cat, idx) => {
+                  const share = totalListed > 0 ? Math.round((cat.count / totalListed) * 100) : 0;
+                  return (
+                    <div key={idx} className="flex items-center text-[13px] px-2">
+                      <div className="w-1/3 flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.dot }}></div>
+                        <span className="font-medium text-slate-700">{cat.name}</span>
+                      </div>
+                      <div className="w-1/6 text-center text-slate-800">{cat.count}</div>
+                      <div className="w-1/6 text-center text-slate-500">{share}%</div>
+                      <div className="w-1/3 flex items-center h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full rounded-full transition-all duration-1000" 
+                          style={{ width: `${share}%`, backgroundColor: cat.color }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 px-2 md:px-0">
-          {/* Recent Listings Card */}
-          <div className="lg:col-span-3 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
-            <div className="px-5 py-4 border-b border-slate-50 flex items-center justify-between">
-              <h3 className="text-xs md:text-sm font-bold text-slate-900">Recent Platform Activity</h3>
-              <button 
-                onClick={() => navigate('/admin/listings')}
-                className="px-3 md:px-4 py-1 rounded-lg border border-slate-200 text-[10px] md:text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all"
-              >
-                View All
-              </button>
-            </div>
-            <div className="flex-1 overflow-x-auto">
-              {!stats?.recentListings || stats.recentListings.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-10 md:py-16 text-center px-6">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[#faf9f6] rounded-xl flex items-center justify-center mb-4">
-                    <span className="text-xl md:text-2xl opacity-40">📋</span>
-                  </div>
-                  <h4 className="text-sm md:text-base font-bold text-slate-900">No listings yet</h4>
-                </div>
-              ) : (
-                <div className="divide-y divide-slate-50 min-w-[500px]">
-                  {stats.recentListings.map((listing) => (
-                    <div key={listing._id} className="p-4 hover:bg-slate-50/50 transition-colors flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                          listing.postType === 'AVAILABILITY' ? 'bg-emerald-50 text-emerald-600' : 'bg-blue-50 text-blue-600'
-                        }`}>
-                          <span className="text-xs font-bold uppercase">{listing.vertical?.[0] || 'P'}</span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[11px] font-bold text-slate-900 truncate">
-                            {listing.vertical} {listing.intent} in {listing.location}
-                          </p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded uppercase ${
-                              listing.postType === 'AVAILABILITY' ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
-                            }`}>
-                              {listing.postType}
-                            </span>
-                            <span className="text-[9px] text-slate-400 font-medium flex items-center gap-1">
-                              <MapPin size={8} /> {listing.project || 'Direct'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <div className="flex items-center justify-end gap-2 mb-1">
-                           <User size={10} className="text-slate-300" />
-                           <p className="text-[10px] font-bold text-slate-600">{listing.postedBy?.firstName} {listing.postedBy?.lastName}</p>
-                        </div>
-                        <p className="text-[9px] text-slate-400 font-medium flex items-center justify-end gap-1">
-                           <Clock size={8} /> {listing.createdAt ? new Date(listing.createdAt).toLocaleDateString() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+        {/* Brokers by City (Right 5 cols) */}
+        <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm lg:col-span-5 overflow-hidden flex flex-col">
+          <div className="p-5 pb-3 border-b border-[#ede8df] flex items-center justify-between">
+            <h3 className="text-[14px] font-medium text-slate-700">Brokers by city</h3>
+            <span className="text-[10px] text-slate-400">Active only</span>
           </div>
-
-          {/* Breakdown Card */}
-          <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-full">
-            <div className="px-5 py-4 border-b border-slate-50">
-              <h3 className="text-xs md:text-sm font-bold text-slate-900">Inventory Breakdown</h3>
-            </div>
-            <div className="p-5 md:p-6 space-y-4 md:space-y-6 flex-1">
-              {breakdownItems.map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between group">
-                  <div className="space-y-1.5 flex-1 mr-6 md:mr-8">
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] md:text-[11px] font-bold text-slate-500 group-hover:text-slate-900 transition-colors leading-none truncate">{item.label}</p>
-                      <span className="text-xs md:text-[12px] font-serif font-bold text-[#1e3a8a]">{item.value}</span>
+          
+          <div className="p-5 pt-6 space-y-6">
+            {brokersByCity.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">No active brokers found</p>
+            ) : (
+              brokersByCity.map((item, idx) => {
+                const width = Math.max(5, (item.count / maxBrokers) * 100);
+                return (
+                  <div key={idx} className="flex items-center gap-4">
+                    <div className="w-20 text-[13px] font-medium text-slate-700 truncate">{item.city}</div>
+                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden flex items-center">
+                      <div 
+                        className="h-full rounded-full transition-all duration-1000" 
+                        style={{ width: `${width}%`, backgroundColor: getCityColor(item.city, idx) }}
+                      ></div>
                     </div>
-                    <div className="w-full h-[3px] bg-slate-100 rounded-full overflow-hidden">
-                       <div 
-                        className="h-full bg-[#c8962a] transition-all duration-700 ease-out" 
-                        style={{ width: `${Math.min(((parseInt(item.value) || 0) / (stats?.totalListings || 1)) * 100, 100)}%` }}
-                       />
-                    </div>
+                    <div className="w-4 text-right text-[12px] text-slate-400">{item.count}</div>
                   </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+      </div>
+
+      {/* Bottom Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
+        
+        {/* Month-wise Listings (Left 7 cols) */}
+        <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm lg:col-span-7 overflow-hidden flex flex-col">
+          <div className="p-5 pb-3 border-b border-[#ede8df] flex items-center justify-between">
+            <h3 className="text-[14px] font-medium text-slate-700">Month-wise listings</h3>
+            <span className="text-[10px] text-slate-400">Last 6 months - by category</span>
+          </div>
+          
+          <div className="p-5 pt-3">
+            {/* Legend */}
+            <div className="flex items-center gap-4 mb-8 text-[11px] text-slate-500 overflow-x-auto whitespace-nowrap pb-1">
+              {categories.map((cat, idx) => (
+                <div key={idx} className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.dot }}></div>
+                  <span>{cat.name}</span>
                 </div>
               ))}
             </div>
+
+            {/* Bar Chart (Custom CSS) */}
+            <div className="relative h-[140px] flex items-end justify-between px-4">
+              {last6Months.map((m, idx) => {
+                const rS = getMonthCount(m.month, m.year, 'RESIDENTIAL', 'SALE');
+                const rR = getMonthCount(m.month, m.year, 'RESIDENTIAL', 'RENT');
+                const rW = getMonthCount(m.month, m.year, 'RESIDENTIAL', 'WANT');
+                const cS = getMonthCount(m.month, m.year, 'COMMERCIAL', 'SALE');
+                const cL = getMonthCount(m.month, m.year, 'COMMERCIAL', 'RENT'); // map to RENT internally
+                const cW = getMonthCount(m.month, m.year, 'COMMERCIAL', 'WANT');
+
+                // Determine max total across months to scale height
+                const allTotals = last6Months.map(mx => 
+                  getMonthCount(mx.month, mx.year, 'RESIDENTIAL', 'SALE') +
+                  getMonthCount(mx.month, mx.year, 'RESIDENTIAL', 'RENT') +
+                  getMonthCount(mx.month, mx.year, 'RESIDENTIAL', 'WANT') +
+                  getMonthCount(mx.month, mx.year, 'COMMERCIAL', 'SALE') +
+                  getMonthCount(mx.month, mx.year, 'COMMERCIAL', 'RENT') +
+                  getMonthCount(mx.month, mx.year, 'COMMERCIAL', 'WANT')
+                );
+                const maxMonthTotal = Math.max(...allTotals, 1);
+
+                return (
+                  <div key={idx} className="flex flex-col items-center w-full">
+                    {/* Bars Container */}
+                    <div className="flex gap-1 items-end h-[100px] w-full justify-center relative">
+                      {/* Grey placeholder bar for empty data if you want, but reference shows empty is blank */}
+                      <div className="w-2 bg-[#1e3a8a] rounded-t-sm transition-all" style={{ height: `${(rS / maxMonthTotal) * 100}%` }}></div>
+                      <div className="w-2 bg-[#3b82f6] rounded-t-sm transition-all" style={{ height: `${(rR / maxMonthTotal) * 100}%` }}></div>
+                      <div className="w-2 bg-[#93c5fd] rounded-t-sm transition-all" style={{ height: `${(rW / maxMonthTotal) * 100}%` }}></div>
+                      <div className="w-2 bg-[#eab308] rounded-t-sm transition-all" style={{ height: `${(cS / maxMonthTotal) * 100}%` }}></div>
+                      <div className="w-2 bg-[#d97706] rounded-t-sm transition-all" style={{ height: `${(cL / maxMonthTotal) * 100}%` }}></div>
+                      <div className="w-2 bg-[#92400e] rounded-t-sm transition-all" style={{ height: `${(cW / maxMonthTotal) * 100}%` }}></div>
+                    </div>
+                    {/* Label */}
+                    <span className="text-[10px] text-slate-400 mt-3">{m.label}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
+
+        {/* Listings by City (Right 5 cols) */}
+        <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm lg:col-span-5 overflow-hidden flex flex-col">
+          <div className="p-5 pb-3 border-b border-[#ede8df] flex items-center justify-between">
+            <h3 className="text-[14px] font-medium text-slate-700">Listings by city</h3>
+            <span className="text-[10px] text-slate-400">All categories combined</span>
+          </div>
+          
+          <div className="p-5 pt-6 space-y-6">
+            {listingsByCity.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-4">No active listings found</p>
+            ) : (
+              listingsByCity.map((item, idx) => {
+                const width = Math.max(5, (item.count / maxListings) * 100);
+                return (
+                  <div key={idx} className="flex items-center gap-4">
+                    <div className="w-20 text-[13px] font-medium text-slate-700 truncate">{item.city}</div>
+                    <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden flex items-center">
+                      <div 
+                        className="h-full rounded-full transition-all duration-1000" 
+                        style={{ width: `${width}%`, backgroundColor: getCityColor(item.city, idx) }}
+                      ></div>
+                    </div>
+                    <div className="w-4 text-right text-[12px] text-slate-400">{item.count}</div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
       </div>
+
     </div>
   );
 };
