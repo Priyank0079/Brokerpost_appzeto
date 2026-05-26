@@ -1,7 +1,8 @@
 import { API_BASE_URL } from '../../../config/api';
 
 const getHeaders = (contentType = 'application/json') => {
-  const token = localStorage.getItem('token');
+  const isAdminApp = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+  const token = localStorage.getItem(isAdminApp ? 'admin_token' : 'token');
   const headers = {};
   if (contentType) headers['Content-Type'] = contentType;
   if (token && token !== 'null' && token !== 'undefined') {

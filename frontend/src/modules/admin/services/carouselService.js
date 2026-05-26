@@ -1,7 +1,7 @@
 import { API_BASE_URL } from '../../../config/api';
 
 const getHeaders = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('admin_token');
   return {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -47,7 +47,7 @@ export const uploadImage = async (file) => {
   const response = await fetch(`${API_BASE_URL}/upload`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+      'Authorization': `Bearer ${localStorage.getItem('admin_token')}`
     },
     body: formData
   });

@@ -4,9 +4,13 @@ import { api } from '../services/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const isAdminApp = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+  const tokenKey = isAdminApp ? 'admin_token' : 'token';
+  const userKey = isAdminApp ? 'admin_user' : 'user';
+
   const [user, setUser] = useState(() => {
     try {
-      const cached = localStorage.getItem('user');
+      const cached = localStorage.getItem(userKey);
       return cached ? JSON.parse(cached) : null;
     } catch {
       return null;
@@ -15,11 +19,11 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(tokenKey);
     
     if (!token) {
       setUser(null);
-      localStorage.removeItem('user');
+      localStorage.removeItem(userKey);
       setLoading(false);
       return;
     }
@@ -28,13 +32,13 @@ export const AuthProvider = ({ children }) => {
       const response = await api.get('/auth/me');
       if (response.success) {
         setUser(response.data);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem(userKey, JSON.stringify(response.data));
       } else {
         // Only log out if it's an auth error, not a random server 500
         const msg = (response.message || '').toLowerCase();
         if (msg.includes('authorized') || msg.includes('expired') || msg.includes('invalid') || msg.includes('token') || msg.includes('found')) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          localStorage.removeItem(tokenKey);
+          localStorage.removeItem(userKey);
           setUser(null);
         }
       }
@@ -54,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       if (response.success) {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('token', response.token); // Broker login always sets normal token
         localStorage.setItem('user', JSON.stringify(response.data));
         setUser(response.data);
         return { success: true, user: response.data };
@@ -118,13 +122,13 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = (newData) => {
     setUser(newData);
-    localStorage.setItem('user', JSON.stringify(newData));
+    localStorage.setItem(userKey, JSON.stringify(newData));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem(tokenKey);
+    localStorage.removeItem(userKey);
     localStorage.removeItem('registration_draft');
   };
 
@@ -132,8 +136,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/admin/login', { email, password });
       if (response.success) {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('admin_token', response.token); // Admin login always sets admin_token
+        localStorage.setItem('admin_user', JSON.stringify(response.data));
         setUser(response.data);
         return { success: true, user: response.data };
       }
