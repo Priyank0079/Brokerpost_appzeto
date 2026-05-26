@@ -11,14 +11,16 @@ const Brokers = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [stats, setStats] = useState([
-    { label: 'Total Brokers', value: '0' },
-    { label: 'Pending', value: '0' },
-    { label: 'Verified', value: '0' },
+    { label: 'Total Brokers', value: '0', color: 'text-[#1e3a8a]' },
+    { label: 'Active', value: '0', color: 'text-emerald-600' },
+    { label: 'Blocked', value: '0', color: 'text-red-600' },
+    { label: 'Total Listings', value: '0', color: 'text-[#c8962a]' },
   ]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingBroker, setEditingBroker] = useState(null);
+  const [brokerToDelete, setBrokerToDelete] = useState(null);
   const [formData, setFormData] = useState({
     fullName: '',
     company: '',
@@ -56,16 +58,16 @@ const Brokers = () => {
   const handleEditClick = (broker) => {
     setEditingBroker(broker);
     setFormData({
-      fullName: broker.name,
-      company: broker.firm,
-      phone: broker.phone,
-      email: broker.email,
+      fullName: `${broker.firstName || ''} ${broker.lastName || ''}`.trim(),
+      company: broker.companyName || '',
+      phone: broker.phoneNumber || '',
+      email: broker.email || '',
       password: '', // Hidden in edit usually
-      city: broker.city,
-      address: 'H.No. 2322 Sushant Lok-2', // Mock address
+      city: broker.operatingCity || '',
+      address: broker.officeAddress || '',
       role: 'Broker',
-      listingLimit: broker.listings.split('/')[1] || '25',
-      status: broker.status,
+      listingLimit: broker.listingLimit || '25',
+      status: broker.isVerified ? 'Active' : 'Blocked',
       groupAssignment: broker.groups || []
     });
     setIsEditModalOpen(true);
@@ -89,9 +91,10 @@ const Brokers = () => {
       const response = await api.get('/auth/stats');
       if (response.success) {
         setStats([
-          { label: 'Total Brokers', value: response.data.totalBrokers || 0 },
-          { label: 'Pending', value: response.data.pendingBrokers || 0 },
-          { label: 'Verified', value: response.data.verifiedBrokers || 0 },
+          { label: 'Total Brokers', value: response.data.totalBrokers || 0, color: 'text-[#1e3a8a]' },
+          { label: 'Active', value: response.data.verifiedBrokers || 0, color: 'text-emerald-600' },
+          { label: 'Blocked', value: response.data.pendingBrokers || 0, color: 'text-red-600' },
+          { label: 'Total Listings', value: response.data.totalListings || 0, color: 'text-[#c8962a]' },
         ]);
       }
     } catch (err) {
@@ -108,17 +111,18 @@ const Brokers = () => {
     loadData();
   }, [currentPage]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this broker?')) {
-      try {
-        const response = await api.delete(`/auth/brokers/${id}`);
-        if (response.success) {
-          fetchBrokers(currentPage);
-          fetchStats();
-        }
-      } catch (err) {
-        alert('Failed to delete broker');
+  const confirmDelete = async () => {
+    if (!brokerToDelete) return;
+    try {
+      const response = await api.delete(`/auth/brokers/${brokerToDelete._id}`);
+      if (response.success) {
+        fetchBrokers(currentPage);
+        fetchStats();
       }
+    } catch (err) {
+      alert('Failed to delete broker');
+    } finally {
+      setBrokerToDelete(null);
     }
   };
 
@@ -186,11 +190,11 @@ const Brokers = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 px-2 md:px-0">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white p-2.5 md:p-3 rounded-xl border border-slate-200 shadow-sm text-center">
-              <span className="text-xl md:text-2xl font-serif text-[#1e3a8a] leading-none">{stat.value}</span>
-              <p className="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 md:mt-1">{stat.label}</p>
+            <div key={idx} className="bg-white py-4 md:py-6 px-4 rounded-xl border border-slate-200 shadow-sm text-center flex flex-col items-center justify-center">
+              <span className={`text-2xl md:text-3xl font-serif ${stat.color} leading-none mb-2`}>{stat.value}</span>
+              <p className="text-[11px] md:text-xs font-medium text-slate-500">{stat.label}</p>
             </div>
           ))}
         </div>
@@ -256,35 +260,38 @@ const Brokers = () => {
                             href={`https://wa.me/${broker.phoneNumber.replace(/[^0-9]/g, '').length === 10 ? '91' + broker.phoneNumber.replace(/[^0-9]/g, '') : broker.phoneNumber.replace(/[^0-9]/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[8px] font-bold hover:bg-emerald-100 transition-all border border-emerald-100/50"
+                            className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500 text-white rounded text-[9px] font-bold hover:bg-emerald-600 transition-all shadow-sm"
                           >
-                            WA
+                            <MessageSquare size={10} /> WA
                           </a>
                           <a 
                             href={`tel:${broker.phoneNumber}`}
-                            className="flex items-center gap-1 px-1.5 py-0.5 bg-blue-50 text-blue-600 rounded text-[8px] font-bold hover:bg-blue-100 transition-all border border-blue-100/50"
+                            className="flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-[9px] font-bold hover:bg-blue-100 transition-all border border-blue-100"
                           >
-                            Call
+                            <Phone size={10} /> Call
                           </a>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[8px] font-bold border border-blue-100">{broker.role.toLowerCase()}</span>
+                      <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold border border-blue-100">{broker.role.toLowerCase()}</span>
                     </td>
                     <td className="px-4 py-4">
-                      <div className="space-y-1 w-full">
-                        <p className="text-[10px] font-bold text-slate-900">
-                          {broker.listingCount || 0}/{broker.listingLimit || 25}
+                      <div className="space-y-1.5 w-full">
+                        <p className="text-[11px] font-bold text-slate-900">
+                          {broker.listingCount || 0} / {broker.listingLimit || 25}
                         </p>
-                        <div className="w-full h-1 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-[#c8962a] rounded-full animate-pulse-subtle" 
+                            className="h-full bg-[#1e3a8a] rounded-full" 
                             style={{ width: `${Math.min(((broker.listingCount || 0) / (broker.listingLimit || 25)) * 100, 100)}%` }}
                           />
                         </div>
-                        <button className="text-[8px] font-bold text-primary-500 flex items-center gap-1 hover:underline">
-                           Limit
+                        <button 
+                          onClick={() => handleEditClick(broker)}
+                          className="text-[9px] font-bold text-slate-500 flex items-center gap-1 hover:text-slate-700 transition-colors"
+                        >
+                           <Edit2 size={10} className="text-[#c8962a]" /> Limit
                         </button>
                       </div>
                     </td>
@@ -307,30 +314,30 @@ const Brokers = () => {
                     </td>
                     <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{new Date(broker.createdAt).toLocaleDateString()}</td>
                     <td className="px-4 py-4">
-                      <span className={`px-1.5 py-0.5 rounded text-[8px] font-bold border ${broker.isVerified ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
-                        {broker.isVerified ? 'Verified' : 'Pending'}
+                      <span className={`text-[11px] font-bold ${broker.isVerified ? 'text-emerald-500' : 'text-red-500'}`}>
+                        {broker.isVerified ? 'Active' : 'Blocked'}
                       </span>
                     </td>
                     <td className="px-4 py-4">
-                      <div className="flex items-center justify-center gap-1">
+                      <div className="flex items-center justify-center gap-1.5">
                         <button 
                           onClick={() => handleEditClick(broker)}
-                          className="p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                          className="px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-full text-[10px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
                         >
-                          <Edit2 size={8} className="text-primary-500" /> Edit
+                          <Edit2 size={10} className="text-[#c8962a]" /> Edit
                         </button>
                         <button 
                           onClick={() => toggleStatus(broker)}
-                          className={`p-1.5 border border-slate-200 text-slate-600 rounded-lg text-[9px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1 ${broker.isVerified ? 'hover:text-amber-600' : 'hover:text-emerald-600'}`}
+                          className={`px-2.5 py-1.5 border border-slate-200 rounded-full text-[10px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1 ${broker.isVerified ? 'text-slate-600' : 'text-slate-600'}`}
                         >
-                          {broker.isVerified ? <XCircle size={8} className="text-amber-500" /> : <CheckCircle size={8} className="text-emerald-500" />} 
-                          {broker.isVerified ? 'Unverify' : 'Verify'}
+                          {broker.isVerified ? <Ban size={10} className="text-red-500" /> : <CheckCircle size={10} className="text-emerald-500" />} 
+                          {broker.isVerified ? 'Block' : 'Unblock'}
                         </button>
                         <button 
-                          onClick={() => handleDelete(broker._id)}
-                          className="p-1.5 bg-[#7f1d1d] text-white rounded-lg text-[9px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1"
+                          onClick={() => setBrokerToDelete(broker)}
+                          className="px-2.5 py-1.5 bg-[#7f1d1d] text-white rounded-full text-[10px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1"
                         >
-                          <Trash2 size={8} /> Del
+                          <Trash2 size={10} /> Del
                         </button>
                       </div>
                     </td>
@@ -448,8 +455,12 @@ const Brokers = () => {
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all appearance-none"
                   >
                     <option value="">— Select —</option>
-                    <option value="Gurugram">Gurugram</option>
+                    <option value="Gurgaon">Gurgaon</option>
                     <option value="Delhi">Delhi</option>
+                    <option value="Noida">Noida</option>
+                    <option value="Faridabad">Faridabad</option>
+                    <option value="Ghaziabad">Ghaziabad</option>
+                    <option value="Greater Noida">Greater Noida</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
@@ -488,11 +499,75 @@ const Brokers = () => {
                   Cancel
                 </button>
                 <button 
+                  onClick={async () => {
+                    if (isEditModalOpen && editingBroker) {
+                      const [firstName, ...lastNameParts] = formData.fullName.split(' ');
+                      const lastName = lastNameParts.join(' ');
+                      
+                      const payload = {
+                        firstName: firstName || '',
+                        lastName: lastName || '',
+                        companyName: formData.company,
+                        phoneNumber: formData.phone,
+                        operatingCity: formData.city,
+                        officeAddress: formData.address,
+                        listingLimit: parseInt(formData.listingLimit) || 25,
+                      };
+                      
+                      if (formData.password) payload.password = formData.password;
+
+                      try {
+                        const response = await api.put(`/auth/brokers/${editingBroker._id}`, payload);
+                        if (response.success) {
+                          setIsEditModalOpen(false);
+                          setEditingBroker(null);
+                          fetchBrokers(currentPage);
+                        } else {
+                          alert('Failed to update broker: ' + response.message);
+                        }
+                      } catch (err) {
+                        alert('Error updating broker');
+                      }
+                    } else if (isAddModalOpen) {
+                       // Implement add broker logic if needed
+                       alert("Manual adding of brokers is not yet fully configured via this UI. Use public registration.");
+                    }
+                  }}
                   className="px-4 py-2 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
                 >
-                  Save Listing
+                  {isEditModalOpen ? 'Save Broker' : 'Add Broker'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {brokerToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => setBrokerToDelete(null)} />
+          <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden text-center p-6">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Trash2 size={24} />
+            </div>
+            <h3 className="text-lg font-serif text-slate-900 mb-2">Delete Broker?</h3>
+            <p className="text-xs text-slate-500 mb-6">
+              Are you sure you want to delete <span className="font-bold text-slate-800">{brokerToDelete.firstName} {brokerToDelete.lastName}</span>? This action cannot be undone and will remove all their active listings.
+            </p>
+            <div className="flex items-center gap-3 w-full">
+              <button 
+                onClick={() => setBrokerToDelete(null)}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-slate-200 text-slate-600 text-[11px] font-bold hover:bg-slate-50 transition-all"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2.5 rounded-lg bg-red-600 text-white text-[11px] font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-600/20"
+              >
+                Yes, Delete
+              </button>
             </div>
           </div>
         </div>

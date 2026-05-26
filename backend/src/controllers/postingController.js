@@ -20,7 +20,7 @@ exports.createPosting = async (req, res, next) => {
       totalAmount, totalAmountUnit,
       budgetMin, budgetMax, budgetUnit,
       occupancy, constructionStatus,
-      tenantPreference, shortDescription, images, videos, city
+      tenantPreference, shortDescription, remarks, images, videos, city
     } = req.body;
 
     const posting = await Posting.create({
@@ -35,7 +35,7 @@ exports.createPosting = async (req, res, next) => {
       totalAmount, totalAmountUnit,
       budgetMin, budgetMax, budgetUnit,
       occupancy, constructionStatus,
-      tenantPreference, shortDescription, images, videos, city
+      tenantPreference, shortDescription, remarks, images, videos, city
     });
 
     // Fire and forget matching process
@@ -74,7 +74,7 @@ exports.getPostings = async (req, res, next) => {
     if (vertical)           filter.vertical           = vertical;
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
-    if (subType)            filter.subType            = subType;
+    if (subType)            filter.subType            = new RegExp(`^${subType}$`, 'i');
     if (bedrooms)           filter.bedrooms           = bedrooms;
     if (constructionStatus) filter.constructionStatus = constructionStatus;
     if (occupancy)          filter.occupancy          = occupancy;
@@ -164,7 +164,7 @@ exports.getMyPostings = async (req, res, next) => {
 
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
-    if (subType)            filter.subType            = subType;
+    if (subType)            filter.subType            = new RegExp(`^${subType}$`, 'i');
     if (vertical)           filter.vertical           = vertical;
     // Allow fetching inactive postings for "my postings" view
     if (isActive !== undefined) filter.isActive = isActive === 'true';
@@ -247,7 +247,7 @@ exports.updatePosting = async (req, res, next) => {
       'totalAmount', 'totalAmountUnit',
       'budgetMin', 'budgetMax', 'budgetUnit',
       'occupancy', 'constructionStatus',
-      'tenantPreference', 'shortDescription', 'images', 'videos',
+      'tenantPreference', 'shortDescription', 'remarks', 'images', 'videos',
       'isActive', 'city'
     ];
 

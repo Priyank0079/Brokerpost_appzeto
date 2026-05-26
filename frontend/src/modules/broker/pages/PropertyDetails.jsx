@@ -199,7 +199,7 @@ const PropertyDetails = () => {
                       variant="secondary"
                       className="bg-primary-50 text-primary-600 border-none font-black text-[8px] uppercase tracking-[0.2em] px-2 py-1"
                     >
-                      {SUBTYPE_DISPLAY_MAP[item.subType]}
+                      {item.subType}
                     </Badge>
                     <span className="text-slate-200">•</span>
                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
@@ -257,7 +257,7 @@ const PropertyDetails = () => {
                   <div className="p-4 rounded-lg bg-white border border-slate-50 shadow-soft space-y-2">
                     <HomeIcon size={15} className="text-slate-400" />
                     <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest mb-0.5">Category</p>
-                    <p className="font-black text-slate-900 text-sm">{SUBTYPE_DISPLAY_MAP[item.subType] || item.subType}</p>
+                    <p className="font-black text-slate-900 text-sm">{item.subType}</p>
                   </div>
                 )}
               </div>
@@ -273,7 +273,7 @@ const PropertyDetails = () => {
                         {item.bedrooms ? 'Accommodation' : 'Category'}
                       </p>
                       <p className="text-sm font-black text-slate-900">
-                        {item.bedrooms ? `${item.bedrooms} BHK` : SUBTYPE_DISPLAY_MAP[item.subType]}
+                        {item.bedrooms ? `${item.bedrooms} BHK` : item.subType}
                       </p>
                     </div>
                   </div>

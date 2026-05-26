@@ -60,22 +60,20 @@ const CommercialInventory = () => {
 
   const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
   const isRentIntent = ['RENT', 'WANTED_RENT', 'RENTALS', 'LEASE', 'WANTED_LEASE'].includes(intent);
-  const subTypes = isRentIntent
-    ? [
-        'All Sub-types', 
-        'Shops/Showroom', 
-        'Office', 
-        'Warehouse', 
-        'Standalone Building'
-      ]
-    : [
-        'All Sub-types', 
-        'Shops/Showroom', 
-        'Office', 
-        'Warehouse', 
-        'Standalone Building', 
-        'Plot'
-      ];
+  const [subTypes, setSubTypes] = useState(['All Sub-types']);
+
+  useEffect(() => {
+    import('../services/categoryService').then(({ getCategories }) => {
+      getCategories({ vertical: 'COMMERCIAL', intent }).then(res => {
+        if (res.success && res.data.length > 0) {
+          const cat = res.data[0];
+          setSubTypes(['All Sub-types', ...(cat.subCategories || [])]);
+        } else {
+          setSubTypes(['All Sub-types']);
+        }
+      });
+    });
+  }, [intent]);
 
   const fetchListings = async () => {
     setLoading(true);
@@ -85,7 +83,7 @@ const CommercialInventory = () => {
         intent: intent,
       };
       if (selectedSubType !== 'All Sub-types') {
-        params.subType = selectedSubType.toUpperCase().replace(' ', '_').replace('/', '_');
+        params.subType = selectedSubType;
       }
       if (debouncedSearch.trim() !== '') {
         params.location = debouncedSearch.trim();

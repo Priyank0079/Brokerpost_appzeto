@@ -24,6 +24,11 @@ export const api = {
     const data = await response.json();
     // Return proper structure even on error
     if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: data.message } }));
+        }
+      }
       return { success: false, message: data.message || 'Request failed', data: null };
     }
     return data;
@@ -34,7 +39,11 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data)
     });
-    return response.json();
+    const resData = await response.json();
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: resData.message } }));
+    }
+    return resData;
   },
   put: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -42,7 +51,11 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data)
     });
-    return response.json();
+    const resData = await response.json();
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: resData.message } }));
+    }
+    return resData;
   },
   patch: async (endpoint, data) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -50,13 +63,21 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data)
     });
-    return response.json();
+    const resData = await response.json();
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: resData.message } }));
+    }
+    return resData;
   },
   delete: async (endpoint) => {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       method: 'DELETE',
       headers: getHeaders(null)
     });
-    return response.json();
+    const resData = await response.json();
+    if (!response.ok && (response.status === 401 || response.status === 403)) {
+      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('auth-error', { detail: { message: resData.message } }));
+    }
+    return resData;
   }
 };

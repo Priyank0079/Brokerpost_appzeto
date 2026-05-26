@@ -35,6 +35,10 @@ const protect = async (req, res, next) => {
         return res.status(401).json({ success: false, message: 'User not found' });
       }
 
+      if (userModel === 'User' && !foundUser.isVerified) {
+        return res.status(401).json({ success: false, message: 'Your account has been blocked by the administrator.', isBlocked: true });
+      }
+
       req.user = foundUser;
       req.userModel = userModel;
 

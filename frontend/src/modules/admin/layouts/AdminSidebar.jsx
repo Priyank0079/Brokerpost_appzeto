@@ -48,6 +48,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
         { icon: <Zap size={16} />, label: 'Subscriptions', path: '/admin/subscriptions' },
         { icon: <CreditCard size={16} />, label: 'Payments', path: '/admin/payments' },
         { icon: <PieChart size={16} />, label: 'Reports', path: '/admin/reports' },
+        { icon: <Settings size={16} />, label: 'Taxonomy', path: '/admin/categories' },
         { icon: <Settings size={16} />, label: 'Settings', path: '/admin/settings' },
       ]
     }

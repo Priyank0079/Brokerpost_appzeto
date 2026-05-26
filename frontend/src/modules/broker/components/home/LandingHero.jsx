@@ -134,19 +134,7 @@ const LandingHero = ({ onRegisterClick, config }) => {
               </button>
             </div>
 
-            <div className="flex flex-wrap gap-x-8 gap-y-2 pt-8 border-t border-slate-200">
-              {[
-                { label: 'Live Listings', value: '45' },
-                { label: 'Verified Brokers', value: '17' },
-                { label: 'Brokerage Charged', value: '₹0' },
-                { label: 'Direct Deals', value: '100%' }
-              ].map((stat, idx) => (
-                <div key={idx}>
-                  <p className="text-2xl font-serif font-semibold text-[#1a365d]">{stat.value}</p>
-                  <p className="text-[10px] font-normal text-slate-500 mt-0">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+
           </div>
 
           {/* Right Side: Inventory Preview Card */}

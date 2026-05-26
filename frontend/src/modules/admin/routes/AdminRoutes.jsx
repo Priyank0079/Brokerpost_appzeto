@@ -14,6 +14,7 @@ import Reports from '../pages/Reports';
 import Profile from '../pages/Profile';
 import BrokerDetail from '../pages/BrokerDetail';
 import LandingPageManager from '../pages/LandingPageManager';
+import CategoriesManagement from '../pages/CategoriesManagement';
 import PropertyDetails from '../../broker/pages/PropertyDetails';
 
 const AdminRoutes = () => {
@@ -23,6 +24,7 @@ const AdminRoutes = () => {
         <Route path="/" element={<Dashboard />} />
         <Route path="/landing" element={<LandingPageManager />} />
         <Route path="/carousel" element={<CarouselManagement />} />
+        <Route path="/categories" element={<CategoriesManagement />} />
         <Route path="/brokers" element={<Brokers />} />
         <Route path="/brokers/:id" element={<BrokerDetail />} />
         <Route path="/listings" element={<Listings />} />
