@@ -97,6 +97,16 @@ exports.getPostings = async (req, res, next) => {
       }
     }
 
+    if (req.query.scope === 'network' && req.userModel !== 'Admin' && req.user) {
+      const Group = require('../models/Group');
+      const userGroups = await Group.find({ members: req.user._id });
+      const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
+      if (!memberIds.includes(req.user._id.toString())) {
+        memberIds.push(req.user._id.toString());
+      }
+      filter.postedBy = { $in: memberIds };
+    }
+
     const skip = (Number(page) - 1) * Number(limit);
 
     let postings;
@@ -152,13 +162,14 @@ exports.getMyPostings = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'User context missing' });
     }
 
-    const { postType, intent, subType, isActive, page = 1, limit = 20 } = req.query;
+    const { postType, intent, subType, vertical, isActive, page = 1, limit = 20 } = req.query;
 
-    const filter = { postedBy: req.user.id };
+    const filter = { postedBy: req.user._id };
 
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
     if (subType)            filter.subType            = subType;
+    if (vertical)           filter.vertical           = vertical;
     // Allow fetching inactive postings for "my postings" view
     if (isActive !== undefined) filter.isActive = isActive === 'true';
 
@@ -342,7 +353,7 @@ exports.getPostingStats = async (req, res, next) => {
 
     const networkBaseQuery = { isActive: true };
     const myBaseQuery = { isActive: true };
-    if (req.userModel === 'User') {
+    if (req.userModel !== 'Admin') {
       myBaseQuery.postedBy = userId;
       
       // Calculate network visibility (own posts + group members' posts)
@@ -449,15 +460,15 @@ exports.getPostingStats = async (req, res, next) => {
 
         const [brokersByCityAgg, listingsByCityAgg, monthWiseAgg] = await Promise.all([
           UserModel.aggregate([
-            { $match: { role: 'Broker', operatingCity: { $exists: true, $ne: [] } } },
-            { $unwind: '$operatingCity' },
-            { $match: { operatingCity: { $ne: '' } } },
+            { $match: { role: 'Broker' } },
+            { $unwind: { path: '$operatingCity', preserveNullAndEmptyArrays: false } },
+            { $match: { operatingCity: { $type: 'string', $ne: '' } } },
             { $group: { _id: { $toLower: '$operatingCity' }, count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 10 }
           ]),
           PostingModel.aggregate([
-            { $match: { isActive: true, city: { $exists: true, $ne: '' } } },
+            { $match: { isActive: true, city: { $type: 'string', $ne: '' } } },
             { $group: { _id: { $toLower: '$city' }, count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 10 }
