@@ -232,9 +232,20 @@ const HomeInventorySection = ({ data }) => {
     setCurrentPage(1);
   }, [propertyTypeFilter, transactionFilter, sortKey]);
 
-  const propertyTypeOptions = useMemo(() => {
-    const uniqueTypes = Array.from(new Set(staticListings.map((item) => item.type)));
-    return ['All Property Types', ...uniqueTypes];
+  const [propertyTypeOptions, setPropertyTypeOptions] = useState(['All Property Types']);
+
+  useEffect(() => {
+    import('../../services/categoryService').then(({ getCategories }) => {
+      getCategories().then(res => {
+        if (res.success) {
+          const allSubTypes = new Set();
+          res.data.forEach(cat => {
+            (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
+          });
+          setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
+        }
+      });
+    });
   }, []);
 
   const filteredListings = useMemo(() => {
@@ -244,7 +255,8 @@ const HomeInventorySection = ({ data }) => {
     const filtered = data.filter((item) => {
       // Basic client-side filtering for things not handled by API yet
       const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
+        propertyTypeFilter === 'All Property Types' || 
+        (item.subType && item.subType.toLowerCase() === propertyTypeFilter.toLowerCase());
       const matchesTransaction =
         transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
 
@@ -569,7 +581,7 @@ const HomeInventorySection = ({ data }) => {
                         )}
 
                       </td>
-                      <td className="px-4 py-5 text-sm font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                      <td className="px-4 py-5 text-sm font-medium text-slate-700">{item.subType}</td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
                       <td className="px-4 py-5 text-sm font-medium text-slate-600 truncate max-w-[150px]">{item.location}</td>
                       <td className="px-4 py-5 text-sm font-semibold text-slate-900">{item.project || '-'}</td>
@@ -638,7 +650,7 @@ const HomeInventorySection = ({ data }) => {
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
-                      <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                      <p className="font-medium text-slate-700">{item.subType}</p>
                     </div>
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Broker Name</p>
@@ -779,7 +791,7 @@ const HomeInventorySection = ({ data }) => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Badge variant="secondary" className="bg-primary-50 text-primary-600 font-black text-[9px] uppercase px-2 py-1 tracking-wider border-none">
-                    {SUBTYPE_DISPLAY_MAP[selectedProperty.subType]}
+                    {selectedProperty.subType}
                   </Badge>
                   <span className="text-slate-300">•</span>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ID: #{selectedProperty._id.slice(-6).toUpperCase()}</span>
@@ -836,7 +848,7 @@ const HomeInventorySection = ({ data }) => {
             <div className="space-y-3">
               <h4 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em]">Detailed Narrative</h4>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                {selectedProperty.shortDescription || `Explore this exceptional ${SUBTYPE_DISPLAY_MAP[selectedProperty.subType]} located in ${selectedProperty.location}. Designed for high-end brokerage standards, this property offers premium visibility.`}
+                {selectedProperty.shortDescription || `Explore this exceptional ${selectedProperty.subType} located in ${selectedProperty.location}. Designed for high-end brokerage standards, this property offers premium visibility.`}
               </p>
             </div>
 

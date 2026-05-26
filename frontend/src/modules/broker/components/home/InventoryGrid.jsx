@@ -152,9 +152,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             >
               All Listed Inventory
             </h2>
-            <p className="text-xs text-slate-500 font-medium mt-1">
-              {total} listings found
-            </p>
+
           </div>
 
           <div className="flex items-center gap-3">

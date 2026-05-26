@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         // Only log out if it's an auth error, not a random server 500
         const msg = (response.message || '').toLowerCase();
-        if (msg.includes('authorized') || msg.includes('expired') || msg.includes('invalid') || msg.includes('token') || msg.includes('found')) {
+        if (msg.includes('authorized') || msg.includes('expired') || msg.includes('invalid') || msg.includes('token') || msg.includes('found') || msg.includes('blocked')) {
           localStorage.removeItem(tokenKey);
           localStorage.removeItem(userKey);
           setUser(null);
@@ -52,6 +52,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuth();
+
+    const handleAuthError = () => {
+      logout();
+    };
+
+    window.addEventListener('auth-error', handleAuthError);
+    return () => {
+      window.removeEventListener('auth-error', handleAuthError);
+    };
   }, []);
 
   const login = async (email, password) => {

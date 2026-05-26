@@ -37,20 +37,6 @@ const postingSchema = new mongoose.Schema({
   },
   subType: {
     type: String,
-    enum: [
-      // Residential
-      'APARTMENTS',
-      'LOW_RISE_FLOORS',
-      'KOTHI_VILLAS',
-      'PLOTS',
-      // Commercial
-      'SHOP_SHOWROOM',
-      'OFFICE',
-      'WAREHOUSE',
-      'STANDALONE_BUILDING',
-      'PLOT',
-      'COMMERCIAL_APARTMENTS'
-    ],
     required: [true, 'Sub-type is required'],
     index: true
   },
@@ -158,10 +144,14 @@ const postingSchema = new mongoose.Schema({
     enum: ['STUDENTS', 'FAMILY', 'MNC', 'KOREAN', 'BUSINESSMAN']
   }],
 
-  // Free-text note — Requirements only
   shortDescription: {
     type: String,
     maxlength: [500, 'Description cannot exceed 500 characters'],
+    trim: true
+  },
+  remarks: {
+    type: String,
+    maxlength: [1000, 'Remarks cannot exceed 1000 characters'],
     trim: true
   },
 

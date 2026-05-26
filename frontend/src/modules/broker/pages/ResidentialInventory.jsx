@@ -60,12 +60,21 @@ const ResidentialInventory = () => {
     return () => clearTimeout(handler);
   }, [searchTerm]);
   
-  const isRentIntent = ['RENT', 'WANTED_RENT', 'RENTALS', 'LEASE', 'WANTED_LEASE'].includes(intent);
-  const subTypes = isRequirement
-    ? (isRentIntent 
-        ? ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas'] 
-        : ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas', 'Plots'])
-    : ['All Sub-types', 'Apartments', 'Low Rise Floors', 'Kothi/Villas'];
+  const [subTypes, setSubTypes] = useState(['All Sub-types']);
+
+  useEffect(() => {
+    import('../services/categoryService').then(({ getCategories }) => {
+      getCategories({ vertical: 'RESIDENTIAL', intent }).then(res => {
+        if (res.success && res.data.length > 0) {
+          const cat = res.data[0];
+          setSubTypes(['All Sub-types', ...(cat.subCategories || [])]);
+        } else {
+          // fallback if no category is defined
+          setSubTypes(['All Sub-types']);
+        }
+      });
+    });
+  }, [intent]);
 
   const fetchListings = async () => {
     setLoading(true);
@@ -75,7 +84,7 @@ const ResidentialInventory = () => {
         intent: intent,
       };
       if (selectedSubType !== 'All Sub-types') {
-        params.subType = selectedSubType.toUpperCase().replace(' ', '_').replace('/', '_');
+        params.subType = selectedSubType;
       }
       if (debouncedSearch.trim() !== '') {
         params.location = debouncedSearch.trim();

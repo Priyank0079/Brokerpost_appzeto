@@ -41,6 +41,9 @@ export const getPostings = async (params = {}) => {
 
 // ── READ MY POSTINGS ────────────────────────────────────────────────────────
 export const getMyPostings = async (params = {}) => {
+  if (params.isActive === undefined) {
+    params.isActive = true;
+  }
   const queryObj = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null));
   queryObj.t = Date.now();
   const query = new URLSearchParams(queryObj).toString();

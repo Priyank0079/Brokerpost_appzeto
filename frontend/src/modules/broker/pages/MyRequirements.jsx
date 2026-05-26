@@ -79,8 +79,20 @@ const MyRequirements = () => {
     fetchData();
   }, []);
 
-  const propertyTypeOptions = useMemo(() => {
-    return ['All Property Types', ...Object.values(SUBTYPE_DISPLAY_MAP)];
+  const [propertyTypeOptions, setPropertyTypeOptions] = useState(['All Property Types']);
+
+  React.useEffect(() => {
+    import('../services/categoryService').then(({ getCategories }) => {
+      getCategories().then(res => {
+        if (res.success) {
+          const allSubTypes = new Set();
+          res.data.forEach(cat => {
+            (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
+          });
+          setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
+        }
+      });
+    });
   }, []);
 
   const filteredListings = useMemo(() => {
@@ -95,7 +107,8 @@ const MyRequirements = () => {
         (typeFilter === 'Requirement' && item.postType === 'REQUIREMENT');
 
       const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
+        propertyTypeFilter === 'All Property Types' || 
+        (item.subType && item.subType.toLowerCase() === propertyTypeFilter.toLowerCase());
       
       const matchesTransaction =
         transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
@@ -263,7 +276,7 @@ const MyRequirements = () => {
                     <td className="px-5 py-6">
                       <Badge variant="warning" className="rounded-full px-4 py-1.5 text-[11px] font-bold border-[#fde68a] bg-[#fffbeb] text-primary-600 uppercase tracking-tighter">REQUIREMENT</Badge>
                     </td>
-                    <td className="px-5 py-6 text-[14px] font-bold text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                    <td className="px-5 py-6 text-[14px] font-bold text-slate-700">{item.subType}</td>
                     <td className="px-5 py-6 text-[14px] font-medium text-slate-600">{INTENT_MAP[item.intent]}</td>
                     <td className="px-5 py-6 text-[14px] text-slate-600 truncate max-w-[150px]">{item.location}</td>
                     <td className="px-5 py-6 text-[14px] font-bold text-slate-900">{item.project || '-'}</td>
@@ -312,7 +325,7 @@ const MyRequirements = () => {
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
-                    <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                    <p className="font-medium text-slate-700">{item.subType}</p>
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Intent</p>

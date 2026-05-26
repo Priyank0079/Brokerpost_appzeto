@@ -77,6 +77,7 @@ app.use('/api/v1/groups', require('./routes/groupRoutes'));
 app.use('/api/v1/banners', require('./routes/carouselRoutes'));
 app.use('/api/v1/faqs', faqRoutes);
 app.use('/api/v1/landing-config', landingConfigRoutes);
+app.use('/api/v1/categories', require('./routes/categoryRoutes'));
 
 
 

@@ -209,6 +209,10 @@ exports.verifyLoginOTP = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
     }
 
+    if (!user.isVerified) {
+      return res.status(403).json({ success: false, message: 'Your account has been blocked by the administrator.' });
+    }
+
     user.otp = undefined;
     user.otpExpires = undefined;
     await user.save({ validateBeforeSave: false });
@@ -251,6 +255,10 @@ exports.login = async (req, res, next) => {
 
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({ success: false, message: 'Your account has been blocked by the administrator.' });
     }
 
     res.json({
@@ -411,6 +419,42 @@ exports.updateBrokerStatus = async (req, res, next) => {
   }
 };
 
+// @desc    Update broker details (Admin only)
+// @route   PUT /api/v1/auth/brokers/:id
+// @access  Private/Admin
+exports.updateBroker = async (req, res, next) => {
+  try {
+    const fieldsToUpdate = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      phoneNumber: req.body.phoneNumber,
+      companyName: req.body.companyName,
+      operatingCity: req.body.operatingCity,
+      officeAddress: req.body.officeAddress,
+      listingLimit: req.body.listingLimit
+    };
+
+    if (req.body.password) {
+      fieldsToUpdate.password = req.body.password;
+    }
+
+    let user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Broker not found' });
+    }
+
+    Object.assign(user, fieldsToUpdate);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Delete broker (Admin only)
 // @route   DELETE /api/v1/auth/brokers/:id
 // @access  Private/Admin
@@ -458,6 +502,9 @@ exports.getStats = async (req, res, next) => {
     const totalBrokers = await User.countDocuments({ role: 'Broker' });
     const pendingBrokers = await User.countDocuments({ role: 'Broker', isVerified: false });
     const verifiedBrokers = await User.countDocuments({ role: 'Broker', isVerified: true });
+    
+    const Posting = require('../models/Posting');
+    const totalListings = await Posting.countDocuments({ isActive: true });
 
     res.status(200).json({
       success: true,
@@ -465,6 +512,7 @@ exports.getStats = async (req, res, next) => {
         totalBrokers,
         pendingBrokers,
         verifiedBrokers,
+        totalListings
       }
     });
   } catch (error) {

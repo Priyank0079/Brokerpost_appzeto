@@ -80,8 +80,20 @@ const MyListings = ({
     fetchData();
   }, []);
 
-  const propertyTypeOptions = useMemo(() => {
-    return ['All Property Types', ...Object.values(SUBTYPE_DISPLAY_MAP)];
+  const [propertyTypeOptions, setPropertyTypeOptions] = useState(['All Property Types']);
+
+  React.useEffect(() => {
+    import('../services/categoryService').then(({ getCategories }) => {
+      getCategories().then(res => {
+        if (res.success) {
+          const allSubTypes = new Set();
+          res.data.forEach(cat => {
+            (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
+          });
+          setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
+        }
+      });
+    });
   }, []);
 
   const filteredListings = useMemo(() => {
@@ -96,7 +108,8 @@ const MyListings = ({
         (typeFilter === 'Requirement' && item.postType === 'REQUIREMENT');
 
       const matchesPropertyType =
-        propertyTypeFilter === 'All Property Types' || SUBTYPE_DISPLAY_MAP[item.subType] === propertyTypeFilter;
+        propertyTypeFilter === 'All Property Types' || 
+        (item.subType && item.subType.toLowerCase() === propertyTypeFilter.toLowerCase());
       
       const matchesTransaction =
         transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
@@ -286,7 +299,7 @@ const MyListings = ({
                     <td className="px-4 py-4">
                       <Badge variant="success" className="rounded-full px-3 py-1 text-[11px] font-bold">AVAILABILITY</Badge>
                     </td>
-                    <td className="px-4 py-4 text-sm font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</td>
+                    <td className="px-4 py-4 text-sm font-medium text-slate-700">{item.subType}</td>
                     <td className="px-4 py-4 text-sm text-slate-600">{INTENT_MAP[item.intent]}</td>
                     <td className="px-4 py-4 text-sm text-slate-600 truncate max-w-[150px]">{item.location}</td>
                     <td className="px-4 py-4 text-sm font-semibold text-slate-900">{item.project || '-'}</td>
@@ -344,7 +357,7 @@ const MyListings = ({
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Property Type</p>
-                    <p className="font-medium text-slate-700">{SUBTYPE_DISPLAY_MAP[item.subType]}</p>
+                    <p className="font-medium text-slate-700">{item.subType}</p>
                   </div>
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Intent</p>

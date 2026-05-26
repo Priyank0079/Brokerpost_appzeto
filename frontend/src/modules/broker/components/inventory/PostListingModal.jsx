@@ -20,7 +20,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     subType: vertical === 'RESIDENTIAL' ? 'APARTMENTS' : 'OFFICE',
     location: '',
     project: '',
-    city: 'Gurgaon',
+    city: user?.city || 'Gurgaon',
     size: '',
     sizeUnit: 'SQ_FT',
     bedrooms: '2',
@@ -45,14 +45,15 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   const postType = isRequirement ? 'REQUIREMENT' : 'AVAILABILITY';
 
   const resetForm = () => {
+    const isReq = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
     setFormData({
       vertical,
-      postType,
+      postType: isReq ? 'REQUIREMENT' : 'AVAILABILITY',
       intent,
       subType: vertical === 'RESIDENTIAL' ? 'APARTMENTS' : 'OFFICE',
       location: '',
       project: '',
-      city: 'Gurgaon',
+      city: user?.city || 'Gurgaon',
       size: '',
       sizeUnit: 'SQ_FT',
       bedrooms: '2',
@@ -94,7 +95,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
           subType: posting.subType || 'APARTMENTS',
           location: posting.location || '',
           project: posting.project || '',
-          city: posting.city || 'Gurgaon',
+          city: posting.city || user?.city || 'Gurgaon',
           size: posting.size || '',
           sizeUnit: posting.sizeUnit || 'SQ_FT',
           bedrooms: posting.bedrooms || '2',
@@ -133,6 +134,29 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       setFormData(prev => ({ ...prev, totalAmount: '' }));
     }
   }, [formData.size, formData.priceRate, formData.priceRateType, isRequirement]);
+
+  const [dynamicSubTypes, setDynamicSubTypes] = useState([]);
+
+  useEffect(() => {
+    import('../../services/categoryService').then(({ getCategories }) => {
+      getCategories({ vertical: formData.vertical, intent: formData.intent || intent }).then(res => {
+        if (res.success && res.data.length > 0) {
+          const cat = res.data[0];
+          setDynamicSubTypes(cat.subCategories || []);
+          
+          // Auto-select first subtype if current one is not in list
+          setFormData(prev => {
+            if (cat.subCategories && cat.subCategories.length > 0 && !cat.subCategories.includes(prev.subType)) {
+              return { ...prev, subType: cat.subCategories[0] };
+            }
+            return prev;
+          });
+        } else {
+          setDynamicSubTypes([]);
+        }
+      });
+    });
+  }, [formData.vertical, formData.intent, intent]);
 
   if (!isOpen) return null;
 
@@ -203,6 +227,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     if (isRequirement) {
       if (!formData.budgetMin) errors.budgetMin = 'Minimum Budget is mandatory for Requirement listings.';
       if (!formData.budgetMax) errors.budgetMax = 'Maximum Budget is mandatory for Requirement listings.';
+      
+      if (formData.budgetMin && formData.budgetMax) {
+        if (parseFloat(formData.budgetMax) <= parseFloat(formData.budgetMin)) {
+          errors.budgetMax = 'Maximum Budget must be greater than Minimum Budget.';
+        }
+      }
     }
 
     if (Object.keys(errors).length > 0) {
@@ -248,19 +278,10 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     }
   };
 
-  const subTypeOptions = formData.vertical === 'RESIDENTIAL' 
-    ? [
-        { label: 'Apartments', value: 'APARTMENTS' },
-        { label: 'Low Rise Floors', value: 'LOW_RISE_FLOORS' },
-        { label: 'Kothi/Villas', value: 'KOTHI_VILLAS' },
-        ...(isRental ? [] : [{ label: 'Plots', value: 'PLOTS' }])
-      ]
+  const subTypeOptions = dynamicSubTypes.length > 0 
+    ? dynamicSubTypes.map(st => ({ label: st, value: st }))
     : [
-        { label: 'Shops/Showroom', value: 'SHOP_SHOWROOM' },
-        { label: 'Office', value: 'OFFICE' },
-        { label: 'Warehouse', value: 'WAREHOUSE' },
-        { label: 'Standalone Building', value: 'STANDALONE_BUILDING' },
-        ...(isRental ? [] : [{ label: 'Plot', value: 'PLOT' }])
+        { label: 'Property', value: 'PROPERTY' } // Fallback
       ];
 
   const currentIntent = formData.intent || intent;
@@ -338,19 +359,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="space-y-1">
                 <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">City *</label>
                 <div className="relative">
-                  <select 
+                  <input 
+                    type="text"
                     name="city"
-                    required
                     value={formData.city}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg cursor-not-allowed opacity-80"
-                  >
-                    <option value="Gurgaon">Gurgaon</option>
-                    <option value="Noida">Noida</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Faridabad">Faridabad</option>
-                    <option value="Greater Noida">Greater Noida</option>
-                  </select>
+                    readOnly
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-[12px] font-medium text-[#2d3748] outline-none rounded-lg cursor-not-allowed opacity-80"
+                  />
                   <Lock size={12} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 </div>
                 <p className="flex items-center gap-1 text-[9px] text-[#c8962a] font-medium ml-1 mt-0.5">
@@ -432,19 +447,31 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
             <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Pricing</h3>
             {!isRequirement ? (
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-2 mt-1">
                   <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Price Type</label>
-                  <div className="relative">
-                    <select 
-                      name="priceRateType"
-                      value={formData.priceRateType}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] outline-none appearance-none rounded-lg"
-                    >
-                      <option value="PER_SQFT">Per Sq.Ft / Sq.Yd / Sq.Mt</option>
-                      <option value="LUMPSUM">Fixed Amount</option>
-                    </select>
-                    <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <div className="flex items-center gap-4 px-1">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="priceRateType" 
+                        value="PER_SQFT"
+                        checked={formData.priceRateType === 'PER_SQFT'}
+                        onChange={handleChange}
+                        className="w-3.5 h-3.5 accent-[#c8962a]"
+                      />
+                      <span className="text-[11px] font-medium text-[#2d3748]">Per Area Unit</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="priceRateType" 
+                        value="LUMPSUM"
+                        checked={formData.priceRateType === 'LUMPSUM'}
+                        onChange={handleChange}
+                        className="w-3.5 h-3.5 accent-[#c8962a]"
+                      />
+                      <span className="text-[11px] font-medium text-[#2d3748]">Fixed Amount</span>
+                    </label>
                   </div>
                 </div>
                 <div className="space-y-1">
