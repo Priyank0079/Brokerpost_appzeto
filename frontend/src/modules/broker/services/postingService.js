@@ -28,30 +28,33 @@ export const createPosting = async (data) => {
 // params: { vertical, postType, intent, subType, location, bedrooms,
 //           constructionStatus, occupancy, page, limit }
 export const getPostings = async (params = {}) => {
-  const query = new URLSearchParams(
-    Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null))
-  ).toString();
-  const res = await fetch(`${API_BASE}/postings${query ? `?${query}` : ''}`, {
-    headers: authHeader()
+  const queryObj = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null));
+  queryObj.t = Date.now();
+  const query = new URLSearchParams(queryObj).toString();
+  const res = await fetch(`${API_BASE}/postings?${query}`, {
+    headers: authHeader(),
+    cache: 'no-store'
   });
   return res.json();
 };
 
 // ── READ MY POSTINGS ────────────────────────────────────────────────────────
 export const getMyPostings = async (params = {}) => {
-  const query = new URLSearchParams(
-    Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null))
-  ).toString();
-  const res = await fetch(`${API_BASE}/postings/my${query ? `?${query}` : ''}`, {
-    headers: authHeader()
+  const queryObj = Object.fromEntries(Object.entries(params).filter(([, v]) => v !== '' && v != null));
+  queryObj.t = Date.now();
+  const query = new URLSearchParams(queryObj).toString();
+  const res = await fetch(`${API_BASE}/postings/my?${query}`, {
+    headers: authHeader(),
+    cache: 'no-store'
   });
   return res.json();
 };
 
 // ── READ DASHBOARD STATS ────────────────────────────────────────────────────
 export const getPostingStats = async () => {
-  const res = await fetch(`${API_BASE}/postings/stats`, {
-    headers: authHeader()
+  const res = await fetch(`${API_BASE}/postings/stats?t=${Date.now()}`, {
+    headers: authHeader(),
+    cache: 'no-store'
   });
   const data = await res.json();
   // Return proper structure even on error
@@ -63,8 +66,9 @@ export const getPostingStats = async () => {
 
 // ── READ ONE ────────────────────────────────────────────────────────────────
 export const getPostingById = async (id) => {
-  const res = await fetch(`${API_BASE}/postings/${id}`, {
-    headers: authHeader()
+  const res = await fetch(`${API_BASE}/postings/${id}?t=${Date.now()}`, {
+    headers: authHeader(),
+    cache: 'no-store'
   });
   return res.json();
 };

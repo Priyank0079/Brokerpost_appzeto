@@ -112,16 +112,6 @@ exports.getPostings = async (req, res, next) => {
         Posting.countDocuments(filter)
       ]);
     } else {
-      // User (Broker) - Retrieve posts of all members of the group(s) they are in
-      if (!groupId && req.user) {
-        const userGroups = await Group.find({ members: req.user._id });
-        const memberIds = [...new Set(userGroups.flatMap(g => g.members.map(m => m.toString())))];
-        // Always include the user's own ID so they can see their own listings
-        if (!memberIds.includes(req.user._id.toString())) {
-          memberIds.push(req.user._id.toString());
-        }
-        filter.postedBy = { $in: memberIds };
-      }
 
       [postings, total] = await Promise.all([
         Posting.find(filter)

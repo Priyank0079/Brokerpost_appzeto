@@ -15,8 +15,10 @@ const getHeaders = (contentType = 'application/json') => {
 
 export const api = {
   get: async (endpoint) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: getHeaders(null)
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const response = await fetch(`${API_BASE_URL}${endpoint}${separator}t=${Date.now()}`, {
+      headers: getHeaders(null),
+      cache: 'no-store'
     });
     const data = await response.json();
     // Return proper structure even on error

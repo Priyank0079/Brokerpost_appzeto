@@ -199,3 +199,117 @@
 [getPostings] filter: {"isActive":true} | total: 8
 
 [getPostings] filter: {"isActive":true} | total: 8
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true,"postedBy":{"$in":["6a11852f9cc5f5c8139daefb"]}} | total: 0
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
+
+[getPostings] filter: {"isActive":true} | total: 21
