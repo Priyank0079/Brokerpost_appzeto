@@ -16,7 +16,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-1" style={{ fontFamily: "'Playfair Display', 'Times New Roman', serif" }}>
               <span className="text-[20px] md:text-[24px] font-bold text-[#1e3a5f] tracking-tight">Brokers</span>
-              <span className="text-[20px] md:text-[24px] font-bold text-[#c8962a] tracking-tight">Link</span>
+              <span className="text-[20px] md:text-[24px] font-bold text-[#c8962a] tracking-tight">Post</span>
             </Link>
           </div>
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Ruler, Phone, MessageCircle, Lock } from 'lucide-react';
 
 const formatNum = (num) => new Intl.NumberFormat('en-IN').format(num);
@@ -32,6 +32,8 @@ const renderListingType = (item) => {
 };
 
 const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLogin }) => {
+  const [showLoginMsg, setShowLoginMsg] = useState(false);
+
   if (!isOpen || !item) return null;
 
   const brokerName = item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name';
@@ -47,7 +49,7 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
   const currentUserCompany = user?.companyName || '';
   const currentUserPhone = user?.phoneNumber || '';
   
-  const whatsappMsg = `Hi ${brokerName}, saw your listing (ID: ${refCode}) on BrokersLink- ${subTypeDisplay} ${intentDisplay} at ${item.location}. Would like to discuss. ${currentUserName} ${currentUserCompany} ${currentUserPhone}`.replace(/\s+/g, ' ').trim();
+  const whatsappMsg = `Hi ${brokerName}, saw your listing (ID: ${refCode}) on BrokersPost- ${subTypeDisplay} ${intentDisplay} at ${item.location}. Would like to discuss. ${currentUserName} ${currentUserCompany} ${currentUserPhone}`.replace(/\s+/g, ' ').trim();
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -95,7 +97,7 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
                   {item.size} {item.sizeUnit?.replace(/_/g, ' ')}
                 </span>
               )}
-              {item.bedrooms && (
+              {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && (
                 <span className="px-2 py-1 bg-[#eff6ff] text-[#2563eb] text-[10px] font-semibold rounded-md">
                   {item.bedrooms} BHK
                 </span>
@@ -129,20 +131,44 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
               {companyName} · {operatingCity}
             </p>
 
+            {showLoginMsg && (
+              <div className="bg-red-50 text-red-600 text-[11px] p-2 rounded mb-2 border border-red-100 flex justify-between items-center">
+                <span>Please login to connect with this broker.</span>
+                <button onClick={() => { setShowLoginMsg(false); if(onLogin) { onClose(); onLogin(); } }} className="font-bold underline">Login</button>
+              </div>
+            )}
             <div className="flex flex-row gap-2">
-              <a 
-                href={`https://wa.me/91${phoneNumber?.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMsg)}`}
-                target="_blank" rel="noreferrer"
-                className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#25D366] text-white rounded-[6px] text-[11px] font-bold hover:bg-[#20bd5a] transition-all"
-              >
-                <MessageCircle size={13} fill="currentColor" stroke="none" /> WhatsApp
-              </a>
-              <a 
-                href={`tel:${phoneNumber}`}
-                className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#eff6ff] text-[#2563eb] rounded-[6px] text-[11px] font-bold border border-[#bfdbfe] hover:bg-[#dbeafe] transition-all"
-              >
-                <Phone size={13} fill="currentColor" stroke="none" /> Call {phoneNumber}
-              </a>
+              {isAuthenticated ? (
+                <a 
+                  href={`https://wa.me/91${phoneNumber?.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMsg)}`}
+                  target="_blank" rel="noreferrer"
+                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#25D366] text-white rounded-[6px] text-[11px] font-bold hover:bg-[#20bd5a] transition-all"
+                >
+                  <MessageCircle size={13} fill="currentColor" stroke="none" /> WhatsApp
+                </a>
+              ) : (
+                <button 
+                  onClick={() => setShowLoginMsg(true)}
+                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#25D366] text-white rounded-[6px] text-[11px] font-bold hover:bg-[#20bd5a] transition-all"
+                >
+                  <Lock size={13} /> WhatsApp
+                </button>
+              )}
+              {isAuthenticated ? (
+                <a 
+                  href={`tel:${phoneNumber}`}
+                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#eff6ff] text-[#2563eb] rounded-[6px] text-[11px] font-bold border border-[#bfdbfe] hover:bg-[#dbeafe] transition-all"
+                >
+                  <Phone size={13} fill="currentColor" stroke="none" /> Call {phoneNumber}
+                </a>
+              ) : (
+                <button 
+                  onClick={() => setShowLoginMsg(true)}
+                  className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#eff6ff] text-[#2563eb] rounded-[6px] text-[11px] font-bold border border-[#bfdbfe] hover:bg-[#dbeafe] transition-all"
+                >
+                  <Lock size={13} /> Call
+                </button>
+              )}
             </div>
           </div>
 

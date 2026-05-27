@@ -80,7 +80,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col">
-          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Link</span></span>
+          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Post</span></span>
           <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">MY DASHBOARD</span>
         </div>
         <button 

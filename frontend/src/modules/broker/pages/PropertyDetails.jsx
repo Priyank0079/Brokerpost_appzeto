@@ -263,17 +263,17 @@ const PropertyDetails = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 border-y border-slate-50">
-                {(item.bedrooms || (item.vertical === 'RESIDENTIAL' && item.subType !== 'PLOTS')) && (
+                {((item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL') || (item.vertical === 'RESIDENTIAL' && item.subType !== 'PLOTS')) && (
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                       <Bed size={18} />
                     </div>
                     <div>
                       <p className="text-[8px] text-slate-400 uppercase font-black tracking-widest italic">
-                        {item.bedrooms ? 'Accommodation' : 'Category'}
+                        {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' ? 'Accommodation' : 'Category'}
                       </p>
                       <p className="text-sm font-black text-slate-900">
-                        {item.bedrooms ? `${item.bedrooms} BHK` : item.subType}
+                        {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' ? `${item.bedrooms} BHK` : item.subType}
                       </p>
                     </div>
                   </div>

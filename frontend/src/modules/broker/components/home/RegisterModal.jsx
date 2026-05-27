@@ -219,41 +219,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
           {step === 1 ? (
             <form onSubmit={handleNext} className="space-y-2">
-              {/* Photo Upload Area */}
-              <div className="space-y-2 pt-2">
-                <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1 flex items-center gap-2">
-                  PROFILE PHOTO / LOGO (Optional)
-                  {errors.profileImage && <span className="text-red-500 lowercase font-bold flex items-center gap-1"><AlertCircle size={10} /> {errors.profileImage}</span>}
-                </label>
-                <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`w-full border-2 border-dashed ${errors.profileImage ? 'border-red-200 bg-red-50/30' : 'border-[#ddd6c8] bg-white'} rounded-lg p-4 flex items-center gap-4 hover:border-[#c8962a]/50 transition-colors cursor-pointer relative overflow-hidden`}
-                >
-                  <input 
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-                  {uploading && (
-                    <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 backdrop-blur-[1px]">
-                      <Loader2 size={24} className="text-[#c8962a] animate-spin" />
-                    </div>
-                  )}
-                  <div className="w-12 h-12 rounded-full bg-[#fdf8f3] border border-[#f5ebd8] flex items-center justify-center text-[#1a365d] shrink-0 overflow-hidden">
-                    {formData.profileImage ? (
-                      <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                    ) : (
-                      <Camera size={20} />
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#1a365d]">{formData.profileImage ? 'Photo uploaded' : 'Click to upload photo'}</p>
-                    <p className="text-[10px] text-slate-400 font-medium">JPG or PNG • Max 2MB</p>
-                  </div>
-                </div>
-              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* First Name */}
@@ -438,7 +403,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <div className="px-4 py-3 bg-[#dbeafe] border border-[#8ab4f8] rounded-lg">
                 <p className="text-[12px] text-[#2d4eb5] font-normal tracking-tight leading-relaxed">
                   <span className="mr-1.5 text-[12px]">📋</span>
-                  Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersLink.
+                  Please read and accept our Disclaimer & Terms before proceeding. This is mandatory to use BrokersPost.
                 </p>
               </div>
 
@@ -476,13 +441,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               `}</style>
               <div className="p-5 border border-slate-200 rounded-lg bg-[#faf7f2] max-h-[300px] overflow-y-auto space-y-3 terms-scrollbar">
                 <h3 className="text-[12px] font-bold text-[#314a6b]">
-                  {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersLink"}
+                  {dynamicTerms?.title || "Important Disclaimer & Terms of Use — BrokersPost"}
                 </h3>
                 
                 <div className="space-y-4">
                   {(dynamicTerms?.items || [
-                    { title: "No Liability", content: "BrokersLink is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
-                    { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersLink does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
+                    { title: "No Liability", content: "BrokersPost is a networking platform that connects verified real estate brokers. We do not participate in any transaction between brokers. This site does not take any responsibility for disputes, financial losses, or any issues arising between brokers during or after a deal." },
+                    { title: "Independent Dealing", content: "Brokers are independent professionals. They may call and deal with each other directly. BrokersPost does not mediate, negotiate, or guarantee any transaction. All dealings happen independently between brokers at their own risk and discretion." },
                     { title: "Genuine Listings Only", content: "Brokers must post only genuine, verified inventory that they have the authority to list. Fake, misleading, or unauthorized listings are strictly prohibited and may result in account termination." }
                   ]).map((item, idx) => {
                     const cleanTitle = (item.title || "").replace(/^\d+\.\s*/, '').replace(/:*\s*$/, '');

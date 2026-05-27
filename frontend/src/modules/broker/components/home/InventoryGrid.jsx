@@ -219,7 +219,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                       </p>
 
                       <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
-                        {item.bedrooms ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
+                        {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
                       </h3>
 
                       <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-1">

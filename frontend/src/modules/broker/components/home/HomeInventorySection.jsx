@@ -821,7 +821,7 @@ const HomeInventorySection = ({ data }) => {
                 </div>
                 <div>
                   <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Accommodation</p>
-                  <p className="text-sm font-black text-slate-900">{selectedProperty.bedrooms || '-'} BHK</p>
+                  <p className="text-sm font-black text-slate-900">{selectedProperty.vertical?.toUpperCase() === 'COMMERCIAL' ? 'N/A' : `${selectedProperty.bedrooms || '-'} BHK`}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 border-x border-slate-100 px-4">
