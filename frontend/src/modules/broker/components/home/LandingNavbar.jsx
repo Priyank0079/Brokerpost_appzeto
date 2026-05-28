@@ -171,6 +171,15 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
                   <>
                     <button
                       onClick={() => {
+                        onLoginClick();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="w-full px-5 py-3 rounded-md border border-[#1a365d] text-[#1a365d] text-sm font-bold text-center"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => {
                         onRegisterClick();
                         setIsMobileMenuOpen(false);
                       }}
