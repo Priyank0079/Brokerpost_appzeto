@@ -108,7 +108,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [selectedItem, setSelectedItem] = useState(null);
-  const limit = 8;
+  const limit = 20;
 
   const fetchListings = async () => {
     setLoading(true);
@@ -262,15 +262,14 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                   <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-bold uppercase text-slate-500 tracking-wider">
-                        <th className="py-4 px-6 text-center w-12">#</th>
-                        <th className="py-4 px-6">Category</th>
-                        <th className="py-4 px-6">Sub-Type</th>
-                        <th className="py-4 px-6">Section</th>
-                        <th className="py-4 px-6">Location</th>
-                        <th className="py-4 px-6">Area</th>
-                        <th className="py-4 px-6">Total Price</th>
-                        <th className="py-4 px-6">Broker</th>
-                        <th className="py-4 px-6 text-center w-36">Connect</th>
+                        <th className="py-3 px-6">Category</th>
+                        <th className="py-3 px-6">Sub-Type</th>
+                        <th className="py-3 px-6">Section</th>
+                        <th className="py-3 px-6">Location</th>
+                        <th className="py-3 px-6">Area</th>
+                        <th className="py-3 px-6">Total Price</th>
+                        <th className="py-3 px-6">Broker</th>
+                        <th className="py-3 px-6 text-center w-36">Connect</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#ddd6c8] bg-white">
@@ -280,33 +279,23 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                           onClick={() => setSelectedItem(item)}
                           className="hover:bg-slate-50/50 transition-all group cursor-pointer text-[12.5px] text-slate-700"
                         >
-                          {/* Index & ID */}
-                          <td className="py-4 px-6 text-center">
-                            <div className="font-bold text-slate-400 text-[13px]">
-                              {(page - 1) * limit + idx + 1}
-                            </div>
-                            <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider group-hover:text-slate-400 transition-colors">
-                              ID: {item._id?.toString().slice(-6)}
-                            </div>
-                          </td>
-
                           {/* Category Badge */}
-                          <td className="py-4 px-6">
+                          <td className="py-2.5 px-6">
                             {renderCategoryBadge(item.vertical)}
                           </td>
 
                           {/* Sub-Type Badge */}
-                          <td className="py-4 px-6">
+                          <td className="py-2.5 px-6">
                             {renderSubTypeBadge(item.subType)}
                           </td>
 
                           {/* Section */}
-                          <td className="py-4 px-6 text-slate-500 font-medium">
+                          <td className="py-2.5 px-6 text-slate-500 font-medium">
                             {renderListingType(item)}
                           </td>
 
                           {/* Location */}
-                          <td className="py-4 px-6">
+                          <td className="py-2.5 px-6">
                             <div className="flex flex-col">
                               <span className="font-bold text-slate-900">{item.location || 'N/A'}</span>
                               {item.project && (
@@ -316,24 +305,34 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
                           </td>
 
                           {/* Area */}
-                          <td className="py-4 px-6 text-slate-800 font-semibold">
+                          <td className="py-2.5 px-6 text-slate-800 font-semibold">
                             {formatArea(item)}
                           </td>
 
                           {/* Total Price */}
-                          <td className="py-4 px-6 font-bold text-slate-900">
+                          <td className="py-2.5 px-6 font-bold text-slate-900">
                             {formatTotalPrice(item)}
                           </td>
 
                           {/* Broker */}
-                          <td className="py-4 px-6 font-semibold text-slate-800 whitespace-nowrap">
-                            {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name'}
+                          <td className="py-2.5 px-6 whitespace-nowrap">
+                            <div className="font-semibold text-slate-800">
+                              {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name'}
+                            </div>
+                            {item.postedBy?.companyName && (
+                              <div className="text-[10px] text-slate-500 font-medium mt-0.5">
+                                {item.postedBy.companyName}
+                              </div>
+                            )}
                           </td>
 
                           {/* Connect Button */}
-                          <td className="py-4 px-6 text-center">
+                          <td className="py-2.5 px-6 text-center">
                             <button
-                              onClick={() => setSelectedItem(item)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedItem(item);
+                              }}
                               className="px-2.5 py-1 rounded-[4px] bg-slate-900 hover:bg-[#c8962a] text-white text-[8.5px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
                             >
                               Connect

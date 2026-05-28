@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Ruler, Phone, MessageCircle, Lock } from 'lucide-react';
+import { X, Ruler, Phone, MessageCircle, Lock, Play, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const formatNum = (num) => new Intl.NumberFormat('en-IN').format(num);
 
@@ -33,8 +33,14 @@ const renderListingType = (item) => {
 
 const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLogin }) => {
   const [showLoginMsg, setShowLoginMsg] = useState(false);
+  const [selectedMediaIndex, setSelectedMediaIndex] = useState(null);
 
   if (!isOpen || !item) return null;
+
+  const allMedia = [
+    ...(item.images || []).map(url => ({ type: 'image', url })),
+    ...(item.videos || []).map(url => ({ type: 'video', url }))
+  ];
 
   const brokerName = item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Broker Name';
   const companyName = item.postedBy?.companyName || 'Company';
@@ -67,7 +73,7 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
           <div>
             <h2 className="text-[17px] font-serif text-[#1a365d] mb-1 leading-tight tracking-tight">Connect with Broker</h2>
             <p className="text-[11px] text-slate-500 font-medium tracking-wide">
-              {renderListingType(item)} · {item.subType?.replace(/_/g, ' ') || 'Apartments'} · {item.location}
+              {renderListingType(item)} · {item.subType?.replace(/_/g, ' ') || 'Apartments'} · {item.location} · ID: {refCode}
             </p>
           </div>
           <button 
@@ -172,18 +178,42 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
             </div>
           </div>
 
-          {/* IMAGES SECTION */}
-          {item.images && item.images.length > 0 && (
+          {/* REMARKS SECTION */}
+          {item.remarks && (
             <div className="bg-white rounded-[8px] p-[10px] border border-slate-200">
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-2">PROPERTY IMAGES</p>
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-2">NOTES / ADDITIONAL INFO</p>
+              <div className="text-[11px] font-medium text-[#334155] leading-relaxed whitespace-pre-wrap">
+                {item.remarks}
+              </div>
+            </div>
+          )}
+
+          {/* MEDIA SECTION */}
+          {allMedia.length > 0 && (
+            <div className="bg-white rounded-[8px] p-[10px] border border-slate-200">
+              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.15em] mb-2">PROPERTY MEDIA</p>
               <div className="flex gap-2 overflow-x-auto snap-x scrollbar-hide pb-1">
-                {item.images.map((img, idx) => (
-                  <img 
-                    key={idx} 
-                    src={img} 
-                    alt={`Listing image ${idx + 1}`} 
-                    className="w-24 h-16 object-cover rounded-lg snap-start border border-slate-200 flex-shrink-0"
-                  />
+                {allMedia.map((media, idx) => (
+                  media.type === 'image' ? (
+                    <img 
+                      key={`media-${idx}`} 
+                      src={media.url} 
+                      alt={`Listing media ${idx + 1}`} 
+                      onClick={() => setSelectedMediaIndex(idx)}
+                      className="w-24 h-16 object-cover rounded-lg snap-start border border-slate-200 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity"
+                    />
+                  ) : (
+                    <div 
+                      key={`media-${idx}`}
+                      onClick={() => setSelectedMediaIndex(idx)}
+                      className="relative w-24 h-16 rounded-lg snap-start border border-slate-200 flex-shrink-0 cursor-pointer overflow-hidden group hover:opacity-90 transition-opacity bg-black"
+                    >
+                      <video src={media.url} className="w-full h-full object-cover opacity-60 pointer-events-none" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                         <Play size={20} className="text-white opacity-80 group-hover:opacity-100" />
+                      </div>
+                    </div>
+                  )
                 ))}
               </div>
             </div>
@@ -200,6 +230,49 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
             Close
           </button>
         </div>
+
+        {/* Media Lightbox */}
+        {selectedMediaIndex !== null && allMedia[selectedMediaIndex] && (
+          <div className="fixed inset-0 z-[120] bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setSelectedMediaIndex(null)}>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setSelectedMediaIndex(null); }}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 bg-white/10 p-2 rounded-full backdrop-blur-md z-10"
+            >
+              <X size={24} />
+            </button>
+            
+            {allMedia.length > 1 && (
+              <>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedMediaIndex((prev) => (prev > 0 ? prev - 1 : allMedia.length - 1)); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-white/10 p-3 rounded-full backdrop-blur-md z-10"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedMediaIndex((prev) => (prev < allMedia.length - 1 ? prev + 1 : 0)); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-white/10 p-3 rounded-full backdrop-blur-md z-10"
+                >
+                  <ChevronRight size={28} />
+                </button>
+              </>
+            )}
+
+            <div className="max-w-5xl w-full max-h-[90vh] relative flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              {allMedia[selectedMediaIndex].type === 'image' ? (
+                <img src={allMedia[selectedMediaIndex].url} alt="Expanded media" className="max-w-full max-h-[90vh] object-contain rounded-lg" />
+              ) : (
+                <video src={allMedia[selectedMediaIndex].url} controls autoPlay className="max-w-full max-h-[90vh] rounded-lg" />
+              )}
+            </div>
+            
+            {allMedia.length > 1 && (
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium bg-black/50 px-4 py-1.5 rounded-full backdrop-blur-md">
+                {selectedMediaIndex + 1} / {allMedia.length}
+              </div>
+            )}
+          </div>
+        )}
 
       </div>
     </div>

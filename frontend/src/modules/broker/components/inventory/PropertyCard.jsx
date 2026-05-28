@@ -90,7 +90,7 @@ const PropertyCard = ({ listing }) => {
             <Square size={14} className="text-slate-300" />
             <span className="text-[11px] font-bold">{size} {sizeUnit.replace('_', '')}</span>
           </div>
-          {vertical === 'RESIDENTIAL' && subType !== 'PLOTS' && (
+          {vertical === 'RESIDENTIAL' && subType?.toUpperCase() !== 'PLOTS' && (
             <div className="flex items-center gap-2 text-slate-500">
               <BedDouble size={14} className="text-slate-300" />
               <span className="text-[11px] font-bold">{bedrooms} BHK</span>

@@ -263,7 +263,7 @@ const PropertyDetails = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 border-y border-slate-50">
-                {((item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL') || (item.vertical === 'RESIDENTIAL' && item.subType !== 'PLOTS')) && (
+                {((item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL') || (item.vertical === 'RESIDENTIAL' && item.subType?.toUpperCase() !== 'PLOTS')) && (
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
                       <Bed size={18} />
@@ -279,7 +279,7 @@ const PropertyDetails = () => {
                   </div>
                 )}
                 
-                {item.vertical === 'RESIDENTIAL' && item.subType !== 'PLOTS' && (
+                {item.vertical === 'RESIDENTIAL' && item.subType?.toUpperCase() !== 'PLOTS' && (
                   <div className="flex items-center gap-3 md:border-x md:border-slate-50 md:px-6">
                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                       <Bath size={18} />

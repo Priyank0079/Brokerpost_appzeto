@@ -8,6 +8,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState('');
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
   
@@ -192,11 +193,12 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
     // Basic validation
     if (file.size > 20 * 1024 * 1024) {
-      setError('Video size must be less than 20MB');
+      setVideoError('Video size must be less than 20MB. Please select a smaller file.');
       return;
     }
 
     setVideoLoading(true);
+    setVideoError('');
     setError('');
     try {
       const result = await uploadPropertyVideo(file);
@@ -205,11 +207,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
           ...prev,
           videos: [result.data] // Limited to 1 video
         }));
+      } else {
+        setVideoError('Video upload failed');
       }
     } catch (err) {
-      setError('Video upload failed');
+      setVideoError('Video upload failed');
     } finally {
-      videoLoading(false);
+      setVideoLoading(false);
     }
   };
 
@@ -383,7 +387,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
                 />
               </div>
-              {formData.vertical === 'RESIDENTIAL' && formData.subType !== 'PLOTS' && (
+              {formData.vertical === 'RESIDENTIAL' && formData.subType?.toUpperCase() !== 'PLOTS' && (
                 <div className="space-y-1">
                   <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Bedrooms</label>
                   <div className="relative">
@@ -419,7 +423,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                     if (fieldErrors.size) setFieldErrors(prev => ({ ...prev, size: null }));
                   }}
                   placeholder="e.g. 1200" 
-                  className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.size ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                  className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.size ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} 
                 />
                 {fieldErrors.size && <p className="text-[10px] text-red-500 font-medium ml-1">{fieldErrors.size}</p>}
               </div>
@@ -485,7 +489,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       if (fieldErrors.priceRate) setFieldErrors(prev => ({ ...prev, priceRate: null }));
                     }}
                     placeholder="e.g. 5500" 
-                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.priceRate ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.priceRate ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} 
                   />
                   {fieldErrors.priceRate && <p className="text-[10px] text-red-500 font-medium ml-1">{fieldErrors.priceRate}</p>}
                 </div>
@@ -504,7 +508,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                         if (fieldErrors.budgetMin) setFieldErrors(prev => ({ ...prev, budgetMin: null }));
                       }}
                       placeholder="Min" 
-                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMin ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMin ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} 
                     />
                     {fieldErrors.budgetMin && <p className="text-[10px] text-red-500 font-medium ml-1 leading-tight">{fieldErrors.budgetMin}</p>}
                   </div>
@@ -519,7 +523,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                         if (fieldErrors.budgetMax) setFieldErrors(prev => ({ ...prev, budgetMax: null }));
                       }}
                       placeholder="Max" 
-                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMax ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px]`} 
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${fieldErrors.budgetMax ? 'border-red-400 focus:border-red-500' : 'border-slate-200 focus:border-[#c8962a]/40'} transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:text-[12px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`} 
                     />
                     {fieldErrors.budgetMax && <p className="text-[10px] text-red-500 font-medium ml-1 leading-tight">{fieldErrors.budgetMax}</p>}
                   </div>
@@ -620,8 +624,9 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
               {/* Video */}
               <div className="space-y-2">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Videos (MP4/MOV)</p>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Videos (MP4/MOV) - Max 20MB</p>
                 {!formData.videos[0] ? (
+                  <>
                   <label className="w-full h-32 relative group cursor-pointer block">
                     <input type="file" accept="video/*" onChange={handleVideoUpload} className="hidden" />
                     <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
@@ -636,11 +641,13 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                             <Video size={20} className="text-slate-400" />
                           </div>
                           <p className="text-[13px] font-bold text-[#1a365d]">Click to upload videos</p>
-                          <p className="text-[11px] text-slate-400">MP4, MOV — multiple allowed</p>
+                          <p className="text-[11px] text-slate-400">MP4, MOV — Max 20MB</p>
                         </>
                       )}
                     </div>
                   </label>
+                  {videoError && <p className="text-[11px] text-red-500 font-medium ml-1 leading-tight">{videoError}</p>}
+                </>
                 ) : (
                   <div className="relative w-full h-40 rounded-lg overflow-hidden border border-slate-200 shadow-lg group">
                     <video className="w-full h-full object-cover">

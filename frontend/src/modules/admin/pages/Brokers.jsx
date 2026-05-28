@@ -36,8 +36,12 @@ const Brokers = () => {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('All');
 
   const filteredBrokers = brokers.filter(broker => {
+    if (filterStatus === 'Active' && !broker.isVerified) return false;
+    if (filterStatus === 'Blocked' && broker.isVerified) return false;
+
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -192,7 +196,19 @@ const Brokers = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
           {stats.map((stat, idx) => (
-            <div key={idx} className="bg-white py-4 md:py-6 px-4 rounded-xl border border-slate-200 shadow-sm text-center flex flex-col items-center justify-center">
+            <div 
+              key={idx} 
+              onClick={() => {
+                if (stat.label === 'Total Listings') {
+                  navigate('/admin/listings');
+                } else if (stat.label === 'Total Brokers') {
+                  setFilterStatus('All');
+                } else {
+                  setFilterStatus(stat.label);
+                }
+              }}
+              className={`bg-white py-4 md:py-6 px-4 rounded-xl border ${filterStatus === stat.label || (filterStatus === 'All' && stat.label === 'Total Brokers') ? 'border-[#c8962a] ring-1 ring-[#c8962a]' : 'border-slate-200'} shadow-sm text-center flex flex-col items-center justify-center cursor-pointer hover:shadow-md transition-all hover:-translate-y-0.5`}
+            >
               <span className={`text-2xl md:text-3xl font-serif ${stat.color} leading-none mb-2`}>{stat.value}</span>
               <p className="text-[11px] md:text-xs font-medium text-slate-500">{stat.label}</p>
             </div>
