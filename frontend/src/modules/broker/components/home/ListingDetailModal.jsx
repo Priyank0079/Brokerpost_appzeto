@@ -145,13 +145,15 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
             )}
             <div className="flex flex-row gap-2">
               {isAuthenticated ? (
-                <a 
-                  href={`https://wa.me/91${phoneNumber?.replace(/\D/g, '')}?text=${encodeURIComponent(whatsappMsg)}`}
-                  target="_blank" rel="noreferrer"
+                <button
+                  onClick={() => {
+                    const url = `https://api.whatsapp.com/send?phone=91${phoneNumber?.replace(/\D/g, '')}&text=${encodeURIComponent(whatsappMsg)}`;
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                  }}
                   className="flex items-center justify-center gap-1.5 px-4 py-1.5 bg-[#25D366] text-white rounded-[6px] text-[11px] font-bold hover:bg-[#20bd5a] transition-all"
                 >
                   <MessageCircle size={13} fill="currentColor" stroke="none" /> WhatsApp
-                </a>
+                </button>
               ) : (
                 <button 
                   onClick={() => setShowLoginMsg(true)}

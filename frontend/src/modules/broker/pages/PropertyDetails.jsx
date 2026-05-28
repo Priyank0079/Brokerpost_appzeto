@@ -82,7 +82,7 @@ const PropertyDetails = () => {
   const handleWhatsAppConnect = () => {
     if (!item) return;
     const message = `Hi, I'm interested in "${item.project || 'Property'}" (ID: #${item._id.slice(-6).toUpperCase()}) located in ${item.location}. Can you provide more details?`;
-    const whatsappUrl = `https://wa.me/91${item.postedBy?.phoneNumber || '9876543210'}?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=91${item.postedBy?.phoneNumber || '9876543210'}&text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
