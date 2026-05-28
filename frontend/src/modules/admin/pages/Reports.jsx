@@ -1,9 +1,9 @@
 import React from 'react';
-import { 
-  Download, 
-  BarChart3, 
-  PieChart as PieIcon, 
-  ArrowUpRight, 
+import {
+  Download,
+  BarChart3,
+  PieChart as PieIcon,
+  ArrowUpRight,
   ArrowDownRight,
   Calendar,
   Filter,
@@ -31,14 +31,14 @@ const Reports = () => {
             <h1 className="text-lg font-serif text-[#1e3a8a]">System Analytics</h1>
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c0922e]" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder="Search reports..."
                 className="w-[240px] pl-9 pr-4 py-1.5 bg-[#fefce8] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/40 transition-all text-slate-600"
               />
             </div>
           </div>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="px-4 py-1.5 rounded-full border border-slate-200 text-[#1e3a8a] text-[11px] font-bold hover:bg-slate-50 transition-all flex items-center gap-2"
           >
@@ -53,79 +53,79 @@ const Reports = () => {
             <p className="text-[11px] text-slate-400 font-medium tracking-tight">Export detailed platform data and monitor performance trends.</p>
           </div>
           <div className="flex items-center gap-3">
-             <button className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
-                <Filter size={14} /> Filter Date
-             </button>
-             <button className="px-6 py-2 bg-[#c0922e] text-white rounded-xl text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20 flex items-center gap-2">
-                <Download size={14} /> Export CSV
-             </button>
+            <button className="px-6 py-2 rounded-xl border border-slate-200 bg-white text-[11px] font-bold text-slate-600 hover:bg-slate-50 transition-all flex items-center gap-2">
+              <Filter size={14} /> Filter Date
+            </button>
+            <button className="px-6 py-2 bg-[#c0922e] text-white rounded-xl text-[11px] font-bold hover:bg-[#a67d26] transition-all shadow-lg shadow-[#c0922e]/20 flex items-center gap-2">
+              <Download size={14} /> Export CSV
+            </button>
           </div>
         </div>
 
-      {/* Metric Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {reportCards.map((card, i) => (
-          <Card key={i} className="hover:border-[#c0922e]/30 transition-all border-slate-100 shadow-sm">
-             <div className="flex items-center justify-between mb-4">
+        {/* Metric Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {reportCards.map((card, i) => (
+            <Card key={i} className="hover:border-[#c0922e]/30 transition-all border-slate-100 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{card.scale}</span>
                 <div className={`flex items-center gap-1 text-xs font-black ${card.up ? 'text-emerald-600' : 'text-red-500'}`}>
-                   {card.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                   {card.growth}
+                  {card.up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
+                  {card.growth}
                 </div>
-             </div>
-             <h3 className="text-2xl font-serif text-[#1e3a8a] leading-none">{card.value}</h3>
-             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-3">{card.title}</p>
-          </Card>
-        ))}
-      </div>
+              </div>
+              <h3 className="text-2xl font-serif text-[#1e3a8a] leading-none">{card.value}</h3>
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-3">{card.title}</p>
+            </Card>
+          ))}
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         {/* Performance Chart Placeholder */}
-         <Card title="Traffic & Conversion Trends" className="border-slate-100">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Performance Chart Placeholder */}
+          <Card title="Traffic & Conversion Trends" className="border-slate-100">
             <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-lg border-2 border-dashed border-slate-100 mt-4 overflow-hidden relative group">
-               <BarChart3 size={48} className="text-slate-200 group-hover:scale-110 transition-transform" />
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Generating Visualization...</p>
-               
-               {/* Mock Bars */}
-               <div className="absolute bottom-4 left-4 right-4 flex items-end gap-2 h-32 opacity-20 group-hover:opacity-40 transition-opacity">
-                  {[40, 70, 45, 90, 65, 80, 55, 30, 85, 50, 95, 60].map((h, i) => (
-                    <div key={i} className="flex-1 bg-[#c0922e] rounded-t-lg transition-all duration-700" style={{ height: `${h}%` }} />
-                  ))}
-               </div>
-            </div>
-         </Card>
+              <BarChart3 size={48} className="text-slate-200 group-hover:scale-110 transition-transform" />
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Generating Visualization...</p>
 
-         {/* Distribution Chart Placeholder */}
-         <Card title="Vertical Distribution" className="border-slate-100">
+              {/* Mock Bars */}
+              <div className="absolute bottom-4 left-4 right-4 flex items-end gap-2 h-32 opacity-20 group-hover:opacity-40 transition-opacity">
+                {[40, 70, 45, 90, 65, 80, 55, 30, 85, 50, 95, 60].map((h, i) => (
+                  <div key={i} className="flex-1 bg-[#c0922e] rounded-t-lg transition-all duration-700" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+            </div>
+          </Card>
+
+          {/* Distribution Chart Placeholder */}
+          <Card title="Vertical Distribution" className="border-slate-100">
             <div className="h-64 flex flex-col items-center justify-center bg-slate-50 rounded-lg border-2 border-dashed border-slate-100 mt-4 relative group">
-               <PieIcon size={48} className="text-slate-200 group-hover:rotate-12 transition-transform" />
-               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Analyzing segments...</p>
-               
-               <div className="mt-8 grid grid-cols-2 gap-x-12 gap-y-3">
-                  <div className="flex items-center gap-2">
-                     <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                     <span className="text-xs font-bold text-slate-600">Residential (64%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                     <span className="text-xs font-bold text-slate-600">Commercial (22%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />
-                     <span className="text-xs font-bold text-slate-600">Industrial (10%)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
-                     <span className="text-xs font-bold text-slate-600">Land (4%)</span>
-                  </div>
-               </div>
-            </div>
-         </Card>
-      </div>
+              <PieIcon size={48} className="text-slate-200 group-hover:rotate-12 transition-transform" />
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-4">Analyzing segments...</p>
 
-      {/* Exportable Log Section */}
-      <Card noPadding title="Available Data Exports" className="border-slate-100 overflow-hidden">
-         <div className="divide-y divide-slate-50">
+              <div className="mt-8 grid grid-cols-2 gap-x-12 gap-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                  <span className="text-xs font-bold text-slate-600">Residential (64%)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="text-xs font-bold text-slate-600">Commercial (22%)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary-500" />
+                  <span className="text-xs font-bold text-slate-600">Industrial (10%)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-slate-400" />
+                  <span className="text-xs font-bold text-slate-600">Land (4%)</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Exportable Log Section */}
+        <Card noPadding title="Available Data Exports" className="border-slate-100 overflow-hidden">
+          <div className="divide-y divide-slate-50">
             {[
               { name: 'Full Broker Directory', size: '2.4 MB', type: 'CSV/Excel', updated: 'Today, 10:30 AM' },
               { name: 'Subscription Transaction History', size: '1.1 MB', type: 'PDF/CSV', updated: 'Yesterday' },
@@ -133,25 +133,25 @@ const Reports = () => {
               { name: 'Platform Activity Audit', size: '540 KB', type: 'PDF', updated: 'Today, 04:15 PM' },
             ].map((report, i) => (
               <div key={i} className="p-6 flex items-center justify-between hover:bg-slate-50 transition-all group">
-                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#fdf8f3] group-hover:text-[#c0922e] transition-all border border-slate-100/50">
-                       <FileText size={20} />
-                    </div>
-                    <div>
-                       <h5 className="text-sm font-bold text-slate-900">{report.name}</h5>
-                       <p className="text-xs text-slate-500 mt-1">Generated {report.updated} • {report.size}</p>
-                    </div>
-                 </div>
-                 <div className="flex items-center gap-4">
-                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest hidden sm:block">{report.type}</span>
-                    <button className="p-2.5 text-[#c0922e] hover:bg-[#fdf8f3] rounded-xl transition-all shadow-sm bg-white border border-slate-100">
-                       <Download size={18} />
-                    </button>
-                 </div>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-[#fdf8f3] group-hover:text-[#c0922e] transition-all border border-slate-100/50">
+                    <FileText size={20} />
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-bold text-slate-900">{report.name}</h5>
+                    <p className="text-xs text-slate-500 mt-1">Generated {report.updated} • {report.size}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest hidden sm:block">{report.type}</span>
+                  <button className="p-2.5 text-[#c0922e] hover:bg-[#fdf8f3] rounded-xl transition-all shadow-sm bg-white border border-slate-100">
+                    <Download size={18} />
+                  </button>
+                </div>
               </div>
             ))}
-         </div>
-      </Card>
+          </div>
+        </Card>
       </div>
     </div>
   );

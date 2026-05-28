@@ -63,6 +63,9 @@ const Dashboard = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAllListings, setShowAllListings] = useState(false);
+  const [allListings, setAllListings] = useState([]);
+  const [loadingAll, setLoadingAll] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -99,6 +102,29 @@ const Dashboard = () => {
       alert('An error occurred while deleting the listing');
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleViewAll = async () => {
+    if (showAllListings) {
+      setShowAllListings(false);
+      return;
+    }
+    
+    setLoadingAll(true);
+    try {
+      const res = await getMyPostings({ limit: 1000 });
+      if (res.success) {
+        setAllListings(res.data);
+        setShowAllListings(true);
+      } else {
+        alert('Failed to load all listings');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error fetching all listings');
+    } finally {
+      setLoadingAll(false);
     }
   };
 
@@ -148,7 +174,7 @@ const Dashboard = () => {
   const activeNetworkListings = (activeAvailability + activeRequirements) ?? 0;
   const slotsRemaining = Math.max(0, 25 - activeMyListings);
 
-  const displayListings = s.recentListings || [];
+  const displayListings = showAllListings ? allListings : (s.recentListings || []);
 
   return (
     <div className="space-y-8 pb-10">
@@ -197,10 +223,15 @@ const Dashboard = () => {
         <div className="space-y-6">
           <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-[#ede8df] flex items-center justify-between bg-white">
-              <h3 className="text-sm font-bold text-[#1e3a5f]">My Recent Listings</h3>
-              <Link to="/" className="text-xs font-bold px-4 py-2 rounded-lg border border-[#ede8df] text-slate-600 hover:bg-[#FAF9F6] transition-all">
-                View All
-              </Link>
+              <h3 className="text-sm font-bold text-[#1e3a5f]">{showAllListings ? 'My All Listings' : 'My Recent Listings'}</h3>
+              <button 
+                onClick={handleViewAll} 
+                disabled={loadingAll}
+                className="text-xs font-bold px-4 py-2 rounded-lg border border-[#ede8df] text-slate-600 hover:bg-[#FAF9F6] transition-all flex items-center gap-2"
+              >
+                {loadingAll ? <Loader2 size={14} className="animate-spin" /> : null}
+                {showAllListings ? 'View Recent' : 'View All'}
+              </button>
             </div>
             
             {displayListings.length === 0 ? (
