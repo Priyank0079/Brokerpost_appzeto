@@ -103,7 +103,7 @@ const ListingDetailModal = ({ isOpen, onClose, item, isAuthenticated, user, onLo
                   {item.size} {item.sizeUnit?.replace(/_/g, ' ')}
                 </span>
               )}
-              {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && (
+              {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && !item.subType?.toUpperCase().includes('PLOT') && (
                 <span className="px-2 py-1 bg-[#eff6ff] text-[#2563eb] text-[10px] font-semibold rounded-md">
                   {item.bedrooms} BHK
                 </span>
