@@ -41,7 +41,7 @@ const Navbar = ({ toggleSidebar, isCollapsed, toggleCollapse }) => {
   };
 
   return (
-    <nav className="h-16 px-6 lg:px-10 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 flex items-center justify-between">
+    <nav className="h-16 px-6 lg:px-10 border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-40 flex items-center justify-between">
       {/* Left: Logo & Controls */}
       <div className="flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2.5 group shrink-0">

@@ -83,14 +83,14 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
 
         <div className="search-box mx-auto lg:mx-0">
           {/* Tabs */}
-          <div className="inline-flex border border-slate-200 rounded-lg overflow-hidden mb-4">
+          <div className="flex w-full lg:w-auto lg:inline-flex border border-slate-200 rounded-lg overflow-hidden mb-4">
             <button
               onClick={() => {
                 const updated = { ...localFilters, vertical: '', subType: '', intent: '' };
                 setLocalFilters(updated);
                 onFilterChange(updated);
               }}
-              className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === ''
+              className={`flex flex-1 lg:flex-none items-center justify-center gap-1 sm:gap-2 px-2 sm:px-5 py-3 font-bold text-[10px] sm:text-xs transition-all ${localFilters.vertical === ''
                 ? 'bg-[#1a365d] text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
@@ -104,7 +104,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 setLocalFilters(updated);
                 onFilterChange(updated);
               }}
-              className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'RESIDENTIAL'
+              className={`flex flex-1 lg:flex-none items-center justify-center gap-1 sm:gap-2 px-2 sm:px-5 py-3 font-bold text-[10px] sm:text-xs transition-all border-l border-slate-200 lg:border-none ${localFilters.vertical === 'RESIDENTIAL'
                 ? 'bg-[#1a365d] text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}
@@ -118,7 +118,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 setLocalFilters(updated);
                 onFilterChange(updated);
               }}
-              className={`flex items-center gap-2 px-5 py-3 font-bold text-xs transition-all ${localFilters.vertical === 'COMMERCIAL'
+              className={`flex flex-1 lg:flex-none items-center justify-center gap-1 sm:gap-2 px-2 sm:px-5 py-3 font-bold text-[10px] sm:text-xs transition-all border-l border-slate-200 lg:border-none ${localFilters.vertical === 'COMMERCIAL'
                 ? 'bg-[#1a365d] text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50'
                 }`}

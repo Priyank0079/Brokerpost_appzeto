@@ -44,7 +44,7 @@ const Layout = ({ children }) => {
         <>
           {sidebarOpen && (
             <div 
-              className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 transition-opacity"
+              className="lg:hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 transition-opacity"
               onClick={() => setSidebarOpen(false)}
             />
           )}
