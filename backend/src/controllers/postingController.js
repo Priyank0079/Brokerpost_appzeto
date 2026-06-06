@@ -11,6 +11,20 @@ const { findAndNotifyMatches } = require('../services/matchingService');
 // ─────────────────────────────────────────────────────────────────────────────
 exports.createPosting = async (req, res, next) => {
   try {
+    // Enforce listing limit
+    const currentUser = await User.findById(req.user._id);
+    const activeListingsCount = await Posting.countDocuments({ 
+      postedBy: req.user._id, 
+      isActive: true 
+    });
+
+    if (activeListingsCount >= currentUser.listingLimit) {
+      return res.status(400).json({
+        success: false,
+        message: `You have reached your maximum limit of ${currentUser.listingLimit} active listings.`
+      });
+    }
+
     const {
       vertical, postType, intent, subType,
       location, project,
@@ -93,7 +107,12 @@ exports.getPostings = async (req, res, next) => {
     if (groupId) {
       const group = await Group.findById(groupId);
       if (group) {
-        filter.postedBy = { $in: group.members };
+        let membersToSearch = group.members;
+        if (req.user && req.userModel !== 'Admin') {
+          // Exclude the current user's own postings from the group view
+          membersToSearch = membersToSearch.filter(m => m.toString() !== req.user._id.toString());
+        }
+        filter.postedBy = { $in: membersToSearch };
       }
     }
 
@@ -116,7 +135,7 @@ exports.getPostings = async (req, res, next) => {
       [postings, total] = await Promise.all([
         Posting.find(filter)
           .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
-          .sort({ createdAt: -1 })
+          .sort({ boostedAt: -1, createdAt: -1 })
           .skip(skip)
           .limit(Number(limit)),
         Posting.countDocuments(filter)
@@ -126,7 +145,7 @@ exports.getPostings = async (req, res, next) => {
       [postings, total] = await Promise.all([
         Posting.find(filter)
           .populate('postedBy', 'firstName lastName name phoneNumber companyName operatingCity')
-          .sort({ createdAt: -1 })
+          .sort({ boostedAt: -1, createdAt: -1 })
           .skip(skip)
           .limit(Number(limit)),
         Posting.countDocuments(filter)
@@ -173,7 +192,7 @@ exports.getMyPostings = async (req, res, next) => {
 
     const [postings, total] = await Promise.all([
       Posting.find(filter)
-        .sort({ createdAt: -1 })
+        .sort({ boostedAt: -1, createdAt: -1 })
         .skip(skip)
         .limit(Number(limit))
         .lean()
@@ -307,6 +326,70 @@ exports.deletePosting = async (req, res, next) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// @desc    Refresh (Boost) a posting
+// @route   PATCH /api/v1/postings/:id/refresh
+// @access  Private (Owner Broker)
+// ─────────────────────────────────────────────────────────────────────────────
+exports.refreshPosting = async (req, res, next) => {
+  try {
+    const posting = await Posting.findById(req.params.id);
+
+    if (!posting) {
+      return res.status(404).json({ success: false, message: 'Posting not found' });
+    }
+
+    // Only owner can refresh their posting
+    if (posting.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized to refresh this posting' });
+    }
+
+    const LandingPageConfig = require('../models/LandingPageConfig');
+    const config = await LandingPageConfig.findOne();
+    const dailyLimit = config?.platformSettings?.dailyBoostLimit || 5;
+
+    const user = await User.findById(req.user._id);
+
+    const now = new Date();
+    // Midnight reset check
+    if (user.lastBoostDate) {
+      const lastBoost = new Date(user.lastBoostDate);
+      if (
+        lastBoost.getDate() !== now.getDate() ||
+        lastBoost.getMonth() !== now.getMonth() ||
+        lastBoost.getFullYear() !== now.getFullYear()
+      ) {
+        user.dailyBoostUsed = 0;
+      }
+    }
+
+    if (user.dailyBoostUsed >= dailyLimit) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Daily refresh limit reached (${dailyLimit}/${dailyLimit}). Try again tomorrow.`
+      });
+    }
+
+    // Apply boost
+    user.dailyBoostUsed += 1;
+    user.lastBoostDate = now;
+    await user.save({ validateBeforeSave: false });
+
+    posting.boostedAt = now;
+    posting.boostCount += 1;
+    await posting.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      message: 'Listing refreshed successfully!',
+      boostsUsed: user.dailyBoostUsed,
+      dailyLimit: dailyLimit
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // @desc    Get dashboard statistics (aggregated counts)
 // @route   GET /api/v1/postings/stats
 // @access  Private
@@ -319,7 +402,6 @@ exports.getPostingStats = async (req, res, next) => {
     }
 
     const userId = req.user.id || req.user._id;
-    console.log(`Generating dashboard stats for [${req.userModel}] ID: ${userId}`);
 
     // Use imported models directly instead of mongoose.model() to avoid MissingSchemaError
     const PostingModel = Posting;

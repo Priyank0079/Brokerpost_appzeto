@@ -84,7 +84,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm"
-        onClick={onClose}
       />
       
       {/* Modal Card */}

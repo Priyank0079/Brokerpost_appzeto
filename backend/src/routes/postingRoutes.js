@@ -8,7 +8,8 @@ const {
   getPostingById,
   updatePosting,
   deletePosting,
-  getPostingStats
+  getPostingStats,
+  refreshPosting
 } = require('../controllers/postingController');
 
 const { protect, optionalProtect } = require('../middlewares/authMiddleware');
@@ -44,5 +45,8 @@ router.patch('/:id', updatePosting);
 
 // Soft-delete posting (owner or admin — enforced in controller)
 router.delete('/:id', deletePosting);
+
+// Refresh/boost posting
+router.patch('/:id/refresh', refreshPosting);
 
 module.exports = router;

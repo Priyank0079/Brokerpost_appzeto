@@ -42,6 +42,16 @@ const Settings = () => {
     }
   };
 
+  const updatePlatformSettings = (field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      platformSettings: {
+        ...prev.platformSettings,
+        [field]: value
+      }
+    }));
+  };
+
   const updateTermsField = (field, value) => {
     setConfig(prev => ({
       ...prev,
@@ -209,6 +219,37 @@ const Settings = () => {
                   placeholder="The text next to the 'I agree' checkbox..."
                   className="w-full h-24 bg-[#fdf8f3] border border-slate-100 rounded-xl p-4 text-[11px] font-medium text-slate-700 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none resize-none"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Platform Settings Section */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <Shield size={18} />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900">Platform Settings</h2>
+                  <p className="text-[10px] text-slate-400 font-medium">Global platform rules and limits</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Daily Boost Limit Per Broker</label>
+                <input 
+                  type="text"
+                  value={config?.platformSettings?.dailyBoostLimit !== undefined ? config.platformSettings.dailyBoostLimit : ''}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    updatePlatformSettings('dailyBoostLimit', val === '' ? '' : parseInt(val, 10));
+                  }}
+                  className="w-full max-w-xs px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">Number of listings a broker can refresh to the top of the feed each day.</p>
               </div>
             </div>
           </div>

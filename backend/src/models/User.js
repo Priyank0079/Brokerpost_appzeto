@@ -90,6 +90,14 @@ const userSchema = new mongoose.Schema({
   listingLimit: {
     type: Number,
     default: 25
+  },
+  dailyBoostUsed: {
+    type: Number,
+    default: 0
+  },
+  lastBoostDate: {
+    type: Date,
+    default: null
   }
 }, {
   timestamps: true

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, Plus, ChevronDown, Loader2 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { getMyPostings, deletePosting } from '../services/postingService';
+import { getMyPostings, deletePosting, refreshPosting } from '../services/postingService';
 
 import PostListingModal from '../components/inventory/PostListingModal';
 import Modal from '../components/ui/Modal';
@@ -41,8 +41,9 @@ const ResidentialInventory = () => {
 
   // Delete State
   const [postingToDelete, setPostingToDelete] = useState(null);
+  const [isDeleting, setDeleting] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [deleting, setDeleting] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState(urlSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(urlSearch);
@@ -120,6 +121,22 @@ const ResidentialInventory = () => {
       console.error('Delete failed:', err);
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleRefreshClick = async (listing) => {
+    try {
+      const result = await refreshPosting(listing._id);
+      if (result.success) {
+        setRefreshMessage({ type: 'success', text: result.message });
+        fetchListings();
+        window.dispatchEvent(new Event('listing-updated'));
+      } else {
+        setRefreshMessage({ type: 'error', text: result.message || 'Failed to refresh listing' });
+      }
+    } catch (err) {
+      console.error(err);
+      setRefreshMessage({ type: 'error', text: 'Error refreshing listing' });
     }
   };
 
@@ -370,7 +387,19 @@ const ResidentialInventory = () => {
                         {user && listing.postedBy && user._id === (typeof listing.postedBy === 'object' ? listing.postedBy._id : listing.postedBy) ? (
                           <div className="flex items-center justify-center gap-2">
                             <button 
-                              onClick={() => {
+                              onClick={(e) => { e.stopPropagation(); handleRefreshClick(listing); }}
+                              title={listing.boostedAt ? "Boosted listing" : "Refresh to top"}
+                              className={`px-3 py-1.5 rounded-lg border font-bold transition-all flex items-center justify-center ${
+                                listing.boostedAt 
+                                  ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                                  : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                              }`}
+                            >
+                              ↑
+                            </button>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedPosting(listing);
                                 setIsEditModalOpen(true);
                               }}
@@ -379,7 +408,8 @@ const ResidentialInventory = () => {
                               Edit
                             </button>
                             <button 
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setPostingToDelete(listing);
                                 setIsDeleteModalOpen(true);
                               }}
@@ -426,39 +456,72 @@ const ResidentialInventory = () => {
           onSuccess={fetchListings}
         />
 
-        {/* Premium Delete Confirmation Modal */}
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onClose={() => {
-            setIsDeleteModalOpen(false);
-            setPostingToDelete(null);
-          }}
-          title="Confirm Delete"
-          footer={
-            <div className="flex gap-3">
-              <button 
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setPostingToDelete(null);
-                }}
-                className="px-4 py-2 border border-slate-200 rounded-lg text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all bg-white"
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleConfirmDelete}
-                disabled={deleting}
-                className="px-4 py-2 bg-[#8b1a1a] hover:bg-[#a02020] text-white rounded-lg text-xs font-bold transition-all shadow-md flex items-center justify-center min-w-[70px]"
-              >
-                {deleting ? 'Deleting...' : 'Delete'}
-              </button>
+        {/* Custom Delete Confirmation Modal */}
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-6">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-100 mb-4 mx-auto">
+                  <span className="text-red-500 text-xl font-bold">!</span>
+                </div>
+                <h3 className="text-lg font-bold text-center text-slate-900 mb-2">Delete Listing?</h3>
+                <p className="text-sm text-center text-slate-500 mb-6">
+                  Are you sure you want to delete this listing? This action cannot be undone.
+                </p>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => {
+                      setIsDeleteModalOpen(false);
+                      setPostingToDelete(null);
+                    }}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={handleConfirmDelete}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-2.5 bg-[#991b1b] hover:bg-[#7f1d1d] text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {isDeleting ? <Loader2 size={16} className="animate-spin" /> : 'Delete'}
+                  </button>
+                </div>
+              </div>
             </div>
-          }
-        >
-          <p className="text-[13px] text-slate-600 font-normal leading-relaxed">
-            Are you sure you want to delete this listing? This cannot be undone.
-          </p>
-        </Modal>
+          </div>
+        )}
+
+        {/* Custom Refresh Alert Modal */}
+        {refreshMessage && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+              <div className="p-6">
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full mb-4 mx-auto border ${refreshMessage.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-500' : 'bg-red-50 border-red-100 text-red-500'}`}>
+                  {refreshMessage.type === 'success' ? (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  ) : (
+                    <span className="text-xl font-bold">!</span>
+                  )}
+                </div>
+                <h3 className="text-lg font-bold text-center text-slate-900 mb-2">
+                  {refreshMessage.type === 'success' ? 'Success' : 'Error'}
+                </h3>
+                <p className="text-sm text-center text-slate-500 mb-6">
+                  {refreshMessage.text}
+                </p>
+                <div className="flex items-center justify-center">
+                  <button 
+                    onClick={() => setRefreshMessage(null)}
+                    className="w-full px-4 py-2.5 bg-[#1a365d] hover:bg-[#12284b] text-white text-sm font-bold rounded-lg transition-colors"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

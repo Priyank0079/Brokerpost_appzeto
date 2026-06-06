@@ -120,7 +120,8 @@ exports.updateLandingConfig = async (req, res) => {
     let config = await LandingPageConfig.findOne().sort({ updatedAt: -1 });
     
     if (config) {
-      config.sections = configData.sections;
+      if (configData.sections) config.sections = configData.sections;
+      if (configData.platformSettings) config.platformSettings = configData.platformSettings;
       config.updatedAt = Date.now();
       await config.save();
     } else {

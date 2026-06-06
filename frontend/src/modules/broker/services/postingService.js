@@ -97,6 +97,15 @@ export const deletePosting = async (id) => {
   return res.json();
 };
 
+// ── REFRESH (boost) ─────────────────────────────────────────────────────────
+export const refreshPosting = async (id) => {
+  const res = await fetch(`${API_BASE}/postings/${id}/refresh`, {
+    method: 'PATCH',
+    headers: authHeader()
+  });
+  return res.json();
+};
+
 // ── UPLOAD IMAGES ──────────────────────────────────────────────────────────
 export const uploadPropertyImages = async (files) => {
   const formData = new FormData();

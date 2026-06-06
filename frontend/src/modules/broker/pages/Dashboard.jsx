@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, ArrowLeft, Loader2, Users, List, Building, MapPin, Globe } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { getMyPostings, getPostingStats, deletePosting } from '../services/postingService';
+import { getMyPostings, getPostingStats, deletePosting, refreshPosting } from '../services/postingService';
 import Badge from '../components/ui/Badge';
 import Button from '../components/ui/Button';
 import PostListingModal from '../components/inventory/PostListingModal';
@@ -66,6 +66,7 @@ const Dashboard = () => {
   const [showAllListings, setShowAllListings] = useState(false);
   const [allListings, setAllListings] = useState([]);
   const [loadingAll, setLoadingAll] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -126,6 +127,23 @@ const Dashboard = () => {
       alert('Error fetching all listings');
     } finally {
       setLoadingAll(false);
+    }
+  };
+
+  const handleRefreshClick = async (e, id) => {
+    e.stopPropagation();
+    try {
+      const res = await refreshPosting(id);
+      if (res.success) {
+        setRefreshMessage({ type: 'success', text: res.message });
+        fetchData();
+        window.dispatchEvent(new Event('listing-updated'));
+      } else {
+        setRefreshMessage({ type: 'error', text: res.message || 'Failed to refresh listing' });
+      }
+    } catch (err) {
+      console.error(err);
+      setRefreshMessage({ type: 'error', text: 'Error refreshing listing' });
     }
   };
 
@@ -344,6 +362,17 @@ const Dashboard = () => {
                           <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-center gap-2">
                               <button 
+                                onClick={(e) => handleRefreshClick(e, post._id)}
+                                title={post.boostedAt ? "Boosted listing" : "Refresh to top"}
+                                className={`px-3.5 py-1.5 border rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
+                                  post.boostedAt 
+                                    ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                                    : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                                }`}
+                              >
+                                ↑
+                              </button>
+                              <button 
                                 onClick={() => {
                                   setSelectedPosting(post);
                                   setIsEditModalOpen(true);
@@ -408,6 +437,37 @@ const Dashboard = () => {
                   className="flex-1 px-4 py-2.5 bg-[#991b1b] hover:bg-[#7f1d1d] text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isDeleting ? <Loader2 size={16} className="animate-spin" /> : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Refresh Alert Modal */}
+      {refreshMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className={`flex items-center justify-center w-12 h-12 rounded-full mb-4 mx-auto border ${refreshMessage.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-500' : 'bg-red-50 border-red-100 text-red-500'}`}>
+                {refreshMessage.type === 'success' ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                ) : (
+                  <span className="text-xl font-bold">!</span>
+                )}
+              </div>
+              <h3 className="text-lg font-bold text-center text-slate-900 mb-2">
+                {refreshMessage.type === 'success' ? 'Success' : 'Error'}
+              </h3>
+              <p className="text-sm text-center text-slate-500 mb-6">
+                {refreshMessage.text}
+              </p>
+              <div className="flex items-center justify-center">
+                <button 
+                  onClick={() => setRefreshMessage(null)}
+                  className="w-full px-4 py-2.5 bg-[#1a365d] hover:bg-[#12284b] text-white text-sm font-bold rounded-lg transition-colors"
+                >
+                  OK
                 </button>
               </div>
             </div>

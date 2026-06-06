@@ -77,6 +77,9 @@ const LandingPageConfigSchema = new mongoose.Schema({
       agreementText: { type: String, default: "I have read and understood all the above terms." }
     }
   },
+  platformSettings: {
+    dailyBoostLimit: { type: Number, default: 5 }
+  },
   updatedAt: {
     type: Date,
     default: Date.now
