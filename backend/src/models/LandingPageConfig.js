@@ -80,6 +80,19 @@ const LandingPageConfigSchema = new mongoose.Schema({
   platformSettings: {
     dailyBoostLimit: { type: Number, default: 5 }
   },
+  legalPages: {
+    privacyPolicy: {
+      content: { type: String, default: "Your privacy policy goes here. Update this content from the admin dashboard." }
+    },
+    support: {
+      email: { type: String, default: "support@brokerspost.com" },
+      mobile: { type: String, default: "+91 9876543210" },
+      faqs: [{
+        question: { type: String },
+        answer: { type: String }
+      }]
+    }
+  },
   updatedAt: {
     type: Date,
     default: Date.now

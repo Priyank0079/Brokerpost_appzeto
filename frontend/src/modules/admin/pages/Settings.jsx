@@ -81,6 +81,35 @@ const Settings = () => {
     updateTermsField('items', newItems);
   };
 
+  const updateLegalPages = (section, field, value) => {
+    setConfig(prev => ({
+      ...prev,
+      legalPages: {
+        ...prev.legalPages,
+        [section]: {
+          ...(prev.legalPages?.[section] || {}),
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  const handleFAQChange = (index, field, value) => {
+    const newFaqs = [...(config.legalPages?.support?.faqs || [])];
+    newFaqs[index] = { ...newFaqs[index], [field]: value };
+    updateLegalPages('support', 'faqs', newFaqs);
+  };
+
+  const addFAQ = () => {
+    const newFaqs = [...(config.legalPages?.support?.faqs || []), { question: '', answer: '' }];
+    updateLegalPages('support', 'faqs', newFaqs);
+  };
+
+  const removeFAQ = (index) => {
+    const newFaqs = (config.legalPages?.support?.faqs || []).filter((_, i) => i !== index);
+    updateLegalPages('support', 'faqs', newFaqs);
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
@@ -250,6 +279,105 @@ const Settings = () => {
                   className="w-full max-w-xs px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
                 />
                 <p className="text-[11px] text-slate-500 mt-1">Number of listings a broker can refresh to the top of the feed each day.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Legal Pages Section */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/30">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                  <Shield size={18} />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900">Legal & Support Pages</h2>
+                  <p className="text-[10px] text-slate-400 font-medium">Manage privacy policy and support content</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-8">
+              {/* Privacy Policy */}
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Privacy Policy Content</label>
+                <textarea 
+                  value={config?.legalPages?.privacyPolicy?.content || ''}
+                  onChange={(e) => updateLegalPages('privacyPolicy', 'content', e.target.value)}
+                  placeholder="Enter the privacy policy text here..."
+                  className="w-full h-48 bg-[#fdf8f3] border border-slate-100 rounded-xl p-4 text-[11px] font-medium text-slate-700 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none resize-y"
+                />
+              </div>
+
+              {/* Support Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Support Email</label>
+                  <input 
+                    type="email"
+                    value={config?.legalPages?.support?.email || ''}
+                    onChange={(e) => updateLegalPages('support', 'email', e.target.value)}
+                    placeholder="support@brokerspost.com"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Support Mobile</label>
+                  <input 
+                    type="text"
+                    value={config?.legalPages?.support?.mobile || ''}
+                    onChange={(e) => updateLegalPages('support', 'mobile', e.target.value)}
+                    placeholder="+91 9876543210"
+                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* FAQs */}
+              <div className="space-y-4 pt-4 border-t border-slate-100">
+                <div className="flex items-center justify-between px-1">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Support FAQs</label>
+                  <button 
+                    onClick={addFAQ}
+                    className="flex items-center gap-1.5 text-[10px] font-black text-[#c0922e] hover:text-[#a67d26] transition-all"
+                  >
+                    <Plus size={12} strokeWidth={3} /> ADD NEW FAQ
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                  {(config?.legalPages?.support?.faqs || []).map((faq, idx) => (
+                    <div key={idx} className="relative group p-5 bg-[#faf9f6] rounded-2xl border border-slate-100 hover:border-[#c8962a]/20 transition-all">
+                      <button 
+                        onClick={() => removeFAQ(idx)}
+                        className="absolute -top-2 -right-2 w-7 h-7 bg-white text-rose-500 rounded-full border border-slate-100 shadow-sm flex items-center justify-center hover:bg-rose-50 transition-all opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                      
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3">
+                          <span className="w-6 h-6 flex items-center justify-center rounded-lg bg-white text-[10px] font-black text-[#c0922e] border border-slate-100 shadow-sm">
+                            Q
+                          </span>
+                          <input 
+                            type="text"
+                            value={faq.question}
+                            onChange={(e) => handleFAQChange(idx, 'question', e.target.value)}
+                            placeholder="Question (e.g. How do I verify my account?)"
+                            className="flex-1 bg-transparent border-none text-[12px] font-black text-[#1a365d] placeholder:text-slate-300 outline-none p-0"
+                          />
+                        </div>
+                        <textarea 
+                          value={faq.answer}
+                          onChange={(e) => handleFAQChange(idx, 'answer', e.target.value)}
+                          placeholder="Answer to the FAQ..."
+                          className="w-full h-20 bg-white border border-slate-100 rounded-xl p-4 text-[11px] font-medium text-slate-600 placeholder:text-slate-300 resize-none outline-none focus:border-[#c8962a]/30 transition-all"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

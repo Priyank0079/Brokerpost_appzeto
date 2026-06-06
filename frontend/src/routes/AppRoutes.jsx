@@ -27,6 +27,8 @@ const PropertyDetails = lazy(() => import('../modules/broker/pages/PropertyDetai
 const Login = lazy(() => import('../modules/broker/pages/Login'));
 const BrokerRegistration = lazy(() => import('../modules/broker/pages/BrokerRegistration'));
 const PostProperty = lazy(() => import('../modules/broker/pages/PostProperty'));
+const PrivacyPolicy = lazy(() => import('../modules/broker/pages/PrivacyPolicy'));
+const Support = lazy(() => import('../modules/broker/pages/Support'));
 
 const AdminLogin = lazy(() => import('../modules/admin/pages/Login'));
 
@@ -46,6 +48,10 @@ const AppRoutes = () => {
             <Home />
           )
         } />
+
+        {/* Public Legal Pages */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/support" element={<Support />} />
 
         {/* Removed dedicated login/register routes to favor home modal */}
         <Route path="/admin/login" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin" />} />

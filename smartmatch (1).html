@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>BrokersPost — Your Matches</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nav:#0d1520;
+  --gold:#c8962a;--gold2:#e8b84b;
+  --page:#f5f0e8;
+  --card:#ffffff;
+  --ink:#1a1a2e;--ink2:#1e3a5f;
+  --muted:#6b7060;
+  --border:#e0d8cc;--border2:#ede6da;
+  --success:#166534;--sbg:#dcfce7;
+  --danger:#991b1b;--dbg:#fee2e2;
+  --info:#1e40af;--ibg:#dbeafe;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--page);color:var(--ink);font-size:14px;line-height:1.5;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══ LAYOUT ══ */
+.app{display:flex;height:100vh;overflow:hidden;}
+.sidebar{width:240px;background:var(--nav);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:54px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:14px;flex-shrink:0;}
+.content{flex:1;overflow-y:auto;padding:22px 24px 48px;}
+
+/* ══ SIDEBAR ══ */
+.sb-top{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.sb-brand{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff;}
+.sb-brand b{color:var(--gold2);}
+.sb-tag{font-size:8.5px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:2px;}
+.sb-sec{padding:14px 10px 4px;}
+.sb-lbl{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:0 10px;margin-bottom:6px;font-weight:600;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:.12s;color:rgba(255,255,255,0.6);font-size:12.5px;}
+.sb-item:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.sb-item.active{background:var(--gold2);color:var(--nav);}
+.sb-item.active .sb-dot{background:rgba(13,21,32,0.4);}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.2);flex-shrink:0;}
+.sb-badge{min-width:20px;height:20px;border-radius:50%;background:var(--gold2);color:var(--nav);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px;margin-left:auto;flex-shrink:0;}
+.sb-item.active .sb-badge{background:rgba(13,21,32,0.15);}
+.sb-icon{font-size:14px;flex-shrink:0;opacity:.75;}
+.sb-item.active .sb-icon{opacity:1;}
+.sb-user{margin-top:auto;padding:12px 14px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+.sb-av{width:34px;height:34px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--nav);flex-shrink:0;}
+.sb-uname{font-size:12.5px;font-weight:600;color:#fff;}
+.sb-role{font-size:10px;color:rgba(255,255,255,0.35);}
+
+/* ══ TOPBAR ══ */
+.tb-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--ink2);}
+.tb-srch{flex:1;max-width:280px;position:relative;}
+.tb-srch input{width:100%;background:var(--page);border:1px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;}
+.tb-srch input:focus{border-color:var(--ink2);}
+.tb-si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+.tb-r{margin-left:auto;display:flex;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:inherit;transition:.12s;}
+.btn-out{background:transparent;color:var(--ink2);border:1px solid var(--border);}
+.btn-out:hover{background:var(--page);}
+.btn-gold{background:var(--gold2);color:var(--nav);}
+.btn-gold:hover{background:var(--gold);}
+.btn-sm{padding:5px 11px;font-size:11px;}
+
+/* ══ PAGE HEADER ══ */
+.pg-hd{margin-bottom:18px;}
+.pg-h1{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.pg-sub{font-size:12px;color:var(--muted);line-height:1.6;}
+.pg-rule{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 14px;margin-top:10px;font-size:11px;color:var(--muted);}
+.pg-rule strong{color:var(--ink2);}
+
+/* ══ STAT ROW ══ */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.sc-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:6px;}
+.sc-val{font-family:'Playfair Display',serif;font-size:28px;color:var(--ink2);line-height:1;}
+.sc-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+
+/* ══ FILTER BAR ══ */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.fb-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:500;}
+.fb-sel{background:var(--page);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px;font-family:inherit;color:var(--ink);outline:none;cursor:pointer;}
+.fb-r{margin-left:auto;display:flex;gap:6px;align-items:center;}
+.fb-cnt{font-size:11px;color:var(--muted);}
+.sort-row{display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.sort-btn{padding:5px 12px;font-size:11px;background:var(--card);color:var(--muted);border:none;border-right:1px solid var(--border);cursor:pointer;font-family:inherit;transition:.12s;}
+.sort-btn:last-child{border-right:none;}
+.sort-btn.on{background:var(--ink2);color:#fff;}
+
+/* ══ MATCH GROUP ══ */
+.mg-wrap{margin-bottom:14px;animation:fadeUp .35s ease both;}
+.mg-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+
+/* Listing header */
+.mg-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none;transition:.1s;border-left:3px solid transparent;}
+.mg-hd:hover{filter:brightness(.97);}
+.mg-hd.open{border-bottom:1px solid var(--border);}
+.mg-hd.av-hd{border-left-color:var(--success);background:rgba(22,101,52,0.04);}
+.mg-hd.rq-hd{border-left-color:var(--ink2);background:rgba(30,58,95,0.03);}
+.mg-type{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;flex-shrink:0;}
+.tt-av{background:var(--sbg);color:var(--success);}
+.tt-rq{background:var(--ibg);color:var(--info);}
+.mg-info{flex:1;min-width:0;}
+.mg-sec{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;}
+.mg-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.mg-loc{font-size:13px;font-weight:600;color:var(--ink);}
+.mg-proj{font-size:11px;color:var(--muted);}
+.mg-sz{font-size:11px;color:var(--muted);flex-shrink:0;}
+.mg-price{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--ink2);flex-shrink:0;}
+.mg-cnt{display:flex;align-items:center;gap:5px;background:var(--gold2);color:var(--nav);font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;flex-shrink:0;white-space:nowrap;}
+.mg-strong{background:var(--sbg);color:var(--success);font-size:9px;padding:2px 6px;border-radius:10px;}
+.mg-chev{font-size:13px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.mg-hd.open .mg-chev{transform:rotate(180deg);}
+
+/* Match table */
+.mt-wrap{display:none;}
+.mt-wrap.open{display:block;}
+.mt-head{
+  display:grid;
+  grid-template-columns:74px 100px 1fr 1fr 148px 76px 90px 124px;
+  padding:9px 18px;
+  background:#faf8f4;border-bottom:1px solid var(--border2);
+  font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:500;
+}
+.mt-row{
+  display:grid;
+  grid-template-columns:74px 100px 1fr 1fr 148px 76px 90px 124px;
+  padding:12px 18px;border-bottom:1px solid var(--border2);align-items:center;transition:.1s;
+}
+.mt-row:last-of-type{border-bottom:none;}
+.mt-row:hover{background:#faf8f4;}
+.mt-foot{padding:9px 18px;background:#faf8f4;border-top:1px solid var(--border2);font-size:10px;color:var(--muted);}
+
+/* Score */
+.sc-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.sc-hi{background:var(--sbg);color:var(--success);}
+.sc-md{background:#fef3c7;color:#92400e;}
+.sc-lo{background:var(--ibg);color:var(--info);}
+.sc-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sd-hi{background:var(--success);}
+.sd-md{background:#d97706;}
+.sd-lo{background:var(--info);}
+.sc-bar{height:2px;background:var(--border);border-radius:1px;margin-top:3px;}
+.sc-fill{height:100%;border-radius:1px;}
+.sc-lbl-s{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.4px;}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:500;}
+.p-blue{background:var(--ibg);color:var(--info);}
+.p-orange{background:#fff7ed;color:#c2410c;}
+.p-green{background:var(--sbg);color:var(--success);}
+.p-gold{background:#fef9c3;color:#854d0e;}
+.p-gray{background:#f3f4f6;color:#374151;}
+.p-purple{background:#f5f3ff;color:#6d28d9;}
+
+/* Reason tags */
+.rtags{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px;}
+.rtag{padding:2px 6px;border-radius:3px;font-size:9px;font-weight:500;}
+.rt-loc{background:var(--ibg);color:var(--info);}
+.rt-proj{background:var(--sbg);color:var(--success);}
+.rt-sub{background:#fef9c3;color:#854d0e;}
+
+/* Highlight keywords */
+.hl-loc{background:var(--ibg);color:var(--info);padding:0 3px;border-radius:2px;font-weight:600;}
+.hl-proj{background:var(--sbg);color:var(--success);padding:0 3px;border-radius:2px;font-weight:600;}
+
+/* Broker */
+.b-cell{display:flex;align-items:center;gap:7px;}
+.b-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
+.b-nm{font-size:11.5px;font-weight:500;color:var(--ink);}
+.b-co{font-size:10px;color:var(--muted);}
+
+/* Connect */
+.con-row{display:flex;gap:4px;flex-wrap:wrap;}
+.wa-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;background:#25D366;color:#fff;border-radius:5px;font-size:10px;font-weight:500;text-decoration:none;white-space:nowrap;border:none;cursor:pointer;font-family:inherit;}
+.wa-btn:hover{background:#128C7E;}
+.ca-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 9px;background:var(--ibg);color:var(--info);border:1px solid #93c5fd;border-radius:5px;font-size:10px;font-weight:500;text-decoration:none;white-space:nowrap;}
+.ca-btn:hover{background:#bfdbfe;}
+
+/* Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,21,32,0.5);z-index:999;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border-radius:12px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.18);position:relative;}
+.m-hd{padding:18px 22px 14px;border-bottom:1px solid var(--border);}
+.m-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--ink2);}
+.m-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.m-x{position:absolute;top:14px;right:14px;background:var(--page);border:none;width:28px;height:28px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);}
+.m-x:hover{background:var(--border);}
+.m-bd{padding:18px 22px;}
+.m-ft{padding:10px 22px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.listing-box{background:var(--page);border-radius:8px;padding:12px 14px;margin-bottom:12px;}
+.broker-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink2);color:#fff;padding:10px 18px;border-radius:8px;font-size:12px;z-index:9999;transform:translateY(60px);opacity:0;transition:.3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .mt-head,.mt-row{grid-template-columns:70px 96px 1fr 1fr 130px 70px 84px 108px;}
+}
+@media(max-width:960px){
+  .mt-head,.mt-row{grid-template-columns:68px 90px 1fr 1fr 120px !important;}
+  .mt-head>*:nth-child(n+6),.mt-row>*:nth-child(n+6){display:none;}
+  .stat-row{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:700px){
+  .sidebar{width:52px;}
+  .sb-brand,.sb-tag,.sb-lbl,.sb-item>span:not(.sb-badge),.sb-uname,.sb-role{display:none;}
+  .sb-item{justify-content:center;padding:10px;}
+  .sb-badge{display:none;}
+  .sb-user{justify-content:center;}
+  .content{padding:12px;}
+}
+@media(max-width:480px){
+  .modal-overlay{align-items:flex-end;padding:0;}
+  .modal{border-radius:12px 12px 0 0;max-height:95vh;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Connect Modal -->
+<div class="modal-overlay" id="cm">
+  <div class="modal">
+    <div class="m-hd"><div class="m-title">Connect with Broker</div><div class="m-sub" id="cm-sub">—</div></div>
+    <div class="m-bd" id="cm-body"></div>
+    <div class="m-ft"><button class="btn btn-out btn-sm" onclick="document.getElementById('cm').classList.remove('open')">Close</button></div>
+    <button class="m-x" onclick="document.getElementById('cm').classList.remove('open')">✕</button>
+  </div>
+</div>
+
+<div class="app">
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <div class="sb-brand">Brokers<b>Post</b></div>
+    <div class="sb-tag">My Dashboard</div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Residential</div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Available for Sale</span><span class="sb-badge">2</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Available for Rental</span><span class="sb-badge">1</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Wanted on Purchase</span><span class="sb-badge">1</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Wanted on Rent</span><span class="sb-badge">0</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Commercial</div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Available for Sale</span><span class="sb-badge">1</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Available for Lease</span><span class="sb-badge">0</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Wanted on Purchase</span><span class="sb-badge">0</span></div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><div class="sb-dot"></div><span>Wanted on Lease</span><span class="sb-badge">0</span></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Network</div>
+    <div class="sb-item" onclick="goTo('dashboard.html')"><span class="sb-icon">👥</span><span>My Groups</span></div>
+    <div class="sb-item active"><span class="sb-icon">🎯</span><span>Your Matches</span><span class="sb-badge" id="totalBadge">5</span></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av">PK</div>
+    <div><div class="sb-uname">Pawan Kumar</div><div class="sb-role">Broker</div></div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title">Your Matches</div>
+    <div class="tb-srch"><span class="tb-si">🔍</span><input type="text" id="searchInp" placeholder="Search location, project, broker…" oninput="applyFilters()"></div>
+    <div class="tb-r">
+      <a class="btn btn-out btn-sm" href="dashboard.html">← Dashboard</a>
+      <button class="btn btn-gold btn-sm" onclick="init()">↻ Refresh</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="pg-hd">
+      <div class="pg-h1">Your Deal Matches</div>
+      <div class="pg-sub">Matches found across all your listings — availability and requirements.
+        <strong>Sub-type must match</strong>, and at least one of <strong>Location</strong> or <strong>Project</strong> must have keyword overlap.</div>
+      <div class="pg-rule">
+        <strong>Mandatory:</strong> Sub-type must match &nbsp;·&nbsp; <strong>AND</strong> Location or Project (at least one) must match
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="sc"><div class="sc-lbl">Listings Matched</div><div class="sc-val" id="sListed">0</div><div class="sc-sub">Your listings with results</div></div>
+      <div class="sc"><div class="sc-lbl">Total Matches</div><div class="sc-val" id="sTotal">0</div><div class="sc-sub">Requirements matched</div></div>
+      <div class="sc"><div class="sc-lbl">Strong Matches</div><div class="sc-val" id="sStrong" style="color:var(--success)">0</div><div class="sc-sub">Score 70% and above</div></div>
+      <div class="sc"><div class="sc-lbl">Brokers to Connect</div><div class="sc-val" id="sBrokers">0</div><div class="sc-sub">Unique brokers</div></div>
+    </div>
+
+    <div class="filter-bar">
+      <span class="fb-lbl">Filter</span>
+      <select class="fb-sel" id="fType" onchange="applyFilters()">
+        <option value="">Availability &amp; Requirements</option>
+        <option value="avail">My Availability Only</option>
+        <option value="req">My Requirements Only</option>
+      </select>
+      <select class="fb-sel" id="fCat" onchange="applyFilters()">
+        <option value="">All Categories</option>
+        <option value="Residential">Residential</option>
+        <option value="Commercial">Commercial</option>
+      </select>
+      <select class="fb-sel" id="fScore" onchange="applyFilters()">
+        <option value="0">All Scores</option>
+        <option value="70">Strong (70%+)</option>
+        <option value="40">Good &amp; Above (40%+)</option>
+      </select>
+      <div class="fb-r">
+        <span class="fb-cnt" id="fbCnt">—</span>
+        <div class="sort-row">
+          <button class="sort-btn on" id="st-score" onclick="setSort('score')">Score ↑</button>
+          <button class="sort-btn" id="st-date" onclick="setSort('date')">Latest</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="wrap"></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ══ SAMPLE DATA ══
+// Current broker (Pawan Kumar)
+const ME = {id:'pk01', name:'Pawan Kumar', company:'PK Realty', phone:'9810011001', city:'Gurugram'};
+
+// Other brokers in network
+const BROKERS = [
+  {id:'rs01', name:'Rajesh Sharma',  company:'Sharma Properties', phone:'9810022002', city:'Gurugram'},
+  {id:'am01', name:'Anita Mehta',    company:'Mehta Realtors',    phone:'9810033003', city:'Noida'},
+  {id:'vs01', name:'Vivek Singh',    company:'VS Associates',     phone:'9810044004', city:'Gurugram'},
+  {id:'pk02', name:'Priya Kapoor',   company:'Kapoor Estates',    phone:'9810055005', city:'Delhi'},
+  {id:'mk01', name:'Manish Khanna',  company:'MK Properties',     phone:'9810066006', city:'Faridabad'},
+  {id:'sj01', name:'Sunita Jain',    company:'Jain Realty',       phone:'9810077007', city:'Noida'},
+];
+
+// MY LISTINGS (Pawan Kumar's own listings)
+const MY_LISTINGS = [
+  // --- AVAILABILITY ---
+  {id:'L001', brokerId:'pk01', section:'res-sale',
+   subType:'Apartments', location:'Golf Course Road, Gurugram', city:'Gurugram',
+   projectSociety:'TDI Ourania', bedrooms:'3 BHK', size:'1,400 Sq.Ft',
+   price:'12,000', priceType:'per_unit', totalPrice:'1.68 Cr', status:'Ready to Move',
+   date:'31/5/2026'},
+
+  {id:'L002', brokerId:'pk01', section:'res-rental',
+   subType:'Apartments', location:'Sector 62, Noida', city:'Noida',
+   projectSociety:'Supertech Eco Village', bedrooms:'2 BHK', size:'1,100 Sq.Ft',
+   rent:'28,000', totalPrice:'28,000/mo', status:'Ready to Move',
+   date:'28/5/2026'},
+
+  {id:'L003', brokerId:'pk01', section:'com-sale',
+   subType:'Office', location:'Cyber City, Gurugram', city:'Gurugram',
+   projectSociety:'DLF Cyber Hub Tower B', size:'1,500 Sq.Ft',
+   price:'23,000', priceType:'per_unit', totalPrice:'3.45 Cr', status:'Vacant',
+   date:'25/5/2026'},
+
+  {id:'L004', brokerId:'pk01', section:'res-sale',
+   subType:'Low Rise Floors', location:'Sohna Road, Gurugram', city:'Gurugram',
+   projectSociety:'Vatika City', bedrooms:'4 BHK', size:'2,200 Sq.Ft',
+   price:'9,500', priceType:'per_unit', totalPrice:'2.09 Cr', status:'Ready to Move',
+   date:'20/5/2026'},
+
+  // --- REQUIREMENTS ---
+  {id:'L005', brokerId:'pk01', section:'res-buy',
+   subType:'Kothi/Villas', location:'Golf Course Road, Gurugram', city:'Gurugram',
+   projectSociety:'DLF Phase 5', bedrooms:'5 BHK', size:'3,500 Sq.Ft',
+   totalPrice:'4.5 Cr', notes:'Client ready with cheque. Immediate purchase.',
+   date:'18/5/2026'},
+
+  {id:'L006', brokerId:'pk01', section:'com-available-lease',
+   subType:'Retail Shops/Showroom', location:'MG Road, Gurugram', city:'Gurugram',
+   projectSociety:'Raheja Mall', size:'800 Sq.Ft',
+   totalPrice:'85,000/mo', status:'Vacant',
+   date:'15/5/2026'},
+];
+
+// OTHER BROKERS' LISTINGS (that may match Pawan's)
+const OTHER_LISTINGS = [
+  // Will match L001 (res-sale → res-buy, Golf Course Road + TDI Ourania)
+  {id:'O001', brokerId:'rs01', section:'res-buy',
+   subType:'Apartments', location:'Golf Course Road, Gurugram', city:'Gurugram',
+   projectSociety:'TDI Ourania Society', bedrooms:'3 BHK', size:'1,200 Sq.Ft',
+   totalPrice:'1.5 Cr', notes:'Serious buyer, pre-approved loan.', date:'30/5/2026'},
+
+  // Will match L001 strongly (same project exact)
+  {id:'O002', brokerId:'vs01', section:'res-buy',
+   subType:'Apartments', location:'Golf Course Road Gurugram', city:'Gurugram',
+   projectSociety:'TDI Ourania', bedrooms:'3 BHK', size:'1,400 Sq.Ft',
+   totalPrice:'2 Cr', notes:'NRI client, flexible on price.', date:'29/5/2026'},
+
+  // Will match L001 (different sub-type — lower score)
+  {id:'O003', brokerId:'pk02', section:'res-buy',
+   subType:'Low Rise Floors', location:'Golf Course Road Gurugram', city:'Gurugram',
+   projectSociety:'TDI Ourania Area', bedrooms:'3 BHK', size:'1,600 Sq.Ft',
+   totalPrice:'2.2 Cr', date:'27/5/2026'},
+
+  // Will match L002 (res-rental → res-rent, Sector 62 + Supertech)
+  {id:'O004', brokerId:'am01', section:'res-rent',
+   subType:'Apartments', location:'Sector 62 Noida', city:'Noida',
+   projectSociety:'Supertech Eco Village Phase 2', bedrooms:'2 BHK', size:'1,000 Sq.Ft',
+   totalPrice:'25,000/mo', notes:'Corporate client, 2-year lease preferred.', date:'28/5/2026'},
+
+  // Will match L002
+  {id:'O005', brokerId:'sj01', section:'res-rent',
+   subType:'Apartments', location:'Sector 62, Noida', city:'Noida',
+   projectSociety:'Supertech Eco Village', bedrooms:'2 BHK', size:'1,100 Sq.Ft',
+   totalPrice:'30,000/mo', notes:'Family of 4, immediate.', date:'26/5/2026'},
+
+  // Will match L003 (com-sale → com-buy, Cyber City + DLF)
+  {id:'O006', brokerId:'mk01', section:'com-buy',
+   subType:'Office', location:'Cyber City Gurugram', city:'Gurugram',
+   projectSociety:'DLF Cyber Hub', size:'1,200 Sq.Ft',
+   totalPrice:'3 Cr', notes:'IT company expansion, flexible.', date:'24/5/2026'},
+
+  // Will match L003
+  {id:'O007', brokerId:'rs01', section:'com-buy',
+   subType:'Office', location:'Cyber City, Gurugram', city:'Gurugram',
+   projectSociety:'DLF Cyber Hub Tower', size:'2,000 Sq.Ft',
+   totalPrice:'4.5 Cr', notes:'MNC client, prefer ground floor.', date:'23/5/2026'},
+
+  // Will match L005 (res-buy → res-sale, Golf Course Road + DLF Phase 5)
+  {id:'O008', brokerId:'vs01', section:'res-sale',
+   subType:'Kothi/Villas', location:'Golf Course Road Gurugram', city:'Gurugram',
+   projectSociety:'DLF Phase 5', bedrooms:'5 BHK', size:'3,800 Sq.Ft',
+   totalPrice:'5.5 Cr', status:'Ready to Move', date:'22/5/2026'},
+
+  // Will match L006 (com-available-lease → com-lease, MG Road + Raheja)
+  {id:'O009', brokerId:'am01', section:'com-lease',
+   subType:'Retail Shops/Showroom', location:'MG Road Gurugram', city:'Gurugram',
+   projectSociety:'Raheja Mall Ground Floor', size:'600 Sq.Ft',
+   totalPrice:'75,000/mo', notes:'Fashion brand expanding.', date:'21/5/2026'},
+
+  {id:'O010', brokerId:'pk02', section:'com-lease',
+   subType:'Retail Shops/Showroom', location:'MG Road, Gurugram', city:'Gurugram',
+   projectSociety:'Raheja Mall', size:'1,000 Sq.Ft',
+   totalPrice:'1,10,000/mo', notes:'Restaurant chain client.', date:'20/5/2026'},
+];
+
+// ══ CONSTANTS ══
+const SECTIONS = {
+  'res-sale':           {label:'Available for Sale',   cat:'Residential', type:'avail', pair:'res-buy'},
+  'res-rental':         {label:'Available for Rental', cat:'Residential', type:'avail', pair:'res-rent'},
+  'res-buy':            {label:'Wanted on Purchase',   cat:'Residential', type:'req',   pair:'res-sale'},
+  'res-rent':           {label:'Wanted on Rent',       cat:'Residential', type:'req',   pair:'res-rental'},
+  'com-sale':           {label:'Available for Sale',   cat:'Commercial',  type:'avail', pair:'com-buy'},
+  'com-available-lease':{label:'Available for Lease',  cat:'Commercial',  type:'avail', pair:'com-lease'},
+  'com-buy':            {label:'Wanted on Purchase',   cat:'Commercial',  type:'req',   pair:'com-sale'},
+  'com-lease':          {label:'Wanted on Lease',      cat:'Commercial',  type:'req',   pair:'com-available-lease'},
+};
+const PILL = {
+  'Apartments':'p-blue','Low Rise Floors':'p-purple','Kothi/Villas':'p-orange',
+  'Plots':'p-green','Plot':'p-green','Retail Shops/Showroom':'p-orange',
+  'Shops/Showroom':'p-orange','Office':'p-blue','Warehouse':'p-gray',
+  'Standalone Building':'p-purple'
+};
+const BCOLORS = ['#1e3a5f','#c8962a','#166534','#6d28d9','#b45309','#0f766e','#be123c','#1d4ed8'];
+
+// ══ STATE ══
+let matchGroups=[], filtered=[], sortMode='score';
+
+// ══ UTILS ══
+function goTo(url){location.href=url;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.className='toast show';setTimeout(()=>t.classList.remove('show'),2500);}
+function norm(s){return(s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+function kw(s){return norm(s).split(' ').filter(w=>w.length>2);}
+function bColor(id){return BCOLORS[(id||'').split('').reduce((s,c)=>s+c.charCodeAt(0),0)%BCOLORS.length];}
+function ini(n){return(n||'?').split(' ').map(x=>x[0]).join('').substring(0,2).toUpperCase();}
+function scClass(s){return s>=70?'sc-hi':s>=40?'sc-md':'sc-lo';}
+function scDot(s){return s>=70?'sd-hi':s>=40?'sd-md':'sd-lo';}
+function scBar(s){return s>=70?'var(--success)':s>=40?'#d97706':'var(--info)';}
+function scLbl(s){return s>=70?'Strong':s>=40?'Good':'Possible';}
+function getBroker(id){return BROKERS.find(b=>b.id===id)||{name:'Unknown',company:'',phone:'',city:''};}
+
+// ══ MATCHING ENGINE ══
+// Rule 1 — Sub-type: MANDATORY exact match
+// Rule 2 — Location OR Project: at least ONE must have keyword overlap
+function match(myL, other){
+  // MANDATORY — Sub-type must match exactly
+  if(!myL.subType || !other.subType) return null;
+  if(norm(myL.subType) !== norm(other.subType)) return null;
+
+  // Location keyword overlap
+  const locA=kw(myL.location), locB=kw(other.location);
+  const locCommon=locA.filter(w=>locB.some(v=>v===w||v.startsWith(w)||w.startsWith(v)));
+
+  // Project keyword overlap
+  const projA=kw(myL.projectSociety||''), projB=kw(other.projectSociety||'');
+  let projCommon=[];
+  if(projA.length>0 && projB.length>0){
+    projCommon=projA.filter(w=>projB.some(v=>v===w||v.startsWith(w)||w.startsWith(v)));
+  }
+
+  const locMatched  = locCommon.length > 0;
+  const projMatched = projCommon.length > 0;
+
+  // MANDATORY — at least one of location or project must match
+  if(!locMatched && !projMatched) return null;
+
+  // Score calculation (sub-type already matched = base 20 pts)
+  let score = 20;
+
+  // Location — up to 40 pts
+  if(locMatched){
+    const locMax=Math.max(locA.length,locB.length,1);
+    score+=Math.min(Math.round((locCommon.length/locMax)*40),40);
+  }
+
+  // Project — up to 40 pts
+  if(projMatched){
+    const projMax=Math.max(projA.length,projB.length,1);
+    score+=Math.min(Math.round((projCommon.length/projMax)*40),40);
+  }
+
+  return {score:Math.min(score,100), locCommon, projCommon, subMatch:true, locMatched, projMatched};
+}
+
+// ══ BUILD MATCH GROUPS ══
+function buildGroups(){
+  matchGroups=[];
+  MY_LISTINGS.forEach(myL=>{
+    const sec=SECTIONS[myL.section];
+    if(!sec) return;
+    // Find all other-broker listings in the paired section
+    const candidates=OTHER_LISTINGS.filter(l=>l.section===sec.pair);
+    const matches=[];
+    candidates.forEach(other=>{
+      const result=match(myL,other);
+      if(!result||result.score<20) return;
+      matches.push({listing:other, ...result});
+    });
+    if(!matches.length) return;
+    matches.sort((a,b)=>b.score-a.score);
+    matchGroups.push({myL, sec, matches, isAvail:sec.type==='avail'});
+  });
+  matchGroups.sort((a,b)=>b.matches[0].score-a.matches[0].score);
+
+  // Stats
+  const total=matchGroups.reduce((s,g)=>s+g.matches.length,0);
+  const strong=matchGroups.reduce((s,g)=>s+g.matches.filter(m=>m.score>=70).length,0);
+  const uniq=new Set(matchGroups.flatMap(g=>g.matches.map(m=>m.listing.brokerId))).size;
+  document.getElementById('sListed').textContent=matchGroups.length;
+  document.getElementById('sTotal').textContent=total;
+  document.getElementById('sStrong').textContent=strong;
+  document.getElementById('sBrokers').textContent=uniq;
+  document.getElementById('totalBadge').textContent=total;
+  document.getElementById('fbCnt').textContent=`${total} match${total!==1?'es':''}`;
+
+  applyFilters();
+}
+
+// ══ FILTERS ══
+function applyFilters(){
+  const type=document.getElementById('fType').value;
+  const cat =document.getElementById('fCat').value;
+  const minS=parseInt(document.getElementById('fScore').value)||0;
+  const srch=(document.getElementById('searchInp').value||'').toLowerCase().trim();
+
+  filtered=matchGroups.map(g=>{
+    if(type==='avail'&&!g.isAvail) return null;
+    if(type==='req'&&g.isAvail) return null;
+    if(cat&&g.sec.cat!==cat) return null;
+    const ms=g.matches.filter(m=>{
+      if(m.score<minS) return false;
+      if(srch){
+        const fields=[m.listing.location,m.listing.projectSociety,m.listing.brokerName||getBroker(m.listing.brokerId).name].join(' ').toLowerCase();
+        if(!fields.includes(srch)) return false;
+      }
+      return true;
+    });
+    if(!ms.length) return null;
+    return {...g,matches:ms};
+  }).filter(Boolean);
+
+  sortFiltered();
+}
+
+function setSort(s){
+  sortMode=s;
+  ['score','date'].forEach(x=>document.getElementById('st-'+x).classList.toggle('on',x===s));
+  sortFiltered();
+}
+function sortFiltered(){
+  if(sortMode==='score'){
+    filtered.forEach(g=>g.matches.sort((a,b)=>b.score-a.score));
+    filtered.sort((a,b)=>b.matches[0].score-a.matches[0].score);
+  } else {
+    filtered.sort((a,b)=>b.myL.id.localeCompare(a.myL.id));
+  }
+  const total=filtered.reduce((s,g)=>s+g.matches.length,0);
+  document.getElementById('fbCnt').textContent=`${total} match${total!==1?'es':''}`;
+  render();
+}
+
+// ══ HIGHLIGHT HELPERS ══
+function hlLoc(text, common){
+  if(!text||!common.length) return text||'—';
+  let r=text;
+  [...new Set(common)].forEach(w=>{
+    if(!w||w.length<3) return;
+    const re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    r=r.replace(re,'<span class="hl-loc">$1</span>');
+  });
+  return r;
+}
+function hlProj(text, common){
+  if(!text) return '—';
+  if(!common||!common.length) return `<span class="hl-proj">${text}</span>`;
+  let r=text;
+  [...new Set(common)].forEach(w=>{
+    if(!w||w.length<2) return;
+    const re=new RegExp('('+w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    r=r.replace(re,'<span class="hl-proj">$1</span>');
+  });
+  return r;
+}
+
+// ══ RENDER ══
+function render(){
+  const wrap=document.getElementById('wrap');
+  if(!filtered.length){
+    wrap.innerHTML=`<div style="text-align:center;padding:60px;background:var(--card);border:1px solid var(--border);border-radius:10px;">
+      <div style="font-size:36px;opacity:.15;margin-bottom:12px">🎯</div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--muted);margin-bottom:6px">No matches for current filters</div>
+      <div style="font-size:12px;color:var(--muted)">Try adjusting the filter or sort options above.</div>
+    </div>`;
+    return;
+  }
+
+  wrap.innerHTML=filtered.map((g,gi)=>{
+    const{myL,sec,matches,isAvail}=g;
+    const myProj=myL.projectSociety||'';
+    const myPrice=myL.totalPrice||myL.rent||'';
+    const strong=matches.filter(m=>m.score>=70).length;
+    const hdClass=isAvail?'av-hd':'rq-hd';
+    const typeTag=isAvail?'<span class="mg-type tt-av">My Availability</span>':'<span class="mg-type tt-rq">My Requirement</span>';
+    const uniqBrokers=new Set(matches.map(m=>m.listing.brokerId)).size;
+
+    const rows=matches.map(m=>{
+      const{listing,score,locCommon,projCommon,subMatch}=m;
+      const broker=getBroker(listing.brokerId);
+      const oProj=listing.projectSociety||'';
+      const oPrice=listing.totalPrice||listing.rent||'';
+      const oSec=SECTIONS[listing.section]||{};
+      const isOtherAvail=oSec.type==='avail';
+      const waMsg=encodeURIComponent(`Hi ${broker.name}, I have a matching ${isAvail?'requirement for your availability':'availability for your requirement'} on BrokersLink — ${listing.subType||''} at ${listing.location||''}${oProj?' · '+oProj:''}. Would like to connect. ${ME.name} ${ME.company} ${ME.phone}`);
+
+      return `<div class="mt-row">
+        <!-- SCORE -->
+        <div>
+          <div class="sc-badge ${scClass(score)}"><div class="sc-dot ${scDot(score)}"></div>${score}%</div>
+          <div class="sc-bar"><div class="sc-fill" style="width:${score}%;background:${scBar(score)}"></div></div>
+          <div class="sc-lbl-s">${scLbl(score)}</div>
+        </div>
+        <!-- SUB-TYPE -->
+        <div>
+          <span class="pill ${PILL[listing.subType]||'p-gray'}">${listing.subType||'—'}</span>
+          <div style="font-size:9px;color:var(--success);margin-top:2px">✓ Sub-type match</div>
+          <div style="margin-top:3px">${isOtherAvail?'<span class="pill p-green" style="font-size:9px">Availability</span>':'<span class="pill p-blue" style="font-size:9px">Requirement</span>'}</div>
+        </div>
+        <!-- LOCATION -->
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--ink)">${hlLoc(listing.location,locCommon)}</div>
+          ${listing.city?`<div style="font-size:10px;color:var(--muted)">${listing.city}</div>`:''}
+          ${m.locMatched?'<div class="rtags"><span class="rtag rt-loc">📍 Location matched</span></div>':'<div style="font-size:9px;color:var(--muted);margin-top:2px;font-style:italic">Not matched</div>'}
+        </div>
+        <!-- PROJECT -->
+        <div>
+          <div style="font-size:12px;color:var(--ink)">${hlProj(oProj,projCommon)}</div>
+          ${oProj?'<div class="rtags"><span class="rtag rt-proj">◈ Project matched</span></div>':'<div style="font-size:10px;color:var(--muted);margin-top:2px">—</div>'}
+        </div>
+        <!-- BROKER -->
+        <div class="b-cell">
+          <div class="b-av" style="background:${bColor(listing.brokerId)}">${ini(broker.name)}</div>
+          <div>
+            <div class="b-nm">${broker.name}</div>
+            <div class="b-co">${broker.company}${broker.city?' · '+broker.city:''}</div>
+          </div>
+        </div>
+        <!-- AREA -->
+        <div style="font-size:12px;color:var(--muted)">${listing.size||'—'}</div>
+        <!-- BUDGET -->
+        <div style="font-size:12px;font-weight:500;color:var(--ink2)">${oPrice?'₹ '+oPrice:'—'}</div>
+        <!-- CONNECT -->
+        <div class="con-row">
+          <a href="https://wa.me/91${broker.phone}?text=${waMsg}" target="_blank" class="wa-btn">💬 WA</a>
+          <a href="tel:${broker.phone}" class="ca-btn">📞 Call</a>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="mg-wrap" style="animation-delay:${gi*.06}s">
+      <div class="mg-card">
+        <div class="mg-hd ${hdClass}" id="hd${gi}" onclick="toggle(${gi})">
+          ${typeTag}
+          <div class="mg-info">
+            <div class="mg-sec">${sec.cat} · ${sec.label}</div>
+            <div class="mg-title-row">
+              <span class="pill ${PILL[myL.subType]||'p-gray'}">${myL.subType||'—'}</span>
+              <span class="mg-loc">${myL.location||'—'}</span>
+              ${myProj?`<span class="mg-proj">· ${myProj}</span>`:''}
+            </div>
+          </div>
+          ${myL.size?`<div class="mg-sz">${myL.size}</div>`:''}
+          ${myPrice?`<div class="mg-price">₹ ${myPrice}</div>`:''}
+          <div class="mg-cnt">
+            🎯 ${matches.length} match${matches.length!==1?'es':''}
+            ${strong?`<span class="mg-strong">${strong} strong</span>`:''}
+          </div>
+          <div class="mg-chev" id="chev${gi}">▼</div>
+        </div>
+        <div class="mt-wrap" id="tbl${gi}">
+          <div class="mt-head">
+            <span>SCORE</span><span>SUB-TYPE</span><span>LOCATION</span><span>PROJECT</span>
+            <span>BROKER</span><span>AREA</span><span>BUDGET</span><span>CONNECT</span>
+          </div>
+          ${rows}
+          <div class="mt-foot">
+            📍 Matched on: <strong>${myL.location}</strong>${myProj?' · ◈ <strong>'+myProj+'</strong>':''} &nbsp;·&nbsp;
+            ${matches.length} result${matches.length!==1?'s':''} from ${uniqBrokers} broker${uniqBrokers!==1?'s':''}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Auto-expand first group
+  if(filtered.length) toggle(0);
+}
+
+function toggle(gi){
+  const tbl=document.getElementById('tbl'+gi);
+  const hd=document.getElementById('hd'+gi);
+  const chev=document.getElementById('chev'+gi);
+  if(!tbl) return;
+  const open=tbl.classList.contains('open');
+  tbl.classList.toggle('open',!open);
+  if(hd) hd.classList.toggle('open',!open);
+  if(chev) chev.style.transform=open?'':'rotate(180deg)';
+}
+
+function init(){
+  buildGroups();
+  toast('Matches refreshed');
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

@@ -122,6 +122,7 @@ exports.updateLandingConfig = async (req, res) => {
     if (config) {
       if (configData.sections) config.sections = configData.sections;
       if (configData.platformSettings) config.platformSettings = configData.platformSettings;
+      if (configData.legalPages) config.legalPages = configData.legalPages;
       config.updatedAt = Date.now();
       await config.save();
     } else {

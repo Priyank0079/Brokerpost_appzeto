@@ -12,6 +12,8 @@ const {
   refreshPosting
 } = require('../controllers/postingController');
 
+const { getSmartMatches } = require('../controllers/smartMatchController');
+
 const { protect, optionalProtect } = require('../middlewares/authMiddleware');
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -23,6 +25,9 @@ router.get('/stats', protect, getPostingStats);
 
 // My postings — current broker's own posts
 router.get('/my', protect, getMyPostings);
+
+// Smart Matches - Fetch all smart matches for the current user
+router.get('/smart-matches', protect, getSmartMatches);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GENERAL ROUTES

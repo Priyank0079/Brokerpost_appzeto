@@ -7,7 +7,8 @@ import {
   Building2,
   Building,
   X,
-  Bell
+  Bell,
+  Target
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -17,17 +18,20 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [matchCount, setMatchCount] = useState(0);
 
   useEffect(() => {
-    const fetchUnread = async () => {
+    const fetchMatchesCount = async () => {
       try {
-        const res = await api.get('/auth/notifications/unread-count');
-        if (res.success) setUnreadCount(res.count);
+        const res = await api.get('/postings/smart-matches');
+        if (res.success && res.data) {
+          const total = res.data.reduce((sum, group) => sum + group.matches.length, 0);
+          setMatchCount(total);
+        }
       } catch (e) {}
     };
-    fetchUnread();
-    const int = setInterval(fetchUnread, 30000);
+    fetchMatchesCount();
+    const int = setInterval(fetchMatchesCount, 60000); // Check every minute
     return () => clearInterval(int);
   }, []);
 
@@ -70,7 +74,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       title: 'NETWORK',
       items: [
         { icon: <Users size={18} />, label: 'My Groups', path: '/groups' },
-        { icon: <Bell size={18} />, label: 'Your Matches', path: '/matches', count: unreadCount > 0 ? unreadCount : undefined },
+        { icon: <Target size={18} />, label: 'Your Matches', path: '/matches', count: matchCount > 0 ? matchCount : undefined },
       ]
     }
   ];
