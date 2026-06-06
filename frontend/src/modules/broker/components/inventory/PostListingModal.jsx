@@ -271,6 +271,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       if (result.success) {
         resetForm();
         onSuccess?.();
+        window.dispatchEvent(new Event('listing-updated'));
         onClose();
       } else {
         setError(result.message || `Failed to ${isEdit ? 'update' : 'create'} listing`);
@@ -418,6 +419,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   type="number" 
                   name="size"
                   value={formData.size}
+                  onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                   onChange={(e) => {
                     handleChange(e);
                     if (fieldErrors.size) setFieldErrors(prev => ({ ...prev, size: null }));
@@ -484,6 +486,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                     type="number" 
                     name="priceRate"
                     value={formData.priceRate}
+                    onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                     onChange={(e) => {
                       handleChange(e);
                       if (fieldErrors.priceRate) setFieldErrors(prev => ({ ...prev, priceRate: null }));
@@ -503,6 +506,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       type="number" 
                       name="budgetMin"
                       value={formData.budgetMin}
+                      onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                       onChange={(e) => {
                         handleChange(e);
                         if (fieldErrors.budgetMin) setFieldErrors(prev => ({ ...prev, budgetMin: null }));
@@ -518,6 +522,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                       type="number" 
                       name="budgetMax"
                       value={formData.budgetMax}
+                      onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                       onChange={(e) => {
                         handleChange(e);
                         if (fieldErrors.budgetMax) setFieldErrors(prev => ({ ...prev, budgetMax: null }));

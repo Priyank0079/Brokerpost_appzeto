@@ -32,6 +32,9 @@ const Layout = ({ children }) => {
       }
     };
     if (!isHomePage) fetchStats();
+
+    window.addEventListener('listing-updated', fetchStats);
+    return () => window.removeEventListener('listing-updated', fetchStats);
   }, [isHomePage, location.pathname]);
 
   const contact = config?.contact || {

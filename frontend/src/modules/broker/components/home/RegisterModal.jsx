@@ -76,8 +76,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     if (!formData.address) newErrors.address = 'Address is required';
     if (!formData.city) newErrors.city = 'City is required';
     
-    if (!formData.pinCode) newErrors.pinCode = 'Pin code is required';
-    else if (!pinRegex.test(formData.pinCode)) newErrors.pinCode = 'Must be exactly 6 digits';
+    if (formData.pinCode && !pinRegex.test(formData.pinCode)) newErrors.pinCode = 'Must be exactly 6 digits';
 
     if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
     else if (!phoneRegex.test(formData.phoneNumber)) newErrors.phoneNumber = 'Must be exactly 10 digits';
@@ -186,7 +185,6 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-[#0f172a]/40 backdrop-blur-sm"
-        onClick={onClose}
       />
       
       {/* Modal Card */}
@@ -299,7 +297,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 {/* Pin Code */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
-                    PIN CODE *
+                    PIN CODE
                   </label>
                   <input 
                     type="text"

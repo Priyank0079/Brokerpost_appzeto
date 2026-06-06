@@ -93,6 +93,7 @@ const Dashboard = () => {
       const res = await deletePosting(deleteConfirmId);
       if (res.success) {
         fetchData();
+        window.dispatchEvent(new Event('listing-updated'));
         setDeleteConfirmId(null);
       } else {
         alert(res.message || 'Failed to delete listing');

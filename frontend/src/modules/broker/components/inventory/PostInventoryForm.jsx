@@ -158,6 +158,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                   type="number" 
                   className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. 25000000"
+                  onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
                 />
@@ -168,6 +169,7 @@ const PostInventoryForm = ({ onSuccess }) => {
                   type="number" 
                   className="w-full px-5 py-4 rounded-xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-8 focus:ring-primary-500/5 focus:border-primary-200 outline-none font-bold text-slate-900 transition-all placeholder:text-[12px]"
                   placeholder="e.g. 1250"
+                  onKeyDown={(e) => ['ArrowUp', 'ArrowDown'].includes(e.key) && e.preventDefault()}
                   value={formData.sqft}
                   onChange={(e) => setFormData({...formData, sqft: e.target.value})}
                 />
@@ -302,7 +304,7 @@ const PostInventoryForm = ({ onSuccess }) => {
         
         {step === totalSteps ? (
           <Button 
-            onClick={() => { alert('Post Distributed Successfully!'); onSuccess(); }} 
+            onClick={() => { alert('Post Distributed Successfully!'); window.dispatchEvent(new Event('listing-updated')); onSuccess(); }} 
             variant="primary" 
             className="px-6 sm:px-12 py-3 sm:py-4 font-black uppercase tracking-widest text-[10px] sm:text-[11px] shadow-2xl shadow-primary-600/20 scale-105"
           >

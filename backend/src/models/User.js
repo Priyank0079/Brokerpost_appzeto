@@ -52,7 +52,6 @@ const userSchema = new mongoose.Schema({
   },
   pinCode: {
     type: String,
-    required: [true, 'Please provide a pin code'],
     trim: true
   },
   reraNumber: {

@@ -114,6 +114,7 @@ const ResidentialInventory = () => {
         setIsDeleteModalOpen(false);
         setPostingToDelete(null);
         fetchListings();
+        window.dispatchEvent(new Event('listing-updated'));
       }
     } catch (err) {
       console.error('Delete failed:', err);
