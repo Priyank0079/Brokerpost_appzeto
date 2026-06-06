@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ArrowLeft, Edit2, Trash2, Plus, Loader2, AlertCircle } from 'lucide-react';
+import { Search, ArrowLeft, Edit2, Trash2, Plus, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 import Modal from '../../broker/components/ui/Modal';
@@ -29,6 +29,9 @@ const Listings = () => {
   const [listingToDelete, setListingToDelete] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Parse query params
   const queryParams = new URLSearchParams(location.search);
   const postTypeFilter = queryParams.get('postType');
@@ -37,17 +40,20 @@ const Listings = () => {
 
   useEffect(() => {
     setSearchTerm(urlSearch);
+    setCurrentPage(1);
   }, [urlSearch]);
-
-
 
   const fetchListings = async () => {
     try {
       setLoading(true);
-      const endpoint = postTypeFilter ? `/postings?postType=${postTypeFilter}` : '/postings';
+      let endpoint = `/postings?page=${currentPage}&limit=15`;
+      if (postTypeFilter) endpoint += `&postType=${postTypeFilter}`;
+      if (urlSearch) endpoint += `&location=${encodeURIComponent(urlSearch)}`;
+
       const response = await api.get(endpoint);
       if (response.success) {
         setListings(response.data);
+        setTotalPages(response.pages || 1);
       }
     } catch (err) {
       console.error('Error fetching listings:', err);
@@ -59,37 +65,10 @@ const Listings = () => {
 
   useEffect(() => {
     fetchListings();
-  }, [postTypeFilter]);
+  }, [postTypeFilter, urlSearch, currentPage]);
 
-  const filteredListings = listings.filter(listing => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    const subType = (listing.subType || '').toLowerCase();
-    const subTypeFormatted = formatEnum(listing.subType).toLowerCase();
-    const locationStr = (listing.location || '').toLowerCase();
-    const project = (listing.project || '').toLowerCase();
-    const postedByName = `${listing.postedBy?.firstName || ''} ${listing.postedBy?.lastName || ''}`.toLowerCase();
-    const companyName = (listing.postedBy?.companyName || '').toLowerCase();
-    const intent = (listing.intent || '').toLowerCase();
-    const intentFormatted = formatEnum(listing.intent).toLowerCase();
-    const postType = (listing.postType || '').toLowerCase();
-    const statusText = getStatusText(listing).toLowerCase();
-    const bedrooms = (listing.bedrooms || '').toLowerCase();
-    const size = `${listing.size || ''}`.toLowerCase();
-    
-    return subType.includes(term) ||
-           subTypeFormatted.includes(term) ||
-           locationStr.includes(term) ||
-           project.includes(term) ||
-           postedByName.includes(term) ||
-           companyName.includes(term) ||
-           intent.includes(term) ||
-           intentFormatted.includes(term) ||
-           postType.includes(term) ||
-           statusText.includes(term) ||
-           bedrooms.includes(term) ||
-           size.includes(term);
-  });
+  // We are now relying on backend pagination and search
+  const filteredListings = listings;
 
   const handleDeleteConfirm = async () => {
     if (!listingToDelete) return;
@@ -248,6 +227,57 @@ const Listings = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="py-3.5 border-t border-slate-100 flex items-center justify-center gap-4 bg-slate-50/50">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all bg-white active:scale-95 shadow-sm"
+              >
+                <ChevronLeft size={14} />
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                {[...Array(totalPages)].map((_, i) => {
+                  // Logic to show a reasonable number of page buttons instead of 100 buttons
+                  // Show first, last, current, and +/- 2 pages around current
+                  if (
+                    i + 1 === 1 || 
+                    i + 1 === totalPages || 
+                    (i + 1 >= currentPage - 2 && i + 1 <= currentPage + 2)
+                  ) {
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => setCurrentPage(i + 1)}
+                        className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${currentPage === i + 1
+                            ? 'bg-[#c8962a] text-white shadow-md shadow-[#c8962a]/20 scale-105 z-10'
+                            : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 active:scale-95'
+                          }`}
+                      >
+                        {i + 1}
+                      </button>
+                    );
+                  } else if (
+                    i + 1 === currentPage - 3 || 
+                    i + 1 === currentPage + 3
+                  ) {
+                    return <span key={i} className="text-slate-400 font-bold px-1">...</span>;
+                  }
+                  return null;
+                })}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-400 hover:border-[#c8962a] hover:text-[#c8962a] disabled:opacity-20 disabled:cursor-not-allowed transition-all bg-white active:scale-95 shadow-sm"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

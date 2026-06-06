@@ -352,11 +352,25 @@ exports.getMe = async (req, res, next) => {
 // @access  Private/Admin
 exports.getBrokers = async (req, res, next) => {
   try {
-    const { page = 1, limit = 8 } = req.query;
+    const { page = 1, limit = 8, city, status, search } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    const total = await User.countDocuments({ role: 'Broker' });
-    const brokers = await User.find({ role: 'Broker' })
+    const query = { role: 'Broker' };
+    if (city) query.operatingCity = city;
+    if (status === 'Active') query.isVerified = true;
+    if (status === 'Blocked') query.isVerified = false;
+    if (search) {
+      query.$or = [
+        { firstName: { $regex: search, $options: 'i' } },
+        { lastName: { $regex: search, $options: 'i' } },
+        { companyName: { $regex: search, $options: 'i' } },
+        { phoneNumber: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const total = await User.countDocuments(query);
+    const brokers = await User.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit))
@@ -466,9 +480,12 @@ exports.deleteBroker = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Broker not found' });
     }
 
+    const Posting = require('../models/Posting');
+    await Posting.deleteMany({ postedBy: req.params.id });
+
     res.status(200).json({
       success: true,
-      message: 'Broker deleted successfully'
+      message: 'Broker and all associated listings deleted successfully'
     });
   } catch (error) {
     next(error);

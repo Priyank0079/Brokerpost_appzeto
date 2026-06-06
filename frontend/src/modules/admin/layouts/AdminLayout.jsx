@@ -21,7 +21,7 @@ const AdminLayout = ({ children }) => {
         toggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
       />
       
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-64'}`}>
+      <div className={`flex-1 flex flex-col min-w-0 min-h-screen transition-all duration-300 ease-in-out overflow-x-hidden ${sidebarOpen ? 'lg:ml-64' : 'lg:ml-64'}`}>
 
         
         <main className="flex-1 p-4 md:p-8 lg:p-10 animate-fade-in max-w-[1600px] mx-auto w-full">

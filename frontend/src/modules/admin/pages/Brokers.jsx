@@ -37,22 +37,15 @@ const Brokers = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
+  const [filterCity, setFilterCity] = useState('');
 
-  const filteredBrokers = brokers.filter(broker => {
-    if (filterStatus === 'Active' && !broker.isVerified) return false;
-    if (filterStatus === 'Blocked' && broker.isVerified) return false;
+  // When filters change, reset to page 1
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterStatus, filterCity]);
 
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      (broker.firstName || '').toLowerCase().includes(term) ||
-      (broker.lastName || '').toLowerCase().includes(term) ||
-      (broker.companyName || '').toLowerCase().includes(term) ||
-      (broker.phoneNumber || '').toLowerCase().includes(term) ||
-      (broker.email || '').toLowerCase().includes(term) ||
-      (broker.operatingCity || '').toLowerCase().includes(term)
-    );
-  });
+  // Use the backend data directly
+  const filteredBrokers = brokers;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +72,12 @@ const Brokers = () => {
 
   const fetchBrokers = async (page = 1) => {
     try {
-      const response = await api.get(`/auth/brokers?page=${page}&limit=8`);
+      let endpoint = `/auth/brokers?page=${page}&limit=8`;
+      if (filterCity) endpoint += `&city=${encodeURIComponent(filterCity)}`;
+      if (filterStatus && filterStatus !== 'All' && filterStatus !== 'Total Brokers') endpoint += `&status=${encodeURIComponent(filterStatus)}`;
+      if (searchTerm) endpoint += `&search=${encodeURIComponent(searchTerm)}`;
+
+      const response = await api.get(endpoint);
       if (response.success) {
         setBrokers(response.data);
         setTotalPages(response.pages || 1);
@@ -112,8 +110,12 @@ const Brokers = () => {
       await Promise.all([fetchBrokers(currentPage), fetchStats()]);
       setLoading(false);
     };
-    loadData();
-  }, [currentPage]);
+    // Debounce to avoid too many requests while typing search
+    const delayDebounceFn = setTimeout(() => {
+      loadData();
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }, [currentPage, filterCity, filterStatus, searchTerm]);
 
   const confirmDelete = async () => {
     if (!brokerToDelete) return;
@@ -151,15 +153,34 @@ const Brokers = () => {
         <div className="-mx-4 md:-mx-6 lg:-mx-10 -mt-4 md:-mt-6 lg:-mt-10 px-4 md:px-6 lg:px-10 py-3 md:py-4 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4 md:gap-6">
             <h1 className="text-base md:text-lg font-serif text-black">Manage Brokers</h1>
-            <div className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
-              <input 
-                type="text" 
-                placeholder="Search listings..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-[180px] lg:w-[240px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
-              />
+            <div className="relative hidden md:flex items-center gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#3b82f6]" size={14} />
+                <input 
+                  type="text" 
+                  placeholder="Search brokers..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-[160px] lg:w-[200px] pl-9 pr-4 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 placeholder:text-[#7f7f7f] placeholder:font-normal"
+                />
+              </div>
+              <div className="relative">
+                <select 
+                  value={filterCity}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                  className="w-[130px] pl-3 pr-8 py-1.5 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/40 transition-all text-slate-600 appearance-none"
+                >
+                  <option value="">All Cities</option>
+                  <option value="Gurugram">Gurugram</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Faridabad">Faridabad</option>
+                  <option value="Noida">Noida</option>
+                  <option value="Greater Noida">Greater Noida</option>
+                </select>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
             </div>
           </div>
           <button 
@@ -218,19 +239,19 @@ const Brokers = () => {
         {/* Table Container */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse table-fixed">
+            <table className="w-full text-left border-collapse min-w-[1100px]">
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-8">#</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[22%]">BROKER DETAILS</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[10%]">CITY</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">CONTACT</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">ROLE</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">LISTINGS</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-[12%]">GROUPS</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-20">JOINED</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">STATUS</th>
-                  <th className="px-4 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center w-[18%]">ACTIONS</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-10">#</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider min-w-[180px]">BROKER DETAILS</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-24">CITY</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-36">CONTACT</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">ROLE</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-28">LISTINGS</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-28">GROUPS</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-20">JOINED</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-16">STATUS</th>
+                  <th className="px-3 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center min-w-[180px]">ACTIONS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -251,8 +272,8 @@ const Brokers = () => {
                   </tr>
                 ) : filteredBrokers.map((broker, idx) => (
                   <tr key={broker._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-4 py-4 text-[11px] text-slate-400 font-bold">{idx + 1}</td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4 text-[11px] text-slate-400 font-bold">{(currentPage - 1) * 8 + idx + 1}</td>
+                    <td className="px-3 py-4">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 flex-shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-[10px] overflow-hidden">
                           {broker.profileImage ? <img src={broker.profileImage} alt="" /> : broker.firstName.charAt(0)}
@@ -264,11 +285,11 @@ const Brokers = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4">
                       <p className="text-[11px] font-bold text-slate-900 mb-0.5 truncate">{broker.operatingCity}</p>
                       <p className="text-[9px] text-slate-400 font-medium">{broker.pinCode}</p>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4">
                       <div className="space-y-1.5">
                         <p className="text-[10px] font-bold text-slate-900">{broker.phoneNumber}</p>
                         <div className="flex gap-1">
@@ -289,29 +310,26 @@ const Brokers = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4">
                       <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold border border-blue-100">{broker.role.toLowerCase()}</span>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4">
                       <div className="space-y-1.5 w-full">
                         <p className="text-[11px] font-bold text-slate-900">
                           {broker.listingCount || 0} / {broker.listingLimit || 25}
                         </p>
                         <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                           <div 
-                            className="h-full bg-[#1e3a8a] rounded-full" 
+                            className="h-full bg-[#1e3a8a] rounded-full transition-all" 
                             style={{ width: `${Math.min(((broker.listingCount || 0) / (broker.listingLimit || 25)) * 100, 100)}%` }}
                           />
                         </div>
-                        <button 
-                          onClick={() => handleEditClick(broker)}
-                          className="text-[9px] font-bold text-slate-500 flex items-center gap-1 hover:text-slate-700 transition-colors"
-                        >
-                           <Edit2 size={10} className="text-[#c8962a]" /> Limit
-                        </button>
+                        <div className="flex items-center gap-1 text-[9px] text-[#c0922e] font-bold cursor-pointer hover:underline" onClick={() => handleEditClick(broker)}>
+                          <Edit2 size={10} /> Limit
+                        </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-4">
                       {broker.groups && broker.groups.length > 0 ? (
                         <div className="flex flex-wrap gap-1 max-w-[120px]">
                           {broker.groups.map((groupName, i) => (
@@ -328,30 +346,29 @@ const Brokers = () => {
                         <span className="text-[9px] text-slate-400 font-medium">None</span>
                       )}
                     </td>
-                    <td className="px-4 py-4 text-[9px] font-bold text-slate-400">{new Date(broker.createdAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-4">
-                      <span className={`text-[11px] font-bold ${broker.isVerified ? 'text-emerald-500' : 'text-red-500'}`}>
+                    <td className="px-3 py-4 text-[11px] font-medium text-slate-500">{new Date(broker.createdAt).toLocaleDateString('en-GB')}</td>
+                    <td className="px-3 py-4">
+                      <span className={`px-2 py-1 rounded-full text-[9px] font-bold border whitespace-nowrap ${broker.isVerified ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
                         {broker.isVerified ? 'Active' : 'Blocked'}
                       </span>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center justify-center gap-1.5">
+                    <td className="px-3 py-4">
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         <button 
                           onClick={() => handleEditClick(broker)}
-                          className="px-2.5 py-1.5 border border-slate-200 text-slate-600 rounded-full text-[10px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-bold text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all"
                         >
-                          <Edit2 size={10} className="text-[#c8962a]" /> Edit
+                          <Edit2 size={10} /> Edit
                         </button>
                         <button 
-                          onClick={() => toggleStatus(broker)}
-                          className={`px-2.5 py-1.5 border border-slate-200 rounded-full text-[10px] font-bold hover:bg-slate-50 transition-all flex items-center gap-1 ${broker.isVerified ? 'text-slate-600' : 'text-slate-600'}`}
+                          onClick={() => toggleStatus(broker._id, broker.isVerified)}
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-bold text-red-600 border border-red-100 hover:bg-red-50 transition-all whitespace-nowrap"
                         >
-                          {broker.isVerified ? <Ban size={10} className="text-red-500" /> : <CheckCircle size={10} className="text-emerald-500" />} 
-                          {broker.isVerified ? 'Block' : 'Unblock'}
+                          <Ban size={10} /> {broker.isVerified ? 'Block' : 'Unblock'}
                         </button>
                         <button 
                           onClick={() => setBrokerToDelete(broker)}
-                          className="px-2.5 py-1.5 bg-[#7f1d1d] text-white rounded-full text-[10px] font-bold hover:bg-[#991b1b] transition-all flex items-center gap-1"
+                          className="flex items-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-bold text-white bg-red-800 hover:bg-red-900 transition-all shadow-sm"
                         >
                           <Trash2 size={10} /> Del
                         </button>
