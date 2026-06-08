@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Lock, LogOut, LayoutGrid, Menu, X } from 'lucide-react';
+import { LogOut, LayoutGrid, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
@@ -10,8 +10,34 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
 
   return (
     <>
-      <div className="h-20 w-full shrink-0" />
-      <nav className="h-20 px-6 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-slate-200/60 fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+      {/* ── MOBILE LANDING NAVBAR (dark) ── */}
+      <div className="md:hidden w-full shrink-0" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))' }} />
+      <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)', background: '#0d1520', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', flex: 1, fontFamily: "'Playfair Display', serif" }}>
+          <span style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Brokers</span>
+          <span style={{ fontSize: 17, fontWeight: 700, color: '#e8b84b' }}>Post</span>
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {user ? (
+            <button onClick={() => navigate('/dashboard')} style={{ background: '#e8b84b', color: '#0d1520', border: 'none', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Dashboard
+            </button>
+          ) : (
+            <>
+              <button onClick={onLoginClick} style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Login
+              </button>
+              <button onClick={onRegisterClick} style={{ background: '#e8b84b', color: '#0d1520', border: 'none', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Join Network
+              </button>
+            </>
+          )}
+        </div>
+      </nav>
+
+      {/* ── DESKTOP LANDING NAVBAR (unchanged) ── */}
+      <div className="hidden md:block h-20 w-full shrink-0" />
+      <nav className="hidden md:flex h-20 px-6 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-slate-200/60 fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div className="max-w-[1200px] mx-auto w-full h-full flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-1" style={{ fontFamily: "'Playfair Display', 'Times New Roman', serif" }}>
@@ -19,180 +45,31 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
               <span className="text-[20px] md:text-[24px] font-bold text-[#c8962a] tracking-tight">Post</span>
             </Link>
           </div>
-
           <div className="hidden lg:flex items-center gap-2 ml-auto mr-12">
-            <a 
-              href="/#inventory" 
-              style={{
-                padding: '8px 14px',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '500',
-                textDecoration: 'none',
-                transition: 'all 0.15s ease',
-                cursor: 'pointer'
-              }}
-              className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all"
-            >
-              Browse Inventory
-            </a>
-            <a 
-              href="/#features" 
-              style={{
-                padding: '8px 14px',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '500',
-                textDecoration: 'none',
-                transition: 'all 0.15s ease',
-                cursor: 'pointer'
-              }}
-              className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all"
-            >
-              Features
-            </a>
-            <a 
-              href="/#how-it-works" 
-              style={{
-                padding: '8px 14px',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: '500',
-                textDecoration: 'none',
-                transition: 'all 0.15s ease',
-                cursor: 'pointer'
-              }}
-              className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all"
-            >
-              How It Works
-            </a>
+            <a href="/#inventory" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', textDecoration: 'none', cursor: 'pointer' }} className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all">Browse Inventory</a>
+            <a href="/#features" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', textDecoration: 'none', cursor: 'pointer' }} className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all">Features</a>
+            <a href="/#how-it-works" style={{ padding: '8px 14px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', textDecoration: 'none', cursor: 'pointer' }} className="text-[#6e7d90] hover:text-[#c8962a] hover:bg-slate-50/80 transition-all">How It Works</a>
           </div>
-
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2">
               {user ? (
                 <>
-                  <button
-                    onClick={logout}
-                    className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all flex items-center gap-2"
-                  >
-                    <LogOut size={14} />
-                    Logout
+                  <button onClick={logout} className="px-5 py-2 rounded-xl border border-slate-300 text-xs font-bold text-[#1A1A1A] hover:bg-slate-50 transition-all flex items-center gap-2">
+                    <LogOut size={14} /> Logout
                   </button>
-                  <button
-                    onClick={() => navigate('/dashboard')}
-                    className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20 flex items-center gap-2"
-                  >
-                    <LayoutGrid size={14} />
-                    My Dashboard
+                  <button onClick={() => navigate('/dashboard')} className="px-5 py-2 rounded-xl bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20 flex items-center gap-2">
+                    <LayoutGrid size={14} /> My Dashboard
                   </button>
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={onLoginClick}
-                    className="px-3 py-2 rounded-lg border border-[#1a365d] text-xs font-bold tracking-tight text-[#1a365d] hover:bg-[#1e3a5f] hover:text-white transition-all"
-                  >
-                    Login
-                  </button>
-                  <button
-                    onClick={onRegisterClick}
-                    className="px-5 py-2.5 rounded-lg bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20"
-                  >
-                    Join as Broker
-                  </button>
+                  <button onClick={onLoginClick} className="px-3 py-2 rounded-lg border border-[#1a365d] text-xs font-bold tracking-tight text-[#1a365d] hover:bg-[#1e3a5f] hover:text-white transition-all">Login</button>
+                  <button onClick={onRegisterClick} className="px-5 py-2.5 rounded-lg bg-[#c0922e] text-xs font-bold text-white hover:bg-[#a67d26] transition-all shadow-sm shadow-[#c0922e]/20">Join as Broker</button>
                 </>
               )}
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              className="lg:hidden p-2 text-[#4A4A4A]"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation Drawer */}
-        {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-20 left-0 w-full bg-white border-b border-slate-200 shadow-xl z-50 animate-in slide-in-from-top duration-300">
-            <div className="flex flex-col p-6 gap-4">
-              <a
-                href="/#inventory"
-                className="text-base font-medium text-[#4A4A4A] py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Browse Inventory
-              </a>
-              <a
-                href="/#features"
-                className="text-base font-medium text-[#4A4A4A] py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Features
-              </a>
-              <a
-                href="/#how-it-works"
-                className="text-base font-medium text-[#4A4A4A] py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                How It Works
-              </a>
-
-              <div className="h-[1px] bg-slate-100 my-2" />
-
-              <div className="flex flex-col gap-3 sm:hidden">
-                {user ? (
-                  <>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-5 py-3 rounded-xl border border-slate-300 text-sm font-bold text-[#1A1A1A] flex items-center justify-center gap-2"
-                    >
-                      <LogOut size={16} />
-                      Logout
-                    </button>
-                    <button
-                      onClick={() => {
-                        navigate('/dashboard');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-5 py-3 rounded-xl bg-[#c0922e] text-sm font-bold text-white flex items-center justify-center gap-2"
-                    >
-                      <LayoutGrid size={16} />
-                      My Dashboard
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => {
-                        onLoginClick();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-5 py-3 rounded-md border border-[#1a365d] text-[#1a365d] text-sm font-bold text-center"
-                    >
-                      Login
-                    </button>
-                    <button
-                      onClick={() => {
-                        onRegisterClick();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full px-5 py-3 rounded-md bg-[#c0922e] text-sm font-bold text-white"
-                    >
-                      Join as Broker
-                    </button>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </nav>
     </>
   );

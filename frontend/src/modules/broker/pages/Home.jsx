@@ -21,9 +21,12 @@ import RegisterModal from '../components/home/RegisterModal';
 import TermsModal from '../components/home/TermsModal';
 
 import { useLandingConfig } from '../../../hooks/useLandingConfig';
+import { useAuth } from '../context/AuthContext';
+import MobileBottomNav from '../components/layout/MobileBottomNav';
 
 const Home = () => {
   const { config, loading, error } = useLandingConfig();
+  const { user } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
@@ -62,7 +65,7 @@ const Home = () => {
   const { sections } = config;
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen">
+    <div className="bg-[#FAF9F6] min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
       <LandingNavbar 
         onLoginClick={() => setIsLoginModalOpen(true)}
         onRegisterClick={() => setIsRegisterModalOpen(true)}
@@ -133,6 +136,8 @@ const Home = () => {
         isOpen={isTermsModalOpen} 
         onClose={() => setIsTermsModalOpen(false)} 
       />
+
+      {!user && <MobileBottomNav onAuthRequired={() => setIsLoginModalOpen(true)} />}
     </div>
   );
 };

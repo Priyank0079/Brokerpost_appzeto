@@ -26,14 +26,20 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
         const res = await api.get('/postings/smart-matches');
         if (res.success && res.data) {
           const total = res.data.reduce((sum, group) => sum + group.matches.length, 0);
-          setMatchCount(total);
+          if (location.pathname === '/matches') {
+            localStorage.setItem('lastSeenMatches', total);
+            setMatchCount(0);
+          } else {
+            const lastSeen = parseInt(localStorage.getItem('lastSeenMatches')) || 0;
+            setMatchCount(Math.max(0, total - lastSeen));
+          }
         }
       } catch (e) {}
     };
     fetchMatchesCount();
     const int = setInterval(fetchMatchesCount, 60000); // Check every minute
     return () => clearInterval(int);
-  }, []);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();

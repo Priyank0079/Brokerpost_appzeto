@@ -157,8 +157,103 @@ const Matches = () => {
     );
   }
 
+  const mobScColor = (s) => s >= 70 ? '#166534' : s >= 40 ? '#92400e' : '#1e40af';
+  const mobScLabel = (s) => s >= 70 ? 'Strong' : s >= 40 ? 'Good' : 'Possible';
+  const mobScBg = (s) => s >= 70 ? '#166534' : s >= 40 ? '#d97706' : '#3b82f6';
+
+  const allMobMatches = filteredGroups.flatMap(g =>
+    g.matches.map(m => ({ ...m, myL: g.myL, isAvail: g.isAvail }))
+  ).sort((a, b) => b.score - a.score);
+
   return (
-    <div className="max-w-[1400px] mx-auto py-6 px-4 font-sans text-sm text-slate-800">
+    <>
+      {/* MOBILE MATCHES */}
+      <div className="md:hidden" style={{ background: '#f5f0e8', minHeight: '100vh', paddingBottom: 72 }}>
+        <div style={{ background: '#fff', borderBottom: '0.5px solid #e0d8cc', padding: '6px 12px 4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e3a5f' }}>Your Matches</div>
+              <div style={{ fontSize: 9, color: '#6b7060' }}>{stats.total} results · {stats.strong} strong</div>
+            </div>
+            <span style={{ background: '#dcfce7', color: '#166534', fontSize: 8.5, fontWeight: 700, padding: '3px 9px', borderRadius: 20 }}>Live</span>
+            <button onClick={fetchMatches} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c8962a', padding: 4 }}>
+              <RefreshCw size={16} />
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: 5, paddingBottom: 4 }} className="mob-hscroll">
+            {[['', 'All Types'], ['avail', 'Availability'], ['req', 'Requirements']].map(([val, label]) => (
+              <button key={val} onClick={() => setFType(val)}
+                className={`mob-tc ${fType === val ? 'on' : ''}`}
+                style={{ fontSize: 8.5, padding: '3px 10px', border: 'none' }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div style={{ padding: '4px 0' }}>
+          {allMobMatches.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#6b7060', fontSize: 12 }}>
+              <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.2 }}>◎</div>No matches found
+            </div>
+          ) : allMobMatches.map((m, idx) => {
+            const { listing, score, locCommon, projCommon, myL } = m;
+            const initials = (listing.brokerName || 'UB').split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+            const waMsg = encodeURIComponent(`Hi ${listing.brokerName}, I have a matching property — ${listing.subType || ''} at ${listing.location || ''}. Would like to connect.`);
+            return (
+              <div key={idx} className="mob-match-card">
+                <div className="mob-mc-score-bar">
+                  <span style={{ fontSize: 13, fontWeight: 600, color: mobScColor(score) }}>{score}%</span>
+                  <div className="mob-mc-bar"><div className="mob-mc-fill" style={{ width: `${score}%`, background: mobScBg(score) }} /></div>
+                  <span style={{ fontSize: 8.5, fontWeight: 600, color: mobScColor(score) }}>{mobScLabel(score)}</span>
+                </div>
+                <div style={{ padding: '8px 10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 3 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#166534', marginTop: 4, flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: 10.5, fontWeight: 600, color: '#1a1a2e' }}>{m.isAvail ? 'My Avail' : 'My Req'}: {myL.subType}</div>
+                      <div style={{ fontSize: 9, color: '#6b7060' }}>{myL.location}{myL.projectSociety ? ` · ${myL.projectSociety}` : ''}</div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'center', fontSize: 9, color: '#c0b8a0', padding: '2px 0' }}>
+                    ⇅ {[locCommon?.length > 0 && 'location', projCommon?.length > 0 && 'project'].filter(Boolean).join(' + ')} matched
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 5 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#1e40af', marginTop: 4, flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: 10.5, fontWeight: 600, color: '#1a1a2e' }}>{listing.postType === 'AVAILABILITY' ? 'Avail' : 'Wanted'}: {listing.subType}</div>
+                      <div style={{ fontSize: 9, color: '#6b7060' }}>{listing.location}{listing.projectSociety ? ` · ${listing.projectSociety}` : ''}{listing.price ? ` · ₹${listing.price}` : ''}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#1e3a5f', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 8, fontWeight: 700, color: '#fff', flexShrink: 0 }}>{initials}</div>
+                    <div>
+                      <div style={{ fontSize: 10.5, fontWeight: 600, color: '#1a1a2e' }}>{listing.brokerName}</div>
+                      <div style={{ fontSize: 9, color: '#6b7060' }}>{listing.brokerCompany}{listing.brokerCity ? ` · ${listing.brokerCity}` : ''}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 5, marginTop: 7 }}>
+                    {listing.brokerPhone ? (
+                      <>
+                        <a href={`https://wa.me/91${listing.brokerPhone}?text=${waMsg}`} target="_blank" rel="noreferrer"
+                          style={{ flex: 1, background: '#25D366', color: '#fff', fontSize: 9.5, padding: '4px 0', borderRadius: 5, textAlign: 'center', textDecoration: 'none', fontWeight: 600 }}>
+                          💬 WhatsApp
+                        </a>
+                        <a href={`tel:${listing.brokerPhone}`}
+                          style={{ flex: 1, background: '#dbeafe', color: '#1e40af', fontSize: 9.5, padding: '4px 0', borderRadius: 5, textAlign: 'center', textDecoration: 'none', fontWeight: 600, border: '0.5px solid #93c5fd' }}>
+                          📞 Call
+                        </a>
+                      </>
+                    ) : <span style={{ fontSize: 9, color: '#6b7060', fontStyle: 'italic' }}>No phone</span>}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* DESKTOP MATCHES */}
+      <div className="hidden md:block max-w-[1400px] mx-auto py-6 px-4 font-sans text-sm text-slate-800">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b border-slate-200 pb-4">
         <div>
@@ -391,7 +486,8 @@ const Matches = () => {
           })}
         </div>
       )}
-    </div>
+      </div>{/* end desktop wrapper */}
+    </>
   );
 };
 

@@ -195,8 +195,85 @@ const Dashboard = () => {
 
   const displayListings = showAllListings ? allListings : (s.recentListings || []);
 
+  const getSubPill = (subType) => {
+    if (!subType) return { label: 'Property', cls: 'mob-p-gray' };
+    const s = subType.toLowerCase();
+    if (s.includes('apart')) return { label: subType, cls: 'mob-p-blue' };
+    if (s.includes('office')) return { label: subType, cls: 'mob-p-orange' };
+    if (s.includes('plot')) return { label: subType, cls: 'mob-p-green' };
+    if (s.includes('villa') || s.includes('kothi')) return { label: subType, cls: 'mob-p-gold' };
+    return { label: subType, cls: 'mob-p-gray' };
+  };
+  const getIntentPill = (intent) => {
+    const i = (intent || '').toLowerCase();
+    if (i.includes('sale')) return { label: 'Sale', cls: 'mob-p-green' };
+    if (i.includes('rent') || i.includes('rental')) return { label: 'Rent', cls: 'mob-p-blue' };
+    if (i.includes('lease')) return { label: 'Lease', cls: 'mob-p-purple' };
+    if (i.includes('purchase')) return { label: 'Wanted', cls: 'mob-p-orange' };
+    return { label: intent, cls: 'mob-p-gray' };
+  };
+
   return (
-    <div className="space-y-8 pb-10">
+    <>
+      {/* ── MOBILE DASHBOARD ── */}
+      <div className="md:hidden" style={{ background: '#f5f0e8', minHeight: '100vh', paddingBottom: 72 }}>
+        {/* Stat Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, padding: '10px 12px 6px' }}>
+          <div className="mob-sc-mini">
+            <div className="mob-sm-lbl">My Listings</div>
+            <div className="mob-sm-val">{activeMyListings}</div>
+          </div>
+          <div className="mob-sc-mini">
+            <div className="mob-sm-lbl">Network</div>
+            <div className="mob-sm-val">{activeNetworkListings}</div>
+          </div>
+          <div className="mob-sc-mini">
+            <div className="mob-sm-lbl">Availability</div>
+            <div className="mob-sm-val" style={{ color: '#166534' }}>{activeAvailability}</div>
+          </div>
+          <div className="mob-sc-mini">
+            <div className="mob-sm-lbl">Requirements</div>
+            <div className="mob-sm-val">{activeRequirements}</div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: 1.2, color: '#6b7060', padding: '8px 12px 4px', fontWeight: 600 }}>Recent Activity</div>
+
+        {(s.recentListings || []).slice(0, 6).map((post) => {
+          const sub = getSubPill(post.subType);
+          const intent = getIntentPill(post.intent);
+          const priceDisplay = post.totalAmount
+            ? `₹ ${Number(post.totalAmount).toLocaleString('en-IN')}`
+            : post.budgetMax ? `₹ ${Number(post.budgetMax).toLocaleString('en-IN')}` : 'On Req.';
+          return (
+            <div key={post._id} className="mob-listing-card"
+              onClick={() => { setSelectedPosting(post); setIsEditModalOpen(true); }}
+              style={{ cursor: 'pointer' }}>
+              <div className="mob-lc-hd">
+                <span className={`mob-pill ${sub.cls}`}>{sub.label}</span>
+                <span className={`mob-pill ${intent.cls}`}>{intent.label}</span>
+              </div>
+              <div className="mob-lc-title">{post.location}{post.project ? ` · ${post.project}` : ''}</div>
+              <div className="mob-lc-sub">{post.bedrooms ? `${post.bedrooms} · ` : ''}{post.size ? `${Number(post.size).toLocaleString('en-IN')} Sq.Ft` : ''}{post.city ? ` · ${post.city}` : ''}</div>
+              <div className="mob-lc-ft">
+                <span className="mob-lc-price">{priceDisplay}</span>
+                <span style={{ background: '#e8b84b', color: '#0d1520', fontSize: 9.5, fontWeight: 700, padding: '3px 9px', borderRadius: 5 }}>View</span>
+              </div>
+            </div>
+          );
+        })}
+
+        {(s.recentListings || []).length === 0 && (
+          <div style={{ textAlign: 'center', padding: '30px 20px', color: '#6b7060', fontSize: 12 }}>
+            <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.3 }}>◈</div>
+            No listings yet. Use the sidebar to add your first listing.
+          </div>
+        )}
+      </div>
+
+      {/* ── DESKTOP DASHBOARD ── */}
+      <div className="hidden md:block">
       {/* Welcome Header */}
       <div className="px-2 md:px-0 page-hd">
         <h1 
@@ -463,7 +540,7 @@ const Dashboard = () => {
                 {refreshMessage.text}
               </p>
               <div className="flex items-center justify-center">
-                <button 
+                <button
                   onClick={() => setRefreshMessage(null)}
                   className="w-full px-4 py-2.5 bg-[#1a365d] hover:bg-[#12284b] text-white text-sm font-bold rounded-lg transition-colors"
                 >
@@ -474,7 +551,8 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>
+    </div>{/* end desktop wrapper */}
+    </>
   );
 };
 

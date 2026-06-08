@@ -91,7 +91,7 @@ exports.getSmartMatches = async (req, res) => {
       isActive: true,
       city: { $in: myCities },
       subType: { $in: mySubTypes }
-    }).populate('postedBy', 'firstName lastName name companyName operatingCity phoneNumber').lean();
+    }).populate('postedBy', 'firstName lastName name companyName operatingCity phoneNumber isDeleted').lean();
 
     const matchGroups = [];
 
@@ -109,7 +109,7 @@ exports.getSmartMatches = async (req, res) => {
 
       candidates.forEach(other => {
         // If the broker was deleted but listing exists, skip it
-        if (!other.postedBy || !other.postedBy._id) return;
+        if (!other.postedBy || !other.postedBy._id || other.postedBy.isDeleted) return;
 
         const result = matchRule(myL, other);
         if (!result || result.score < 20) return;

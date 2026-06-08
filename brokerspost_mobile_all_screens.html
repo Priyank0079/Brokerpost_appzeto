@@ -1,0 +1,625 @@
+
+<h2 class="sr-only">BrokersPost mobile app showing 9 screens: login, dashboard, sidebar drawer, public listings, residential section, add listing, smart match, my groups, and profile</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.row{display:flex;gap:14px;padding:14px 8px 6px;overflow-x:auto;align-items:flex-start;justify-content:flex-start;}
+.col{flex-shrink:0;}
+.phone{width:196px;border-radius:28px;background:#1a1a2a;padding:3px;box-shadow:0 8px 28px rgba(0,0,0,0.35);}
+.phone-inner{border-radius:26px;overflow:hidden;height:428px;display:flex;flex-direction:column;position:relative;background:#f5f0e8;}
+.notch{width:56px;height:13px;border-radius:0 0 9px 9px;position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:20;}
+.s-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);text-align:center;margin-top:7px;}
+.status-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 13px 3px;font-size:9px;flex-shrink:0;}
+.sb-r{display:flex;gap:3px;align-items:center;}
+.topnav{display:flex;align-items:center;gap:8px;padding:5px 13px 7px;flex-shrink:0;}
+.tn-title{font-size:13px;font-weight:500;}
+.search-bar{display:flex;align-items:center;gap:5px;border-radius:18px;padding:5px 10px;font-size:10px;}
+.pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:500;}
+.p-blue{background:#dbeafe;color:#1e40af;}
+.p-green{background:#dcfce7;color:#166534;}
+.p-orange{background:#fff7ed;color:#c2410c;}
+.p-gold{background:#fef9c3;color:#854d0e;}
+.p-gray{background:#f3f4f6;color:#374151;}
+.p-purple{background:#f5f3ff;color:#6d28d9;}
+.sc-content{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.sec-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.9px;color:#6b7060;padding:6px 12px 3px;font-weight:500;}
+.listing-card{background:#fff;border-radius:9px;margin:3px 11px;padding:9px 11px;border:0.5px solid #e0d8cc;}
+.lc-hd{display:flex;align-items:center;gap:5px;margin-bottom:5px;}
+.lc-title{font-size:11.5px;font-weight:500;color:#1a1a2e;}
+.lc-sub{font-size:9.5px;color:#6b7060;margin-bottom:4px;}
+.lc-ft{display:flex;align-items:center;justify-content:space-between;}
+.lc-price{font-size:12px;font-weight:500;color:#1e3a5f;}
+.lc-btn{font-size:9px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.btn-edit{background:#f3f4f6;color:#374151;}
+.btn-del{background:#fee2e2;color:#991b1b;}
+.btn-gold{background:#e8b84b;color:#0d1520;}
+.btn-con{background:#0d1520;color:#fff;}
+.bnav{display:flex;align-items:center;justify-content:space-around;padding:5px 0 7px;border-top:0.5px solid #e0d8cc;background:#fff;flex-shrink:0;}
+.bn-i{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8.5px;color:#a09888;flex:1;}
+.bn-i.on{color:#c8962a;}
+.bn-i i{font-size:17px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:0 11px 4px;}
+.sc-mini{background:#fff;border-radius:7px;padding:7px 9px;border:0.5px solid #e0d8cc;}
+.sm-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:#6b7060;margin-bottom:2px;}
+.sm-val{font-size:17px;font-weight:500;color:#1e3a5f;}
+/* --- LOGIN --- */
+.login-wrap{background:#0d1520;flex:1;display:flex;flex-direction:column;}
+.login-brand{font-size:23px;font-weight:600;color:#fff;text-align:center;padding:32px 0 4px;}
+.login-brand b{color:#e8b84b;}
+.login-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:20px;}
+.lf{margin:0 15px 7px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.11);border-radius:8px;padding:8px 11px;}
+.lf-lbl{font-size:8px;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
+.lf-val{font-size:11.5px;color:rgba(255,255,255,0.7);margin-top:2px;}
+.login-btn-m{margin:10px 15px 6px;background:#e8b84b;color:#0d1520;border-radius:8px;padding:10px;text-align:center;font-size:12.5px;font-weight:600;}
+.login-alt{text-align:center;font-size:9.5px;color:rgba(255,255,255,0.3);}
+.login-alt b{color:#e8b84b;}
+/* --- DRAWER --- */
+.drawer-overlay{position:absolute;inset:0;background:rgba(13,21,32,0.55);z-index:30;display:flex;}
+.drawer{width:158px;background:#0d1520;height:100%;display:flex;flex-direction:column;overflow-y:auto;}
+.dr-top{padding:14px 13px 10px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.dr-brand{font-size:16px;font-weight:600;color:#fff;}
+.dr-brand b{color:#e8b84b;}
+.dr-tag{font-size:7.5px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:1px;}
+.dr-sec{padding:9px 8px 2px;}
+.dr-lbl{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:0 8px;margin-bottom:4px;font-weight:600;}
+.dr-item{display:flex;align-items:center;gap:7px;padding:6px 10px;border-radius:6px;color:rgba(255,255,255,0.6);font-size:10.5px;}
+.dr-item:hover,.dr-item.on{background:#e8b84b;color:#0d1520;}
+.dr-item.on .dr-dot{background:rgba(13,21,32,0.3);}
+.dr-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);flex-shrink:0;}
+.dr-badge{min-width:16px;height:16px;border-radius:50%;background:#e8b84b;color:#0d1520;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0;}
+.dr-item.on .dr-badge{background:rgba(13,21,32,0.15);}
+.dr-user{margin-top:auto;padding:9px 11px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:7px;}
+.dr-av{width:26px;height:26px;border-radius:50%;background:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d1520;flex-shrink:0;}
+.dr-uname{font-size:10px;font-weight:500;color:#fff;}
+.dr-role{font-size:8px;color:rgba(255,255,255,0.3);}
+/* --- PUBLIC LISTINGS --- */
+.pub-hero{background:#0d1520;padding:0 12px 10px;flex-shrink:0;}
+.ph-tag{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:3px;}
+.ph-title{font-size:14px;font-weight:500;color:#fff;margin-bottom:8px;}
+.ph-search{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.12);border-radius:18px;padding:6px 11px;font-size:10px;color:rgba(255,255,255,0.4);}
+.tab-chips{display:flex;gap:4px;padding:6px 11px 4px;overflow-x:auto;flex-shrink:0;}
+.tc{padding:4px 11px;border-radius:20px;font-size:9.5px;font-weight:500;white-space:nowrap;border:0.5px solid #e0d8cc;background:#fff;color:#6b7060;}
+.tc.on{background:#0d1520;color:#fff;border-color:#0d1520;}
+.pub-card{background:#fff;border-radius:9px;margin:3px 11px;border:0.5px solid #e0d8cc;overflow:hidden;}
+.pc-img{height:60px;background:#e8e0d4;display:flex;align-items:center;justify-content:center;font-size:22px;color:#c0b8a0;}
+.pc-body{padding:7px 10px;}
+/* --- SECTION VIEW (RES SALE) --- */
+.sv-hd{display:flex;align-items:center;padding:6px 12px 8px;gap:6px;flex-shrink:0;border-bottom:0.5px solid #e0d8cc;background:#fff;}
+.sv-back{font-size:16px;color:#1e3a5f;flex-shrink:0;}
+.sv-title-col{flex:1;}
+.sv-title{font-size:12.5px;font-weight:500;color:#1e3a5f;}
+.sv-sub{font-size:9px;color:#6b7060;}
+.sv-add{background:#e8b84b;color:#0d1520;font-size:9px;font-weight:600;padding:4px 10px;border-radius:6px;}
+.sv-filter-row{display:flex;align-items:center;gap:5px;padding:5px 11px 5px;border-bottom:0.5px solid #e0d8cc;background:#fff;flex-shrink:0;}
+.sf-search{flex:1;background:#f5f0e8;border:0.5px solid #e0d8cc;border-radius:14px;padding:4px 9px;font-size:10px;color:#6b7060;display:flex;align-items:center;gap:4px;}
+.sf-sel{background:#f5f0e8;border:0.5px solid #e0d8cc;border-radius:14px;padding:4px 7px;font-size:9px;color:#6b7060;}
+/* --- ADD LISTING --- */
+.al-top{background:#fff;border-bottom:0.5px solid #e0d8cc;padding:5px 12px 8px;flex-shrink:0;}
+.al-step{font-size:9px;color:#e8b84b;font-weight:500;margin-bottom:3px;}
+.al-progress{display:flex;gap:3px;}
+.al-prog-bar{flex:1;height:3px;border-radius:2px;}
+.form-field{margin:0 11px 6px;background:#fff;border:0.5px solid #e0d8cc;border-radius:7px;padding:6px 10px;}
+.ff-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;color:#6b7060;margin-bottom:2px;}
+.ff-val{font-size:11px;color:#1a1a2e;}
+.ff-ph{font-size:11px;color:#c0b8a0;}
+.al-btn{margin:4px 11px 0;background:#e8b84b;color:#0d1520;border-radius:8px;padding:9px;text-align:center;font-size:11.5px;font-weight:600;}
+/* --- SMART MATCH --- */
+.sm-header{background:#fff;border-bottom:0.5px solid #e0d8cc;flex-shrink:0;}
+.sm-hd-row{display:flex;align-items:center;gap:8px;padding:5px 12px 3px;}
+.sm-filters{display:flex;gap:4px;padding:4px 11px 5px;overflow-x:auto;}
+.match-card{background:#fff;border-radius:9px;margin:3px 11px;border:0.5px solid #e0d8cc;overflow:hidden;}
+.mc-score-bar{display:flex;align-items:center;gap:5px;padding:6px 9px;background:#f5f0e8;border-bottom:0.5px solid #e0d8cc;}
+.mc-sc{font-size:12px;font-weight:500;}
+.mc-bar{flex:1;height:3px;background:#e0d8cc;border-radius:2px;overflow:hidden;}
+.mc-fill{height:100%;border-radius:2px;}
+.mc-lbl{font-size:8px;font-weight:500;}
+.mc-body{padding:7px 9px;}
+.mc-listing{display:flex;align-items:flex-start;gap:5px;margin-bottom:3px;}
+.mc-dot{width:6px;height:6px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+.mc-info{font-size:10px;font-weight:500;color:#1a1a2e;}
+.mc-sub-text{font-size:9px;color:#6b7060;}
+.mc-sep{text-align:center;font-size:9px;color:#c0b8a0;padding:2px 0;}
+.mc-broker{display:flex;align-items:center;gap:5px;margin-top:4px;}
+.mc-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:700;color:#fff;flex-shrink:0;}
+.mc-bn{font-size:10px;font-weight:500;color:#1a1a2e;}
+.mc-bc{font-size:9px;color:#6b7060;}
+.mc-btns{display:flex;gap:4px;margin-top:5px;}
+.mc-wa{background:#25D366;color:#fff;font-size:9px;padding:3px 7px;border-radius:4px;font-weight:500;flex:1;text-align:center;}
+.mc-ca{background:#dbeafe;color:#1e40af;font-size:9px;padding:3px 7px;border-radius:4px;border:0.5px solid #93c5fd;flex:1;text-align:center;}
+/* --- MY GROUPS --- */
+.group-card{background:#fff;border-radius:9px;margin:3px 11px;border:0.5px solid #e0d8cc;padding:9px 11px;}
+.gc-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.gc-av{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.gc-name{font-size:12px;font-weight:500;color:#1a1a2e;}
+.gc-meta{font-size:9.5px;color:#6b7060;}
+.gc-members{display:flex;align-items:center;gap:3px;margin-bottom:6px;}
+.gm-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:#fff;margin-left:-4px;border:1.5px solid #fff;}
+.gm-av:first-child{margin-left:0;}
+.gm-more{font-size:9px;color:#6b7060;margin-left:4px;}
+.gc-row{display:flex;gap:4px;margin-top:2px;}
+/* --- PROFILE --- */
+.prof-hero{background:#0d1520;padding:0 0 10px;flex-shrink:0;}
+.pr-av{width:48px;height:48px;border-radius:50%;background:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#0d1520;margin:0 auto 6px;}
+.pr-name{font-size:13px;font-weight:500;color:#fff;text-align:center;}
+.pr-role{font-size:9px;color:rgba(255,255,255,0.38);text-align:center;}
+.pr-stats{display:flex;justify-content:center;gap:14px;margin-top:7px;}
+.pr-stat{text-align:center;}
+.pr-sv{font-size:13px;font-weight:500;color:#e8b84b;}
+.pr-sl{font-size:8px;color:rgba(255,255,255,0.3);}
+.pr-divider{width:0.5px;background:rgba(255,255,255,0.1);}
+.pr-row{display:flex;align-items:center;gap:8px;background:#fff;border:0.5px solid #e0d8cc;border-radius:8px;padding:8px 10px;margin:0 11px 4px;}
+.pr-icon{font-size:14px;color:#6b7060;}
+.pr-val{font-size:11px;color:#1a1a2e;font-weight:500;}
+.pr-sub{font-size:9px;color:#6b7060;}
+.pr-arr{margin-left:auto;font-size:12px;color:#c0b8a0;}
+</style>
+
+<!-- ROW 1 -->
+<div class="row">
+
+<!-- 1. LOGIN -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner" style="background:#0d1520;">
+  <div class="notch" style="background:#060d14;"></div>
+  <div class="status-bar" style="color:rgba(255,255,255,0.4)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="login-brand">Brokers<b>Post</b></div>
+  <div class="login-tag">Verified Broker Network</div>
+  <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px;">
+    <div style="width:7px;height:7px;border-radius:50%;background:#e8b84b;opacity:.3"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:#e8b84b;opacity:.6"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:#e8b84b"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:#e8b84b;opacity:.6"></div>
+    <div style="width:7px;height:7px;border-radius:50%;background:#e8b84b;opacity:.3"></div>
+  </div>
+  <div class="lf"><div class="lf-lbl">Email Address</div><div class="lf-val">pawan@pkrealty.com</div></div>
+  <div class="lf"><div class="lf-lbl">Password</div><div class="lf-val">••••••••</div></div>
+  <div class="login-btn-m">Sign In to Dashboard</div>
+  <div class="login-alt" style="margin-bottom:6px">New broker? <b>Join the network</b></div>
+  <div style="text-align:center;margin-top:4px">
+    <span style="font-size:9px;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:3px 12px;color:rgba(255,255,255,0.35)">Admin Login</span>
+  </div>
+</div>
+</div>
+<div class="s-label">Login</div>
+</div>
+
+<!-- 2. DASHBOARD -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="topnav" style="background:#fff;border-bottom:0.5px solid #e0d8cc;">
+    <div style="flex:1"><div class="tn-title" style="color:#1e3a5f">Dashboard</div><div style="font-size:8.5px;color:#6b7060">Good morning, Pawan</div></div>
+    <div style="width:27px;height:27px;border-radius:50%;background:#0d1520;display:flex;align-items:center;justify-content:center;"><i class="ti ti-bell" style="font-size:13px;color:#e8b84b" aria-hidden="true"></i></div>
+    <div style="width:27px;height:27px;border-radius:50%;background:#e8b84b;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0d1520;">PK</div>
+  </div>
+  <div class="sc-content" style="padding-top:4px;">
+    <div class="stat-grid">
+      <div class="sc-mini"><div class="sm-lbl">My Listings</div><div class="sm-val">12</div></div>
+      <div class="sc-mini"><div class="sm-lbl">Network</div><div class="sm-val">214</div></div>
+      <div class="sc-mini"><div class="sm-lbl">Matches</div><div class="sm-val" style="color:#166534">5</div></div>
+      <div class="sc-mini"><div class="sm-lbl">Groups</div><div class="sm-val">2</div></div>
+    </div>
+    <div class="sec-lbl">Recent activity</div>
+    <div class="listing-card">
+      <div class="lc-hd"><span class="pill p-blue">Apartments</span><span class="pill p-green" style="margin-left:3px">Sale</span></div>
+      <div class="lc-title">Golf Course Rd · TDI Ourania</div>
+      <div class="lc-sub">3 BHK · 1,400 Sq.Ft · Gurugram</div>
+      <div class="lc-ft"><span class="lc-price">₹ 1.68 Cr</span><span class="lc-btn btn-gold">View</span></div>
+    </div>
+    <div class="listing-card">
+      <div class="lc-hd"><span class="pill p-orange">Office</span><span class="pill p-green" style="margin-left:3px">Sale</span></div>
+      <div class="lc-title">Cyber City · DLF Cyber Hub</div>
+      <div class="lc-sub">1,500 Sq.Ft · Vacant</div>
+      <div class="lc-ft"><span class="lc-price">₹ 3.45 Cr</span><span class="lc-btn btn-gold">View</span></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i on"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><span>Matches</span></div>
+    <div class="bn-i"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">Dashboard</div>
+</div>
+
+<!-- 3. NAV DRAWER (all sidebar options) -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div style="flex:1;position:relative;overflow:hidden;">
+    <!-- base screen -->
+    <div style="height:100%;background:#f5f0e8;padding:8px 11px;opacity:.35;">
+      <div style="height:12px;background:#e0d8cc;border-radius:4px;margin-bottom:7px;width:60%"></div>
+      <div style="height:80px;background:#fff;border-radius:9px;border:0.5px solid #e0d8cc;margin-bottom:5px;"></div>
+      <div style="height:80px;background:#fff;border-radius:9px;border:0.5px solid #e0d8cc;"></div>
+    </div>
+    <!-- DRAWER OVERLAY -->
+    <div class="drawer-overlay">
+      <div class="drawer">
+        <div class="dr-top">
+          <div class="dr-brand">Brokers<b>Post</b></div>
+          <div class="dr-tag">My Dashboard</div>
+        </div>
+        <!-- Residential -->
+        <div class="dr-sec">
+          <div class="dr-lbl">Residential</div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Avail. for Sale</span><span class="dr-badge">2</span></div>
+          <div class="dr-item on"><div class="dr-dot"></div><span>Avail. for Rental</span><span class="dr-badge">1</span></div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Wanted Purchase</span><span class="dr-badge">1</span></div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Wanted Rent</span><span class="dr-badge">0</span></div>
+        </div>
+        <!-- Commercial -->
+        <div class="dr-sec">
+          <div class="dr-lbl">Commercial</div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Avail. for Sale</span><span class="dr-badge">1</span></div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Avail. for Lease</span><span class="dr-badge">0</span></div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Wanted Purchase</span><span class="dr-badge">0</span></div>
+          <div class="dr-item"><div class="dr-dot"></div><span>Wanted Lease</span><span class="dr-badge">0</span></div>
+        </div>
+        <!-- Network -->
+        <div class="dr-sec">
+          <div class="dr-lbl">Network</div>
+          <div class="dr-item"><i class="ti ti-users" style="font-size:13px;opacity:.6" aria-hidden="true"></i><span>My Groups</span></div>
+          <div class="dr-item"><i class="ti ti-arrows-exchange" style="font-size:13px;opacity:.6" aria-hidden="true"></i><span>Your Matches</span><span class="dr-badge">5</span></div>
+        </div>
+        <div class="dr-user">
+          <div class="dr-av">PK</div>
+          <div><div class="dr-uname">Pawan Kumar</div><div class="dr-role">Broker</div></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:flex-start;padding:10px 8px;">
+        <div style="background:rgba(255,255,255,0.12);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-x" style="font-size:14px;color:#fff" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="s-label">All Nav Options</div>
+</div>
+
+<!-- 4. PUBLIC LISTINGS -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner" style="background:#f5f0e8;">
+  <div class="notch" style="background:#0d1520;"></div>
+  <div class="status-bar" style="color:rgba(255,255,255,0.45);background:#0d1520"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="pub-hero">
+    <div class="ph-tag">Live Inventory</div>
+    <div class="ph-title">Network Listings</div>
+    <div class="ph-search"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Location, project, city…</div>
+  </div>
+  <div class="tab-chips">
+    <div class="tc on">All</div>
+    <div class="tc">Res. Sale</div>
+    <div class="tc">Res. Rent</div>
+    <div class="tc">Com. Sale</div>
+    <div class="tc">Com. Lease</div>
+  </div>
+  <div class="sc-content">
+    <div class="pub-card">
+      <div class="pc-img"><i class="ti ti-building-estate" aria-hidden="true"></i></div>
+      <div class="pc-body">
+        <div class="lc-hd"><span class="pill p-blue">Apartments</span><span class="pill p-green" style="margin-left:3px">Sale</span></div>
+        <div class="lc-title">Golf Course Rd · TDI Ourania</div>
+        <div class="lc-sub">3 BHK · 1,400 Sq.Ft · Gurugram</div>
+        <div class="lc-ft"><span class="lc-price">₹ 1.68 Cr</span><span class="lc-btn btn-con" style="font-size:8px;padding:3px 8px;border-radius:5px">Connect</span></div>
+      </div>
+    </div>
+    <div class="pub-card">
+      <div class="pc-img" style="background:#dbeafe;"><i class="ti ti-building" style="color:#1e40af" aria-hidden="true"></i></div>
+      <div class="pc-body">
+        <div class="lc-hd"><span class="pill p-orange">Office</span><span class="pill p-purple" style="margin-left:3px">Wanted</span></div>
+        <div class="lc-title">Cyber City · DLF Cyber Hub</div>
+        <div class="lc-sub">1,200 Sq.Ft · Budget ₹ 3 Cr</div>
+        <div class="lc-ft"><span class="lc-price">₹ 3 Cr</span><span class="lc-btn btn-con" style="font-size:8px;padding:3px 8px;border-radius:5px">Connect</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i on"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><span>Matches</span></div>
+    <div class="bn-i"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">Public Listings</div>
+</div>
+
+</div><!-- end row 1 -->
+
+<!-- ROW 2 -->
+<div class="row" style="padding-top:0;">
+
+<!-- 5. SECTION VIEW — Available for Rental Residential -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="sv-hd">
+    <i class="ti ti-arrow-left sv-back" aria-hidden="true"></i>
+    <div class="sv-title-col">
+      <div class="sv-title">Available for Rental</div>
+      <div class="sv-sub">Residential · 1 listing</div>
+    </div>
+    <div class="sv-add">+ Add</div>
+  </div>
+  <div class="sv-filter-row">
+    <div class="sf-search"><i class="ti ti-search" style="font-size:11px" aria-hidden="true"></i>Search…</div>
+    <div class="sf-sel">All Sub-types ▾</div>
+  </div>
+  <!-- TABLE HEADER -->
+  <div style="display:grid;grid-template-columns:1fr 60px 54px 60px;padding:5px 11px;background:#fff;border-bottom:0.5px solid #e0d8cc;flex-shrink:0;">
+    <div style="font-size:8px;text-transform:uppercase;letter-spacing:.6px;color:#6b7060">Location / Project</div>
+    <div style="font-size:8px;text-transform:uppercase;letter-spacing:.6px;color:#6b7060">Area</div>
+    <div style="font-size:8px;text-transform:uppercase;letter-spacing:.6px;color:#6b7060">Price</div>
+    <div style="font-size:8px;text-transform:uppercase;letter-spacing:.6px;color:#6b7060">Action</div>
+  </div>
+  <div class="sc-content">
+    <!-- row 1 -->
+    <div style="display:grid;grid-template-columns:1fr 60px 54px 60px;padding:9px 11px;background:#fff;border-bottom:0.5px solid #e8e0d4;align-items:center;">
+      <div>
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px;"><span class="pill p-blue" style="font-size:8px">Apartments</span></div>
+        <div style="font-size:10.5px;font-weight:500;color:#1a1a2e">Golf Course Road</div>
+        <div style="font-size:9px;color:#6b7060">TDI Ourania</div>
+        <div style="font-size:8px;color:#9a9888">Gurgaon · #BEE35E</div>
+      </div>
+      <div style="font-size:10px;color:#6b7060">1,400 Sq.Ft</div>
+      <div style="font-size:10.5px;font-weight:500;color:#1e3a5f">₹70,000</div>
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <span class="lc-btn btn-edit" style="text-align:center">Edit</span>
+        <span class="lc-btn btn-del" style="text-align:center">Del</span>
+      </div>
+    </div>
+    <div style="text-align:center;padding:20px 12px;">
+      <div style="font-size:28px;opacity:.12;margin-bottom:6px">◈</div>
+      <div style="font-size:11px;color:#6b7060">No more listings in this section</div>
+      <div style="margin-top:8px"><span class="lc-btn btn-gold" style="padding:5px 14px;font-size:10px">+ Add Listing</span></div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i on"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><span>Matches</span></div>
+    <div class="bn-i"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">Section View</div>
+</div>
+
+<!-- 6. ADD LISTING -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="al-top">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      <i class="ti ti-arrow-left" style="font-size:15px;color:#1e3a5f" aria-hidden="true"></i>
+      <div style="font-size:12.5px;font-weight:500;color:#1e3a5f;flex:1">Add Listing</div>
+      <span style="font-size:9px;color:#e8b84b;font-weight:500">Step 1 / 3</span>
+    </div>
+    <div class="al-progress">
+      <div class="al-prog-bar" style="background:#e8b84b"></div>
+      <div class="al-prog-bar" style="background:#e0d8cc"></div>
+      <div class="al-prog-bar" style="background:#e0d8cc"></div>
+    </div>
+  </div>
+  <div class="sc-content" style="padding-top:4px;">
+    <div class="sec-lbl">Property Details</div>
+    <div class="form-field"><div class="ff-lbl">Section *</div><div class="ff-val">Available for Sale ▾</div></div>
+    <div class="form-field"><div class="ff-lbl">Category *</div><div class="ff-val">Residential ▾</div></div>
+    <div class="form-field"><div class="ff-lbl">Sub-type *</div><div class="ff-val">Apartments ▾</div></div>
+    <div class="form-field"><div class="ff-lbl">Location *</div><div class="ff-val">Golf Course Road, Gurugram</div></div>
+    <div class="form-field"><div class="ff-lbl">Project / Society *</div><div class="ff-val">TDI Ourania</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:0 11px 6px;">
+      <div class="form-field" style="margin:0"><div class="ff-lbl">Bedrooms</div><div class="ff-val">3 BHK ▾</div></div>
+      <div class="form-field" style="margin:0"><div class="ff-lbl">Area (Sq.Ft)</div><div class="ff-ph">Enter area</div></div>
+    </div>
+    <div class="al-btn">Next — Pricing →</div>
+  </div>
+</div>
+</div>
+<div class="s-label">Add Listing</div>
+</div>
+
+<!-- 7. SMART MATCH -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="sm-header">
+    <div class="sm-hd-row">
+      <div style="flex:1"><div style="font-size:12.5px;font-weight:500;color:#1e3a5f">Your Matches</div><div style="font-size:9px;color:#6b7060">5 results · 2 strong</div></div>
+      <span style="background:#dcfce7;color:#166534;font-size:8.5px;font-weight:600;padding:3px 8px;border-radius:20px">Live</span>
+    </div>
+    <div class="sm-filters">
+      <div class="tc on" style="font-size:8.5px">All Types</div>
+      <div class="tc" style="font-size:8.5px">Availability</div>
+      <div class="tc" style="font-size:8.5px">Requirements</div>
+    </div>
+  </div>
+  <div class="sc-content">
+    <div style="margin:4px 11px 2px;font-size:9px;color:#6b7060;font-style:italic">Golf Course Road · TDI Ourania · Apartments</div>
+    <div class="match-card">
+      <div class="mc-score-bar">
+        <span class="mc-sc" style="color:#166534">90%</span>
+        <div class="mc-bar"><div class="mc-fill" style="width:90%;background:#166534"></div></div>
+        <span class="mc-lbl" style="color:#166534">Strong</span>
+      </div>
+      <div class="mc-body">
+        <div class="mc-listing">
+          <div class="mc-dot" style="background:#166534"></div>
+          <div><div class="mc-info">My Avail: Apartments</div><div class="mc-sub-text">Golf Course Rd · TDI Ourania</div></div>
+        </div>
+        <div class="mc-sep">⇅ matched on sub-type + location + project</div>
+        <div class="mc-listing">
+          <div class="mc-dot" style="background:#1e40af"></div>
+          <div><div class="mc-info">Wanted: Apartments</div><div class="mc-sub-text">Golf Course · TDI Ourania · ₹2 Cr</div></div>
+        </div>
+        <div class="mc-broker">
+          <div class="mc-av" style="background:#1e3a5f">VS</div>
+          <div><div class="mc-bn">Vivek Singh</div><div class="mc-bc">VS Associates · Gurugram</div></div>
+          <span class="pill p-blue" style="margin-left:auto;font-size:7.5px">NRI</span>
+        </div>
+        <div class="mc-btns"><div class="mc-wa">💬 WhatsApp</div><div class="mc-ca">📞 Call</div></div>
+      </div>
+    </div>
+    <div class="match-card">
+      <div class="mc-score-bar">
+        <span class="mc-sc" style="color:#92400e">65%</span>
+        <div class="mc-bar"><div class="mc-fill" style="width:65%;background:#d97706"></div></div>
+        <span class="mc-lbl" style="color:#92400e">Good</span>
+      </div>
+      <div class="mc-body">
+        <div class="mc-listing">
+          <div class="mc-dot" style="background:#166534"></div>
+          <div><div class="mc-info">My Avail: Apartments</div><div class="mc-sub-text">Golf Course · TDI Ourania</div></div>
+        </div>
+        <div class="mc-sep">⇅ sub-type + location matched</div>
+        <div class="mc-listing">
+          <div class="mc-dot" style="background:#1e40af"></div>
+          <div><div class="mc-info">Wanted: Apartments</div><div class="mc-sub-text">Golf Course Rd · TDI Ourania</div></div>
+        </div>
+        <div class="mc-broker">
+          <div class="mc-av" style="background:#c8962a">RS</div>
+          <div><div class="mc-bn">Rajesh Sharma</div><div class="mc-bc">Sharma Properties</div></div>
+        </div>
+        <div class="mc-btns"><div class="mc-wa">💬 WhatsApp</div><div class="mc-ca">📞 Call</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i on"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><span>Matches</span></div>
+    <div class="bn-i"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">Smart Match</div>
+</div>
+
+<!-- 8. MY GROUPS -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner">
+  <div class="notch" style="background:#f5f0e8;"></div>
+  <div class="status-bar" style="color:rgba(13,21,32,0.45)"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="topnav" style="background:#fff;border-bottom:0.5px solid #e0d8cc;">
+    <i class="ti ti-arrow-left" style="font-size:15px;color:#1e3a5f" aria-hidden="true"></i>
+    <div class="tn-title" style="color:#1e3a5f;flex:1">My Groups</div>
+    <span style="font-size:9px;color:#6b7060">2 groups</span>
+  </div>
+  <div class="sc-content" style="padding-top:5px;">
+    <div class="group-card">
+      <div class="gc-top">
+        <div class="gc-av" style="background:#1e3a5f">GR</div>
+        <div><div class="gc-name">Gurugram Realtors</div><div class="gc-meta">Leader: Rajesh Sharma · 9810022002</div></div>
+      </div>
+      <div class="gc-members">
+        <div class="gm-av" style="background:#1e3a5f">AS</div>
+        <div class="gm-av" style="background:#c8962a">PM</div>
+        <div class="gm-av" style="background:#166534">VJ</div>
+        <div class="gm-av" style="background:#6d28d9">RK</div>
+        <span class="gm-more">+5 brokers</span>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:5px;">
+        <span class="pill p-green" style="font-size:8px">9 members</span>
+        <span class="pill p-blue" style="font-size:8px">37 listings</span>
+        <span class="pill p-gold" style="font-size:8px">Gurugram</span>
+      </div>
+      <div class="gc-row">
+        <span class="lc-btn btn-gold" style="flex:1;text-align:center;padding:5px">View Inventory</span>
+        <span class="lc-btn btn-edit" style="padding:5px 10px">Chat</span>
+      </div>
+    </div>
+    <div class="group-card">
+      <div class="gc-top">
+        <div class="gc-av" style="background:#0f766e">NB</div>
+        <div><div class="gc-name">Noida Brokers Circle</div><div class="gc-meta">Leader: Anita Mehta · 9810033003</div></div>
+      </div>
+      <div class="gc-members">
+        <div class="gm-av" style="background:#0f766e">AM</div>
+        <div class="gm-av" style="background:#c8962a">SK</div>
+        <div class="gm-av" style="background:#1d4ed8">VK</div>
+        <span class="gm-more">+3 brokers</span>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:5px;">
+        <span class="pill p-green" style="font-size:8px">6 members</span>
+        <span class="pill p-blue" style="font-size:8px">19 listings</span>
+        <span class="pill p-purple" style="font-size:8px">Noida</span>
+      </div>
+      <div class="gc-row">
+        <span class="lc-btn btn-gold" style="flex:1;text-align:center;padding:5px">View Inventory</span>
+        <span class="lc-btn btn-edit" style="padding:5px 10px">Chat</span>
+      </div>
+    </div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i on"><i class="ti ti-users" aria-hidden="true"></i><span>Groups</span></div>
+    <div class="bn-i"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">My Groups</div>
+</div>
+
+<!-- 9. PROFILE -->
+<div class="col">
+<div class="phone">
+<div class="phone-inner" style="background:#f5f0e8;">
+  <div class="notch" style="background:#0d1520;"></div>
+  <div class="status-bar" style="color:rgba(255,255,255,0.4);background:#0d1520"><span>9:41</span><div class="sb-r"><i class="ti ti-wifi" style="font-size:11px" aria-hidden="true"></i><i class="ti ti-battery" style="font-size:11px" aria-hidden="true"></i></div></div>
+  <div class="prof-hero">
+    <div class="pr-av">PK</div>
+    <div class="pr-name">Pawan Kumar</div>
+    <div class="pr-role">Broker · PK Realty · Gurugram</div>
+    <div class="pr-stats">
+      <div class="pr-stat"><div class="pr-sv">12</div><div class="pr-sl">Listings</div></div>
+      <div class="pr-divider"></div>
+      <div class="pr-stat"><div class="pr-sv">2</div><div class="pr-sl">Groups</div></div>
+      <div class="pr-divider"></div>
+      <div class="pr-stat"><div class="pr-sv" style="color:#4ade80">5</div><div class="pr-sl">Matches</div></div>
+    </div>
+  </div>
+  <div class="sc-content" style="padding-top:6px;">
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#6b7060;padding:0 11px 4px;font-weight:500;">Contact</div>
+    <div class="pr-row"><i class="ti ti-phone pr-icon" aria-hidden="true"></i><div><div class="pr-val">9810011001</div><div class="pr-sub">Phone</div></div><i class="ti ti-chevron-right pr-arr" aria-hidden="true"></i></div>
+    <div class="pr-row"><i class="ti ti-mail pr-icon" aria-hidden="true"></i><div><div class="pr-val">pawan@pkrealty.com</div><div class="pr-sub">Email</div></div><i class="ti ti-chevron-right pr-arr" aria-hidden="true"></i></div>
+    <div class="pr-row"><i class="ti ti-map-pin pr-icon" aria-hidden="true"></i><div><div class="pr-val">Gurugram · 122018</div><div class="pr-sub">City &amp; Pincode</div></div><i class="ti ti-chevron-right pr-arr" aria-hidden="true"></i></div>
+    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:#6b7060;padding:5px 11px 4px;font-weight:500;">Account</div>
+    <div class="pr-row"><i class="ti ti-lock pr-icon" aria-hidden="true"></i><div><div class="pr-val">Change Password</div></div><i class="ti ti-chevron-right pr-arr" aria-hidden="true"></i></div>
+    <div class="pr-row" style="border-color:#fee2e2"><i class="ti ti-logout" style="font-size:14px;color:#991b1b" aria-hidden="true"></i><div><div class="pr-val" style="color:#991b1b">Sign Out</div></div></div>
+  </div>
+  <div class="bnav">
+    <div class="bn-i"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span>Home</span></div>
+    <div class="bn-i"><i class="ti ti-building-estate" aria-hidden="true"></i><span>Listings</span></div>
+    <div class="bn-i"><i class="ti ti-world" aria-hidden="true"></i><span>Public</span></div>
+    <div class="bn-i"><i class="ti ti-arrows-exchange" aria-hidden="true"></i><span>Matches</span></div>
+    <div class="bn-i on"><i class="ti ti-user" aria-hidden="true"></i><span>Profile</span></div>
+  </div>
+</div>
+</div>
+<div class="s-label">Profile</div>
+</div>
+
+</div><!-- end row 2 -->

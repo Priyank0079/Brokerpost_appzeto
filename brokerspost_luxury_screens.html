@@ -1,0 +1,532 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --nav:#0d1520;--nav2:#162240;
+  --gold:#c9a84c;--gold2:#e8b84b;--gold3:#f5e6c8;
+  --cream:#faf7f2;--cream2:#f0ebe0;--cream3:#e8ddd0;
+  --ink:#0d1520;--ink2:#1e3a5f;
+  --muted:#7a7060;--border:#ddd6c8;
+  --white:#fff;
+  --success:#166534;--sbg:#dcfce7;
+  --info:#1e40af;--ibg:#dbeafe;
+}
+body{font-family:'DM Sans',sans-serif;background:transparent;font-size:13px;line-height:1.5;color:var(--ink);}
+
+.page-wrap{display:flex;flex-direction:column;gap:28px;padding:8px 0 16px;}
+.row{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+.row-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:center;margin-bottom:10px;}
+
+.screen{background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 20px rgba(13,21,32,0.1);}
+
+.hdr{background:var(--nav);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
+.hdr-left{display:flex;align-items:center;gap:8px;}
+.brand{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:600;color:#fff;}
+.brand b{color:var(--gold2);}
+.brand-sub{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);display:block;margin-top:1px;}
+.hdr-av{width:28px;height:28px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--gold2);}
+
+.crumb{background:#faf8f4;padding:7px 16px;display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);border-bottom:0.5px solid var(--border);}
+.crumb-sep{color:var(--border);}
+.crumb-cur{color:var(--ink2);font-weight:500;}
+
+.body{padding:18px 18px 20px;background:var(--cream);}
+.body-white{padding:18px 18px 20px;background:var(--white);}
+
+.page-h{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.2;}
+.page-s{font-size:11.5px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+
+.field{position:relative;margin-bottom:10px;}
+.field input,.field select{width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:9px 13px 9px 36px;font-size:12.5px;color:var(--ink);outline:none;font-family:inherit;}
+.field input:focus,.field select:focus{border-color:var(--gold);}
+.field input::placeholder{color:var(--muted);}
+.fi{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px;pointer-events:none;}
+.field-opt{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--muted);}
+
+.check-row{display:flex;align-items:center;gap:7px;margin:6px 0 14px;font-size:12px;color:var(--ink);}
+.chk{width:16px;height:16px;border-radius:3px;background:var(--gold2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.terms-link{color:var(--gold);text-decoration:none;font-weight:500;}
+
+.btn-gold{width:100%;background:var(--gold2);color:var(--nav);border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:.3px;}
+.btn-gold:hover{background:var(--gold);}
+.btn-outline{width:100%;background:transparent;color:var(--ink2);border:1px solid var(--border);border-radius:8px;padding:10px;font-size:12.5px;font-weight:500;cursor:pointer;font-family:inherit;margin-top:7px;}
+.alt-link{text-align:center;margin-top:10px;font-size:12px;color:var(--muted);}
+.alt-link a{color:var(--gold);text-decoration:none;font-weight:500;}
+
+.toggle-row{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.tog-btn{flex:1;padding:8px;font-size:11.5px;font-weight:500;text-align:center;cursor:pointer;border:none;font-family:inherit;}
+.tog-btn.on{background:var(--nav);color:var(--gold2);}
+.tog-btn.off{background:var(--white);color:var(--muted);}
+
+.sub-toggle{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;width:fit-content;}
+.st-btn{padding:7px 18px;font-size:12px;font-weight:500;cursor:pointer;border:none;font-family:inherit;}
+.st-btn.on{background:var(--gold2);color:var(--nav);}
+.st-btn.off{background:var(--white);color:var(--muted);}
+
+.inv-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px;}
+.inv-card{border:1px solid var(--border);border-radius:10px;padding:16px 12px 14px;text-align:center;background:var(--white);}
+.inv-card-ico{width:56px;height:56px;border-radius:10px;background:var(--cream2);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:26px;}
+.inv-card-title{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:var(--ink);margin-bottom:5px;}
+.inv-card-sub{font-size:10.5px;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+.inv-card-btn{width:100%;background:var(--nav);color:var(--gold2);border:none;border-radius:6px;padding:7px;font-size:11.5px;font-weight:500;cursor:pointer;font-family:inherit;}
+
+.sec-lbl{font-size:11.5px;font-weight:500;color:var(--ink);margin-bottom:8px;}
+
+.radio-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px;}
+.radio-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink);background:var(--white);border:0.5px solid var(--border);border-radius:6px;padding:7px 9px;cursor:pointer;}
+.radio-item.on{border-color:var(--gold);background:#fffbf0;}
+.r-circle{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.r-circle.on{border-color:var(--gold);}
+.r-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+
+.sel-wrap{position:relative;margin-bottom:10px;}
+.sel-wrap select{width:100%;background:var(--white);border:1px solid var(--border);border-radius:8px;padding:8px 32px 8px 12px;font-size:12.5px;color:var(--ink);outline:none;appearance:none;cursor:pointer;font-family:inherit;}
+.sel-wrap select:focus{border-color:var(--gold);}
+.sel-chev{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
+
+.city-opts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.city-opt{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);cursor:pointer;}
+.city-opt.on{color:var(--ink);}
+
+.config-row{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.cf-btn{flex:1;padding:7px 4px;font-size:11px;font-weight:500;text-align:center;cursor:pointer;border:none;border-right:1px solid var(--border);font-family:inherit;}
+.cf-btn:last-child{border-right:none;}
+.cf-btn.on{background:var(--nav);color:var(--gold2);}
+.cf-btn.off{background:var(--white);color:var(--muted);}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.inp-lbl{font-size:10.5px;color:var(--muted);margin-bottom:4px;}
+.inp-box{background:var(--white);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-size:12px;color:var(--ink);}
+
+.status-row{display:flex;gap:16px;margin-bottom:14px;}
+.stat-opt{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);cursor:pointer;}
+.stat-opt.on{color:var(--ink);}
+
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:9.5px;font-weight:500;}
+.p-sale{background:var(--sbg);color:var(--success);}
+.p-rent{background:var(--ibg);color:var(--info);}
+.p-want{background:#ccfbf1;color:#0f766e;}
+.p-gold{background:#fef9c3;color:#854d0e;}
+.p-com{background:#f5f3ff;color:#6d28d9;}
+.p-blue{background:var(--ibg);color:var(--info);}
+.p-orange{background:#fff7ed;color:#c2410c;}
+
+.pub-hero{background:var(--nav);padding:12px 16px 14px;}
+.ph-eye{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3px;}
+.ph-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;color:#fff;margin-bottom:8px;line-height:1.2;}
+.ph-title em{font-style:italic;color:var(--gold2);}
+.ph-search{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.12);border-radius:20px;padding:7px 12px;}
+.ph-s-txt{font-size:11px;color:rgba(255,255,255,0.38);flex:1;}
+.ph-city{background:var(--gold2);color:var(--nav);font-size:9px;font-weight:600;padding:3px 9px;border-radius:12px;white-space:nowrap;}
+
+.tab-row{display:flex;background:var(--white);border-bottom:0.5px solid var(--border);}
+.tab{flex:1;padding:8px 4px;text-align:center;font-size:11px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;}
+.tab.on{color:var(--ink2);border-bottom-color:var(--gold2);}
+
+.chip-row{display:flex;gap:5px;padding:6px 12px;overflow-x:auto;background:var(--white);border-bottom:0.5px solid var(--border);}
+.chip{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:500;white-space:nowrap;border:0.5px solid var(--border);background:var(--white);color:var(--muted);}
+.chip.on{background:var(--nav);color:var(--gold2);border-color:var(--nav);}
+
+.count-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--cream);border-bottom:0.5px solid var(--border);}
+.cb-cnt{font-size:10.5px;color:var(--muted);}
+.view-tog{display:flex;gap:0;border:0.5px solid var(--border);border-radius:6px;overflow:hidden;}
+.vt{padding:3px 8px;font-size:10px;background:var(--white);border:none;border-right:0.5px solid var(--border);color:var(--muted);}
+.vt:last-child{border-right:none;}
+.vt.on{background:var(--nav);color:var(--gold2);}
+
+.listing-list{display:flex;flex-direction:column;}
+.ll-row{display:grid;grid-template-columns:26px 1fr 52px 56px 56px 56px;padding:9px 12px;border-bottom:0.5px solid var(--border2, #ede6da);align-items:center;background:var(--white);}
+.ll-row:last-child{border-bottom:none;}
+.ll-row.hl{background:#fffbf0;}
+.ll-hd-row{display:grid;grid-template-columns:26px 1fr 52px 56px 56px 56px;padding:7px 12px;background:#faf8f4;border-bottom:0.5px solid var(--border);}
+.th{font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:500;}
+.cell-id{font-size:8px;color:#a09888;font-family:monospace;}
+.cell-loc{font-size:11px;font-weight:500;color:var(--ink);line-height:1.25;}
+.cell-proj{font-size:9.5px;color:var(--muted);}
+.cell-price{font-size:11px;font-weight:500;color:var(--ink2);}
+.cell-area{font-size:10.5px;color:var(--muted);}
+.cell-broker{display:flex;align-items:center;gap:5px;}
+.b-av-sm{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7.5px;font-weight:600;color:#fff;flex-shrink:0;}
+.b-nm-sm{font-size:10px;color:var(--ink);}
+.con-btn-sm{background:var(--nav);color:var(--gold2);border:none;border-radius:5px;padding:3px 9px;font-size:9px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;}
+
+.tbl-hd{background:#faf8f4;border-bottom:0.5px solid var(--border);}
+
+.dash-wrap{display:flex;height:100%;}
+.dash-sb{width:150px;background:var(--nav);display:flex;flex-direction:column;overflow-y:auto;}
+.dash-sb-top{padding:12px 12px 10px;border-bottom:1px solid rgba(255,255,255,0.07);}
+.dash-brand{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#fff;}
+.dash-brand b{color:var(--gold2);}
+.dash-tag{font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-top:1px;}
+.dsb-sec{padding:9px 7px 2px;}
+.dsb-lbl{font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.28);padding:0 7px;margin-bottom:4px;font-weight:600;}
+.dsb-item{display:flex;align-items:center;gap:7px;padding:7px 9px;border-radius:6px;cursor:pointer;color:rgba(255,255,255,0.55);font-size:11px;}
+.dsb-item.on{background:var(--gold2);color:var(--nav);}
+.dsb-item.on .dsb-dot{background:rgba(13,21,32,0.3);}
+.dsb-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);flex-shrink:0;}
+.dsb-badge{min-width:16px;height:16px;border-radius:50%;background:var(--gold2);color:var(--nav);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-left:auto;padding:0 3px;}
+.dsb-item.on .dsb-badge{background:rgba(13,21,32,0.15);}
+.dsb-user{margin-top:auto;padding:9px 10px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:7px;}
+.dsb-av{width:26px;height:26px;border-radius:50%;background:var(--gold2);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;color:var(--nav);}
+.dsb-name{font-size:10px;font-weight:500;color:#fff;}
+.dsb-role{font-size:8.5px;color:rgba(255,255,255,0.3);}
+
+.dash-main{flex:1;display:flex;flex-direction:column;background:var(--cream);overflow:hidden;}
+.dash-topbar{height:42px;background:var(--white);border-bottom:0.5px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;}
+.dash-tb-title{font-size:13px;font-weight:500;color:var(--ink2);font-family:'Cormorant Garamond',serif;}
+.dash-tb-search{flex:1;max-width:200px;display:flex;align-items:center;gap:5px;background:var(--cream);border:0.5px solid var(--border);border-radius:14px;padding:5px 10px;font-size:10.5px;color:var(--muted);}
+.dash-content{flex:1;overflow:hidden;padding:12px 14px;}
+.dash-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.dsc{background:var(--white);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;}
+.dsc-lbl{font-size:8.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px;}
+.dsc-val{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--ink2);line-height:1;}
+.dsc-sub{font-size:9px;color:var(--muted);margin-top:2px;}
+
+.listing-tbl{background:var(--white);border:0.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.lt-hd{padding:8px 12px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.lt-title{font-size:12px;font-weight:500;color:var(--ink2);}
+.lt-btn{background:var(--gold2);color:var(--nav);border:none;border-radius:6px;padding:4px 10px;font-size:10px;font-weight:500;cursor:pointer;font-family:inherit;}
+.lt-hd-row{display:grid;grid-template-columns:22px 1fr 48px 52px 50px;padding:6px 12px;background:#faf8f4;border-bottom:0.5px solid var(--border);}
+.lth{font-size:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:500;}
+.lt-row{display:grid;grid-template-columns:22px 1fr 48px 52px 50px;padding:8px 12px;border-bottom:0.5px solid var(--border);align-items:center;}
+.lt-row:last-child{border-bottom:none;}
+.lt-row.hl{background:#fffbf0;}
+</style>
+
+<h2 class="sr-only">BrokersPost luxury UI screens showing register, landing page inventory, post inventory selection, post residential form, and broker dashboard with dark navy gold and cream theme</h2>
+
+<div class="page-wrap">
+
+<!-- ══ ROW 1: REGISTER + PUBLIC LANDING ══ -->
+<div>
+<div class="row-label">Public Facing — Register & Landing Inventory</div>
+<div class="row">
+
+<!-- REGISTER -->
+<div class="screen" style="width:300px;">
+  <div class="hdr">
+    <div class="hdr-left">
+      <i class="ti ti-building-estate" style="font-size:18px;color:var(--gold2)" aria-hidden="true"></i>
+      <div><div class="brand">Brokers<b>Post</b></div><div class="brand-sub">Verified Network</div></div>
+    </div>
+    <div class="hdr-av">PK</div>
+  </div>
+  <div class="body">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink);margin-bottom:3px">Register as a Broker</div>
+      <div style="font-size:11.5px;color:var(--muted);line-height:1.5">Sign up to manage and share your <strong>real estate listings</strong></div>
+    </div>
+    <div class="field"><i class="ti ti-user fi" aria-hidden="true"></i><input type="text" placeholder="Full Name"></div>
+    <div class="field"><i class="ti ti-phone fi" aria-hidden="true"></i><input type="tel" placeholder="+91 Mobile Number"></div>
+    <div class="field"><i class="ti ti-mail fi" aria-hidden="true"></i><input type="email" placeholder="Email Address"></div>
+    <div class="field"><i class="ti ti-map-pin fi" aria-hidden="true"></i><input type="text" placeholder="Location / City"></div>
+    <div class="field"><i class="ti ti-building fi" aria-hidden="true"></i><input type="text" placeholder="Office Address"></div>
+    <div class="field"><i class="ti ti-certificate fi" aria-hidden="true"></i><input type="text" placeholder="RERA No."><span class="field-opt">(optional)</span></div>
+    <div class="check-row"><div class="chk"><i class="ti ti-check" style="font-size:10px;color:var(--nav)" aria-hidden="true"></i></div><span>I agree to the <a href="#" class="terms-link">Terms &amp; Conditions</a></span></div>
+    <button class="btn-gold">Sign Up</button>
+    <button class="btn-outline">Already have an account — Login</button>
+    <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--muted)"><span style="background:rgba(201,168,76,0.12);border:0.5px solid rgba(201,168,76,0.3);color:var(--gold);padding:3px 12px;border-radius:20px;font-size:10px">Admin Login</span></div>
+  </div>
+</div>
+
+<!-- PUBLIC INVENTORY — TABLE VIEW -->
+<div class="screen" style="width:440px;">
+  <div class="hdr">
+    <div class="hdr-left">
+      <i class="ti ti-building-estate" style="font-size:18px;color:var(--gold2)" aria-hidden="true"></i>
+      <div><div class="brand">Brokers<b>Post</b></div><div class="brand-sub">Verified Network</div></div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+      <span style="font-size:10px;background:rgba(232,184,75,0.15);border:0.5px solid rgba(232,184,75,0.3);color:var(--gold2);padding:3px 10px;border-radius:12px;">Login</span>
+      <span style="font-size:10px;background:var(--gold2);color:var(--nav);padding:3px 10px;border-radius:12px;font-weight:500">Join Network</span>
+    </div>
+  </div>
+  <div class="pub-hero">
+    <div class="ph-eye">Verified Brokers Only · Live Inventory</div>
+    <div class="ph-title">Find Your Next Deal<br>with <em>Verified Brokers</em></div>
+    <div class="ph-search"><i class="ti ti-search" style="font-size:13px;color:rgba(255,255,255,0.35)" aria-hidden="true"></i><span class="ph-s-txt">Location, project, city…</span><span class="ph-city">All Cities ▾</span></div>
+  </div>
+  <div class="tab-row"><div class="tab on">Residential</div><div class="tab">Commercial</div></div>
+  <div class="chip-row">
+    <div class="chip on">All</div><div class="chip">For Sale</div><div class="chip">For Rent</div>
+    <div class="chip">For Lease</div><div class="chip">Wanted</div>
+  </div>
+  <div class="count-bar">
+    <span class="cb-cnt">214 listings across the network</span>
+    <div style="display:flex;gap:5px;align-items:center">
+      <div class="view-tog"><span class="vt"><i class="ti ti-layout-grid" style="font-size:11px" aria-hidden="true"></i></span><span class="vt on"><i class="ti ti-list" style="font-size:11px" aria-hidden="true"></i></span></div>
+      <span style="font-size:9.5px;background:var(--cream);border:0.5px solid var(--border);border-radius:6px;padding:3px 8px;color:var(--muted)"><i class="ti ti-adjustments-horizontal" style="font-size:10px" aria-hidden="true"></i> Filter</span>
+    </div>
+  </div>
+  <!-- TABLE -->
+  <div class="listing-list">
+    <div class="ll-hd-row">
+      <div class="th">#</div><div class="th">Location / Project</div><div class="th">Area</div><div class="th">Price</div><div class="th">Broker</div><div class="th">Connect</div>
+    </div>
+    <div class="ll-row hl">
+      <div><div class="cell-id">001</div><span class="pill p-sale" style="font-size:7.5px">Sale</span></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-blue" style="font-size:8px">Apartments</span></div><div class="cell-loc">Golf Course Road, Gurugram</div><div class="cell-proj">TDI Ourania · 3 BHK · Ready</div></div>
+      <div class="cell-area">1,400 Sq.Ft</div>
+      <div class="cell-price">₹1.68 Cr</div>
+      <div class="cell-broker"><div class="b-av-sm" style="background:#1e3a5f">PK</div><div class="b-nm-sm">Pawan K.</div></div>
+      <div><button class="con-btn-sm">Connect</button></div>
+    </div>
+    <div class="ll-row">
+      <div><div class="cell-id">002</div><span class="pill p-want" style="font-size:7.5px">Wanted</span></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-blue" style="font-size:8px">Apartments</span></div><div class="cell-loc">Golf Course Road, Gurugram</div><div class="cell-proj">TDI Ourania · 3 BHK</div></div>
+      <div class="cell-area">1,200 Sq.Ft</div>
+      <div class="cell-price">₹1.5 Cr</div>
+      <div class="cell-broker"><div class="b-av-sm" style="background:#c8962a">RS</div><div class="b-nm-sm">Rajesh S.</div></div>
+      <div><button class="con-btn-sm">Connect</button></div>
+    </div>
+    <div class="ll-row">
+      <div><div class="cell-id">003</div><span class="pill p-rent" style="font-size:7.5px">Rent</span></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-blue" style="font-size:8px">Apartments</span></div><div class="cell-loc">Sector 62, Noida</div><div class="cell-proj">Supertech Eco Village · 2 BHK</div></div>
+      <div class="cell-area">1,100 Sq.Ft</div>
+      <div class="cell-price">₹28K/mo</div>
+      <div class="cell-broker"><div class="b-av-sm" style="background:#166534">AM</div><div class="b-nm-sm">Anita M.</div></div>
+      <div><button class="con-btn-sm">Connect</button></div>
+    </div>
+    <div class="ll-row">
+      <div><div class="cell-id">004</div><span class="pill p-sale" style="font-size:7.5px">Sale</span></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-com" style="font-size:8px">Office</span></div><div class="cell-loc">Cyber City, Gurugram</div><div class="cell-proj">DLF Cyber Hub Tower B</div></div>
+      <div class="cell-area">1,500 Sq.Ft</div>
+      <div class="cell-price">₹3.45 Cr</div>
+      <div class="cell-broker"><div class="b-av-sm" style="background:#6d28d9">VS</div><div class="b-nm-sm">Vivek S.</div></div>
+      <div><button class="con-btn-sm">Connect</button></div>
+    </div>
+    <div class="ll-row">
+      <div><div class="cell-id">005</div><span class="pill p-want" style="font-size:7.5px">Wanted</span></div>
+      <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-orange" style="font-size:8px">Villa</span></div><div class="cell-loc">Golf Course Road, Gurugram</div><div class="cell-proj">DLF Phase 5 · 5 BHK</div></div>
+      <div class="cell-area">3,500 Sq.Ft</div>
+      <div class="cell-price">₹4.5 Cr</div>
+      <div class="cell-broker"><div class="b-av-sm" style="background:#b45309">PK2</div><div class="b-nm-sm">Priya K.</div></div>
+      <div><button class="con-btn-sm">Connect</button></div>
+    </div>
+    <div style="padding:7px 12px;background:var(--cream);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:6px;">
+      <span style="font-size:10px;color:var(--muted)">Showing 5 of 214 listings</span>
+      <span style="font-size:10px;color:var(--gold);font-weight:500;cursor:pointer">View all →</span>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ══ ROW 2: POST INVENTORY + RESIDENTIAL FORM ══ -->
+<div>
+<div class="row-label">Broker Dashboard — Post Inventory</div>
+<div class="row">
+
+<!-- POST INVENTORY TYPE SELECT -->
+<div class="screen" style="width:300px;">
+  <div class="hdr">
+    <div class="hdr-left">
+      <i class="ti ti-building-estate" style="font-size:16px;color:var(--gold2)" aria-hidden="true"></i>
+      <div><div class="brand" style="font-size:14px">Brokers<b>Post</b></div></div>
+    </div>
+    <div class="hdr-av">PK</div>
+  </div>
+  <div class="crumb">
+    <i class="ti ti-home" style="font-size:12px" aria-hidden="true"></i>
+    <span>Dashboard</span><span class="crumb-sep">›</span>
+    <span class="crumb-cur">Post Inventory</span>
+  </div>
+  <div class="body">
+    <div class="page-h">Post Inventory</div>
+    <div class="page-s">Select the inventory type to post a new listing.</div>
+    <div class="toggle-row">
+      <button class="tog-btn on">Residential</button>
+      <button class="tog-btn off">Commercial</button>
+    </div>
+    <div class="inv-cards">
+      <div class="inv-card">
+        <div class="inv-card-ico"><i class="ti ti-home" style="font-size:26px;color:var(--gold)" aria-hidden="true"></i></div>
+        <div class="inv-card-title">Residential</div>
+        <div class="inv-card-sub">Apartments, Low Rise Floors, Kothi/Villas, Plots</div>
+        <button class="inv-card-btn">Select</button>
+      </div>
+      <div class="inv-card">
+        <div class="inv-card-ico"><i class="ti ti-building" style="font-size:26px;color:var(--gold)" aria-hidden="true"></i></div>
+        <div class="inv-card-title">Commercial</div>
+        <div class="inv-card-sub">Offices, Shops, Warehouses, Standalone Buildings</div>
+        <button class="inv-card-btn">Select</button>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:10px 12px;background:var(--white);border:0.5px solid var(--border);border-radius:8px;">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:7px;font-weight:500">Or post a requirement</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+        <div style="border:0.5px solid var(--border);border-radius:7px;padding:8px 10px;text-align:center;cursor:pointer;">
+          <div style="font-size:11px;font-weight:500;color:var(--ink)">Wanted to Buy</div>
+          <div style="font-size:9.5px;color:var(--muted);margin-top:2px">Residential</div>
+        </div>
+        <div style="border:0.5px solid var(--border);border-radius:7px;padding:8px 10px;text-align:center;cursor:pointer;">
+          <div style="font-size:11px;font-weight:500;color:var(--ink)">Wanted to Lease</div>
+          <div style="font-size:9.5px;color:var(--muted);margin-top:2px">Commercial</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POST RESIDENTIAL FORM -->
+<div class="screen" style="width:340px;">
+  <div class="hdr">
+    <div class="hdr-left">
+      <i class="ti ti-building-estate" style="font-size:16px;color:var(--gold2)" aria-hidden="true"></i>
+      <div><div class="brand" style="font-size:14px">Brokers<b>Post</b></div></div>
+    </div>
+    <div class="hdr-av">PK</div>
+  </div>
+  <div class="crumb">
+    <i class="ti ti-home" style="font-size:12px" aria-hidden="true"></i>
+    <span>Dashboard</span><span class="crumb-sep">›</span>
+    <span>Post Inventory</span><span class="crumb-sep">›</span>
+    <span class="crumb-cur">Residential</span>
+  </div>
+  <div class="body">
+    <div class="page-h">Post Residential Inventory</div>
+    <div class="page-s">Enter details to create a new residential property listing.</div>
+    <div class="toggle-row" style="margin-bottom:10px">
+      <button class="tog-btn on">Residential Inventory</button>
+      <button class="tog-btn off">Commercial Inventory</button>
+    </div>
+    <div class="sub-toggle">
+      <button class="st-btn on">For Sale</button>
+      <button class="st-btn off">For Rent</button>
+    </div>
+    <div class="sec-lbl">Property Category</div>
+    <div class="radio-grid">
+      <div class="radio-item on"><div class="r-circle on"><div class="r-dot"></div></div>Apartments</div>
+      <div class="radio-item"><div class="r-circle"></div>Low Rise Floors</div>
+      <div class="radio-item"><div class="r-circle"></div>Villas / Kothis</div>
+      <div class="radio-item"><div class="r-circle"></div>Plots</div>
+    </div>
+    <div class="sec-lbl">Project / Society Name *</div>
+    <div class="sel-wrap">
+      <select><option>TDI Ourania, Gurugram</option><option>Supertech Eco Village</option><option>DLF Phase 5</option></select>
+      <span class="sel-chev"><i class="ti ti-chevron-down" style="font-size:13px" aria-hidden="true"></i></span>
+    </div>
+    <div class="sec-lbl">City *</div>
+    <div class="city-opts">
+      <div class="city-opt on"><div class="r-circle on" style="width:12px;height:12px"><div class="r-dot" style="width:5px;height:5px"></div></div>Gurugram</div>
+      <div class="city-opt"><div class="r-circle" style="width:12px;height:12px;border-color:var(--border)"></div>Delhi</div>
+      <div class="city-opt"><div class="r-circle" style="width:12px;height:12px;border-color:var(--border)"></div>Noida</div>
+      <div class="city-opt"><div class="r-circle" style="width:12px;height:12px;border-color:var(--border)"></div>Faridabad</div>
+    </div>
+    <div class="sec-lbl">Configuration</div>
+    <div class="config-row">
+      <button class="cf-btn on">1 BHK</button>
+      <button class="cf-btn off">2 BHK</button>
+      <button class="cf-btn off">3 BHK</button>
+      <button class="cf-btn off">4 BHK</button>
+      <button class="cf-btn off" style="font-size:10px">5+ ▾</button>
+    </div>
+    <div class="two-col">
+      <div><div class="inp-lbl">Super Area (Sq.Ft.) *</div><div class="inp-box" style="display:flex;align-items:center;gap:5px;"><i class="ti ti-ruler" style="font-size:13px;color:var(--muted)" aria-hidden="true"></i><span style="font-size:12px;color:var(--muted)">Enter area</span></div></div>
+      <div><div class="inp-lbl">Total Price *</div><div class="inp-box">₹ 1.68 Cr</div></div>
+    </div>
+    <div class="sec-lbl" style="display:flex;align-items:center;gap:5px">RERA No. <span style="font-size:10px;color:var(--muted);font-weight:400">(optional)</span></div>
+    <div class="field" style="margin-bottom:10px"><i class="ti ti-certificate fi" aria-hidden="true"></i><input type="text" placeholder="Enter RERA registration number"></div>
+    <div class="sec-lbl">Property Status</div>
+    <div class="status-row">
+      <div class="stat-opt on"><div class="r-circle on" style="width:13px;height:13px"><div class="r-dot" style="width:5px;height:5px"></div></div>Ready to Move</div>
+      <div class="stat-opt"><div class="r-circle" style="width:13px;height:13px;border-color:var(--border)"></div>Under Construction</div>
+    </div>
+    <button class="btn-gold">Post Listing</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ══ ROW 3: BROKER DASHBOARD ══ -->
+<div>
+<div class="row-label">Broker Dashboard — My Inventory Overview</div>
+<div class="row">
+<div class="screen" style="width:700px;">
+  <div class="dash-wrap" style="height:380px;">
+    <!-- SIDEBAR -->
+    <div class="dash-sb">
+      <div class="dash-sb-top">
+        <div class="dash-brand">Brokers<b>Post</b></div>
+        <div class="dash-tag">My Dashboard</div>
+      </div>
+      <div class="dsb-sec">
+        <div class="dsb-lbl">Residential</div>
+        <div class="dsb-item on"><div class="dsb-dot"></div><span>Available for Sale</span><div class="dsb-badge">2</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Available for Rental</span><div class="dsb-badge">1</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Wanted Purchase</span><div class="dsb-badge">1</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Wanted Rent</span><div class="dsb-badge">0</div></div>
+      </div>
+      <div class="dsb-sec">
+        <div class="dsb-lbl">Commercial</div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Available for Sale</span><div class="dsb-badge">1</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Available for Lease</span><div class="dsb-badge">0</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Wanted Purchase</span><div class="dsb-badge">0</div></div>
+        <div class="dsb-item"><div class="dsb-dot"></div><span>Wanted Lease</span><div class="dsb-badge">0</div></div>
+      </div>
+      <div class="dsb-sec">
+        <div class="dsb-lbl">Network</div>
+        <div class="dsb-item"><i class="ti ti-users" style="font-size:12px;opacity:.6" aria-hidden="true"></i><span>My Groups</span></div>
+        <div class="dsb-item"><i class="ti ti-arrows-exchange" style="font-size:12px;opacity:.6" aria-hidden="true"></i><span>Your Matches</span><div class="dsb-badge">5</div></div>
+      </div>
+      <div class="dsb-user">
+        <div class="dsb-av">PK</div>
+        <div><div class="dsb-name">Pawan Kumar</div><div class="dsb-role">Broker</div></div>
+      </div>
+    </div>
+    <!-- MAIN -->
+    <div class="dash-main">
+      <div class="dash-topbar">
+        <div class="dash-tb-title">Available for Sale — Residential</div>
+        <div class="dash-tb-search"><i class="ti ti-search" style="font-size:12px" aria-hidden="true"></i>Search listings…</div>
+        <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+          <span style="font-size:10px;background:var(--cream2);border:0.5px solid var(--border);border-radius:6px;padding:3px 9px;color:var(--muted);display:flex;align-items:center;gap:3px"><i class="ti ti-adjustments-horizontal" style="font-size:11px" aria-hidden="true"></i> Filter</span>
+          <span style="font-size:10px;background:var(--gold2);color:var(--nav);border:none;border-radius:6px;padding:4px 10px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:3px"><i class="ti ti-plus" style="font-size:11px" aria-hidden="true"></i> Add Listing</span>
+        </div>
+      </div>
+      <div class="dash-content">
+        <div class="dash-stat-row">
+          <div class="dsc"><div class="dsc-lbl">My Listings</div><div class="dsc-val">12</div><div class="dsc-sub">All sections</div></div>
+          <div class="dsc"><div class="dsc-lbl">Network</div><div class="dsc-val">214</div><div class="dsc-sub">Total inventory</div></div>
+          <div class="dsc"><div class="dsc-lbl">Matches</div><div class="dsc-val" style="color:var(--success)">5</div><div class="dsc-sub">Your deals</div></div>
+          <div class="dsc"><div class="dsc-lbl">Groups</div><div class="dsc-val">2</div><div class="dsc-sub">Assigned</div></div>
+        </div>
+        <div class="listing-tbl">
+          <div class="lt-hd">
+            <span class="lt-title">Available for Sale — Residential <span style="font-size:10px;color:var(--muted);font-weight:400">· 2 listings</span></span>
+            <button class="lt-btn"><i class="ti ti-plus" style="font-size:11px" aria-hidden="true"></i> Add Listing</button>
+          </div>
+          <div class="lt-hd-row">
+            <div class="lth">#</div><div class="lth">Sub-type · Location / Project</div><div class="lth">Area</div><div class="lth">Total Price</div><div class="lth">Status · Date</div>
+          </div>
+          <div class="lt-row hl">
+            <div><div class="cell-id">001</div><div style="font-size:7.5px;font-family:monospace;color:#c0b8a0">BEE35E</div></div>
+            <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-blue" style="font-size:8px">Apartments</span></div><div class="cell-loc">Golf Course Road · <span style="color:var(--gold);font-weight:500">TDI Ourania</span></div><div class="cell-proj">Gurugram · 3 BHK · East facing</div></div>
+            <div class="cell-area">1,400 Sq.Ft</div>
+            <div class="cell-price">₹ 1.68 Cr</div>
+            <div><span class="pill p-sale" style="font-size:8px">Ready</span><div style="font-size:9px;color:var(--muted);margin-top:2px">31/5/2026</div><div style="display:flex;gap:3px;margin-top:4px"><span style="background:var(--cream2);color:var(--muted);font-size:9px;padding:2px 7px;border-radius:4px;cursor:pointer">Edit</span><span style="background:var(--dbg);color:var(--danger,#991b1b);font-size:9px;padding:2px 7px;border-radius:4px;cursor:pointer">Del</span></div></div>
+          </div>
+          <div class="lt-row">
+            <div><div class="cell-id">002</div><div style="font-size:7.5px;font-family:monospace;color:#c0b8a0">A1B2C3</div></div>
+            <div><div style="display:flex;align-items:center;gap:4px;margin-bottom:2px"><span class="pill p-orange" style="font-size:8px">Low Rise Floor</span></div><div class="cell-loc">Sohna Road · <span style="color:var(--gold);font-weight:500">Vatika City</span></div><div class="cell-proj">Gurugram · 4 BHK · West facing</div></div>
+            <div class="cell-area">2,200 Sq.Ft</div>
+            <div class="cell-price">₹ 2.09 Cr</div>
+            <div><span class="pill p-sale" style="font-size:8px">Ready</span><div style="font-size:9px;color:var(--muted);margin-top:2px">20/5/2026</div><div style="display:flex;gap:3px;margin-top:4px"><span style="background:var(--cream2);color:var(--muted);font-size:9px;padding:2px 7px;border-radius:4px;cursor:pointer">Edit</span><span style="background:var(--dbg);color:var(--danger,#991b1b);font-size:9px;padding:2px 7px;border-radius:4px;cursor:pointer">Del</span></div></div>
+          </div>
+          <div style="padding:7px 12px;background:var(--cream);border-top:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:10px;color:var(--muted)">2 listings in this section</span>
+            <span style="font-size:10px;color:var(--gold);font-weight:500;cursor:pointer">+ Add another listing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+</div>

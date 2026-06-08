@@ -318,8 +318,88 @@ const ResidentialInventory = () => {
             </button>
           </div>
 
+          {/* Mobile Listing View */}
+          <div className="md:hidden space-y-4 pt-4 px-3 bg-[#faf7f2] flex-1">
+            {loading ? (
+              <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
+                <Loader2 size={40} className="animate-spin text-[#c8962a]" />
+                <p className="text-sm font-bold uppercase tracking-widest">Loading...</p>
+              </div>
+            ) : listings.length > 0 ? (
+              listings.map((listing, idx) => (
+                <div key={listing._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      {renderSubTypeBadge(listing.subType)}
+                      <div className="font-bold text-[#0f172a] text-sm mt-2">{listing.project || listing.location || 'N/A'}</div>
+                      <div className="text-[11px] text-slate-500 font-medium">{listing.location || 'N/A'} · {listing.city || 'Gurugram'}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-[#c8962a] text-sm">{formatTotalPrice(listing)}</div>
+                      <div className="text-[10px] font-mono text-slate-400 mt-1 uppercase">#{listing._id?.toString().slice(-6)}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 flex-wrap">
+                    <span className="px-2 py-1 bg-slate-50 rounded text-[10px] font-medium border border-slate-100">{formatArea(listing)}</span>
+                    {renderStatusBadge(listing)}
+                  </div>
+
+                  <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                    <div className="text-[10px] text-slate-400 font-medium">{formatDate(listing.createdAt)}</div>
+                    {user && listing.postedBy && user._id === (typeof listing.postedBy === 'object' ? listing.postedBy._id : listing.postedBy) ? (
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleRefreshClick(listing); }}
+                          className={`px-2.5 py-1 rounded border font-bold text-[10px] transition-all flex items-center justify-center ${
+                            listing.boostedAt 
+                              ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                              : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                          }`}
+                        >
+                          ↑ Boost
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedPosting(listing);
+                            setIsEditModalOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600 bg-white"
+                        >
+                          Edit
+                        </button>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPostingToDelete(listing);
+                            setIsDeleteModalOpen(true);
+                          }}
+                          className="px-2.5 py-1 rounded bg-[#8b1a1a] text-white text-[10px] font-bold"
+                        >
+                          Del
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="px-3 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase text-indigo-600 bg-indigo-50 border border-indigo-100">
+                        Network
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="py-24 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 bg-[#fefce8] rounded-full flex items-center justify-center mb-4">
+                  <span className="text-3xl opacity-60">📋</span>
+                </div>
+                <h3 className="text-sm font-serif font-bold text-black">No listings in this section</h3>
+              </div>
+            )}
+          </div>
+
           {/* Tabular Listing View */}
-          <div className="flex-1 overflow-x-auto">
+          <div className="hidden md:block flex-1 overflow-x-auto">
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
                 <Loader2 size={40} className="animate-spin text-[#c8962a]" />

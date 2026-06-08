@@ -155,7 +155,7 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
 
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">View:</span>
             <button
               onClick={() => setView('grid')}
@@ -193,67 +193,117 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             {view === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {listings.map((item) => (
-                  <div
-                    key={item._id}
-                    onClick={() => setSelectedItem(item)}
-                    className="bg-white rounded-[0.5rem] overflow-hidden border border-slate-200 hover:shadow-lg transition-all duration-300 flex flex-col cursor-pointer"
-                  >
-                    {/* Top Area (Beige or Image) */}
-                    <div className="h-36 bg-[#f5ede3] relative overflow-hidden flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
-                      {item.images && item.images.length > 0 ? (
-                        <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-20 h-20 flex items-center justify-center bg-transparent">
-                          <Home size={40} className="text-[#8c7a6b] stroke-1" />
-                        </div>
-                      )}
-                      <span className="absolute top-3 left-3 bg-[#dbeafe]/90 backdrop-blur text-[#1e40af] px-1 py-0 rounded-md text-[8px] font-medium">
-                        {item.vertical || 'Residential'}
-                      </span>
-                    </div>
-
-                    {/* Middle Area (White) */}
-                    <div className="p-1 pl-3 flex-1 flex flex-col bg-white">
-                      <p className="text-[9px] font-normal text-slate-400 uppercase tracking-wide mt-2 mb-2">
-                        {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
-                      </p>
-
-                      <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
-                        {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && !item.subType?.toUpperCase().includes('PLOT') ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
-                      </h3>
-
-                      <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-1">
-                        <MapPin size={12} className="text-pink-500" />
-                        <span className="truncate">{item.location}</span>
-                      </div>
-
-                      {/* Chips */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <div className="px-1 py-1 bg-slate-50 text-slate-600 rounded-md text-[9px] font-medium flex items-center gap-1 border border-slate-100 tracking-tighter">
-                          {item.size} {item.sizeUnit}
-                        </div>
-                        <div className="px-1 py-1 bg-emerald-50 text-emerald-600 rounded-md text-[9px] font-medium">
-                          Ready to Move
-                        </div>
-                        <div className="px-1 py-1 bg-blue-50 text-blue-600 rounded-md text-[9px] font-medium">
-                          FOR {item.intent?.toUpperCase() || 'RENT'}
+                  <React.Fragment key={item._id}>
+                    {/* ── MOBILE LISTING CARD ── */}
+                    <div onClick={() => setSelectedItem(item)} className="md:hidden bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm mb-4 cursor-pointer">
+                      <div className="h-32 bg-[#f5f0e8] relative overflow-hidden flex items-center justify-center">
+                        {item.images && item.images.length > 0 ? (
+                          <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover" />
+                        ) : (
+                          <Home size={32} className="text-[#c8962a]/40" />
+                        )}
+                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-white/90 backdrop-blur rounded text-[9px] font-bold text-[#1e3a5f] shadow-sm">
+                          {item.vertical || 'Residential'}
                         </div>
                       </div>
+                      <div className="p-3">
+                        <div className="flex justify-between items-start mb-1">
+                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
+                            {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
+                          </p>
+                          <span className="text-[10px] font-bold text-[#c8962a]">
+                            {item.postType === 'REQUIREMENT'
+                              ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
+                              : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
+                            }
+                          </span>
+                        </div>
+                        <h3 className="text-[13px] font-bold text-[#1e3a5f] mb-1">
+                          {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && !item.subType?.toUpperCase().includes('PLOT') ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
+                        </h3>
+                        <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-3">
+                          <MapPin size={10} className="text-pink-500" />
+                          <span className="truncate">{item.location}</span>
+                        </div>
+                        <div className="flex gap-2 mb-3">
+                          <div className="px-1.5 py-1 bg-slate-50 text-slate-600 rounded text-[9px] font-medium border border-slate-100">
+                            {item.size} {item.sizeUnit}
+                          </div>
+                          <div className="px-1.5 py-1 bg-emerald-50 text-emerald-600 rounded text-[9px] font-medium border border-emerald-100">
+                            Ready to Move
+                          </div>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                          <div className="text-[9px] text-slate-400 font-medium">By {item.postedBy?.name || 'Verified Broker'}</div>
+                          <button className="px-3 py-1.5 bg-[#1e3a5f] text-white rounded font-bold text-[10px]">
+                            Connect
+                          </button>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Bottom Area (Beige) */}
-                    <div className="p-4 bg-[#f5ede3] flex items-center justify-between">
-                      <div className="text-xs font-bold text-[#1e3a5f]">
-                        {item.postType === 'REQUIREMENT'
-                          ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
-                          : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
-                        }
+                    {/* ── DESKTOP LISTING CARD ── */}
+                    <div
+                      onClick={() => setSelectedItem(item)}
+                      className="hidden md:flex bg-white rounded-[0.5rem] overflow-hidden border border-slate-200 hover:shadow-lg transition-all duration-300 flex-col cursor-pointer"
+                    >
+                      {/* Top Area (Beige or Image) */}
+                      <div className="h-36 bg-[#f5ede3] relative overflow-hidden flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
+                        {item.images && item.images.length > 0 ? (
+                          <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-20 h-20 flex items-center justify-center bg-transparent">
+                            <Home size={40} className="text-[#8c7a6b] stroke-1" />
+                          </div>
+                        )}
+                        <span className="absolute top-3 left-3 bg-[#dbeafe]/90 backdrop-blur text-[#1e40af] px-1 py-0 rounded-md text-[8px] font-medium">
+                          {item.vertical || 'Residential'}
+                        </span>
                       </div>
-                      <button className="px-2 py-2 bg-[#1a365d] text-white rounded-lg text-[10px] font-bold hover:bg-[#c8962a] transition-colors tracking-wide">
-                        Connect
-                      </button>
+
+                      {/* Middle Area (White) */}
+                      <div className="p-1 pl-3 flex-1 flex flex-col bg-white">
+                        <p className="text-[9px] font-normal text-slate-400 uppercase tracking-wide mt-2 mb-2">
+                          {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
+                        </p>
+
+                        <h3 className="text-xs font-bold text-[#0f172a] mt-0.5 mb-2">
+                          {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && !item.subType?.toUpperCase().includes('PLOT') ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
+                        </h3>
+
+                        <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-1">
+                          <MapPin size={12} className="text-pink-500" />
+                          <span className="truncate">{item.location}</span>
+                        </div>
+
+                        {/* Chips */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="px-1 py-1 bg-slate-50 text-slate-600 rounded-md text-[9px] font-medium flex items-center gap-1 border border-slate-100 tracking-tighter">
+                            {item.size} {item.sizeUnit}
+                          </div>
+                          <div className="px-1 py-1 bg-emerald-50 text-emerald-600 rounded-md text-[9px] font-medium">
+                            Ready to Move
+                          </div>
+                          <div className="px-1 py-1 bg-blue-50 text-blue-600 rounded-md text-[9px] font-medium">
+                            FOR {item.intent?.toUpperCase() || 'RENT'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom Area (Beige) */}
+                      <div className="p-4 bg-[#f5ede3] flex items-center justify-between">
+                        <div className="text-xs font-bold text-[#1e3a5f]">
+                          {item.postType === 'REQUIREMENT'
+                            ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
+                            : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
+                          }
+                        </div>
+                        <button className="px-2 py-2 bg-[#1a365d] text-white rounded-lg text-[10px] font-bold hover:bg-[#c8962a] transition-colors tracking-wide">
+                          Connect
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </React.Fragment>
                 ))}
               </div>
             ) : (

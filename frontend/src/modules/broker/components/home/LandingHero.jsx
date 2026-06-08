@@ -66,6 +66,37 @@ const LandingHero = ({ onRegisterClick, config }) => {
 
   return (
     <>
+      {/* ── MOBILE LANDING HERO ── */}
+      <section className="md:hidden" style={{ background: '#0d1520', padding: '30px 20px 40px', position: 'relative', overflow: 'hidden' }}>
+        {/* Decorative blur */}
+        <div style={{ position: 'absolute', top: '10%', right: '-20%', width: 200, height: 200, background: 'rgba(200,150,42,0.15)', borderRadius: '50%', filter: 'blur(50px)' }} />
+        
+        <div style={{ position: 'relative', zIndex: 10 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.08)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: 20, padding: '4px 10px', fontSize: 10, fontWeight: 600, color: '#e8b84b', marginBottom: 16 }}>
+            <div className="w-1.5 h-1.5 rounded-full bg-[#c8962a] animate-pulse" />
+            <span>{config?.badge || 'Live Inventory Search'}</span>
+          </div>
+          
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, lineHeight: 1.2, fontWeight: 700, color: '#fff', marginBottom: 12 }}>
+            {config?.titlePart1 || "India's Most Trusted"}<br/>
+            <span style={{ color: '#e8b84b', fontStyle: 'italic' }}>{config?.titleHighlight || "Broker-to-Broker"}</span><br/>
+            {config?.titlePart2 || "Inventory Platform"}
+          </h1>
+          
+          <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 20 }}>
+            A private, verified community where professional real estate brokers share live inventory and requirements.
+          </p>
+          
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={onRegisterClick || (() => setIsRegisterModalOpen(true))} style={{ flex: 1, background: '#e8b84b', color: '#0d1520', border: 'none', borderRadius: 8, padding: '12px 0', fontSize: 12, fontWeight: 700, fontFamily: 'inherit' }}>
+              Register as Broker
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ── DESKTOP LANDING HERO ── */}
+      <div className="hidden md:block">
       <section className="relative px-6 lg:px-20 pt-12 pb-0 lg:pt-16 lg:pb-24 bg-[#FAF9F6] overflow-hidden">
         {/* Decorative Blur Background */}
         <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#c8962a]/5 blur-[120px] rounded-full pointer-events-none" />
@@ -282,6 +313,7 @@ const LandingHero = ({ onRegisterClick, config }) => {
           </div>
         </div>
       </section>
+      </div>
       {isRegisterModalOpen && (
         <RegisterModal
           isOpen={isRegisterModalOpen}
