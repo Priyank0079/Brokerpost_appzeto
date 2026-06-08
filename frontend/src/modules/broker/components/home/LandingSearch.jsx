@@ -85,7 +85,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 onFilterChange(updated);
               }}
               style={{ flex: 1, padding: '10px 0', fontSize: 11, fontWeight: 700, border: 'none', background: localFilters.vertical === 'RESIDENTIAL' ? '#1e3a5f' : '#fff', color: localFilters.vertical === 'RESIDENTIAL' ? '#fff' : '#1e3a5f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              🏡 Res
+              🏡 Residential
             </button>
             <div style={{ width: 1, background: '#e0d8cc' }} />
             <button onClick={() => {
@@ -94,7 +94,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                 onFilterChange(updated);
               }}
               style={{ flex: 1, padding: '10px 0', fontSize: 11, fontWeight: 700, border: 'none', background: localFilters.vertical === 'COMMERCIAL' ? '#1e3a5f' : '#fff', color: localFilters.vertical === 'COMMERCIAL' ? '#fff' : '#1e3a5f', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-              🏢 Com
+              🏢 Commercial
             </button>
           </div>
 

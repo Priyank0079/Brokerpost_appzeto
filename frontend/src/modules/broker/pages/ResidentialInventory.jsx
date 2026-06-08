@@ -260,7 +260,7 @@ const ResidentialInventory = () => {
   const config = getPageConfig();
 
   return (
-    <div className={`-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
+    <div className={`mx-0 md:-mx-6 lg:-mx-5 my-0 md:-my-6 lg:-my-5 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
       <div className="space-y-6 pb-10">
         <div>
           <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">{config.heading}</h1>

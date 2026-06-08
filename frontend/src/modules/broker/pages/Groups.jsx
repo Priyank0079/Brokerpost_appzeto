@@ -184,7 +184,7 @@ const Groups = () => {
   const leader = getLeaderInfoForGroup(selectedGroup);
 
   return (
-    <div className="-mx-4 md:-mx-6 lg:-mx-10 -my-4 md:-my-6 lg:-my-10 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf7f2] min-h-screen">
+    <div className="mx-0 md:-mx-6 lg:-mx-5 my-0 md:-my-6 lg:-my-5 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 bg-[#faf7f2] min-h-screen">
       <div className="space-y-6 pb-10">
         
         {/* Title and Subtitle - Hidden on mobile if inventory is shown */}

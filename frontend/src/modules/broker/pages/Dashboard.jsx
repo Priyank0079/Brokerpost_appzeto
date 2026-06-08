@@ -242,23 +242,75 @@ const Dashboard = () => {
 
         {(s.recentListings || []).slice(0, 6).map((post) => {
           const sub = getSubPill(post.subType);
-          const intent = getIntentPill(post.intent);
           const priceDisplay = post.totalAmount
-            ? `₹ ${Number(post.totalAmount).toLocaleString('en-IN')}`
-            : post.budgetMax ? `₹ ${Number(post.budgetMax).toLocaleString('en-IN')}` : 'On Req.';
+            ? `₹${Number(post.totalAmount).toLocaleString('en-IN')}`
+            : post.budgetMax ? `₹${Number(post.budgetMax).toLocaleString('en-IN')}` : 'On Req.';
+          
+          let bgClass = 'bg-slate-50 text-slate-600 border border-slate-100';
+          if (sub.cls === 'mob-p-blue') bgClass = 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]';
+          else if (sub.cls === 'mob-p-green') bgClass = 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]';
+          else if (sub.cls === 'mob-p-gold') bgClass = 'bg-[#e0e7ff] text-[#4338ca] border border-[#e0e7ff]';
+          else if (sub.cls === 'mob-p-orange') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+          else if (sub.cls === 'mob-p-purple') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+
+          const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
+          const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
+          const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
+          
+          const areaDisplay = post.size ? `${post.size} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : post.sizeUnit)}` : 'N/A';
+          const dateString = post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-GB') : 'N/A';
+
           return (
-            <div key={post._id} className="mob-listing-card"
+            <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 mb-3 mx-3 cursor-pointer"
               onClick={() => { setSelectedPosting(post); setIsEditModalOpen(true); }}
-              style={{ cursor: 'pointer' }}>
-              <div className="mob-lc-hd">
-                <span className={`mob-pill ${sub.cls}`}>{sub.label}</span>
-                <span className={`mob-pill ${intent.cls}`}>{intent.label}</span>
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className={`px-3 py-1 rounded-full text-[10.5px] font-bold tracking-tight whitespace-nowrap inline-block ${bgClass}`}>
+                    {sub.label}
+                  </span>
+                  <div className="font-bold text-[#0f172a] text-sm mt-2">{post.project || post.location || 'N/A'}</div>
+                  <div className="text-[11px] text-slate-500 font-medium">{post.location || 'N/A'} · {post.city || 'Gurugram'}</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold text-[#c8962a] text-sm">{priceDisplay}</div>
+                  <div className="text-[10px] font-mono text-slate-400 mt-1 uppercase">#{post._id?.toString().slice(-6)}</div>
+                </div>
               </div>
-              <div className="mob-lc-title">{post.location}{post.project ? ` · ${post.project}` : ''}</div>
-              <div className="mob-lc-sub">{post.bedrooms ? `${post.bedrooms} · ` : ''}{post.size ? `${Number(post.size).toLocaleString('en-IN')} Sq.Ft` : ''}{post.city ? ` · ${post.city}` : ''}</div>
-              <div className="mob-lc-ft">
-                <span className="mob-lc-price">{priceDisplay}</span>
-                <span style={{ background: '#e8b84b', color: '#0d1520', fontSize: 9.5, fontWeight: 700, padding: '3px 9px', borderRadius: 5 }}>View</span>
+              
+              <div className="flex gap-2 flex-wrap">
+                <span className="px-2 py-1 bg-slate-50 rounded text-[10px] font-medium border border-slate-100">{areaDisplay}</span>
+                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${statusBg}`}>
+                  {statusLabel}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                <div className="text-[10px] text-slate-400 font-medium">{dateString}</div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={(e) => handleRefreshClick(e, post._id)}
+                    className={`px-2.5 py-1 rounded border font-bold text-[10px] transition-all flex items-center justify-center ${
+                      post.boostedAt 
+                        ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                        : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                    }`}
+                  >
+                    ↑ Boost
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setSelectedPosting(post); setIsEditModalOpen(true); }}
+                    className="px-2.5 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600 bg-white"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setPostingToDelete(post); setIsDeleteModalOpen(true); }}
+                    className="px-2.5 py-1 rounded bg-[#8b1a1a] text-white text-[10px] font-bold"
+                  >
+                    Del
+                  </button>
+                </div>
               </div>
             </div>
           );

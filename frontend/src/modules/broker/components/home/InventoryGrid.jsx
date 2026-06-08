@@ -138,10 +138,10 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <section id="inventory-grid" className="bg-pink-50/30 pt-6 pb-10 px-0 md:px-6 lg:px-20 scroll-mt-10">
+    <section id="inventory-grid" className="bg-pink-50/30 pt-6 pb-10 px-4 md:px-6 lg:px-20 scroll-mt-10">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-10 gap-4 md:gap-6 border-b border-slate-200 pb-4 md:pb-8 px-4 md:px-0">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-10 gap-4 md:gap-6 border-b border-slate-200 pb-4 md:pb-8">
           <div className="space-y-0.5">
             <h2
               className="section-title text-left font-serif text-[#0d1b2a]"
@@ -155,13 +155,13 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
 
           </div>
 
-          <div className="hidden md:flex items-center gap-3">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">View:</span>
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-wider">View:</span>
             <button
               onClick={() => setView('grid')}
-              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${view === 'grid'
-                  ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              className={`flex items-center justify-center gap-1.5 md:gap-2 px-4 md:px-8 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all min-w-[80px] md:min-w-[120px] ${view === 'grid'
+                ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                 }`}
             >
               <Grid size={14} className="stroke-[3]" />
@@ -169,9 +169,9 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
             </button>
             <button
               onClick={() => setView('table')}
-              className={`flex items-center justify-center gap-2 px-8 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all min-w-[120px] ${view === 'table'
-                  ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
-                  : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
+              className={`flex items-center justify-center gap-1.5 md:gap-2 px-4 md:px-8 py-2 md:py-2.5 rounded-lg text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all min-w-[80px] md:min-w-[120px] ${view === 'table'
+                ? 'bg-[#1a365d] text-white border border-[#1a365d] shadow-sm'
+                : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                 }`}
             >
               <Table size={14} className="stroke-[3]" />
@@ -191,55 +191,13 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         ) : listings.length > 0 ? (
           <>
             {view === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 md:gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
                 {listings.map((item) => (
                   <React.Fragment key={item._id}>
-                    {/* ── MOBILE LISTING CARD ── */}
-                    <div onClick={() => setSelectedItem(item)} className="md:hidden mob-listing-card cursor-pointer">
-                      <div className="mob-lc-hd">
-                        <span className={`mob-pill ${
-                          !item.subType ? 'mob-p-gray' :
-                          item.subType.toLowerCase().includes('apart') ? 'mob-p-blue' :
-                          item.subType.toLowerCase().includes('office') ? 'mob-p-orange' :
-                          item.subType.toLowerCase().includes('plot') ? 'mob-p-green' :
-                          (item.subType.toLowerCase().includes('villa') || item.subType.toLowerCase().includes('kothi')) ? 'mob-p-gold' : 'mob-p-gray'
-                        }`}>
-                          {item.subType ? item.subType.replace('_', ' ') : 'Property'}
-                        </span>
-                        <span className={`mob-pill ${
-                          !item.intent ? 'mob-p-gray' :
-                          item.intent.toLowerCase().includes('sale') ? 'mob-p-green' :
-                          item.intent.toLowerCase().includes('rent') ? 'mob-p-blue' :
-                          item.intent.toLowerCase().includes('lease') ? 'mob-p-purple' :
-                          item.intent.toLowerCase().includes('purchase') ? 'mob-p-orange' : 'mob-p-gray'
-                        }`}>
-                          {item.postType === 'REQUIREMENT' ? 'Wanted' : (item.intent ? item.intent.charAt(0).toUpperCase() + item.intent.slice(1).toLowerCase() : 'Sale')}
-                        </span>
-                      </div>
-                      <div className="mob-lc-title">{item.location}{item.project ? ` · ${item.project}` : ''}</div>
-                      <div className="mob-lc-sub">{item.bedrooms ? `${item.bedrooms} · ` : ''}{item.size ? `${Number(item.size).toLocaleString('en-IN')} Sq.Ft` : ''}{item.city ? ` · ${item.city}` : ''}</div>
-                      <div className="mob-lc-sub mt-2 text-slate-500 font-medium">By: {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Verified Broker'}</div>
-                      
-                      <div className="mob-lc-ft mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <span className="mob-lc-price">
-                          {item.postType === 'REQUIREMENT'
-                            ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
-                            : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
-                          }
-                        </span>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }}
-                          className="px-4 py-1.5 bg-[#1a365d] text-white rounded-[4px] font-bold text-[10px]"
-                        >
-                          Connect
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* ── DESKTOP LISTING CARD ── */}
+                    {/* ── LISTING CARD ── */}
                     <div
                       onClick={() => setSelectedItem(item)}
-                      className="hidden md:flex bg-white rounded-[0.5rem] overflow-hidden border border-slate-200 hover:shadow-lg transition-all duration-300 flex-col cursor-pointer"
+                      className="flex bg-white rounded-[0.5rem] overflow-hidden border border-slate-200 hover:shadow-lg transition-all duration-300 flex-col cursor-pointer"
                     >
                       {/* Top Area (Beige or Image) */}
                       <div className="h-36 bg-[#f5ede3] relative overflow-hidden flex items-center justify-center cursor-default" onClick={(e) => e.stopPropagation()}>
