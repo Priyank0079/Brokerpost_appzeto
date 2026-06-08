@@ -138,10 +138,10 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <section id="inventory-grid" className="bg-pink-50/30 pt-6 pb-10 px-6 lg:px-20 scroll-mt-10">
+    <section id="inventory-grid" className="bg-pink-50/30 pt-6 pb-10 px-0 md:px-6 lg:px-20 scroll-mt-10">
       <div className="max-w-[1300px] mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6 border-b border-slate-200 pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-10 gap-4 md:gap-6 border-b border-slate-200 pb-4 md:pb-8 px-4 md:px-0">
           <div className="space-y-0.5">
             <h2
               className="section-title text-left font-serif text-[#0d1b2a]"
@@ -191,54 +191,48 @@ const InventoryGrid = ({ filters, onLoginRequired, config }) => {
         ) : listings.length > 0 ? (
           <>
             {view === 'grid' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 md:gap-8">
                 {listings.map((item) => (
                   <React.Fragment key={item._id}>
                     {/* ── MOBILE LISTING CARD ── */}
-                    <div onClick={() => setSelectedItem(item)} className="md:hidden bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm mb-4 cursor-pointer">
-                      <div className="h-32 bg-[#f5f0e8] relative overflow-hidden flex items-center justify-center">
-                        {item.images && item.images.length > 0 ? (
-                          <img src={item.images[0]} alt={item.project} className="w-full h-full object-cover" />
-                        ) : (
-                          <Home size={32} className="text-[#c8962a]/40" />
-                        )}
-                        <div className="absolute top-2 left-2 px-2 py-0.5 bg-white/90 backdrop-blur rounded text-[9px] font-bold text-[#1e3a5f] shadow-sm">
-                          {item.vertical || 'Residential'}
-                        </div>
+                    <div onClick={() => setSelectedItem(item)} className="md:hidden mob-listing-card cursor-pointer">
+                      <div className="mob-lc-hd">
+                        <span className={`mob-pill ${
+                          !item.subType ? 'mob-p-gray' :
+                          item.subType.toLowerCase().includes('apart') ? 'mob-p-blue' :
+                          item.subType.toLowerCase().includes('office') ? 'mob-p-orange' :
+                          item.subType.toLowerCase().includes('plot') ? 'mob-p-green' :
+                          (item.subType.toLowerCase().includes('villa') || item.subType.toLowerCase().includes('kothi')) ? 'mob-p-gold' : 'mob-p-gray'
+                        }`}>
+                          {item.subType ? item.subType.replace('_', ' ') : 'Property'}
+                        </span>
+                        <span className={`mob-pill ${
+                          !item.intent ? 'mob-p-gray' :
+                          item.intent.toLowerCase().includes('sale') ? 'mob-p-green' :
+                          item.intent.toLowerCase().includes('rent') ? 'mob-p-blue' :
+                          item.intent.toLowerCase().includes('lease') ? 'mob-p-purple' :
+                          item.intent.toLowerCase().includes('purchase') ? 'mob-p-orange' : 'mob-p-gray'
+                        }`}>
+                          {item.postType === 'REQUIREMENT' ? 'Wanted' : (item.intent ? item.intent.charAt(0).toUpperCase() + item.intent.slice(1).toLowerCase() : 'Sale')}
+                        </span>
                       </div>
-                      <div className="p-3">
-                        <div className="flex justify-between items-start mb-1">
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wide">
-                            {renderListingType(item)} · {item.subType?.replace('_', ' ') || 'Apartments'}
-                          </p>
-                          <span className="text-[10px] font-bold text-[#c8962a]">
-                            {item.postType === 'REQUIREMENT'
-                              ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
-                              : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
-                            }
-                          </span>
-                        </div>
-                        <h3 className="text-[13px] font-bold text-[#1e3a5f] mb-1">
-                          {item.bedrooms && item.vertical?.toUpperCase() !== 'COMMERCIAL' && !item.subType?.toUpperCase().includes('PLOT') ? `${item.bedrooms} BHK · ` : ''}{item.project || 'Unspecified Project'}
-                        </h3>
-                        <div className="flex items-center gap-1 text-slate-500 text-[10px] mb-3">
-                          <MapPin size={10} className="text-pink-500" />
-                          <span className="truncate">{item.location}</span>
-                        </div>
-                        <div className="flex gap-2 mb-3">
-                          <div className="px-1.5 py-1 bg-slate-50 text-slate-600 rounded text-[9px] font-medium border border-slate-100">
-                            {item.size} {item.sizeUnit}
-                          </div>
-                          <div className="px-1.5 py-1 bg-emerald-50 text-emerald-600 rounded text-[9px] font-medium border border-emerald-100">
-                            Ready to Move
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-slate-100">
-                          <div className="text-[9px] text-slate-400 font-medium">By {item.postedBy?.name || 'Verified Broker'}</div>
-                          <button className="px-3 py-1.5 bg-[#1e3a5f] text-white rounded font-bold text-[10px]">
-                            Connect
-                          </button>
-                        </div>
+                      <div className="mob-lc-title">{item.location}{item.project ? ` · ${item.project}` : ''}</div>
+                      <div className="mob-lc-sub">{item.bedrooms ? `${item.bedrooms} · ` : ''}{item.size ? `${Number(item.size).toLocaleString('en-IN')} Sq.Ft` : ''}{item.city ? ` · ${item.city}` : ''}</div>
+                      <div className="mob-lc-sub mt-2 text-slate-500 font-medium">By: {item.postedBy?.name || `${item.postedBy?.firstName || ''} ${item.postedBy?.lastName || ''}`.trim() || 'Verified Broker'}</div>
+                      
+                      <div className="mob-lc-ft mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span className="mob-lc-price">
+                          {item.postType === 'REQUIREMENT'
+                            ? (item.budgetMin && item.budgetMax ? `₹${formatNum(item.budgetMin)} - ₹${formatNum(item.budgetMax)}` : '₹ 0')
+                            : (item.totalAmount ? `₹${formatNum(item.totalAmount)}` : '₹ 0')
+                          }
+                        </span>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setSelectedItem(item); }}
+                          className="px-4 py-1.5 bg-[#1a365d] text-white rounded-[4px] font-bold text-[10px]"
+                        >
+                          Connect
+                        </button>
                       </div>
                     </div>
 
