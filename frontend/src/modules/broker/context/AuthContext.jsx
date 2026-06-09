@@ -129,18 +129,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const forgotPassword = async (phoneNumber) => {
+  const forgotPassword = async (email) => {
     try {
-      const response = await api.post('/auth/forgot-password', { phoneNumber });
+      const response = await api.post('/auth/forgot-password', { email });
       return response;
     } catch (err) {
       return { success: false, message: 'Server connection failed' };
     }
   };
 
-  const resetPassword = async (phoneNumber, otp, password) => {
+  const resetPassword = async (email, otp, password) => {
     try {
-      const response = await api.post('/auth/reset-password', { phoneNumber, otp, password });
+      const response = await api.post('/auth/reset-password', { email, otp, password });
       return response;
     } catch (err) {
       return { success: false, message: 'Server connection failed' };

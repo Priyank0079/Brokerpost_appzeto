@@ -12,14 +12,13 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [otpStep, setOtpStep] = useState(1); // 1: Email, 2: OTP
   
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1: Phone, 2: OTP & Password
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
+  const [maskedPhone, setMaskedPhone] = useState('');
 
   if (!isOpen) return null;
 
@@ -86,19 +85,19 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
     }
   };
 
-  const handleForgotPasswordSendOtp = async (e) => {
-    e.preventDefault();
-    if (!phoneNumber || phoneNumber.length !== 10) {
-      setError('Please enter a valid 10-digit phone number');
+  const handleForgotPasswordClick = async () => {
+    if (!email) {
+      setError('Please enter your email address first');
       return;
     }
     setLoading(true);
     setError('');
 
     try {
-      const result = await forgotPassword(phoneNumber);
+      const result = await forgotPassword(email);
       if (result.success) {
-        setForgotStep(2);
+        setIsForgotPassword(true);
+        setMaskedPhone(result.maskedPhone || 'your registered number');
       } else {
         setError(result.message);
       }
@@ -124,13 +123,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
     setError('');
 
     try {
-      const result = await resetPassword(phoneNumber, otp, newPassword);
+      const result = await resetPassword(email, otp, newPassword);
       if (result.success) {
         // Reset successful, go back to normal login
         setIsForgotPassword(false);
-        setForgotStep(1);
         setOtp('');
-        setPhoneNumber('');
         setNewPassword('');
         setError('');
       } else {
@@ -143,11 +140,9 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
     }
   };
 
-
   const resetView = () => {
     setIsForgotPassword(false);
     setIsOtpLogin(false);
-    setForgotStep(1);
     setOtpStep(1);
     setError('');
   };
@@ -173,11 +168,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           {/* Header */}
           <div className="">
             <h2 className="text-xl font-serif font-medium text-[#6b515f] mb-1">
-              {isForgotPassword ? (forgotStep === 2 ? 'Reset Password' : 'Forgot Password') :
+              {isForgotPassword ? 'Reset Password' :
                isOtpLogin && otpStep === 2 ? 'Verify OTP' : 'Broker Login'}
             </h2>
             <p className="text-[#738192] text-[11px] tracking-tight">
-              {isForgotPassword ? (forgotStep === 2 ? `OTP sent to ${phoneNumber}` : 'Enter registered phone number') :
+              {isForgotPassword ? `OTP sent to ${maskedPhone}` :
                isOtpLogin && otpStep === 2 ? `OTP sent to ${email}` : 'Access your inventory dashboard'}
             </p>
           </div>
@@ -193,43 +188,11 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
           )}
 
           {isForgotPassword ? (
-             forgotStep === 1 ? (
-               /* Forgot Password - Step 1: Phone */
-               <form onSubmit={handleForgotPasswordSendOtp} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
-                      PHONE NUMBER *
-                    </label>
-                    <input 
-                      type="tel"
-                      required
-                      maxLength={10}
-                      value={phoneNumber}
-                      onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                      placeholder="10-digit mobile number"
-                      className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-3 pt-2">
-                    <button 
-                      type="submit"
-                      disabled={loading || phoneNumber.length !== 10}
-                      className="w-full py-3.5 rounded-xl bg-[#c8962a] text-white text-sm font-bold shadow-xl shadow-[#c8962a]/20 hover:bg-[#b08425] transition-all flex items-center justify-center gap-2"
-                    >
-                      {loading ? 'Sending OTP...' : 'Get Reset OTP'}
-                    </button>
-                    <button 
-                      type="button"
-                      onClick={resetView}
-                      className="text-xs font-bold text-slate-400 hover:underline"
-                    >
-                      Back to Login
-                    </button>
-                  </div>
-               </form>
-             ) : (
                /* Forgot Password - Step 2: Reset */
                <form onSubmit={handleResetPassword} className="space-y-4">
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg text-[11px] text-amber-700 font-medium">
+                    OTP is sending on this number <span className="font-bold">{maskedPhone}</span>
+                  </div>
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                       ENTER 4-DIGIT OTP
@@ -267,14 +230,13 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     </button>
                     <button 
                       type="button"
-                      onClick={() => setForgotStep(1)}
+                      onClick={resetView}
                       className="text-xs font-bold text-slate-400 hover:underline"
                     >
-                      Change Phone Number
+                      Back to Login
                     </button>
                   </div>
                </form>
-             )
           ) : !isOtpLogin ? (
             /* Password Login Form */
             <form onSubmit={handlePasswordLogin} className="space-y-3">
@@ -294,14 +256,9 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <div className="flex justify-between items-center pr-1">
-                    <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
-                      PASSWORD *
-                    </label>
-                    <button type="button" onClick={() => setIsForgotPassword(true)} className="text-[10px] font-bold text-[#c8962a] hover:underline">
-                      Forgot?
-                    </button>
-                  </div>
+                  <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
+                    PASSWORD *
+                  </label>
                   <input 
                     type="password"
                     required
@@ -310,6 +267,16 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     placeholder="Your password"
                     className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
                   />
+                  <div className="flex justify-end pt-1">
+                    <button 
+                      type="button" 
+                      onClick={handleForgotPasswordClick} 
+                      disabled={loading}
+                      className="text-[10.5px] font-bold text-[#c8962a] hover:underline"
+                    >
+                      {loading ? 'Sending OTP...' : 'Forgot password?'}
+                    </button>
+                  </div>
                 </div>
               </div>
 

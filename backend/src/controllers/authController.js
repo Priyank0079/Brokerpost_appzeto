@@ -251,11 +251,11 @@ exports.verifyLoginOTP = async (req, res, next) => {
 // @access  Public
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const { phoneNumber } = req.body;
+    const { email } = req.body;
 
-    const user = await User.findOne({ phoneNumber });
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ success: false, message: 'No account found with this phone number' });
+      return res.status(404).json({ success: false, message: 'No account found with this email' });
     }
 
     const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
@@ -266,9 +266,16 @@ exports.forgotPassword = async (req, res, next) => {
     // Send SMS OTP
     await sendSMSOTP(user.phoneNumber, otp);
 
+    // Mask phone number (first 3 and last 3 digits)
+    const phoneStr = user.phoneNumber.toString();
+    const maskedPhone = phoneStr.length >= 6 
+      ? phoneStr.substring(0, 3) + '*'.repeat(phoneStr.length - 6) + phoneStr.substring(phoneStr.length - 3)
+      : '***';
+
     res.status(200).json({
       success: true,
-      message: 'OTP sent to your mobile number'
+      message: 'OTP sent to your registered mobile number',
+      maskedPhone
     });
   } catch (error) {
     next(error);
@@ -280,10 +287,10 @@ exports.forgotPassword = async (req, res, next) => {
 // @access  Public
 exports.resetPassword = async (req, res, next) => {
   try {
-    const { phoneNumber, otp, password } = req.body;
+    const { email, otp, password } = req.body;
 
     const user = await User.findOne({ 
-      phoneNumber, 
+      email, 
       otp, 
       otpExpires: { $gt: Date.now() } 
     });
