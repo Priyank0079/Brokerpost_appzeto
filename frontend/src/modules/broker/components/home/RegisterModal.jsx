@@ -162,8 +162,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
-    if (!otp || otp.length < 6) {
-      setAuthError('Please enter a valid 6-digit OTP');
+    if (!otp || otp.length < 4) {
+      setAuthError('Please enter a valid 4-digit OTP');
       return;
     }
 
@@ -203,7 +203,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               {step === 3 ? 'Verify Your Email' : 'Register as a Broker'}
             </h2>
             <p className="text-slate-500 text-[11px] font-normal">
-              {step === 3 ? `Enter the OTP sent to ${formData.email}` : 'Join the verified broker network — no brokerage charged'}
+              {step === 3 ? `Enter the OTP sent to ${formData.phoneNumber}` : 'Join the verified broker network — no brokerage charged'}
             </p>
             <hr className="border-[#ddd6c8] -mx-8 mt-4" />
           </div>
@@ -508,9 +508,9 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
             /* Step 3: OTP Verification */
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
                <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg flex gap-3">
-                <span className="text-lg">📧</span>
+                <span className="text-lg">📱</span>
                 <p className="text-xs text-amber-700 font-bold leading-relaxed">
-                  Check your email for a 6-digit verification code. (Development: Use 123456)
+                  Check your phone for a 4-digit verification SMS.
                 </p>
               </div>
 
@@ -521,10 +521,10 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   </label>
                   <input 
                     type="text"
-                    maxLength={6}
+                    maxLength={4}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                    placeholder="000000"
+                    placeholder="0000"
                     className="w-full px-4 py-4 bg-[#fdf8f3] border border-transparent rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-center text-2xl font-black tracking-[0.5em] text-[#1a365d] placeholder:text-slate-200 placeholder:font-normal"
                   />
                 </div>
@@ -539,8 +539,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   </button>
                   <button 
                     type="submit"
-                    disabled={verifying || otp.length < 6}
-                    className={`px-10 py-3 rounded-lg bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${verifying || otp.length < 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    disabled={verifying || otp.length < 4}
+                    className={`px-10 py-3 rounded-lg bg-[#c8962a] text-[#0F172A] text-sm font-black hover:bg-[#b48c35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${verifying || otp.length < 4 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
                     {verifying ? <Loader2 size={16} className="animate-spin" /> : 'Verify & Finish'}
                   </button>

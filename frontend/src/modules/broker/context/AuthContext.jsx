@@ -129,6 +129,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const forgotPassword = async (phoneNumber) => {
+    try {
+      const response = await api.post('/auth/forgot-password', { phoneNumber });
+      return response;
+    } catch (err) {
+      return { success: false, message: 'Server connection failed' };
+    }
+  };
+
+  const resetPassword = async (phoneNumber, otp, password) => {
+    try {
+      const response = await api.post('/auth/reset-password', { phoneNumber, otp, password });
+      return response;
+    } catch (err) {
+      return { success: false, message: 'Server connection failed' };
+    }
+  };
+
   const updateUser = (newData) => {
     setUser(newData);
     localStorage.setItem(userKey, JSON.stringify(newData));
@@ -157,7 +175,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, sendLoginOTP, loginWithOTP, register, verifyOTP, logout, adminLogin, loading, checkAuth, updateUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, sendLoginOTP, loginWithOTP, register, verifyOTP, forgotPassword, resetPassword, logout, adminLogin, loading, checkAuth, updateUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

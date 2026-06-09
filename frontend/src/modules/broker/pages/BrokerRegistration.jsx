@@ -111,7 +111,7 @@ const BrokerRegistration = () => {
 
   const validateOTP = () => {
     const newErrors = {};
-    if (!otpData.otp || otpData.otp.length !== 6) newErrors.otp = 'Enter 6-digit OTP';
+    if (!otpData.otp || otpData.otp.length !== 4) newErrors.otp = 'Enter 4-digit OTP';
     if (!otpData.password || otpData.password.length < 6) newErrors.password = 'Min 6 characters';
     if (otpData.password !== otpData.confirmPassword) newErrors.confirmPassword = 'Passwords mismatch';
     

@@ -3,6 +3,7 @@ const Admin = require('../models/Admin');
 
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/sendEmail');
+const sendSMSOTP = require('../utils/sendSMS');
 const crypto = require('crypto');
 const Group = require('../models/Group');
 const Notification = require('../models/Notification');
@@ -55,7 +56,7 @@ exports.register = async (req, res, next) => {
       await User.deleteOne({ _id: userExists._id });
     }
 
-    const otp = '123456'; // Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
     const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     const user = await User.create({
@@ -100,11 +101,14 @@ exports.register = async (req, res, next) => {
     }
     */
 
-    // For development: Return success without sending email
+    // Send SMS OTP
+    await sendSMSOTP(user.phoneNumber, otp);
+
     res.status(201).json({
       success: true,
-      message: 'OTP generated (Static: 123456)',
-      email: user.email
+      message: 'OTP sent to mobile number',
+      email: user.email,
+      phoneNumber: user.phoneNumber
     });
   } catch (error) {
     next(error);
@@ -177,15 +181,19 @@ exports.sendLoginOTP = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Account exists but email not verified' });
     }
 
-    const otp = '123456'; // Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
     user.otp = otp;
     user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
+    // Send SMS OTP
+    await sendSMSOTP(user.phoneNumber, otp);
+
     res.status(200).json({
       success: true,
-      message: 'OTP sent to email (Static: 123456)',
-      email: user.email
+      message: 'OTP sent to mobile number',
+      email: user.email,
+      phoneNumber: user.phoneNumber
     });
   } catch (error) {
     next(error);
@@ -232,6 +240,66 @@ exports.verifyLoginOTP = async (req, res, next) => {
         phoneNumber: user.phoneNumber,
         profileImage: user.profileImage
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Forgot Password - Send OTP
+// @route   POST /api/v1/auth/forgot-password
+// @access  Public
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No account found with this phone number' });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save({ validateBeforeSave: false });
+
+    // Send SMS OTP
+    await sendSMSOTP(user.phoneNumber, otp);
+
+    res.status(200).json({
+      success: true,
+      message: 'OTP sent to your mobile number'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Reset Password
+// @route   POST /api/v1/auth/reset-password
+// @access  Public
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { phoneNumber, otp, password } = req.body;
+
+    const user = await User.findOne({ 
+      phoneNumber, 
+      otp, 
+      otpExpires: { $gt: Date.now() } 
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Invalid or expired OTP' });
+    }
+
+    user.password = password;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset successfully'
     });
   } catch (error) {
     next(error);
