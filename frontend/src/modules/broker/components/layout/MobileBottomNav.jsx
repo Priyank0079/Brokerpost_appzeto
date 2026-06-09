@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, List, Globe, ArrowLeftRight, User } from 'lucide-react';
+import { LayoutDashboard, Users, Globe, ArrowLeftRight, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const MobileBottomNav = ({ matchCount = 0, onAuthRequired }) => {
@@ -10,7 +10,7 @@ const MobileBottomNav = ({ matchCount = 0, onAuthRequired }) => {
 
   const tabs = [
     { label: 'Home', icon: <LayoutDashboard />, to: '/dashboard', match: ['/dashboard'] },
-    { label: 'Listings', icon: <List />, to: '/residential', match: ['/residential', '/commercial', '/my-listings', '/my-requirements'] },
+    { label: 'Group', icon: <Users />, to: '/groups', match: ['/groups'] },
     { label: 'Public', icon: <Globe />, to: '/', match: ['/'] },
     { label: 'Matches', icon: <ArrowLeftRight />, to: '/matches', match: ['/matches'], badge: matchCount },
     { label: 'Profile', icon: <User />, to: '/profile', match: ['/profile', '/settings'] },

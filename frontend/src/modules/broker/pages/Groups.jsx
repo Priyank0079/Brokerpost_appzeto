@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Users, Phone, ArrowUpRight, Loader2 } from 'lucide-react';
+import { Search, Users, Phone, ArrowUpRight, Loader2, X } from 'lucide-react';
 import { getGroups } from '../services/groupService';
 import { getPostings } from '../services/postingService';
+import { useAuth } from '../context/AuthContext';
 
 const Groups = () => {
+  const { user } = useAuth();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState(null);
@@ -13,6 +15,8 @@ const Groups = () => {
   const [listingsLoading, setListingsLoading] = useState(false);
   const [groupSearch, setGroupSearch] = useState('');
   const [showMobileInventory, setShowMobileInventory] = useState(false);
+  const [showMembers, setShowMembers] = useState(false);
+  const [selectedMemberFilter, setSelectedMemberFilter] = useState(null);
 
   const fetchGroups = async () => {
     setLoading(true);
@@ -51,6 +55,8 @@ const Groups = () => {
 
   useEffect(() => {
     if (selectedGroup) {
+      setShowMembers(false);
+      setSelectedMemberFilter(null);
       fetchGroupListings(selectedGroup._id);
     }
   }, [selectedGroup]);
@@ -167,6 +173,10 @@ const Groups = () => {
 
   // Filter listings client side based on the search bar
   const filteredListings = listings.filter(item => {
+    // Member filter
+    if (selectedMemberFilter && item.postedBy?._id !== selectedMemberFilter) return false;
+
+    // Search term filter
     const term = groupSearch.toLowerCase().trim();
     if (!term) return true;
     return (
@@ -200,7 +210,8 @@ const Groups = () => {
         <div className={`md:hidden flex flex-col gap-4 ${showMobileInventory ? 'hidden' : 'flex'}`}>
           {groups.map((g, idx) => {
             const grpLeader = getLeaderInfoForGroup(g);
-            const members = g.members || [];
+            // Filter out current user for display purposes
+            const members = (g.members || []).filter(m => !user || m._id !== user._id && m !== user._id);
             const displayMembers = members.slice(0, 4);
             const extraMembers = members.length > 4 ? members.length - 4 : 0;
             const bgClass = idx % 2 === 0 ? 'bg-[#1e3a5f]' : 'bg-[#0f766e]';
@@ -287,7 +298,7 @@ const Groups = () => {
           {selectedGroup ? (
             <div className="tbl-wrapper shadow-sm flex flex-col">
               {/* Card Header (Dynamic Group Metadata & Members) */}
-              <div className="card-head flex items-center justify-between border-b border-slate-200 px-[18px] py-[12px] gap-4">
+              <div className="card-head flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 px-[18px] py-[12px] gap-4">
                 <div className="space-y-1">
                   <h2 className="text-[13px] font-bold text-[#1e3a5f] uppercase tracking-wide">
                     {selectedGroup.name}
@@ -310,15 +321,51 @@ const Groups = () => {
                 </div>
   
                 {/* Members Pill list */}
-                <div className="flex max-w-full md:max-w-md" style={{ flexWrap: 'wrap', gap: '8px' }}>
-                  {selectedGroup.members?.map((member) => (
-                    <span 
-                      key={member._id}
-                      className="px-3.5 py-1 bg-[#eff6ff] border border-[#dbeafe] text-[11px] font-bold text-[#1d4ed8] rounded-full tracking-tight"
+                <div className="flex shrink-0">
+                  {!showMembers ? (
+                    <button 
+                      onClick={() => setShowMembers(true)}
+                      className="px-4 py-1.5 bg-[#fdf8f3] border border-[#ddd6c8] text-[#c8962a] text-[11px] font-bold rounded-full hover:bg-[#faf7f2] transition-colors shadow-sm"
                     >
-                      {member.firstName}
-                    </span>
-                  ))}
+                      View Members
+                    </button>
+                  ) : (
+                    <div className="flex max-w-full md:max-w-md" style={{ flexWrap: 'wrap', gap: '8px', justifyContent: 'flex-start' }}>
+                      <button 
+                        onClick={() => setSelectedMemberFilter(null)}
+                        className={`px-3.5 py-1 text-[11px] font-bold rounded-full tracking-tight cursor-pointer transition-all ${
+                          !selectedMemberFilter 
+                            ? 'bg-[#c8962a] text-white shadow-md' 
+                            : 'bg-[#faf7f2] border border-[#ddd6c8] text-slate-500 hover:bg-slate-100'
+                        }`}
+                      >
+                        All
+                      </button>
+                      {(selectedGroup.members || []).filter(m => !user || m._id !== user._id).map((member) => (
+                        <button 
+                          key={member._id}
+                          onClick={() => setSelectedMemberFilter(member._id)}
+                          className={`px-3.5 py-1 text-[11px] font-bold rounded-full tracking-tight cursor-pointer transition-all ${
+                            selectedMemberFilter === member._id 
+                              ? 'bg-[#1e3a5f] text-white shadow-md' 
+                              : 'bg-[#eff6ff] border border-[#dbeafe] text-[#1d4ed8] hover:bg-[#dbeafe]'
+                          }`}
+                        >
+                          {member.firstName} {member.lastName || ''}
+                        </button>
+                      ))}
+                      <button 
+                        onClick={() => {
+                          setShowMembers(false);
+                          setSelectedMemberFilter(null);
+                        }}
+                        className="w-6 h-6 flex items-center justify-center bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-colors shrink-0 ml-1 self-center shadow-sm"
+                        title="Close members list"
+                      >
+                        <X size={12} strokeWidth={3} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 

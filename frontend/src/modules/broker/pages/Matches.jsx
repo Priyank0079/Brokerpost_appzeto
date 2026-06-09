@@ -172,7 +172,7 @@ const Matches = () => {
         <div style={{ background: '#fff', borderBottom: '0.5px solid #e0d8cc', padding: '6px 12px 4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e3a5f' }}>Your Matches</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e3a5f' }}>My Matches</div>
               <div style={{ fontSize: 9, color: '#6b7060' }}>{stats.total} results · {stats.strong} strong</div>
             </div>
             <span style={{ background: '#dcfce7', color: '#166534', fontSize: 8.5, fontWeight: 700, padding: '3px 9px', borderRadius: 20 }}>Live</span>
@@ -434,10 +434,10 @@ const Matches = () => {
                               <div className="text-xs text-slate-800 leading-snug mb-1">
                                 {hlProj(oProj, projCommon)}
                               </div>
-                              {oProj ? (
+                              {m.projMatched ? (
                                 <span className="inline-block px-1.5 py-0.5 rounded-sm bg-green-100 text-green-800 text-[9px] font-bold">◈ Project matched</span>
                               ) : (
-                                <span className="text-[10px] text-slate-400">—</span>
+                                <span className="text-[9px] text-slate-400 italic">{oProj ? 'Not matched' : '—'}</span>
                               )}
                             </div>
                             {/* Broker */}

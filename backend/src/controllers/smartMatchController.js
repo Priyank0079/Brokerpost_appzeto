@@ -13,7 +13,9 @@ const intentMatchMap = {
 
 // Utils
 const norm = (s) => (s || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
-const kw = (s) => norm(s).split(' ').filter(w => w.length > 2);
+const stopwords = ['sector', 'sec', 'phase', 'ph', 'block', 'pocket', 'the', 'of', 'in', 'and'];
+const kw = (s) => norm(s).split(' ').filter(w => w.length > 0 && !stopwords.includes(w));
+const extractNumbers = (s) => (norm(s).match(/\d+/g) || []).join('');
 
 const matchRule = (myL, other) => {
   // MANDATORY: Sub-type must match exactly
@@ -23,8 +25,8 @@ const matchRule = (myL, other) => {
   // Keyword overlap
   const locA = kw(myL.location);
   const locB = kw(other.location);
-  const locCommon = locA.filter(w => locB.some(v => v === w || v.startsWith(w) || w.startsWith(v)));
-
+  let locCommon = locA.filter(w => locB.some(v => v === w || v.startsWith(w) || w.startsWith(v)));
+  
   const projA = kw(myL.project || '');
   const projB = kw(other.project || '');
   let projCommon = [];
@@ -32,10 +34,29 @@ const matchRule = (myL, other) => {
     projCommon = projA.filter(w => projB.some(v => v === w || v.startsWith(w) || w.startsWith(v)));
   }
 
-  const locMatched = locCommon.length > 0;
-  const projMatched = projCommon.length > 0;
+  // Strict Number Matching logic: If both strings have numbers, the numbers MUST match.
+  const locNumA = extractNumbers(myL.location);
+  const locNumB = extractNumbers(other.location);
+  let locMatched = locCommon.length > 0;
+  if (locNumA && locNumB && locNumA !== locNumB) {
+    locMatched = false; // e.g., Sector 84 != Sector 66
+    locCommon = [];
+  }
 
-  // MANDATORY: at least one of location or project must match
+  const projNumA = extractNumbers(myL.project || '');
+  const projNumB = extractNumbers(other.project || '');
+  let projMatched = projCommon.length > 0;
+  if (projNumA && projNumB && projNumA !== projNumB) {
+    projMatched = false;
+    projCommon = [];
+  }
+
+  // MANDATORY RULES:
+  // If both have projects specified, they MUST match.
+  if (myL.project && other.project && !projMatched) return null;
+  // If both have locations specified, they MUST match.
+  if (myL.location && other.location && !locMatched) return null;
+  // Fallback: at least one of location or project must match
   if (!locMatched && !projMatched) return null;
 
   // Score calculation (sub-type already matched = base 20 pts)

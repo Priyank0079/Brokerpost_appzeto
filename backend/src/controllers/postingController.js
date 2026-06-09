@@ -177,14 +177,26 @@ exports.getMyPostings = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'User context missing' });
     }
 
-    const { postType, intent, subType, vertical, isActive, page = 1, limit = 20 } = req.query;
+    const { postType, intent, subType, vertical, isActive, search, page = 1, limit = 20 } = req.query;
 
     const filter = { postedBy: req.user._id };
 
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
-    if (subType)            filter.subType            = new RegExp(`^${subType}$`, 'i');
+    if (subType)            filter.subType            = new RegExp(subType, 'i');
     if (vertical)           filter.vertical           = vertical;
+
+    if (search) {
+      const searchRegex = { $regex: search.trim(), $options: 'i' };
+      filter.$or = [
+        { location: searchRegex },
+        { project: searchRegex },
+        { city: searchRegex },
+        { subType: searchRegex },
+        { $expr: { $regexMatch: { input: { $toString: '$_id' }, regex: search.trim(), options: 'i' } } }
+      ];
+    }
+
     // Allow fetching inactive postings for "my postings" view
     if (isActive !== undefined) filter.isActive = isActive === 'true';
 

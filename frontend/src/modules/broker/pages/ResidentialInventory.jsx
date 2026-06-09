@@ -20,6 +20,14 @@ const ResidentialInventory = () => {
   const [showSubTypes, setShowSubTypes] = useState(false);
   const [selectedSubType, setSelectedSubType] = useState('All Sub-types');
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState(() => {
+    return window.innerWidth < 768 ? 'grid' : 'table';
+  });
+  
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 8;
   
   // Edit State
   const [selectedPosting, setSelectedPosting] = useState(null);
@@ -83,6 +91,8 @@ const ResidentialInventory = () => {
       const params = {
         vertical: 'RESIDENTIAL',
         intent: intent,
+        page: currentPage,
+        limit: limit
       };
       if (selectedSubType !== 'All Sub-types') {
         params.subType = selectedSubType;
@@ -94,6 +104,7 @@ const ResidentialInventory = () => {
       const result = await getMyPostings(params);
       if (result.success) {
         setListings(result.data);
+        setTotalPages(result.pages || 1);
       }
     } catch (err) {
       console.error('Failed to fetch listings:', err);
@@ -103,8 +114,12 @@ const ResidentialInventory = () => {
   };
 
   useEffect(() => {
-    fetchListings();
+    setCurrentPage(1);
   }, [intent, selectedSubType, debouncedSearch]);
+
+  useEffect(() => {
+    fetchListings();
+  }, [currentPage, intent, selectedSubType, debouncedSearch]);
 
   const handleConfirmDelete = async () => {
     if (!postingToDelete) return;
@@ -259,6 +274,30 @@ const ResidentialInventory = () => {
 
   const config = getPageConfig();
 
+  const renderPagination = () => {
+    return (
+      <div className="flex items-center justify-center gap-3 mt-6 mb-2">
+        <button
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-[#c8962a] hover:border-[#c8962a] disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <span className="text-[11px] font-bold text-slate-600 px-4">
+          Page {currentPage} of {Math.max(1, totalPages)}
+        </span>
+        <button
+          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          disabled={currentPage >= totalPages}
+          className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-[#c8962a] hover:border-[#c8962a] disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className={`mx-0 md:-mx-6 lg:-mx-5 my-0 md:-my-6 lg:-my-5 px-4 md:px-6 lg:px-10 py-4 md:py-6 lg:py-10 ${config.bg} min-h-screen transition-colors duration-300`}>
       <div className="space-y-6 pb-10">
@@ -308,26 +347,52 @@ const ResidentialInventory = () => {
               </div>
 
               <span className="text-[11px] text-slate-500 font-bold">{listings.length} listings</span>
+              
+              {(searchTerm || selectedSubType !== 'All Sub-types') && (
+                <button 
+                  onClick={() => { setSearchTerm(''); setSelectedSubType('All Sub-types'); }}
+                  className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap ml-2"
+                >
+                  Reset Filters
+                </button>
+              )}
             </div>
             
-            <button 
-              onClick={() => setIsPostModalOpen(true)}
-              className="w-full sm:w-auto px-4 py-2.5 sm:py-2.5 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-black flex items-center justify-center gap-2 shadow-lg shadow-[#c8962a]/20 transition-all"
-            >
-              <Plus size={14} /> Add Listing
-            </button>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-1 bg-[#faf7f2] border border-slate-200 rounded-lg p-1 shrink-0">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                </button>
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-1.5 rounded transition-all ${viewMode === 'table' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                </button>
+              </div>
+              <button 
+                onClick={() => setIsPostModalOpen(true)}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-[#c8962a] hover:bg-[#B48C35] text-white rounded-lg text-[11px] font-black flex items-center justify-center gap-2 shadow-lg shadow-[#c8962a]/20 transition-all"
+              >
+                <Plus size={14} /> Add Listing
+              </button>
+            </div>
           </div>
 
-          {/* Mobile Listing View */}
-          <div className="md:hidden space-y-4 pt-4 px-3 bg-[#faf7f2] flex-1">
+          {/* Listing View */}
+          {viewMode === 'grid' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-4 px-3 pb-4 bg-[#faf7f2] flex-1">
             {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
+              <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3 col-span-full">
                 <Loader2 size={40} className="animate-spin text-[#c8962a]" />
                 <p className="text-sm font-bold uppercase tracking-widest">Loading...</p>
               </div>
             ) : listings.length > 0 ? (
               listings.map((listing, idx) => (
-                <div key={listing._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3">
+                <div key={listing._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 h-full cursor-pointer hover:shadow-md transition-all" onClick={() => { setSelectedPosting(listing); setIsEditModalOpen(true); }}>
                   <div className="flex justify-between items-start">
                     <div>
                       {renderSubTypeBadge(listing.subType)}
@@ -345,7 +410,7 @@ const ResidentialInventory = () => {
                     {renderStatusBadge(listing)}
                   </div>
 
-                  <div className="flex justify-between items-center pt-3 border-t border-slate-100">
+                  <div className="flex justify-between items-center pt-3 mt-auto border-t border-slate-100">
                     <div className="text-[10px] text-slate-400 font-medium">{formatDate(listing.createdAt)}</div>
                     {user && listing.postedBy && user._id === (typeof listing.postedBy === 'object' ? listing.postedBy._id : listing.postedBy) ? (
                       <div className="flex gap-2">
@@ -389,17 +454,17 @@ const ResidentialInventory = () => {
                 </div>
               ))
             ) : (
-              <div className="py-24 flex flex-col items-center justify-center text-center">
+              <div className="py-24 flex flex-col items-center justify-center text-center col-span-full">
                 <div className="w-16 h-16 bg-[#fefce8] rounded-full flex items-center justify-center mb-4">
                   <span className="text-3xl opacity-60">📋</span>
                 </div>
                 <h3 className="text-sm font-serif font-bold text-black">No listings in this section</h3>
               </div>
             )}
+            {listings.length > 0 && renderPagination()}
           </div>
-
-          {/* Tabular Listing View */}
-          <div className="hidden md:block flex-1 overflow-x-auto">
+          ) : (
+          <div className="flex-1 overflow-x-auto p-4">
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
                 <Loader2 size={40} className="animate-spin text-[#c8962a]" />
@@ -511,7 +576,7 @@ const ResidentialInventory = () => {
                 </tbody>
               </table>
             ) : (
-              <div className="py-24 flex flex-col items-center justify-center text-center">
+              <div className="py-24 flex flex-col items-center justify-center text-center col-span-full">
                 <div className="w-20 h-20 bg-[#fefce8] rounded-full flex items-center justify-center mb-6">
                   <span className="text-4xl opacity-60">📋</span>
                 </div>
@@ -519,7 +584,9 @@ const ResidentialInventory = () => {
                 <p className="text-slate-400 text-xs mt-2">Try changing filters or add your first listing.</p>
               </div>
             )}
+            {listings.length > 0 && renderPagination()}
           </div>
+          )}
         </div>
 
         {/* Dynamic Add/Edit Listing Modal */}

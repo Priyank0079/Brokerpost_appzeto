@@ -80,7 +80,7 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
       title: 'NETWORK',
       items: [
         { icon: <Users size={18} />, label: 'My Groups', path: '/groups' },
-        { icon: <Target size={18} />, label: 'Your Matches', path: '/matches', count: matchCount > 0 ? matchCount : undefined },
+        { icon: <Target size={18} />, label: 'My Matches', path: '/matches', count: matchCount > 0 ? matchCount : undefined },
       ]
     }
   ];

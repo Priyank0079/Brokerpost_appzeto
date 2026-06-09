@@ -63,10 +63,40 @@ const Dashboard = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showAllListings, setShowAllListings] = useState(false);
-  const [allListings, setAllListings] = useState([]);
-  const [loadingAll, setLoadingAll] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState(null);
+
+  // Pagination & Filters State
+  const [myListings, setMyListings] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [subTypeFilter, setSubTypeFilter] = useState('');
+  const [viewMode, setViewMode] = useState('table');
+  const [isFetchingListings, setIsFetchingListings] = useState(false);
+  const limit = 20;
+
+  const fetchMyListings = async () => {
+    setIsFetchingListings(true);
+    try {
+      const res = await getMyPostings({ page: currentPage, limit, search: searchQuery, subType: subTypeFilter });
+      if (res.success) {
+        setMyListings(res.data);
+        setTotalPages(res.pages || 1);
+      }
+    } catch (err) {
+      console.error('Error fetching my listings', err);
+    } finally {
+      setIsFetchingListings(false);
+    }
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, subTypeFilter]);
+
+  useEffect(() => {
+    fetchMyListings();
+  }, [currentPage, searchQuery, subTypeFilter]);
 
   const fetchData = async () => {
     try {
@@ -93,7 +123,8 @@ const Dashboard = () => {
     try {
       const res = await deletePosting(deleteConfirmId);
       if (res.success) {
-        fetchData();
+        fetchData(); // Refreshes stats
+        fetchMyListings(); // Refreshes list without blinking whole page
         window.dispatchEvent(new Event('listing-updated'));
         setDeleteConfirmId(null);
       } else {
@@ -107,28 +138,7 @@ const Dashboard = () => {
     }
   };
 
-  const handleViewAll = async () => {
-    if (showAllListings) {
-      setShowAllListings(false);
-      return;
-    }
-    
-    setLoadingAll(true);
-    try {
-      const res = await getMyPostings({ limit: 1000 });
-      if (res.success) {
-        setAllListings(res.data);
-        setShowAllListings(true);
-      } else {
-        alert('Failed to load all listings');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Error fetching all listings');
-    } finally {
-      setLoadingAll(false);
-    }
-  };
+  // View All handler is removed since we use pagination now.
 
   const handleRefreshClick = async (e, id) => {
     e.stopPropagation();
@@ -137,6 +147,7 @@ const Dashboard = () => {
       if (res.success) {
         setRefreshMessage({ type: 'success', text: res.message });
         fetchData();
+        fetchMyListings();
         window.dispatchEvent(new Event('listing-updated'));
       } else {
         setRefreshMessage({ type: 'error', text: res.message || 'Failed to refresh listing' });
@@ -193,7 +204,7 @@ const Dashboard = () => {
   const activeNetworkListings = (activeAvailability + activeRequirements) ?? 0;
   const slotsRemaining = Math.max(0, 25 - activeMyListings);
 
-  const displayListings = showAllListings ? allListings : (s.recentListings || []);
+  const displayListings = myListings;
 
   const getSubPill = (subType) => {
     if (!subType) return { label: 'Property', cls: 'mob-p-gray' };
@@ -212,6 +223,306 @@ const Dashboard = () => {
     if (i.includes('purchase')) return { label: 'Wanted', cls: 'mob-p-orange' };
     return { label: intent, cls: 'mob-p-gray' };
   };
+
+  const renderFilterBar = () => (
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+      <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+        <div className="relative w-full md:w-64">
+          <input 
+            type="text" 
+            placeholder="Search by ID, Location, Project..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#c8962a] transition-all"
+          />
+          <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
+        </div>
+        <select
+          value={subTypeFilter}
+          onChange={(e) => setSubTypeFilter(e.target.value)}
+          className="w-full md:w-48 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#c8962a] transition-all text-slate-600"
+        >
+          <option value="">All Sub-types</option>
+          <optgroup label="Residential">
+            <option value="Apartment">Apartment</option>
+            <option value="Floor">Independent Floor</option>
+            <option value="Villa">Independent House/Villa</option>
+            <option value="Plot">Plot</option>
+          </optgroup>
+          <optgroup label="Commercial">
+            <option value="Office">Office</option>
+            <option value="Shop">Retail Shop</option>
+            <option value="Showroom">Showroom</option>
+            <option value="Warehouse">Warehouse</option>
+            <option value="Commercial Plot">Commercial Plot</option>
+            <option value="Building">Standalone Building</option>
+          </optgroup>
+        </select>
+        {(searchQuery || subTypeFilter) && (
+          <button 
+            onClick={() => { setSearchQuery(''); setSubTypeFilter(''); }}
+            className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap"
+          >
+            Reset Filters
+          </button>
+        )}
+      </div>
+      <div className="flex items-center gap-2 self-end md:self-auto bg-white border border-slate-200 rounded-lg p-1">
+        <button
+          onClick={() => setViewMode('grid')}
+          className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#1a365d] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+        </button>
+        <button
+          onClick={() => setViewMode('table')}
+          className={`p-1.5 rounded transition-all ${viewMode === 'table' ? 'bg-[#1a365d] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+        </button>
+      </div>
+    </div>
+  );
+
+  const renderPagination = () => {
+    return (
+      <div className="flex items-center justify-center gap-3 mt-8 mb-4">
+        <button
+          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-[#c8962a] hover:border-[#c8962a] disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <span className="text-[11px] font-bold text-slate-600 px-4">
+          Page {currentPage} of {Math.max(1, totalPages)}
+        </span>
+        <button
+          onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+          className="p-2 rounded-lg border border-slate-200 text-slate-500 hover:text-[#c8962a] hover:border-[#c8962a] disabled:opacity-30 disabled:cursor-not-allowed bg-white shadow-sm transition-all"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    );
+  };
+
+  const renderGridView = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {displayListings.map((post) => {
+        const sub = getSubPill(post.subType);
+        const priceDisplay = post.totalAmount
+          ? `₹${Number(post.totalAmount).toLocaleString('en-IN')}`
+          : post.budgetMax ? `₹${Number(post.budgetMax).toLocaleString('en-IN')}` : 'On Req.';
+        
+        let bgClass = 'bg-slate-50 text-slate-600 border border-slate-100';
+        if (sub.cls === 'mob-p-blue') bgClass = 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]';
+        else if (sub.cls === 'mob-p-green') bgClass = 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]';
+        else if (sub.cls === 'mob-p-gold') bgClass = 'bg-[#e0e7ff] text-[#4338ca] border border-[#e0e7ff]';
+        else if (sub.cls === 'mob-p-orange') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+        else if (sub.cls === 'mob-p-purple') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
+
+        const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
+        const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
+        const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
+        
+        const areaDisplay = post.size ? `${post.size} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : post.sizeUnit)}` : 'N/A';
+        const dateString = post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-GB') : 'N/A';
+
+        return (
+          <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 cursor-pointer hover:shadow-md transition-all"
+            onClick={() => { setSelectedPosting(post); setIsEditModalOpen(true); }}
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <span className={`px-3 py-1 rounded-full text-[10.5px] font-bold tracking-tight whitespace-nowrap inline-block ${bgClass}`}>
+                  {sub.label}
+                </span>
+                <div className="font-bold text-[#0f172a] text-sm mt-2">{post.project || post.location || 'N/A'}</div>
+                <div className="text-[11px] text-slate-500 font-medium">{post.location || 'N/A'} · {post.city || 'Gurugram'}</div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-[#c8962a] text-sm">{priceDisplay}</div>
+                <div className="text-[10px] font-mono text-slate-400 mt-1 uppercase">#{post._id?.toString().slice(-6)}</div>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 flex-wrap">
+              <span className="px-2 py-1 bg-slate-50 rounded text-[10px] font-medium border border-slate-100">{areaDisplay}</span>
+              <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${statusBg}`}>
+                {statusLabel}
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center pt-3 mt-auto border-t border-slate-100">
+              <div className="text-[10px] text-slate-400 font-medium">{dateString}</div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={(e) => handleRefreshClick(e, post._id)}
+                  className={`px-2.5 py-1 rounded border font-bold text-[10px] transition-all flex items-center justify-center ${
+                    post.boostedAt 
+                      ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                      : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                  }`}
+                >
+                  ↑ Boost
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedPosting(post); setIsEditModalOpen(true); }}
+                  className="px-2.5 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600 bg-white hover:bg-slate-50"
+                >
+                  Edit
+                </button>
+                <button 
+                  onClick={(e) => handleDeleteClick(e, post._id)}
+                  className="px-2.5 py-1 rounded bg-[#991b1b] text-white text-[10px] font-bold hover:bg-[#7f1d1d]"
+                >
+                  Del
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  const renderTableView = () => (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse min-w-[900px]">
+        <thead>
+          <tr className="bg-[#FAF9F6] border-b border-slate-200">
+            <th className="px-3 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-12 text-center">#</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION / PROJECT</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">STATUS</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">MEDIA</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
+            <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100 bg-white">
+          {displayListings.map((post, idx) => {
+            const subTypeDisplay = getSubtypeDisplay(post.subType);
+            
+            let priceDisplay = 'On Request';
+            if (post.totalAmount) {
+              priceDisplay = `₹${Number(post.totalAmount).toLocaleString('en-IN')}`;
+            } else if (post.budgetMin || post.budgetMax) {
+              if (post.budgetMin && post.budgetMax) {
+                priceDisplay = `₹${Number(post.budgetMin).toLocaleString('en-IN')} - ₹${Number(post.budgetMax).toLocaleString('en-IN')}`;
+              } else {
+                priceDisplay = `₹${Number(post.budgetMin || post.budgetMax).toLocaleString('en-IN')}`;
+              }
+            }
+            
+            const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
+            const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
+            const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857]' : 'bg-[#fffbeb] text-[#b45309]';
+            
+            const mediaCount = (post.images?.length || 0) + (post.videos?.length || 0);
+
+            return (
+              <tr 
+                key={post._id} 
+                onClick={() => {
+                  setSelectedPosting(post);
+                  setIsEditModalOpen(true);
+                }}
+                className="hover:bg-slate-50/50 transition-all cursor-pointer group text-[12.5px] text-slate-700"
+              >
+                <td className="px-3 py-2 text-center">
+                  <div className="font-bold text-slate-400 text-[13px]">{idx + 1 + (currentPage - 1) * limit}</div>
+                  <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider">
+                    ID: {post._id?.toString().slice(-6)}
+                  </div>
+                </td>
+                
+                <td className="px-2 py-2">
+                  <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 whitespace-nowrap">
+                    {subTypeDisplay}
+                  </span>
+                </td>
+                
+                <td className="px-2 py-2">
+                  <div className="flex flex-col">
+                    <p className="text-[12px] font-bold text-slate-900 leading-none mb-1 group-hover:text-[#c8962a] transition-colors">
+                      {post.project || post.location} <span className="text-slate-400 font-normal">· {post.city}</span>
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-medium">
+                      {post.location}
+                    </p>
+                  </div>
+                </td>
+                
+                <td className="px-2 py-2 text-[11px] font-bold text-slate-900 whitespace-nowrap">
+                  {post.size ? `${Number(post.size).toLocaleString('en-IN')} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : 'Sq.Mt')}` : 'N/A'}
+                </td>
+                
+                <td className="px-2 py-2 text-[12px] font-bold text-slate-900 whitespace-nowrap">
+                  {priceDisplay}
+                </td>
+                
+                <td className="px-2 py-2">
+                  {post.postType === 'AVAILABILITY' ? (
+                    <span className={`px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap ${statusBg}`}>
+                      {statusLabel}
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-slate-400">-</span>
+                  )}
+                </td>
+                
+                <td className="px-2 py-2">
+                  <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
+                    {mediaCount} files
+                  </span>
+                </td>
+                
+                <td className="px-2 py-2 text-[10px] font-bold text-slate-400 whitespace-nowrap">
+                  {new Date(post.createdAt || Date.now()).toLocaleDateString('en-GB')}
+                </td>
+                
+                <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-center gap-2">
+                    <button 
+                      onClick={(e) => handleRefreshClick(e, post._id)}
+                      title={post.boostedAt ? "Boosted listing" : "Refresh to top"}
+                      className={`px-3.5 py-1.5 border rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
+                        post.boostedAt 
+                          ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
+                          : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
+                      }`}
+                    >
+                      ↑
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setSelectedPosting(post);
+                        setIsEditModalOpen(true);
+                      }}
+                      className="px-3.5 py-1.5 border border-slate-200 text-[#1e3a5f] bg-white rounded-lg text-[12px] font-bold hover:bg-slate-50 transition-all"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={(e) => handleDeleteClick(e, post._id)}
+                      className="px-3.5 py-1.5 bg-[#991b1b] text-white rounded-lg text-[12px] font-bold hover:bg-[#7f1d1d] transition-all border border-[#991b1b]"
+                    >
+                      Del
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
 
   return (
     <>
@@ -237,91 +548,23 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div style={{ fontSize: 9, textTransform: 'uppercase', letterSpacing: 1.2, color: '#6b7060', padding: '8px 12px 4px', fontWeight: 600 }}>Recent Activity</div>
-
-        {(s.recentListings || []).slice(0, 6).map((post) => {
-          const sub = getSubPill(post.subType);
-          const priceDisplay = post.totalAmount
-            ? `₹${Number(post.totalAmount).toLocaleString('en-IN')}`
-            : post.budgetMax ? `₹${Number(post.budgetMax).toLocaleString('en-IN')}` : 'On Req.';
-          
-          let bgClass = 'bg-slate-50 text-slate-600 border border-slate-100';
-          if (sub.cls === 'mob-p-blue') bgClass = 'bg-[#eff6ff] text-[#1d4ed8] border border-[#dbeafe]';
-          else if (sub.cls === 'mob-p-green') bgClass = 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]';
-          else if (sub.cls === 'mob-p-gold') bgClass = 'bg-[#e0e7ff] text-[#4338ca] border border-[#e0e7ff]';
-          else if (sub.cls === 'mob-p-orange') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
-          else if (sub.cls === 'mob-p-purple') bgClass = 'bg-[#faf5ff] text-[#7e22ce] border border-[#f3e8ff]';
-
-          const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
-          const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
-          const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
-          
-          const areaDisplay = post.size ? `${post.size} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : post.sizeUnit)}` : 'N/A';
-          const dateString = post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-GB') : 'N/A';
-
-          return (
-            <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 mb-3 mx-3 cursor-pointer"
-              onClick={() => { setSelectedPosting(post); setIsEditModalOpen(true); }}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className={`px-3 py-1 rounded-full text-[10.5px] font-bold tracking-tight whitespace-nowrap inline-block ${bgClass}`}>
-                    {sub.label}
-                  </span>
-                  <div className="font-bold text-[#0f172a] text-sm mt-2">{post.project || post.location || 'N/A'}</div>
-                  <div className="text-[11px] text-slate-500 font-medium">{post.location || 'N/A'} · {post.city || 'Gurugram'}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-[#c8962a] text-sm">{priceDisplay}</div>
-                  <div className="text-[10px] font-mono text-slate-400 mt-1 uppercase">#{post._id?.toString().slice(-6)}</div>
-                </div>
-              </div>
-              
-              <div className="flex gap-2 flex-wrap">
-                <span className="px-2 py-1 bg-slate-50 rounded text-[10px] font-medium border border-slate-100">{areaDisplay}</span>
-                <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${statusBg}`}>
-                  {statusLabel}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center pt-3 border-t border-slate-100">
-                <div className="text-[10px] text-slate-400 font-medium">{dateString}</div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={(e) => handleRefreshClick(e, post._id)}
-                    className={`px-2.5 py-1 rounded border font-bold text-[10px] transition-all flex items-center justify-center ${
-                      post.boostedAt 
-                        ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
-                        : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
-                    }`}
-                  >
-                    ↑ Boost
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setSelectedPosting(post); setIsEditModalOpen(true); }}
-                    className="px-2.5 py-1 rounded border border-slate-200 text-[10px] font-bold text-slate-600 bg-white"
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); setPostingToDelete(post); setIsDeleteModalOpen(true); }}
-                    className="px-2.5 py-1 rounded bg-[#8b1a1a] text-white text-[10px] font-bold"
-                  >
-                    Del
-                  </button>
-                </div>
-              </div>
+        {/* Listings Section */}
+        <div className="px-3 py-4">
+          {renderFilterBar()}
+          {isFetchingListings ? (
+            <div className="py-20 flex justify-center"><Loader2 className="animate-spin text-[#c8962a]" /></div>
+          ) : displayListings.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '30px 20px', color: '#6b7060', fontSize: 12 }}>
+              <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.3 }}>◈</div>
+              No listings match your criteria.
             </div>
-          );
-        })}
-
-        {(s.recentListings || []).length === 0 && (
-          <div style={{ textAlign: 'center', padding: '30px 20px', color: '#6b7060', fontSize: 12 }}>
-            <div style={{ fontSize: 32, marginBottom: 8, opacity: 0.3 }}>◈</div>
-            No listings yet. Use the sidebar to add your first listing.
-          </div>
-        )}
+          ) : (
+            <>
+              {viewMode === 'grid' ? renderGridView() : <div className="bg-white rounded-xl shadow-sm overflow-hidden">{renderTableView()}</div>}
+              {renderPagination()}
+            </>
+          )}
+        </div>
       </div>
 
       {/* ── DESKTOP DASHBOARD ── */}
@@ -343,7 +586,7 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 px-2 md:px-0">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 px-2 md:px-0 mb-6">
         <StatCard 
           label="MY LISTINGS" 
           value={activeMyListings} 
@@ -367,168 +610,34 @@ const Dashboard = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Modern Recent Listings Column */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm overflow-hidden">
-            <div className="px-6 py-4 border-b border-[#ede8df] flex items-center justify-between bg-white">
-              <h3 className="text-sm font-bold text-[#1e3a5f]">{showAllListings ? 'My All Listings' : 'My Recent Listings'}</h3>
-              <button 
-                onClick={handleViewAll} 
-                disabled={loadingAll}
-                className="text-xs font-bold px-4 py-2 rounded-lg border border-[#ede8df] text-slate-600 hover:bg-[#FAF9F6] transition-all flex items-center gap-2"
-              >
-                {loadingAll ? <Loader2 size={14} className="animate-spin" /> : null}
-                {showAllListings ? 'View Recent' : 'View All'}
-              </button>
-            </div>
-            
-            {displayListings.length === 0 ? (
-              <div className="p-16 flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-white flex items-center justify-center mb-4 text-slate-300">
-                  <span className="text-5xl">📋</span>
-                </div>
-                <h4 className="text-sm font-bold text-[#1e3a5f]">No listings yet</h4>
-                <p className="text-xs text-slate-400 mt-1">Use "+ Add Listing" in each section</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#FAF9F6] border-b border-slate-200">
-                      <th className="px-3 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider w-12 text-center">#</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">SUB-TYPE</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">LOCATION / PROJECT</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">AREA</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">TOTAL PRICE</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">STATUS</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">MEDIA</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">DATE</th>
-                      <th className="px-2 py-2.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">ACTIONS</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {displayListings.map((post, idx) => {
-                      const subTypeDisplay = getSubtypeDisplay(post.subType);
-                      
-                      let priceDisplay = 'On Request';
-                      if (post.totalAmount) {
-                        priceDisplay = `₹${Number(post.totalAmount).toLocaleString('en-IN')}`;
-                      } else if (post.budgetMin || post.budgetMax) {
-                        if (post.budgetMin && post.budgetMax) {
-                          priceDisplay = `₹${Number(post.budgetMin).toLocaleString('en-IN')} - ₹${Number(post.budgetMax).toLocaleString('en-IN')}`;
-                        } else {
-                          priceDisplay = `₹${Number(post.budgetMin || post.budgetMax).toLocaleString('en-IN')}`;
-                        }
-                      }
-                      
-                      const isReady = post.constructionStatus === 'READY' || post.constructionStatus === 'Ready to Move';
-                      const statusLabel = isReady ? 'Ready to Move' : 'Under Construction';
-                      const statusBg = isReady ? 'bg-[#ecfdf5] text-[#047857]' : 'bg-[#fffbeb] text-[#b45309]';
-                      
-                      const mediaCount = (post.images?.length || 0) + (post.videos?.length || 0);
-
-                      return (
-                        <tr 
-                          key={post._id} 
-                          onClick={() => {
-                            setSelectedPosting(post);
-                            setIsEditModalOpen(true);
-                          }}
-                          className="hover:bg-slate-50/50 transition-all cursor-pointer group text-[12.5px] text-slate-700"
-                        >
-                          <td className="px-3 py-2 text-center">
-                            <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
-                            <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider">
-                              ID: {post._id?.toString().slice(-6)}
-                            </div>
-                          </td>
-                          
-                          <td className="px-2 py-2">
-                            <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-bold border border-blue-100 whitespace-nowrap">
-                              {subTypeDisplay}
-                            </span>
-                          </td>
-                          
-                          <td className="px-2 py-2">
-                            <div className="flex flex-col">
-                              <p className="text-[12px] font-bold text-slate-900 leading-none mb-1 group-hover:text-[#c8962a] transition-colors">
-                                {post.project || post.location} <span className="text-slate-400 font-normal">· {post.city}</span>
-                              </p>
-                              <p className="text-[10px] text-slate-400 font-medium">
-                                {post.location}
-                              </p>
-                            </div>
-                          </td>
-                          
-                          <td className="px-2 py-2 text-[11px] font-bold text-slate-900 whitespace-nowrap">
-                            {post.size ? `${Number(post.size).toLocaleString('en-IN')} ${post.sizeUnit === 'SQ_FT' ? 'Sq.Ft' : (post.sizeUnit === 'SQ_YD' ? 'Sq.Yd' : 'Sq.Mt')}` : 'N/A'}
-                          </td>
-                          
-                          <td className="px-2 py-2 text-[12px] font-bold text-slate-900 whitespace-nowrap">
-                            {priceDisplay}
-                          </td>
-                          
-                          <td className="px-2 py-2">
-                            {post.postType === 'AVAILABILITY' ? (
-                              <span className={`px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap ${statusBg}`}>
-                                {statusLabel}
-                              </span>
-                            ) : (
-                              <span className="text-[10px] font-bold text-slate-400">-</span>
-                            )}
-                          </td>
-                          
-                          <td className="px-2 py-2">
-                            <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
-                              {mediaCount} files
-                            </span>
-                          </td>
-                          
-                          <td className="px-2 py-2 text-[10px] font-bold text-slate-400 whitespace-nowrap">
-                            {new Date(post.createdAt || Date.now()).toLocaleDateString('en-GB')}
-                          </td>
-                          
-                          <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-center gap-2">
-                              <button 
-                                onClick={(e) => handleRefreshClick(e, post._id)}
-                                title={post.boostedAt ? "Boosted listing" : "Refresh to top"}
-                                className={`px-3.5 py-1.5 border rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
-                                  post.boostedAt 
-                                    ? 'border-emerald-500 text-emerald-600 bg-emerald-50 hover:bg-emerald-600 hover:text-white'
-                                    : 'border-[#c8962a] text-[#c8962a] bg-white hover:bg-[#c8962a] hover:text-white'
-                                }`}
-                              >
-                                ↑
-                              </button>
-                              <button 
-                                onClick={() => {
-                                  setSelectedPosting(post);
-                                  setIsEditModalOpen(true);
-                                }}
-                                className="px-3.5 py-1.5 border border-slate-200 text-[#1e3a5f] bg-white rounded-lg text-[12px] font-bold hover:bg-slate-50 transition-all"
-                              >
-                                Edit
-                              </button>
-                              <button 
-                                onClick={(e) => handleDeleteClick(e, post._id)}
-                                className="px-3.5 py-1.5 bg-[#991b1b] text-white rounded-lg text-[12px] font-bold hover:bg-[#7f1d1d] transition-all border border-[#991b1b]"
-                              >
-                                Del
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        {/* Listings Data Viewer */}
+        <div className="bg-white rounded-xl border border-[#ede8df] shadow-sm overflow-hidden p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-[#1e3a5f]">My Listings</h3>
           </div>
+          
+          {renderFilterBar()}
+          
+          {isFetchingListings ? (
+            <div className="py-32 flex flex-col items-center justify-center text-slate-400 gap-3">
+              <Loader2 className="animate-spin text-[#c8962a]" size={32} />
+              <span className="text-xs font-bold uppercase tracking-widest">Loading...</span>
+            </div>
+          ) : displayListings.length === 0 ? (
+            <div className="p-16 flex flex-col items-center justify-center text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              <div className="w-16 h-16 bg-white flex items-center justify-center mb-4 text-slate-300 rounded-full shadow-sm">
+                <span className="text-3xl">📋</span>
+              </div>
+              <h4 className="text-sm font-bold text-[#1e3a5f]">No listings found</h4>
+              <p className="text-xs text-slate-500 mt-1">Try adjusting your filters or search query.</p>
+            </div>
+          ) : (
+            <div className="mt-4">
+              {viewMode === 'grid' ? renderGridView() : <div className="border border-slate-200 rounded-lg overflow-hidden">{renderTableView()}</div>}
+              {renderPagination()}
+            </div>
+          )}
         </div>
-
-
       </div>
       <PostListingModal 
         isOpen={isEditModalOpen} 

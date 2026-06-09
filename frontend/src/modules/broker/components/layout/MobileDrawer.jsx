@@ -44,7 +44,7 @@ const MobileDrawer = ({ isOpen, onClose, stats }) => {
       label: 'NETWORK',
       items: [
         { label: 'My Groups', to: '/groups', icon: <Users size={18} /> },
-        { label: 'Your Matches', to: '/matches', icon: <Target size={18} /> },
+        { label: 'My Matches', to: '/matches', icon: <Target size={18} /> },
       ]
     }
   ];
