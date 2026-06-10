@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, MapPin, Building2, Home as HomeIcon, LayoutGrid } from 'lucide-react';
+import { normalizeSubType } from '../../utils/formatters';
 
 const LandingSearch = ({ filters, onFilterChange, config }) => {
   const [localFilters, setLocalFilters] = useState(filters);
@@ -28,19 +29,44 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
     onFilterChange(cleared);
   };
 
-  const residentialSubTypes = [
+  const [residentialSubTypes, setResidentialSubTypes] = useState([
     { value: 'APARTMENTS', label: 'Apartments' },
     { value: 'LOW_RISE_FLOORS', label: 'Low Rise Floors' },
     { value: 'KOTHI_VILLAS', label: 'Kothi/Villas' },
     { value: 'PLOTS', label: 'Plots' }
-  ];
+  ]);
 
-  const commercialSubTypes = [
+  const [commercialSubTypes, setCommercialSubTypes] = useState([
     { value: 'OFFICE', label: 'Office Space' },
     { value: 'SHOP_SHOWROOM', label: 'Retail/Shops' },
     { value: 'SCO_PLOTS', label: 'SCO Plots' },
     { value: 'WAREHOUSE', label: 'Warehouse' }
-  ];
+  ]);
+
+  useEffect(() => {
+    import('../../services/categoryService').then(({ getCategories }) => {
+      getCategories().then(res => {
+        if (res.success) {
+          const resSubTypes = new Set();
+          const comSubTypes = new Set();
+          res.data.forEach(cat => {
+            if (cat.vertical === 'RESIDENTIAL') {
+              (cat.subCategories || []).forEach(sub => resSubTypes.add(normalizeSubType(sub)));
+            } else if (cat.vertical === 'COMMERCIAL') {
+              (cat.subCategories || []).forEach(sub => comSubTypes.add(normalizeSubType(sub)));
+            }
+          });
+          
+          if (resSubTypes.size > 0) {
+            setResidentialSubTypes(Array.from(resSubTypes).map(sub => ({ value: sub, label: sub })));
+          }
+          if (comSubTypes.size > 0) {
+            setCommercialSubTypes(Array.from(comSubTypes).map(sub => ({ value: sub, label: sub })));
+          }
+        }
+      });
+    });
+  }, []);
 
   const residentialIntents = [
     { value: 'SALE', label: 'Available for Sale' },
@@ -62,6 +88,12 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
     { value: 'PURCHASE', label: 'Wanted on Purchase' },
     { value: 'WANTED_RENT', label: 'Wanted on Rent/Lease' }
   ];
+
+  const allSubTypes = Array.from(
+    new Map(
+      [...residentialSubTypes, ...commercialSubTypes].map(item => [item.value, item])
+    ).values()
+  );
 
   return (
     <>
@@ -124,7 +156,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
             <div style={{ position: 'relative', width: '100%' }}>
               <select value={localFilters.subType} onChange={(e) => setLocalFilters({...localFilters, subType: e.target.value})} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #e0d8cc', fontSize: 13, background: '#fff', appearance: 'none' }}>
                 <option value="">All Property Types</option>
-                {(localFilters.vertical === 'RESIDENTIAL' ? residentialSubTypes : localFilters.vertical === 'COMMERCIAL' ? commercialSubTypes : [...residentialSubTypes, ...commercialSubTypes]).map(opt => (
+                {(localFilters.vertical === 'RESIDENTIAL' ? residentialSubTypes : localFilters.vertical === 'COMMERCIAL' ? commercialSubTypes : allSubTypes).map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>
@@ -277,7 +309,7 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
                   {localFilters.vertical === 'COMMERCIAL' && commercialSubTypes.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
-                  {localFilters.vertical === '' && [...residentialSubTypes, ...commercialSubTypes].map(opt => (
+                  {localFilters.vertical === '' && allSubTypes.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>

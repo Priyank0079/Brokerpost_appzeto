@@ -35,6 +35,7 @@ import Card from '../ui/Card';
 import { listings as staticListings } from '../../data/listings';
 import { useAuth } from '../../context/AuthContext';
 import { getPostings } from '../../services/postingService';
+import { normalizeSubType } from '../../utils/formatters';
 
 // Maps backend keys to display labels
 const INTENT_MAP = {
@@ -240,7 +241,7 @@ const HomeInventorySection = ({ data }) => {
         if (res.success) {
           const allSubTypes = new Set();
           res.data.forEach(cat => {
-            (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
+            (cat.subCategories || []).forEach(sub => allSubTypes.add(normalizeSubType(sub)));
           });
           setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
         }
@@ -256,7 +257,7 @@ const HomeInventorySection = ({ data }) => {
       // Basic client-side filtering for things not handled by API yet
       const matchesPropertyType =
         propertyTypeFilter === 'All Property Types' || 
-        (item.subType && item.subType.toLowerCase() === propertyTypeFilter.toLowerCase());
+        (item.subType && normalizeSubType(item.subType).toLowerCase() === propertyTypeFilter.toLowerCase());
       const matchesTransaction =
         transactionFilter === 'All Transactions' || INTENT_MAP[item.intent] === transactionFilter;
 

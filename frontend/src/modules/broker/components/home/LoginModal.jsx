@@ -281,9 +281,6 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
               </div>
 
               <div className="text-center pt-2 flex flex-col gap-2">
-                 <button type="button" onClick={() => setIsOtpLogin(true)} className="text-xs font-bold text-[#1a365d] hover:underline">
-                    Login with OTP instead
-                 </button>
                 <p className="text-xs font-medium text-[#748295]">
                   Not registered? <button type="button" onClick={onSwitchToRegister} className="font-bold text-[#1a365d] hover:underline">Register here</button>
                 </p>

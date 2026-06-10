@@ -6,6 +6,7 @@ import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
 import { listings as staticListings } from '../data/listings';
 import { getMyPostings } from '../services/postingService';
+import { getCategories } from '../services/categoryService';
 
 const INTENT_MAP = {
   'PURCHASE': 'Sale',
@@ -82,16 +83,14 @@ const MyRequirements = () => {
   const [propertyTypeOptions, setPropertyTypeOptions] = useState(['All Property Types']);
 
   React.useEffect(() => {
-    import('../services/categoryService').then(({ getCategories }) => {
-      getCategories().then(res => {
-        if (res.success) {
-          const allSubTypes = new Set();
-          res.data.forEach(cat => {
-            (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
-          });
-          setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
-        }
-      });
+    getCategories().then(res => {
+      if (res.success) {
+        const allSubTypes = new Set();
+        res.data.forEach(cat => {
+          (cat.subCategories || []).forEach(sub => allSubTypes.add(sub));
+        });
+        setPropertyTypeOptions(['All Property Types', ...Array.from(allSubTypes)]);
+      }
     });
   }, []);
 

@@ -88,7 +88,20 @@ exports.getPostings = async (req, res, next) => {
     if (vertical)           filter.vertical           = vertical;
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
-    if (subType)            filter.subType            = new RegExp(`^${subType}$`, 'i');
+    if (subType) {
+      const s = subType.trim().toLowerCase();
+      if (s === 'apartments' || s === 'appartments') {
+        filter.subType = { $in: [/^apartments$/i, /^appartments$/i] };
+      } else if (s === 'kothi/villas' || s === 'kothi/villa' || s === 'kothi / villas') {
+        filter.subType = { $in: [/^kothi\/villas$/i, /^kothi\/villa$/i, /^kothi \/ villas$/i] };
+      } else if (s === 'plots' || s === 'plot') {
+        filter.subType = { $in: [/^plots$/i, /^plot$/i] };
+      } else if (s === 'office space' || s === 'office' || s === 'offices') {
+        filter.subType = { $in: [/^office space$/i, /^office$/i, /^offices$/i] };
+      } else {
+        filter.subType = new RegExp(`^${subType}$`, 'i');
+      }
+    }
     if (bedrooms)           filter.bedrooms           = bedrooms;
     if (constructionStatus) filter.constructionStatus = constructionStatus;
     if (occupancy)          filter.occupancy          = occupancy;
@@ -183,7 +196,20 @@ exports.getMyPostings = async (req, res, next) => {
 
     if (postType)           filter.postType           = postType;
     if (intent)             filter.intent             = intent;
-    if (subType)            filter.subType            = new RegExp(subType, 'i');
+    if (subType) {
+      const s = subType.trim().toLowerCase();
+      if (s === 'apartments' || s === 'appartments') {
+        filter.subType = { $in: [/apartments/i, /appartments/i] };
+      } else if (s === 'kothi/villas' || s === 'kothi/villa' || s === 'kothi / villas') {
+        filter.subType = { $in: [/kothi\/villas/i, /kothi\/villa/i, /kothi \/ villas/i] };
+      } else if (s === 'plots' || s === 'plot') {
+        filter.subType = { $in: [/plots/i, /plot/i] };
+      } else if (s === 'office space' || s === 'office' || s === 'offices') {
+        filter.subType = { $in: [/office space/i, /office/i, /offices/i] };
+      } else {
+        filter.subType = new RegExp(subType, 'i');
+      }
+    }
     if (vertical)           filter.vertical           = vertical;
 
     if (search) {
