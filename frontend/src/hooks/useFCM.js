@@ -67,8 +67,19 @@ const useFCM = (isAuthenticated, onForegroundMessage) => {
           return;
         }
 
-        // 3. Get FCM token
-        const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+        // 3. Register SW with config params to avoid hardcoding keys in public folder
+        const swUrl = `/firebase-messaging-sw.js?apiKey=${import.meta.env.VITE_FIREBASE_API_KEY}&authDomain=${import.meta.env.VITE_FIREBASE_AUTH_DOMAIN}&projectId=${import.meta.env.VITE_FIREBASE_PROJECT_ID}&storageBucket=${import.meta.env.VITE_FIREBASE_STORAGE_BUCKET}&messagingSenderId=${import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID}&appId=${import.meta.env.VITE_FIREBASE_APP_ID}&measurementId=${import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ''}`;
+        
+        let registration;
+        if ('serviceWorker' in navigator) {
+          registration = await navigator.serviceWorker.register(swUrl);
+        }
+
+        // 4. Get FCM token
+        const token = await getToken(messaging, { 
+          vapidKey: VAPID_KEY,
+          serviceWorkerRegistration: registration 
+        });
         if (!token) {
           console.warn('[FCM] No token received. Check VAPID key and service worker registration.');
           return;

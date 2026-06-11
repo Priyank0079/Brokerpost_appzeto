@@ -5,16 +5,17 @@
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
-// Firebase config — hardcoded here because service workers cannot access import.meta.env
-// These are safe to expose (they are public client-side keys)
+// Firebase config — passed via URL parameters during registration to avoid hardcoding keys
+const urlParams = new URLSearchParams(location.search);
+
 firebase.initializeApp({
-  apiKey: "AIzaSyAJ5vXFwAyGaUJdM-wsm67gADqeEFwB5cw",
-  authDomain: "brokerspost-1e160.firebaseapp.com",
-  projectId: "brokerspost-1e160",
-  storageBucket: "brokerspost-1e160.firebasestorage.app",
-  messagingSenderId: "122676524822",
-  appId: "1:122676524822:web:487510fcbe04a1a5ed8237",
-  measurementId: "G-3V668Q4P4X"
+  apiKey: urlParams.get('apiKey'),
+  authDomain: urlParams.get('authDomain'),
+  projectId: urlParams.get('projectId'),
+  storageBucket: urlParams.get('storageBucket'),
+  messagingSenderId: urlParams.get('messagingSenderId'),
+  appId: urlParams.get('appId'),
+  measurementId: urlParams.get('measurementId')
 });
 
 const messaging = firebase.messaging();

@@ -639,6 +639,7 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+      </div>{/* end desktop wrapper */}
       <PostListingModal 
         isOpen={isEditModalOpen} 
         onClose={() => {
@@ -712,7 +713,6 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-    </div>{/* end desktop wrapper */}
     </>
   );
 };
