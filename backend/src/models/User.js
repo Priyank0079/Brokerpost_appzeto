@@ -98,7 +98,16 @@ const userSchema = new mongoose.Schema({
   lastBoostDate: {
     type: Date,
     default: null
-  }
+  },
+
+  // FCM tokens for push notifications — array supports multi-device
+  fcmTokens: [
+    {
+      token: { type: String, required: true },
+      device: { type: String, default: 'web' }, // 'web', 'android', 'ios'
+      createdAt: { type: Date, default: Date.now }
+    }
+  ]
 }, {
   timestamps: true
 });

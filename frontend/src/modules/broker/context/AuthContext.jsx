@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 
 const AuthContext = createContext();
+
+// AuthContext handles user session state
 
 export const AuthProvider = ({ children }) => {
   const isAdminApp = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
@@ -67,7 +69,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       if (response.success) {
-        localStorage.setItem('token', response.token); // Broker login always sets normal token
+        localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.data));
         setUser(response.data);
         return { success: true, user: response.data };

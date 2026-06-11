@@ -77,6 +77,7 @@ app.use('/api/v1/banners', require('./routes/carouselRoutes'));
 app.use('/api/v1/faqs', faqRoutes);
 app.use('/api/v1/landing-config', landingConfigRoutes);
 app.use('/api/v1/categories', require('./routes/categoryRoutes'));
+app.use('/api/v1/fcm', require('./routes/fcmRoutes'));
 
 
 

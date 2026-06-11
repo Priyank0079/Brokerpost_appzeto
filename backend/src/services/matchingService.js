@@ -1,5 +1,6 @@
 const Posting = require('../models/Posting');
 const Notification = require('../models/Notification');
+const { sendPushNotification } = require('./notificationService');
 
 // Maps new posting intent to what it seeks in counterpart postings
 const intentMatchMap = {
@@ -160,5 +161,49 @@ const sendMatchNotifications = async (newPosting, matches) => {
 
   if (notifications.length > 0) {
     await Notification.insertMany(notifications);
+
+    // ── Fire push notifications (non-blocking — failure won't break the match flow) ──
+    try {
+      const pushPromises = [];
+
+      for (const match of matches) {
+        const newPostTypeLabel = newPosting.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement';
+        const newPostTitle = newPosting.subType ? newPosting.subType.replace(/_/g, ' ') : 'Property';
+        const newPostRef = newPosting._id.toString().slice(-6).toUpperCase();
+        const newPostLoc = newPosting.location || newPosting.city || 'Location';
+
+        const matchPostTypeLabel = match.postType === 'AVAILABILITY' ? 'Availability' : 'Requirement';
+        const matchRef = match._id.toString().slice(-6).toUpperCase();
+        const matchLoc = match.location || match.city || 'Location';
+
+        // Push to owner of existing match post
+        pushPromises.push(
+          sendPushNotification(match.postedBy._id, {
+            title: '🏠 New Property Match Found!',
+            body: `Your ${matchPostTypeLabel} (${matchRef}) at ${matchLoc} matched with a new ${newPostTypeLabel} at ${newPostLoc}.`,
+            data: { type: 'POST_MATCH', relatedId: newPosting._id.toString(), url: '/dashboard/notifications' }
+          })
+        );
+
+        // Push to owner of new post
+        pushPromises.push(
+          sendPushNotification(newPosting.postedBy, {
+            title: '🏠 Existing Match Found!',
+            body: `Your new ${newPostTypeLabel} (${newPostRef}) at ${newPostLoc} matched with an existing ${matchPostTypeLabel} (${matchRef}) at ${matchLoc}.`,
+            data: { type: 'POST_MATCH', relatedId: match._id.toString(), url: '/dashboard/notifications' }
+          })
+        );
+      }
+
+      // All push notifications fire in parallel — failures are logged, not thrown
+      Promise.allSettled(pushPromises).then(results => {
+        const sent = results.filter(r => r.status === 'fulfilled' && r.value?.sent > 0).length;
+        console.log(`[FCM] Match push notifications fired: ${sent}/${pushPromises.length}`);
+      });
+
+    } catch (pushError) {
+      // Push failure is silent — in-app notifications are still saved above
+      console.error('[FCM] Push notification error in matchingService:', pushError.message);
+    }
   }
 };
