@@ -56,7 +56,9 @@ const MobileDrawer = ({ isOpen, onClose, stats }) => {
       <div className="mob-drawer" onClick={e => e.stopPropagation()}>
         {/* Brand */}
         <div className="mob-dr-top">
-          <div className="mob-dr-brand">Brokers<b>Post</b></div>
+          <div className="mob-dr-brand">
+            <img src="/brokerspostwhite.png" alt="BrokersPost" className="h-5 object-contain" />
+          </div>
           <div className="mob-dr-tag">My Dashboard</div>
         </div>
 

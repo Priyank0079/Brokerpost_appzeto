@@ -10,11 +10,11 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
 
   return (
     <>
-      {/* ── MOBILE LANDING NAVBAR (dark) ── */}
+      {/* ── MOBILE LANDING NAVBAR (light) ── */}
       <div className="md:hidden w-full shrink-0" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))' }} />
-      <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)', background: '#0d1520', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+      <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)', background: '#FAF9F6', borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', flex: 1 }}>
-          <img src="/logo (1).png" alt="BrokersPost" className="h-8 object-contain" />
+          <img src="/logo (1).png" alt="BrokersPost" className="h-6 object-contain" />
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {user ? (
@@ -23,7 +23,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
             </button>
           ) : (
             <>
-              <button onClick={onLoginClick} style={{ background: 'rgba(255,255,255,0.08)', color: '#fff', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+              <button onClick={onLoginClick} style={{ background: 'transparent', color: '#1a365d', border: '0.5px solid #1a365d', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
                 Login
               </button>
               <button onClick={onRegisterClick} style={{ background: '#e8b84b', color: '#0d1520', border: 'none', borderRadius: 7, padding: '5px 12px', fontSize: 10, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -40,7 +40,7 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
         <div className="max-w-[1200px] mx-auto w-full h-full flex items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-1">
-              <img src="/logo (1).png" alt="BrokersPost" className="h-10 object-contain" />
+              <img src="/logo (1).png" alt="BrokersPost" className="h-8 object-contain" />
             </Link>
           </div>
           <div className="hidden lg:flex items-center gap-2 ml-auto mr-12">

@@ -59,7 +59,7 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <img src="/brokerspostwhite.png" alt="BrokersPost" className="h-8 object-contain object-left" />
+          <img src="/brokerspostwhite.png" alt="BrokersPost" className="h-6 object-contain object-left" />
           <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">ADMIN CONSOLE</span>
         </div>
         <button 

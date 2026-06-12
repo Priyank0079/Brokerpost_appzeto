@@ -106,20 +106,22 @@ const Layout = ({ children }) => {
 
         {/* Mobile Top Bar (hidden on desktop) */}
         {!isHomePage && (
-          <div className="mob-topbar md:hidden" style={{ position: 'sticky', top: 0, zIndex: 50 }}>
-            <button
-              onClick={() => setDrawerOpen(true)}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#1e3a5f' }}
-              aria-label="Open menu"
-            >
-              <Menu size={22} />
-            </button>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#1e3a5f', fontFamily: "'Playfair Display', serif" }}>
-                Brokers<span style={{ color: '#c8962a' }}>Post</span>
+          <>
+            <div className="mob-topbar md:hidden" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}>
+              <button
+                onClick={() => setDrawerOpen(true)}
+                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#1e3a5f' }}
+                aria-label="Open menu"
+              >
+                <Menu size={22} />
+              </button>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', marginLeft: 8 }}>
+                <img src="/logo (1).png" alt="BrokersPost" className="h-6 object-contain" />
               </div>
             </div>
-          </div>
+            {/* Spacer for fixed topbar */}
+            <div className="md:hidden" style={{ height: 'calc(45px + env(safe-area-inset-top))' }} />
+          </>
         )}
 
         <main className={`flex-1 ${isHomePage ? 'p-0' : (isDashboard ? 'p-0 md:p-6 lg:p-5 bg-[#FAF9F6] pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-6' : 'p-0 md:p-6 lg:p-5 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-6')} animate-fade-in max-w-[1600px] mx-auto w-full`}>
