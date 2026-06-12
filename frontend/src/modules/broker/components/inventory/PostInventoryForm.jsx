@@ -182,7 +182,30 @@ const PostInventoryForm = ({ onSuccess }) => {
           <div className="space-y-6">
             <div 
               className="border-4 border-dashed border-slate-50 rounded-[40px] p-12 flex flex-col items-center justify-center text-center bg-slate-50/50 hover:bg-slate-50 hover:border-primary-100 transition-all cursor-pointer group relative"
-              onClick={() => document.getElementById('fileInput').click()}
+              onClick={(e) => {
+                if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                  e.preventDefault();
+                  const base64ToFile = (base64, filename, mimeType) => {
+                    const byteCharacters = atob(base64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                      byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: mimeType });
+                    return new File([blob], filename, { type: mimeType });
+                  };
+                  
+                  window.flutter_inappwebview.callHandler('openCamera').then(response => {
+                    if (response && response.success) {
+                      const file = base64ToFile(response.base64, response.fileName, response.mimeType);
+                      handleImageUpload({ target: { files: [file] } });
+                    }
+                  }).catch(err => console.error("Flutter camera error", err));
+                } else {
+                  document.getElementById('fileInput').click();
+                }
+              }}
             >
               <input 
                 id="fileInput"
