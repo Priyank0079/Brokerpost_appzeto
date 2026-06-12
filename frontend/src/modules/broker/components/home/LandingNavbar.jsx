@@ -13,9 +13,8 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
       {/* ── MOBILE LANDING NAVBAR (dark) ── */}
       <div className="md:hidden w-full shrink-0" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))' }} />
       <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)', background: '#0d1520', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', flex: 1, fontFamily: "'Playfair Display', serif" }}>
-          <span style={{ fontSize: 17, fontWeight: 700, color: '#fff' }}>Brokers</span>
-          <span style={{ fontSize: 17, fontWeight: 700, color: '#e8b84b' }}>Post</span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', flex: 1 }}>
+          <img src="/logo (1).png" alt="BrokersPost" className="h-8 object-contain" />
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {user ? (
@@ -40,9 +39,8 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
       <nav className="hidden md:flex h-20 px-6 bg-[#FAF9F6]/95 backdrop-blur-md border-b border-slate-200/60 fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div className="max-w-[1200px] mx-auto w-full h-full flex items-center justify-between">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-1" style={{ fontFamily: "'Playfair Display', 'Times New Roman', serif" }}>
-              <span className="text-[20px] md:text-[24px] font-bold text-[#1e3a5f] tracking-tight">Brokers</span>
-              <span className="text-[20px] md:text-[24px] font-bold text-[#c8962a] tracking-tight">Post</span>
+            <Link to="/" className="flex items-center gap-1">
+              <img src="/logo (1).png" alt="BrokersPost" className="h-10 object-contain" />
             </Link>
           </div>
           <div className="hidden lg:flex items-center gap-2 ml-auto mr-12">

@@ -89,8 +89,8 @@ const Sidebar = ({ isOpen, toggleSidebar, stats }) => {
     <aside className={`fixed top-0 left-0 h-screen bg-[#0F172A] w-64 z-50 transition-all flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
       {/* Brand */}
       <div className="p-6 flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-2xl font-bold tracking-tight font-['Times_New_Roman',_serif]"><span className="text-white">Brokers</span><span className="text-[#e8b84b]">Post</span></span>
+        <div className="flex flex-col gap-1">
+          <img src="/brokerspostwhite.png" alt="BrokersPost" className="h-8 object-contain object-left" />
           <span className="text-[9.5px] font-medium text-[#7d8688] uppercase tracking-[0.2em] mt-0">MY DASHBOARD</span>
         </div>
         <button 
