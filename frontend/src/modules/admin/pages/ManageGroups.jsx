@@ -46,7 +46,7 @@ const ManageGroups = () => {
 
   const fetchBrokers = async () => {
     try {
-      const response = await api.get('/auth/brokers');
+      const response = await api.get('/auth/brokers?limit=10000');
       if (response.success) {
         setBrokers(response.data);
       }
@@ -426,9 +426,23 @@ const ManageGroups = () => {
 
               {/* Add Members */}
               <div className="space-y-3 pt-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ADD MEMBERS</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">ADD MEMBERS</label>
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
+                    <input 
+                      type="text" 
+                      placeholder="Search brokers..."
+                      value={createSearchQuery}
+                      onChange={(e) => setCreateSearchQuery(e.target.value)}
+                      className="w-[180px] md:w-[220px] pl-7 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#c8962a]/50 transition-all placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
                 <div className="border border-slate-200 rounded-lg overflow-hidden max-h-[180px] overflow-y-auto">
-                  {brokers.map(broker => {
+                  {filteredBrokersForCreateModal.length === 0 ? (
+                    <div className="p-4 text-center text-[11px] text-slate-400 font-medium">No brokers found</div>
+                  ) : filteredBrokersForCreateModal.map(broker => {
                     const isSelected = selectedMembers.includes(broker._id);
                     const location = broker.operatingCity || broker.city || 'N/A';
                     
