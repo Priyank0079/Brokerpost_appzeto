@@ -187,7 +187,7 @@ const postingSchema = new mongoose.Schema({
   // ── BOOSTING ──────────────────────────────────────────────────────────────────
   boostedAt: {
     type: Date,
-    default: null,
+    default: Date.now,
     index: true
   },
   boostCount: {

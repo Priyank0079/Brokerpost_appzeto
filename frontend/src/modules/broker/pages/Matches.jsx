@@ -172,14 +172,29 @@ const Matches = () => {
         <div style={{ background: '#fff', borderBottom: '0.5px solid #e0d8cc', padding: '6px 12px 4px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#1e3a5f' }}>My Matches</div>
-              <div style={{ fontSize: 9, color: '#6b7060' }}>{stats.total} results · {stats.strong} strong</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#1e3a5f' }}>My Matches</div>
             </div>
             <span style={{ background: '#dcfce7', color: '#166534', fontSize: 8.5, fontWeight: 700, padding: '3px 9px', borderRadius: 20 }}>Live</span>
             <button onClick={fetchMatches} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c8962a', padding: 4 }}>
               <RefreshCw size={16} />
             </button>
           </div>
+          
+          {/* Mobile Stats Grid */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {[
+              { label: 'Listings Matched', val: stats.listed },
+              { label: 'Total Matches', val: stats.total },
+              { label: 'Strong Matches', val: stats.strong, valClass: 'text-green-700' },
+              { label: 'Brokers to Connect', val: stats.uniq },
+            ].map((s, i) => (
+              <div key={i} className="bg-slate-50 border border-slate-100 rounded-lg p-2 shadow-sm flex flex-col justify-center items-center text-center">
+                <div className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">{s.label}</div>
+                <div className={`font-serif text-lg font-bold ${s.valClass || 'text-[#1e3a5f]'}`}>{s.val}</div>
+              </div>
+            ))}
+          </div>
+
           <div style={{ display: 'flex', gap: 5, paddingBottom: 4 }} className="mob-hscroll">
             {[['', 'All Types'], ['avail', 'Availability'], ['req', 'Requirements']].map(([val, label]) => (
               <button key={val} onClick={() => setFType(val)}
@@ -259,7 +274,7 @@ const Matches = () => {
         <div>
           <h1 className="text-2xl font-serif text-[#1e3a5f] font-bold">Your Deal Matches</h1>
           <p className="text-slate-500 text-xs mt-1">
-            Matches found across all your listings — availability and requirements. <strong className="text-slate-700">Sub-type must match</strong>, and at least one of <strong className="text-slate-700">Location</strong> or <strong className="text-slate-700">Project</strong> must have keyword overlap.
+            Matches found across all your listings — availability and requirements. <strong className="text-slate-700">City</strong> and <strong className="text-slate-700">Sub-type</strong> must match, and both <strong className="text-slate-700">Location</strong> and <strong className="text-slate-700">Project</strong> must have keyword overlap.
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">

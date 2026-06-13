@@ -18,6 +18,9 @@ const intentMatchMap = {
 
 const calculateMatchScore = (newPost, existingPost) => {
   let score = 0;
+  let subTypeMatched = false;
+  let locMatched = false;
+  let projMatched = false;
 
   // 1. Vertical
   if (newPost.vertical && existingPost.vertical && newPost.vertical === existingPost.vertical) {
@@ -27,6 +30,7 @@ const calculateMatchScore = (newPost, existingPost) => {
   // 2. SubType
   if (newPost.subType && existingPost.subType && newPost.subType === existingPost.subType) {
     score++;
+    subTypeMatched = true;
   }
 
   // 3. City is now evaluated as a prerequisite at the database level, so we don't score it here again.
@@ -35,9 +39,21 @@ const calculateMatchScore = (newPost, existingPost) => {
   if (newPost.location && existingPost.location) {
     const words1 = newPost.location.toLowerCase().split(/\s+/);
     const words2 = existingPost.location.toLowerCase().split(/\s+/);
-    const hasOverlap = words1.some(w => words2.includes(w) && w.length > 2); // Ignore tiny words if possible, but standard split is fine
+    const hasOverlap = words1.some(w => words2.includes(w) && w.length > 2); // Ignore tiny words if possible
     if (hasOverlap) {
       score++;
+      locMatched = true;
+    }
+  }
+
+  // 4b. Project (fuzzy word match)
+  if (newPost.project && existingPost.project) {
+    const words1 = newPost.project.toLowerCase().split(/\s+/);
+    const words2 = existingPost.project.toLowerCase().split(/\s+/);
+    const hasOverlap = words1.some(w => words2.includes(w) && w.length > 2);
+    if (hasOverlap) {
+      score++;
+      projMatched = true;
     }
   }
 
@@ -51,7 +67,6 @@ const calculateMatchScore = (newPost, existingPost) => {
     const min = req.budgetMin;
     const max = req.budgetMax;
 
-    // Both must be defined and we consider units if possible, but let's assume they are comparable or we just compare raw numbers for now since the system stores raw values in same unit usually.
     // Actually, units might differ (LAKH, CR). Let's do a basic check.
     const getMultiplier = (unit) => {
       if (unit === 'CR') return 10000000;
@@ -76,7 +91,7 @@ const calculateMatchScore = (newPost, existingPost) => {
     score++;
   }
 
-  return score;
+  return { score, subTypeMatched, locMatched, projMatched };
 };
 
 exports.findAndNotifyMatches = async (newPosting) => {
@@ -102,12 +117,10 @@ exports.findAndNotifyMatches = async (newPosting) => {
 
     const matches = [];
     for (const post of potentialMatches) {
-      // City is already a match due to the DB query, so base score starts at 1
-      const baseScore = (newPosting.city && post.city) ? 1 : 0;
-      const score = baseScore + calculateMatchScore(newPosting, post);
+      const matchResult = calculateMatchScore(newPosting, post);
       
-      // Need at least 2 fields to match (City + 1 other field)
-      if (score >= 2) {
+      // Genuine match criteria: Sub-type, City (from query), Location, AND Project must all match/overlap.
+      if (matchResult.subTypeMatched && matchResult.locMatched && matchResult.projMatched) {
         matches.push(post);
       }
     }

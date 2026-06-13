@@ -172,8 +172,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const result = await verifyOTP(formData.email, otp, formData.password);
     if (result.success) {
       localStorage.removeItem('registration_draft');
-      onClose();
-      navigate('/dashboard');
+      onSwitchToLogin();
     } else {
       setAuthError(result.message);
     }

@@ -120,9 +120,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/verify-otp', { email, otp, password });
       if (response.success) {
-        localStorage.setItem('token', response.token);
-        // Note: verify-otp might not return user data in response, let checkAuth handle it or update manually
-        await checkAuth(); 
+        // Do not auto-login here; user will login manually
         return { success: true };
       }
       return { success: false, message: response.message || 'OTP verification failed' };
