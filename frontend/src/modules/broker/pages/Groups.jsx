@@ -224,8 +224,6 @@ const Groups = () => {
                   </div>
                   <div className="flex-1 min-w-0 pt-0.5">
                     <h3 className="font-serif text-[18px] text-[#0d1b2a] font-normal leading-tight truncate">{g.name}</h3>
-                    <p className="text-[#64748b] text-[13px] leading-tight mt-1 truncate">Leader: {grpLeader.name} ·</p>
-                    <p className="text-[#64748b] text-[13px] leading-tight">{grpLeader.phone}</p>
                   </div>
                 </div>
                 
@@ -310,13 +308,6 @@ const Groups = () => {
                     <span>{listings.length} listings</span>
                     <span className="text-slate-350">•</span>
                     <span>{formatDate(selectedGroup.createdAt)}</span>
-                  </div>
-  
-                  <div className="pt-0.5 flex items-center gap-2 text-[11px] font-bold text-slate-700">
-                    <span className="text-slate-400">👤 Leader:</span>
-                    <span className="text-[#0d1b2a]">{leader.name}</span>
-                    <span className="text-slate-400 ml-2">📞</span>
-                    <span className="text-[#c8962a]">{leader.phone}</span>
                   </div>
                 </div>
   
