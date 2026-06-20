@@ -11,8 +11,8 @@ const LandingNavbar = ({ onLoginClick, onRegisterClick }) => {
   return (
     <>
       {/* ── MOBILE LANDING NAVBAR (light) ── */}
-      <div className="md:hidden w-full shrink-0" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))' }} />
-      <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: 'calc(3.5rem + env(safe-area-inset-top))', paddingTop: 'env(safe-area-inset-top)', background: '#FAF9F6', borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
+      <div className="md:hidden w-full shrink-0" style={{ height: '3.5rem' }} />
+      <nav className="md:hidden px-4 fixed top-0 left-0 right-0 z-50 flex items-center" style={{ height: '3.5rem', background: '#FAF9F6', borderBottom: '0.5px solid rgba(0,0,0,0.08)' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', flex: 1 }}>
           <img src="/logo (1).png" alt="BrokersPost" className="h-6 object-contain" />
         </Link>

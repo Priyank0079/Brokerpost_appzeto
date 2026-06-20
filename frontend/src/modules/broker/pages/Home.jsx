@@ -71,7 +71,7 @@ const Home = () => {
   const { sections } = config;
 
   return (
-    <div className="bg-[#FAF9F6] min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0">
+    <div className="bg-[#FAF9F6] min-h-screen pb-[5rem] md:pb-0">
       <LandingNavbar 
         onLoginClick={() => setIsLoginModalOpen(true)}
         onRegisterClick={() => setIsRegisterModalOpen(true)}

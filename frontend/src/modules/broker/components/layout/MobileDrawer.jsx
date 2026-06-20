@@ -106,7 +106,7 @@ const MobileDrawer = ({ isOpen, onClose, stats }) => {
         </div>
       </div>
       {/* Close area */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', padding: 'calc(12px + env(safe-area-inset-top)) 10px 12px 10px' }} onClick={onClose}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', padding: '12px 10px' }} onClick={onClose}>
         <div style={{ background: 'rgba(255,255,255,0.12)', borderRadius: '50%', width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <X size={16} color="#fff" />
         </div>
