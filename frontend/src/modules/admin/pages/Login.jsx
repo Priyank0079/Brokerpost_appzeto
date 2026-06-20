@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../broker/context/AuthContext';
 
 import { useNavigate } from 'react-router-dom';
-import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Loader2, X } from 'lucide-react';
+import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle, Loader2, X, Eye, EyeOff } from 'lucide-react';
 import Button from '../../broker/components/ui/Button';
 
 
@@ -14,6 +14,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,15 +85,24 @@ const AdminLogin = () => {
 
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">ADMIN PASSWORD *</label>
-            <input 
-              disabled={isLoading}
-              type="password" 
-              placeholder="Password"
-              className="w-full px-5 py-3 bg-[#fefce8] border border-slate-200 rounded-xl outline-none focus:border-[#eab308]/40 transition-all text-[12px] font-bold text-slate-900 shadow-inner"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <input 
+                disabled={isLoading}
+                type={showPassword ? "text" : "password"} 
+                placeholder="Password"
+                className="w-full px-5 py-3 bg-[#fefce8] border border-slate-200 rounded-xl outline-none focus:border-[#eab308]/40 transition-all text-[12px] font-bold text-slate-900 shadow-inner pr-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-4">

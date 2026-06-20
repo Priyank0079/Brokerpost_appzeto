@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus, Loader2, CheckCircle, XCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ArrowLeft, Phone, MessageSquare, Edit2, Ban, Trash2, Plus, Loader2, CheckCircle, XCircle, ChevronLeft, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../broker/services/api';
 
@@ -21,14 +21,31 @@ const Brokers = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingBroker, setEditingBroker] = useState(null);
   const [brokerToDelete, setBrokerToDelete] = useState(null);
+  const [groups, setGroups] = useState([]);
+  const [addingBroker, setAddingBroker] = useState(false);
+
+  useEffect(() => {
+    if (isAddModalOpen || isEditModalOpen || brokerToDelete) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isAddModalOpen, isEditModalOpen, brokerToDelete]);
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
     company: '',
     phone: '',
     email: '',
     password: '',
     city: '',
     address: '',
+    pinCode: '',
+    reraNumber: '',
+    associatedGroup: '',
     role: 'Broker',
     listingLimit: '25',
     status: 'Active',
@@ -39,6 +56,8 @@ const Brokers = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCity, setFilterCity] = useState('');
 
+  const [showPassword, setShowPassword] = useState(false);
+
   // When filters change, reset to page 1
   useEffect(() => {
     setCurrentPage(1);
@@ -47,21 +66,55 @@ const Brokers = () => {
   // Use the backend data directly
   const filteredBrokers = brokers;
 
+  // Fetch groups for the associatedGroup dropdown
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await api.get('/groups');
+        if (response.success) setGroups(response.data || []);
+      } catch (err) {
+        console.error('Failed to fetch groups:', err);
+      }
+    };
+    fetchGroups();
+  }, []);
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
+    
+    if (name === 'firstName' || name === 'lastName') {
+      value = value.replace(/[^a-zA-Z\s]/g, '');
+    } else if (name === 'company') {
+      value = value.replace(/[^a-zA-Z0-9\s.,-]/g, '');
+    } else if (name === 'phone') {
+      value = value.replace(/\D/g, '').slice(0, 10);
+    } else if (name === 'pinCode') {
+      value = value.replace(/\D/g, '').slice(0, 6);
+    } else if (name === 'address') {
+      value = value.replace(/[^a-zA-Z0-9\s,.\-#/]/g, '');
+    } else if (name === 'listingLimit') {
+      value = value.replace(/\D/g, '');
+      if (value && parseInt(value) > 100000) value = '100000';
+    }
+
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleEditClick = (broker) => {
     setEditingBroker(broker);
+    const nameParts = `${broker.firstName || ''} ${broker.lastName || ''}`.trim().split(' ');
     setFormData({
-      fullName: `${broker.firstName || ''} ${broker.lastName || ''}`.trim(),
+      firstName: broker.firstName || '',
+      lastName: broker.lastName || '',
       company: broker.companyName || '',
       phone: broker.phoneNumber || '',
       email: broker.email || '',
-      password: '', // Hidden in edit usually
+      password: '',
       city: broker.operatingCity || '',
       address: broker.officeAddress || '',
+      pinCode: broker.pinCode || '',
+      reraNumber: broker.reraNumber || '',
+      associatedGroup: broker.associatedGroup || '',
       role: 'Broker',
       listingLimit: broker.listingLimit || '25',
       status: broker.isVerified ? 'Active' : 'Blocked',
@@ -203,7 +256,7 @@ const Brokers = () => {
               onClick={() => {
                 setEditingBroker(null);
                 setFormData({
-                  fullName: '', company: '', phone: '', email: '', password: '', city: '', address: '', role: 'Broker', listingLimit: '25'
+                  firstName: '', lastName: '', company: '', phone: '', email: '', password: '', city: '', address: '', pinCode: '', reraNumber: '', associatedGroup: '', role: 'Broker', listingLimit: '25'
                 });
                 setIsAddModalOpen(true);
               }}
@@ -421,7 +474,7 @@ const Brokers = () => {
       {/* Add/Edit Broker Modal */}
       {(isAddModalOpen || isEditModalOpen) && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} />
+          <div className="fixed inset-0 bg-[#0f172a]/40 backdrop-blur-sm" />
           <div className="relative w-full max-w-[700px] bg-white rounded-2xl shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden my-auto">
             {/* Modal Header */}
             <div className="p-3 md:p-4 border-b border-[#ddd6c8] flex items-center justify-between sticky top-0 bg-white z-10">
@@ -440,30 +493,48 @@ const Brokers = () => {
             {/* Modal Form */}
             <div className="p-3 md:p-4 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+
+                {/* First Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">FULL NAME *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">FIRST NAME *</label>
                   <input 
-                    type="text" name="fullName" placeholder="Full name"
-                    value={formData.fullName} onChange={handleInputChange}
+                    type="text" name="firstName" placeholder="First name"
+                    value={formData.firstName} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
+
+                {/* Last Name */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">COMPANY *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LAST NAME</label>
                   <input 
-                    type="text" name="company" placeholder="Firm name"
+                    type="text" name="lastName" placeholder="Last name"
+                    value={formData.lastName} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+
+                {/* Company Name */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">COMPANY / FIRM *</label>
+                  <input 
+                    type="text" name="company" placeholder="Registered firm name"
                     value={formData.company} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
+
+                {/* Phone */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PHONE *</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PHONE NUMBER *</label>
                   <input 
-                    type="text" name="phone" placeholder="10-digit mobile"
+                    type="text" name="phone" placeholder="10-digit mobile number"
                     value={formData.phone} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
+
+                {/* Email */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">EMAIL *</label>
                   <input 
@@ -473,22 +544,35 @@ const Brokers = () => {
                     disabled={isEditModalOpen}
                   />
                 </div>
+
+                {/* Password */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PASSWORD *</label>
-                  <input 
-                    type="password" name="password" placeholder="Min 6 characters"
-                    value={formData.password} onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
-                  />
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PASSWORD {isAddModalOpen ? '*' : '(leave blank to keep)'}</label>
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"} name="password" placeholder={isAddModalOpen ? "Min 6 characters" : "Leave blank to keep current"}
+                      value={formData.password} onChange={handleInputChange}
+                      className="w-full pl-4 pr-10 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
+
+                {/* City */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">CITY</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">OPERATING CITY *</label>
                   <select 
                     name="city" value={formData.city} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all appearance-none"
                   >
-                    <option value="">— Select —</option>
-                    <option value="Gurgaon">Gurgaon</option>
+                    <option value="">— Select City —</option>
+                    <option value="Gurugram">Gurugram</option>
                     <option value="Delhi">Delhi</option>
                     <option value="Noida">Noida</option>
                     <option value="Faridabad">Faridabad</option>
@@ -496,23 +580,52 @@ const Brokers = () => {
                     <option value="Greater Noida">Greater Noida</option>
                   </select>
                 </div>
+
+                {/* Pin Code */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ADDRESS</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">PIN CODE</label>
                   <input 
-                    type="text" name="address" placeholder="Office address"
+                    type="text" name="pinCode" placeholder="6-digit pin code"
+                    value={formData.pinCode} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+
+                {/* Office Address - full width */}
+                <div className="space-y-1.5 md:col-span-2">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">STREET / OFFICE ADDRESS *</label>
+                  <input 
+                    type="text" name="address" placeholder="Office address (street, locality)"
                     value={formData.address} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
                   />
                 </div>
+
+                {/* RERA Number */}
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ROLE</label>
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">RERA NUMBER</label>
+                  <input 
+                    type="text" name="reraNumber" placeholder="Alphanumeric RERA code"
+                    value={formData.reraNumber} onChange={handleInputChange}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all placeholder:text-[#848483] placeholder:font-normal"
+                  />
+                </div>
+
+                {/* Associated Group */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">ASSOCIATED GROUP</label>
                   <select 
-                    name="role" value={formData.role} onChange={handleInputChange}
+                    name="associatedGroup" value={formData.associatedGroup} onChange={handleInputChange}
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-medium outline-none focus:border-[#c8962a]/40 transition-all appearance-none"
                   >
-                    <option value="Broker">Broker</option>
+                    <option value="">— No Group —</option>
+                    {groups.map(g => (
+                      <option key={g._id} value={g.name}>{g.name}</option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Listing Limit */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-[#8894a4] uppercase tracking-widest ml-1">LISTING LIMIT</label>
                   <input 
@@ -521,6 +634,7 @@ const Brokers = () => {
                     className="w-full px-4 py-3 bg-[#faf7f2] border border-[#e4ded2] rounded-lg text-[12px] font-bold outline-none focus:border-[#c8962a]/40 transition-all"
                   />
                 </div>
+
               </div>
 
               {/* Footer Buttons */}
@@ -532,21 +646,28 @@ const Brokers = () => {
                   Cancel
                 </button>
                 <button 
+                  disabled={addingBroker}
                   onClick={async () => {
+                    if (!formData.firstName.trim()) return alert("First name is required.");
+                    if (!formData.company.trim()) return alert("Company name is required.");
+                    if (!formData.phone || formData.phone.length !== 10) return alert("Phone number must be exactly 10 digits.");
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(formData.email)) return alert("Please enter a valid email address.");
+                    if (!formData.city) return alert("Please select a city.");
+                    if (!formData.address.trim()) return alert("Office address is required.");
+
                     if (isEditModalOpen && editingBroker) {
-                      const [firstName, ...lastNameParts] = formData.fullName.split(' ');
-                      const lastName = lastNameParts.join(' ');
-                      
                       const payload = {
-                        firstName: firstName || '',
-                        lastName: lastName || '',
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
                         companyName: formData.company,
                         phoneNumber: formData.phone,
                         operatingCity: formData.city,
                         officeAddress: formData.address,
+                        pinCode: formData.pinCode,
+                        reraNumber: formData.reraNumber,
                         listingLimit: parseInt(formData.listingLimit) || 25,
                       };
-                      
                       if (formData.password) payload.password = formData.password;
 
                       try {
@@ -562,12 +683,44 @@ const Brokers = () => {
                         alert('Error updating broker');
                       }
                     } else if (isAddModalOpen) {
-                       // Implement add broker logic if needed
-                       alert("Manual adding of brokers is not yet fully configured via this UI. Use public registration.");
+                      if (!formData.password || formData.password.length < 6) return alert("Password must be at least 6 characters.");
+
+                      const payload = {
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        email: formData.email,
+                        password: formData.password,
+                        phoneNumber: formData.phone,
+                        companyName: formData.company,
+                        operatingCity: formData.city,
+                        officeAddress: formData.address,
+                        pinCode: formData.pinCode || '',
+                        reraNumber: formData.reraNumber || '',
+                        associatedGroup: formData.associatedGroup || '',
+                        listingLimit: parseInt(formData.listingLimit) || 25,
+                      };
+
+                      try {
+                        setAddingBroker(true);
+                        const response = await api.post('/auth/brokers', payload);
+                        if (response.success) {
+                          setIsAddModalOpen(false);
+                          setFormData({ firstName: '', lastName: '', company: '', phone: '', email: '', password: '', city: '', address: '', pinCode: '', reraNumber: '', associatedGroup: '', role: 'Broker', listingLimit: '25' });
+                          fetchBrokers(currentPage);
+                          fetchStats();
+                        } else {
+                          alert('Failed to create broker: ' + (response.message || 'Unknown error'));
+                        }
+                      } catch (err) {
+                        alert('Error creating broker: ' + (err.message || 'Unknown error'));
+                      } finally {
+                        setAddingBroker(false);
+                      }
                     }
                   }}
-                  className="px-4 py-2 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20"
+                  className={`px-4 py-2 rounded-lg bg-[#c8962a] text-white text-[11px] font-bold hover:bg-[#B48C35] transition-all shadow-lg shadow-[#c8962a]/20 flex items-center gap-2 ${addingBroker ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
+                  {addingBroker && <Loader2 size={13} className="animate-spin" />}
                   {isEditModalOpen ? 'Save Broker' : 'Add Broker'}
                 </button>
               </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../../broker/context/AuthContext';
 import Card from '../../broker/components/ui/Card';
 import Button from '../../broker/components/ui/Button';
@@ -13,7 +13,9 @@ import {
   CheckCircle2,
   Terminal,
   Activity,
-  Key
+  Key,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 const AdminProfile = () => {
@@ -21,6 +23,12 @@ const AdminProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [saveStatus, setSaveStatus] = useState(false);
   const [showPasswordFields, setShowPasswordFields] = useState(false);
+  
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
     name: user?.name || 'System Admin',
@@ -30,8 +38,17 @@ const AdminProfile = () => {
     accessLevel: 'Level 10 (Full Access)',
     password: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    profileImage: user?.profileImage || null
   });
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, profileImage: url }));
+    }
+  };
 
   const handleSave = () => {
     updateUser(formData);
@@ -47,10 +64,10 @@ const AdminProfile = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
            <div className="flex items-center gap-2">
-              <ShieldCheck className="text-primary-600" size={24} />
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Superuser Identity</h1>
+              <User className="text-[#c8962a]" size={24} />
+              <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">Admin Profile</h1>
            </div>
-           <p className="text-slate-500 font-medium mt-1 ml-8">Manage terminal credentials and administrative presence.</p>
+           <p className="text-sm text-slate-500 font-medium mt-1 ml-8">Manage your admin account details and preferences.</p>
         </div>
         <div className="flex items-center gap-3">
            {(isEditing || showPasswordFields) ? (
@@ -61,7 +78,7 @@ const AdminProfile = () => {
            ) : (
              <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setShowPasswordFields(true)} leftIcon={<Lock size={18} />} className="px-6 font-bold bg-white">Change Password</Button>
-                <Button variant="primary" onClick={() => setIsEditing(true)} leftIcon={<Key size={18} />} className="px-8 font-bold">Edit Profile</Button>
+                <Button variant="primary" onClick={() => setIsEditing(true)} leftIcon={<Key size={18} />} className="px-8 font-bold bg-[#c8962a] hover:bg-[#B48C35] text-white border-transparent shadow-lg shadow-[#c8962a]/20">Edit Profile</Button>
              </div>
            )}
         </div>
@@ -77,57 +94,61 @@ const AdminProfile = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left: Terminal Card */}
         <div className="space-y-6">
-           <Card className="overflow-hidden border-slate-100 shadow-xl shadow-slate-200/20 bg-slate-900 text-white">
-              <div className="h-1 bg-gradient-to-r from-primary-600 to-blue-400 -mx-6 -mt-6" />
+           <Card className="overflow-hidden border-slate-200 shadow-sm bg-white">
+              <div className="h-2 bg-[#1e3a5f] -mx-6 -mt-6" />
               <div className="mt-6 flex flex-col items-center">
-                 <div className="relative group">
-                    <div className="w-24 h-24 rounded-xl bg-slate-800 border-2 border-slate-700 flex items-center justify-center overflow-hidden">
-                       <User size={40} className="text-slate-500" />
+                 <div className="relative group cursor-pointer" onClick={() => isEditing && fileInputRef.current?.click()}>
+                    <div className="w-24 h-24 rounded-full bg-[#f8fafc] border border-slate-200 flex items-center justify-center overflow-hidden">
+                       {formData.profileImage ? (
+                         <img src={formData.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                       ) : (
+                         <User size={40} className="text-slate-400" />
+                       )}
                     </div>
                     {isEditing && (
-                      <button className="absolute -bottom-2 -right-2 p-2 bg-primary-600 text-white rounded-xl shadow-lg hover:scale-110 transition-transform border-4 border-slate-900">
+                      <button className="absolute -bottom-2 -right-2 p-2 bg-[#c8962a] text-white rounded-full shadow-lg hover:scale-110 transition-transform border-4 border-white pointer-events-none">
                          <Camera size={14} />
                       </button>
                     )}
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleImageUpload} 
+                      accept="image/*" 
+                      className="hidden" 
+                    />
                  </div>
-                 <h3 className="text-xl font-black text-white mt-6">{user?.name}</h3>
-                 <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mt-2">{user?.role}</p>
+                 <h3 className="text-lg font-bold text-slate-900 mt-6">{user?.name}</h3>
+                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{user?.role}</p>
               </div>
               
-              <div className="mt-10 space-y-4 border-t border-slate-800 pt-6">
+              <div className="mt-8 space-y-4 border-t border-slate-100 pt-6">
                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Terminal ID</span>
-                    <span className="text-slate-300 font-mono font-bold">{formData.adminId}</span>
+                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Admin ID</span>
+                    <span className="text-slate-900 font-bold">{formData.adminId}</span>
                  </div>
                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Master Email</span>
-                    <span className="text-slate-400 font-bold">{formData.email}</span>
+                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Email</span>
+                    <span className="text-slate-900 font-bold">{formData.email}</span>
                  </div>
                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Uptime</span>
-                    <span className="text-emerald-400 font-bold">14d 6h 22m</span>
+                    <span className="text-slate-500 font-bold uppercase tracking-widest text-[9px]">Status</span>
+                    <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded">Active</span>
                  </div>
               </div>
            </Card>
 
-           <Card title="Security Protocol" className="border-slate-100">
+           <Card title="Security & Logs" className="border-slate-200 shadow-sm">
               <div className="space-y-2">
-                 <button onClick={() => setShowPasswordFields(true)} className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all group">
+                 <button onClick={() => setShowPasswordFields(true)} className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-all group border border-transparent hover:border-slate-100">
                     <div className="flex items-center gap-3">
-                       <div className="w-9 h-9 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
-                          <Lock size={18} />
+                       <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#1d4ed8] flex items-center justify-center">
+                          <Lock size={16} />
                        </div>
-                       <span className="text-sm font-bold text-slate-700">Rotate Access Key</span>
+                       <span className="text-xs font-bold text-slate-700">Change Password</span>
                     </div>
                  </button>
-                 <button className="w-full flex items-center justify-between p-3 hover:bg-slate-50 rounded-xl transition-all group">
-                    <div className="flex items-center gap-3">
-                       <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                          <Activity size={18} />
-                       </div>
-                       <span className="text-sm font-bold text-slate-700">Audit Logs</span>
-                    </div>
-                 </button>
+
               </div>
            </Card>
         </div>
@@ -147,111 +168,119 @@ const AdminProfile = () => {
                 </div>
 
                 <div className="space-y-6 max-w-md">
-                   <div className="space-y-1.5">
+                    <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Current Password</label>
-                      <input 
-                         type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
-                         placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <input 
+                           type={showCurrentPassword ? "text" : "password"} 
+                           className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900 pr-10"
+                           placeholder="••••••••"
+                        />
+                        <button 
+                           type="button"
+                           onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                           {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                    </div>
                    <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Secure Password</label>
-                      <input 
-                         type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
-                         placeholder="Min 8 characters"
-                      />
+                      <div className="relative">
+                        <input 
+                           type={showNewPassword ? "text" : "password"} 
+                           className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900 pr-10"
+                           placeholder="Min 8 characters"
+                        />
+                        <button 
+                           type="button"
+                           onClick={() => setShowNewPassword(!showNewPassword)}
+                           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                           {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                    </div>
                    <div className="space-y-1.5">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm New Password</label>
-                      <input 
-                         type="password" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900"
-                         placeholder="Repeat new password"
-                      />
+                      <div className="relative">
+                        <input 
+                           type={showConfirmPassword ? "text" : "password"} 
+                           className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all text-sm font-bold text-slate-900 pr-10"
+                           placeholder="Repeat new password"
+                        />
+                        <button 
+                           type="button"
+                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                           {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                    </div>
                 </div>
               </Card>
            ) : (
-              <Card className="border-slate-100 shadow-xl shadow-slate-200/20 px-8 py-10">
-                <div className="flex items-center gap-3 mb-10 border-b border-slate-200 pb-6">
-                   <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
-                      <Terminal size={20} />
-                   </div>
-                   <div>
-                      <h4 className="text-xl font-bold text-slate-900 leading-none">Administrative Credentials</h4>
-                      <p className="text-xs text-slate-400 mt-2">Authenticated terminal identity information.</p>
-                   </div>
-                </div>
+               <Card className="border-slate-200 shadow-sm px-8 py-8">
+                 <div className="flex items-center gap-3 mb-8 border-b border-slate-100 pb-5">
+                    <div className="w-10 h-10 rounded-full bg-[#f8fafc] border border-slate-200 flex items-center justify-center text-slate-500">
+                       <User size={18} />
+                    </div>
+                    <div>
+                       <h4 className="text-lg font-bold text-slate-900 leading-none">Account Information</h4>
+                       <p className="text-xs text-slate-500 mt-1">Your basic administrative identity details.</p>
+                    </div>
+                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Supervisor Name</label>
-                      <input 
-                         disabled={!isEditing}
-                         type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
-                         value={formData.name}
-                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      />
-                   </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                       <input 
+                          disabled={!isEditing}
+                          type="text" 
+                          className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-[#c8962a] transition-all text-sm font-bold text-slate-800 disabled:opacity-70 disabled:bg-slate-100"
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                       />
+                    </div>
 
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Authority</label>
-                      <input 
-                         disabled={!isEditing}
-                         type="email" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
-                         value={formData.email}
-                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      />
-                   </div>
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                       <input 
+                          disabled={!isEditing}
+                          type="email" 
+                          className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-[#c8962a] transition-all text-sm font-bold text-slate-800 disabled:opacity-70 disabled:bg-slate-100"
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                       />
+                    </div>
 
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Secure Contact Number</label>
-                      <input 
-                         disabled={!isEditing}
-                         type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border border-transparent rounded-lg outline-none focus:bg-white focus:border-primary-200 focus:ring-8 focus:ring-primary-500/5 transition-all text-sm font-bold text-slate-900 disabled:opacity-60"
-                         value={formData.mobile}
-                         onChange={(e) => setFormData({...formData, mobile: e.target.value})}
-                      />
-                   </div>
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Contact Number</label>
+                       <input 
+                          disabled={!isEditing}
+                          type="text" 
+                          className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:bg-white focus:border-[#c8962a] transition-all text-sm font-bold text-slate-800 disabled:opacity-70 disabled:bg-slate-100"
+                          value={formData.mobile}
+                          onChange={(e) => setFormData({...formData, mobile: e.target.value})}
+                       />
+                    </div>
 
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">System Access Level</label>
-                      <input 
-                         disabled={true}
-                         type="text" 
-                         className="w-full px-4 py-3 bg-slate-50 border-transparent rounded-lg outline-none text-sm font-bold text-slate-400 opacity-60"
-                         value={formData.accessLevel}
-                      />
-                   </div>
-                </div>
-              </Card>
+                    <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Access Level</label>
+                       <input 
+                          disabled={true}
+                          type="text" 
+                          className="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-lg outline-none text-sm font-bold text-slate-500"
+                          value={formData.accessLevel}
+                       />
+                    </div>
+                 </div>
+               </Card>
            )}
 
-           {/* Permission Summary */}
-           <div className="p-8 bg-primary-600 rounded-[32px] text-white relative overflow-hidden group">
-              <div className="relative z-10">
-                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center">
-                       <ShieldCheck size={18} />
-                    </div>
-                    <span className="text-xs font-black uppercase tracking-widest">Active Privileges</span>
-                 </div>
-                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {['RERA Override', 'Bulk Deletion', 'Financial Audit', 'Global Broadcast'].map((p, i) => (
-                      <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-primary-100">
-                         <div className="w-1 h-1 rounded-full bg-primary-300" />
-                         {p}
-                      </div>
-                    ))}
-                 </div>
-              </div>
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000" />
-           </div>
+
         </div>
       </div>
     </div>

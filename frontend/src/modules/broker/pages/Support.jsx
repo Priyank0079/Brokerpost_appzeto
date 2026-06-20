@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import LandingNavbar from '../components/home/LandingNavbar';
 import LandingFooter from '../components/home/LandingFooter';
+import TermsModal from '../components/home/TermsModal';
 import { Loader2, Mail, Phone, ChevronDown } from 'lucide-react';
 
 const Support = () => {
   const [supportData, setSupportData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openFaq, setOpenFaq] = useState(null);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -30,7 +32,7 @@ const Support = () => {
     <div className="min-h-screen bg-[#faf9f6] font-sans">
       <LandingNavbar />
       
-      <main className="max-w-4xl mx-auto px-6 py-20 mt-16">
+      <main className="max-w-4xl mx-auto px-6 py-8 mt-6">
         
         {/* Header Section */}
         <div className="text-center mb-12">
@@ -108,7 +110,8 @@ const Support = () => {
         )}
       </main>
 
-      <LandingFooter />
+      <LandingFooter onTermsClick={() => setIsTermsModalOpen(true)} />
+      <TermsModal isOpen={isTermsModalOpen} onClose={() => setIsTermsModalOpen(false)} />
     </div>
   );
 };

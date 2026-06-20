@@ -205,10 +205,18 @@ const BrokerRegistration = () => {
                   <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••"
+                    placeholder="Min 6 chars, Max 20"
                     className={`w-full pl-12 pr-12 py-4 bg-slate-50 border ${errors.password ? 'border-red-200' : 'border-slate-100'} rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
                     value={otpData.password}
-                    onChange={(e) => setOtpData({...otpData, password: e.target.value})}
+                    onChange={(e) => {
+                      if (e.target.value.length > 20) {
+                        setErrors(prev => ({ ...prev, password: 'Password cannot exceed 20 characters' }));
+                        setTimeout(() => setErrors(prev => ({ ...prev, password: null })), 3000);
+                        return;
+                      }
+                      setErrors(prev => ({ ...prev, password: null }));
+                      setOtpData({...otpData, password: e.target.value});
+                    }}
                   />
                   <button 
                     type="button"
@@ -227,10 +235,18 @@ const BrokerRegistration = () => {
                   <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="password" 
-                    placeholder="••••••••"
+                    placeholder="Repeat new password"
                     className={`w-full pl-12 pr-5 py-4 bg-slate-50 border ${errors.confirmPassword ? 'border-red-200' : 'border-slate-100'} rounded-lg outline-none focus:bg-white focus:border-primary-200 transition-all font-bold text-slate-900`}
                     value={otpData.confirmPassword}
-                    onChange={(e) => setOtpData({...otpData, confirmPassword: e.target.value})}
+                    onChange={(e) => {
+                      if (e.target.value.length > 20) {
+                        setErrors(prev => ({ ...prev, confirmPassword: 'Password cannot exceed 20 characters' }));
+                        setTimeout(() => setErrors(prev => ({ ...prev, confirmPassword: null })), 3000);
+                        return;
+                      }
+                      setErrors(prev => ({ ...prev, confirmPassword: null }));
+                      setOtpData({...otpData, confirmPassword: e.target.value});
+                    }}
                   />
                 </div>
                 {errors.confirmPassword && <p className="text-[10px] font-bold text-red-500 ml-2 italic">{errors.confirmPassword}</p>}

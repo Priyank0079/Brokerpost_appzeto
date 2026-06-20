@@ -98,7 +98,18 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
   return (
     <>
       {/* ── MOBILE SEARCH ── */}
-      <section className="md:hidden" id="inventory-mob" style={{ background: '#0d1520', padding: '0 12px 24px' }}>
+      <section className="md:hidden" id="inventory-mob" style={{ background: '#0d1520', padding: '32px 12px 24px' }}>
+        <div style={{ marginBottom: '20px', padding: '0 8px' }}>
+          <p style={{ color: '#e8b84b', fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.4em', marginBottom: '8px' }}>
+            {config?.badge || 'LIVE NETWORK QUERY'}
+          </p>
+          <h2 style={{ fontSize: '22px', fontFamily: "'Playfair Display', serif", color: '#fff', marginBottom: '8px', lineHeight: 1.2 }}>
+            {config?.title || 'Find Properties Listed by Verified Brokers'}
+          </h2>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+            {config?.subtitle || 'Browse residential and commercial inventory shared by our verified broker network. No login required to view listings.'}
+          </p>
+        </div>
         <div style={{ background: '#f5f0e8', borderRadius: 12, padding: 12 }}>
           {/* Tabs */}
           <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', border: '1px solid #e0d8cc', marginBottom: 12 }}>
@@ -143,22 +154,31 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
             </div>
 
-            <div style={{ position: 'relative', width: '100%' }}>
-              <select value={localFilters.intent} onChange={(e) => setLocalFilters({...localFilters, intent: e.target.value})} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #e0d8cc', fontSize: 13, background: '#fff', appearance: 'none' }}>
-                <option value="">All Categories</option>
-                {(localFilters.vertical === 'RESIDENTIAL' ? residentialIntents : localFilters.vertical === 'COMMERCIAL' ? commercialIntents : allIntents).map(opt => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
-            </div>
+
 
             <div style={{ position: 'relative', width: '100%' }}>
               <select value={localFilters.subType} onChange={(e) => setLocalFilters({...localFilters, subType: e.target.value})} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #e0d8cc', fontSize: 13, background: '#fff', appearance: 'none' }}>
-                <option value="">All Property Types</option>
-                {(localFilters.vertical === 'RESIDENTIAL' ? residentialSubTypes : localFilters.vertical === 'COMMERCIAL' ? commercialSubTypes : allSubTypes).map(opt => (
+                <option value="">All Sub-types</option>
+                {localFilters.vertical === 'RESIDENTIAL' && residentialSubTypes.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
+                {localFilters.vertical === 'COMMERCIAL' && commercialSubTypes.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+                {localFilters.vertical === '' && (
+                  <>
+                    <optgroup label="Residential">
+                      {residentialSubTypes.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Commercial">
+                      {commercialSubTypes.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </optgroup>
+                  </>
+                )}
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
             </div>
@@ -282,36 +302,34 @@ const LandingSearch = ({ filters, onFilterChange, config }) => {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4 mb-4 search-row">
-              <div className="flex-1 relative">
-                <select
-                  value={localFilters.intent}
-                  onChange={(e) => setLocalFilters({ ...localFilters, intent: e.target.value })}
-                  className="w-full pl-3 pr-10 appearance-none cursor-pointer"
-                >
-                  <option value="">All Categories</option>
-                  {(localFilters.vertical === 'RESIDENTIAL' ? residentialIntents :
-                    localFilters.vertical === 'COMMERCIAL' ? commercialIntents : allIntents).map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
-              </div>
+
               <div className="flex-1 relative">
                 <select
                   value={localFilters.subType}
                   onChange={(e) => setLocalFilters({ ...localFilters, subType: e.target.value })}
                   className="w-full pl-3 pr-10 appearance-none cursor-pointer"
                 >
-                  <option value="">All Property Types</option>
+                  <option value="">All Sub-types</option>
                   {localFilters.vertical === 'RESIDENTIAL' && residentialSubTypes.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                   {localFilters.vertical === 'COMMERCIAL' && commercialSubTypes.map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
-                  {localFilters.vertical === '' && allSubTypes.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
+                  {localFilters.vertical === '' && (
+                    <>
+                      <optgroup label="Residential">
+                        {residentialSubTypes.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label="Commercial">
+                        {commercialSubTypes.map(opt => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </optgroup>
+                    </>
+                  )}
                 </select>
                 <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={16} />
               </div>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { 
+import {
   LogOut, 
   Loader2,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { api } from '../services/api';
 import { uploadProfileImage } from '../services/postingService';
@@ -34,6 +36,10 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // Re-sync form data if user context updates
   useEffect(() => {
     if (user) {
@@ -52,7 +58,8 @@ const Profile = () => {
 
   // Handle Full Name Input change to map to firstName & lastName in DB
   const handleFullNameChange = (val) => {
-    const parts = val.split(/\s+/);
+    const sanitized = val.replace(/[^a-zA-Z\s]/g, '');
+    const parts = sanitized.split(/\s+/);
     const first = parts[0] || '';
     const last = parts.slice(1).join(' ') || '';
     setFormData(prev => ({
@@ -105,6 +112,10 @@ const Profile = () => {
     }
     if (newPassword.length < 6) {
       setSaveStatus({ type: 'error', message: 'New password must be at least 6 characters' });
+      return;
+    }
+    if (newPassword.length > 20) {
+      setSaveStatus({ type: 'error', message: 'New password cannot exceed 20 characters' });
       return;
     }
 
@@ -227,7 +238,7 @@ const Profile = () => {
       </div>
 
       {/* ── PROFILE FORMS (Desktop & Mobile) ── */}
-      <div className="max-w-5xl mx-auto space-y-6 animate-fade-in py-6 px-4 md:px-6">
+      <div className="max-w-5xl mx-auto space-y-6 animate-fade-in py-6 px-4 md:px-6 pb-40 md:pb-6">
         <div className="hidden md:flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5">
           <div>
             <h1 className="text-2xl font-normal font-serif text-[#0d1b2a]">My Profile</h1>
@@ -284,7 +295,7 @@ const Profile = () => {
                     {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="text-[#c8962a] animate-spin" size={16} /></div>}
                   </div>
                   <div><p className="text-xs font-bold text-slate-800">Click to change</p><p className="text-[10px] text-slate-400 font-medium">JPG or PNG</p></div>
-                  <input id="profile-upload-input" type="file" className="hidden" accept="image/*" onChange={handleProfileImageUpload} disabled={loading} />
+                  <input id="profile-upload-input" type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleProfileImageUpload} disabled={loading} />
                 </div>
               </div>
               <div className="space-y-1">
@@ -293,11 +304,17 @@ const Profile = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Company / Firm *</label>
-                <input type="text" placeholder="Enter company name" value={formData.companyName} onChange={(e) => setFormData({...formData, companyName: e.target.value})} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <input type="text" placeholder="Enter company name" value={formData.companyName} onChange={(e) => {
+                  const sanitized = e.target.value.replace(/[^a-zA-Z0-9\s]/g, '');
+                  setFormData({...formData, companyName: sanitized});
+                }} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Phone *</label>
-                <input type="text" placeholder="Enter phone number" value={formData.phoneNumber} onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <input type="text" placeholder="Enter phone number" value={formData.phoneNumber} onChange={(e) => {
+                  const sanitized = e.target.value.replace(/\D/g, '').slice(0, 10);
+                  setFormData({...formData, phoneNumber: sanitized});
+                }} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</label>
@@ -305,17 +322,23 @@ const Profile = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Address</label>
-                <input type="text" placeholder="Enter office address" value={formData.officeAddress} onChange={(e) => setFormData({...formData, officeAddress: e.target.value})} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <input type="text" placeholder="Enter office address" value={formData.officeAddress} onChange={(e) => {
+                  const sanitized = e.target.value.replace(/[^a-zA-Z0-9\s,\.-]/g, '');
+                  setFormData({...formData, officeAddress: sanitized});
+                }} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">City</label>
-                <select value={formData.officeCity} onChange={(e) => setFormData({...formData, officeCity: e.target.value})} className="w-full pl-4 pr-10 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 appearance-none">
+                <select value={formData.officeCity} disabled className="w-full pl-4 pr-10 py-3 bg-[#f1f3f5] border border-slate-200 rounded-lg text-sm font-bold text-slate-400 cursor-not-allowed outline-none appearance-none">
                   <option value="Gurugram">Gurugram</option><option value="New Delhi">New Delhi</option><option value="Noida">Noida</option><option value="Faridabad">Faridabad</option><option value="Ghaziabad">Ghaziabad</option>
                 </select>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pin Code</label>
-                <input type="text" placeholder="Enter pin code" value={formData.pinCode} onChange={(e) => setFormData({...formData, pinCode: e.target.value})} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <input type="text" placeholder="Enter pin code" value={formData.pinCode} onChange={(e) => {
+                  const sanitized = e.target.value.replace(/\D/g, '').slice(0, 6);
+                  setFormData({...formData, pinCode: sanitized});
+                }} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
               </div>
               <div className="pt-2">
                 <button onClick={handleSave} disabled={loading} className="w-full md:w-auto px-6 py-3 md:py-2.5 bg-[#c8962a] hover:bg-[#b08425] text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-[#c8962a]/10 active:scale-95 flex items-center justify-center gap-2 min-w-[120px]">
@@ -329,15 +352,44 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current Password</label>
-                <input type="password" placeholder="Enter current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full pl-4 pr-4 py-3 bg-[#eff6ff] border border-[#dbeafe] rounded-lg text-sm font-bold outline-none focus:border-[#1d4ed8]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <div className="relative">
+                  <input type={showCurrentPassword ? "text" : "password"} placeholder="Enter current password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full pl-4 pr-10 py-3 bg-[#eff6ff] border border-[#dbeafe] rounded-lg text-sm font-bold outline-none focus:border-[#1d4ed8]/30 transition-all text-slate-800 placeholder-slate-400" />
+                  <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">New Password</label>
-                <input type="password" placeholder="Min 6 characters" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <div className="relative">
+                  <input type={showNewPassword ? "text" : "password"} placeholder="Min 6 characters, Max 20" value={newPassword} onChange={(e) => {
+                    if(e.target.value.length > 20) {
+                      setSaveStatus({ type: 'error', message: 'Password cannot exceed 20 characters' });
+                      setTimeout(() => setSaveStatus(null), 3000);
+                      return;
+                    }
+                    setNewPassword(e.target.value);
+                  }} className="w-full pl-4 pr-10 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                  <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Confirm New Password</label>
-                <input type="password" placeholder="Repeat new password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                <div className="relative">
+                  <input type={showConfirmPassword ? "text" : "password"} placeholder="Repeat new password" value={confirmPassword} onChange={(e) => {
+                    if(e.target.value.length > 20) {
+                      setSaveStatus({ type: 'error', message: 'Password cannot exceed 20 characters' });
+                      setTimeout(() => setSaveStatus(null), 3000);
+                      return;
+                    }
+                    setConfirmPassword(e.target.value);
+                  }} className="w-full pl-4 pr-10 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-sm font-bold outline-none focus:border-[#c8962a]/30 transition-all text-slate-800 placeholder-slate-400" />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
               <div className="pt-2">
                 <button onClick={handleUpdatePassword} disabled={passwordLoading} className="w-full md:w-auto px-6 py-3 md:py-2.5 bg-[#1a365d] hover:bg-[#112540] text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all shadow-md shadow-[#1a365d]/10 active:scale-95 flex items-center justify-center gap-2 min-w-[130px]">

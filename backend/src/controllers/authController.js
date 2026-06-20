@@ -544,6 +544,81 @@ exports.updateBroker = async (req, res, next) => {
   }
 };
 
+// @desc    Create broker manually (Admin only — no OTP)
+// @route   POST /api/v1/auth/brokers
+// @access  Private/Admin
+exports.createBrokerAdmin = async (req, res, next) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNumber,
+      companyName,
+      operatingCity,
+      officeAddress,
+      pinCode,
+      reraNumber,
+      associatedGroup,
+      listingLimit
+    } = req.body;
+
+    if (!firstName || !email || !password || !phoneNumber || !companyName || !operatingCity || !officeAddress) {
+      return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
+    }
+
+    const userExists = await User.findOne({ $or: [{ email }, { phoneNumber }] });
+    if (userExists) {
+      const message = userExists.email === email
+        ? 'Email already registered'
+        : 'Phone number already registered';
+      return res.status(400).json({ success: false, message });
+    }
+
+    const user = await User.create({
+      firstName,
+      lastName: lastName || '',
+      email,
+      password,
+      phoneNumber,
+      companyName,
+      operatingCity,
+      officeCity: operatingCity,
+      officeAddress,
+      pinCode: pinCode || '',
+      reraNumber: reraNumber || '',
+      associatedGroup: associatedGroup || '',
+      listingLimit: parseInt(listingLimit) || 25,
+      role: 'Broker',
+      isEmailVerified: true,
+      isVerified: true,
+      agreeWithTerms: true
+    });
+
+    // Auto-add to group if associatedGroup is set
+    if (associatedGroup) {
+      try {
+        const group = await Group.findOne({ name: associatedGroup });
+        if (group && !group.members.includes(user._id)) {
+          group.members.push(user._id);
+          await group.save();
+        }
+      } catch (err) {
+        console.error('Auto-group addition failed:', err);
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Broker created successfully',
+      data: user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Delete broker (Admin only)
 // @route   DELETE /api/v1/auth/brokers/:id
 // @access  Private/Admin

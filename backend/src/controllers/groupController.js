@@ -57,11 +57,29 @@ exports.getGroups = async (req, res, next) => {
     }
 
     const groups = await query;
+    const Posting = require('../models/Posting');
+
+    const groupsWithCount = await Promise.all(groups.map(async (group) => {
+      let membersToSearch = group.members.map(m => m._id);
+      if (req.userModel !== 'Admin' && req.user) {
+        membersToSearch = membersToSearch.filter(m => m.toString() !== req.user._id.toString());
+      }
+      
+      const count = await Posting.countDocuments({
+        postedBy: { $in: membersToSearch },
+        isActive: true
+      });
+      
+      return {
+        ...group.toObject(),
+        listingsCount: count
+      };
+    }));
 
     res.status(200).json({
       success: true,
-      count: groups.length,
-      data: groups
+      count: groupsWithCount.length,
+      data: groupsWithCount
     });
   } catch (error) {
     next(error);

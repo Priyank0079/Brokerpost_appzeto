@@ -8,13 +8,21 @@ const Groups = () => {
   const { user } = useAuth();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('groups_selected_group');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
   
   // Postings states
   const [listings, setListings] = useState([]);
   const [listingsLoading, setListingsLoading] = useState(false);
   const [groupSearch, setGroupSearch] = useState('');
-  const [showMobileInventory, setShowMobileInventory] = useState(false);
+  const [showMobileInventory, setShowMobileInventory] = useState(() => sessionStorage.getItem('groups_show_mobile') === 'true');
+  const [viewMode, setViewMode] = useState(() => sessionStorage.getItem('groups_viewmode') || 'table');
   const [showMembers, setShowMembers] = useState(false);
   const [selectedMemberFilter, setSelectedMemberFilter] = useState(null);
 
@@ -24,7 +32,7 @@ const Groups = () => {
       const response = await getGroups();
       if (response.success) {
         setGroups(response.data);
-        if (response.data && response.data.length > 0) {
+        if (response.data && response.data.length > 0 && !selectedGroup) {
           setSelectedGroup(response.data[0]);
         }
       }
@@ -55,11 +63,20 @@ const Groups = () => {
 
   useEffect(() => {
     if (selectedGroup) {
+      sessionStorage.setItem('groups_selected_group', JSON.stringify(selectedGroup));
       setShowMembers(false);
       setSelectedMemberFilter(null);
       fetchGroupListings(selectedGroup._id);
     }
   }, [selectedGroup]);
+
+  useEffect(() => {
+    sessionStorage.setItem('groups_show_mobile', showMobileInventory);
+  }, [showMobileInventory]);
+
+  useEffect(() => {
+    sessionStorage.setItem('groups_viewmode', viewMode);
+  }, [viewMode]);
 
   if (loading) {
     return (
@@ -240,7 +257,7 @@ const Groups = () => {
                 
                 <div className="flex flex-wrap gap-2 mt-4">
                   <span className="px-3 py-1 bg-[#dcfce7] text-[#166534] text-[11px] font-medium rounded-full">{members.length} members</span>
-                  <span className="px-3 py-1 bg-[#dbeafe] text-[#1e40af] text-[11px] font-medium rounded-full">{g.listingsCount || listings.length || 0} listings</span>
+                  <span className="px-3 py-1 bg-[#dbeafe] text-[#1e40af] text-[11px] font-medium rounded-full">{g.listingsCount || 0} listings</span>
                   <span className="px-3 py-1 bg-[#fef08a] text-[#854d0e] text-[11px] font-medium rounded-full">{g.city || 'Gurugram'}</span>
                 </div>
                 
@@ -361,193 +378,276 @@ const Groups = () => {
               </div>
 
               {/* Filter Bar (Search within this group) */}
-              <div className="p-4 bg-white border-b border-slate-150">
-                <div className="relative w-full">
-                  <input 
-                    type="text" 
-                    placeholder="Search listings in this group..."
-                    value={groupSearch}
-                    onChange={(e) => setGroupSearch(e.target.value)}
-                    className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder-[#9c7f84] tracking-tighter"
-                  />
+              <div className="p-4 bg-white border-b border-slate-150 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-2 w-full md:max-w-md">
+                  <div className="relative w-full">
+                    <input 
+                      type="text" 
+                      placeholder="Search listings in this group..."
+                      value={groupSearch}
+                      onChange={(e) => setGroupSearch(e.target.value)}
+                      className="w-full pl-4 pr-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium outline-none focus:border-[#eab308]/30 transition-all text-slate-600 placeholder-[#9c7f84] tracking-tighter"
+                    />
+                  </div>
+
+                  {/* View Mode Toggle (Mobile) */}
+                  <div className="flex md:hidden bg-[#faf7f2] border border-slate-200 rounded-lg p-1 shrink-0">
+                    <button 
+                      onClick={() => setViewMode('grid')}
+                      className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                      title="Grid View"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('table')}
+                      className={`p-1.5 rounded transition-all ${viewMode === 'table' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                      title="Table View"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                  </div>
+                </div>
+                
+                {/* View Mode Toggle (Desktop only) */}
+                <div className="hidden md:flex bg-slate-100 rounded-lg p-1 shrink-0 self-end">
+                  <button 
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-primary-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    title="Grid View"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('table')}
+                    className={`p-2 rounded-md transition-all ${viewMode === 'table' ? 'bg-white shadow-sm text-primary-600' : 'text-slate-500 hover:text-slate-700'}`}
+                    title="Table View"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                  </button>
                 </div>
               </div>
 
-              {/* ── MOBILE LISTINGS CARDS ── */}
-              <div className="md:hidden bg-[#faf7f2] p-4 flex-1 pb-24">
+              {/* Listings Tabular/Grid Inventory */}
+              <div className={`overflow-x-auto flex-1 pb-24 md:pb-4 ${viewMode === 'grid' ? 'p-4' : 'py-4 px-0 sm:px-4'}`}>
                 {listingsLoading ? (
                   <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
                     <Loader2 size={40} className="animate-spin text-[#c8962a]" />
                     <p className="text-sm font-bold uppercase tracking-widest">Fetching inventory...</p>
                   </div>
                 ) : filteredListings.length > 0 ? (
-                  <div className="flex flex-col gap-3">
-                    {filteredListings.map((post) => {
-                      const getSubPill = (subType) => {
-                        if (!subType) return { label: 'Property', cls: 'mob-p-gray' };
-                        const s = subType.toLowerCase();
-                        if (s.includes('apart')) return { label: subType, cls: 'mob-p-blue' };
-                        if (s.includes('office')) return { label: subType, cls: 'mob-p-orange' };
-                        if (s.includes('plot')) return { label: subType, cls: 'mob-p-green' };
-                        if (s.includes('villa') || s.includes('kothi')) return { label: subType, cls: 'mob-p-gold' };
-                        return { label: subType, cls: 'mob-p-gray' };
-                      };
-                      const getIntentPill = (intent) => {
-                        const i = (intent || '').toLowerCase();
-                        if (i.includes('sale')) return { label: 'Sale', cls: 'mob-p-green' };
-                        if (i.includes('rent') || i.includes('rental')) return { label: 'Rent', cls: 'mob-p-blue' };
-                        if (i.includes('lease')) return { label: 'Lease', cls: 'mob-p-purple' };
-                        if (i.includes('purchase')) return { label: 'Wanted', cls: 'mob-p-orange' };
-                        return { label: intent, cls: 'mob-p-gray' };
-                      };
+                  viewMode === 'grid' ? (
+                    <>
+                      {/* Mobile Cards (UI same as before) */}
+                      <div className="md:hidden flex flex-col gap-3">
+                        {filteredListings.map((post) => {
+                          const getSubPill = (subType) => {
+                            if (!subType) return { label: 'Property', cls: 'mob-p-gray' };
+                            const s = subType.toLowerCase();
+                            if (s.includes('apart')) return { label: subType, cls: 'mob-p-blue' };
+                            if (s.includes('office')) return { label: subType, cls: 'mob-p-orange' };
+                            if (s.includes('plot')) return { label: subType, cls: 'mob-p-green' };
+                            if (s.includes('villa') || s.includes('kothi')) return { label: subType, cls: 'mob-p-gold' };
+                            return { label: subType, cls: 'mob-p-gray' };
+                          };
+                          const getIntentPill = (intent) => {
+                            const i = (intent || '').toLowerCase();
+                            if (i.includes('sale')) return { label: 'Sale', cls: 'mob-p-green' };
+                            if (i.includes('rent') || i.includes('rental')) return { label: 'Rent', cls: 'mob-p-blue' };
+                            if (i.includes('lease')) return { label: 'Lease', cls: 'mob-p-purple' };
+                            if (i.includes('purchase')) return { label: 'Wanted', cls: 'mob-p-orange' };
+                            return { label: intent, cls: 'mob-p-gray' };
+                          };
 
-                      const subPill = getSubPill(post.subType);
-                      const intentPill = getIntentPill(post.intent);
-                      const priceDisplay = formatTotalPrice(post);
-                      const broker = post.postedBy || {};
-                      const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
-                      
-                      return (
-                        <div key={post._id} className="mob-listing-card">
-                          <div className="mob-lc-hd">
-                            <span className={`mob-pill ${subPill.cls}`}>{subPill.label}</span>
-                            <span className={`mob-pill ${intentPill.cls}`}>{intentPill.label}</span>
-                          </div>
-                          <div className="mob-lc-title">{post.location}{post.project ? ` · ${post.project}` : ''}</div>
-                          <div className="mob-lc-sub">{post.bedrooms ? `${post.bedrooms} · ` : ''}{post.size ? `${Number(post.size).toLocaleString('en-IN')} Sq.Ft` : ''}{post.city ? ` · ${post.city}` : ''}</div>
-                          <div className="mob-lc-sub mt-2 text-slate-500 font-medium">By: {brokerName} · {broker.companyName || 'Private'}</div>
+                          const subPill = getSubPill(post.subType);
+                          const intentPill = getIntentPill(post.intent);
+                          const priceDisplay = formatTotalPrice(post);
+                          const broker = post.postedBy || {};
+                          const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
                           
-                          <div className="mob-lc-ft mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span className="mob-lc-price">{priceDisplay}</span>
-                            <div className="flex gap-2">
-                              {broker.phoneNumber && (
-                                <>
-                                  <button onClick={() => window.open(`tel:${broker.phoneNumber}`, '_self')} className="px-3 py-1.5 bg-[#e6f4fe] text-[#0066cc] rounded font-bold text-[10px]">Call</button>
-                                  <button onClick={() => window.open(`https://wa.me/91${broker.phoneNumber.replace(/\D/g, '')}`, '_blank')} className="px-3 py-1.5 bg-[#25D366] text-white rounded font-bold text-[10px]">WhatsApp</button>
-                                </>
-                              )}
+                          return (
+                            <div key={post._id} className="mob-listing-card">
+                              <div className="mob-lc-hd">
+                                <span className={`mob-pill ${subPill.cls}`}>{subPill.label}</span>
+                                <span className={`mob-pill ${intentPill.cls}`}>{intentPill.label}</span>
+                              </div>
+                              <div className="mob-lc-title">{post.location}{post.project ? ` · ${post.project}` : ''}</div>
+                              <div className="mob-lc-sub">{post.bedrooms ? `${post.bedrooms} · ` : ''}{post.size ? `${Number(post.size).toLocaleString('en-IN')} Sq.Ft` : ''}{post.city ? ` · ${post.city}` : ''}</div>
+                              <div className="mob-lc-sub mt-2 text-slate-500 font-medium">By: {brokerName} · {broker.companyName || 'Private'}</div>
+                              
+                              <div className="mob-lc-ft mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <span className="mob-lc-price">{priceDisplay}</span>
+                                <div className="flex gap-2">
+                                  {broker.phoneNumber && (
+                                    <>
+                                      <button onClick={() => window.open(`tel:${broker.phoneNumber}`, '_self')} className="px-3 py-1.5 bg-[#e6f4fe] text-[#0066cc] rounded font-bold text-[10px]">Call</button>
+                                      <button onClick={() => window.open(`https://wa.me/91${broker.phoneNumber.replace(/\D/g, '')}`, '_blank')} className="px-3 py-1.5 bg-[#25D366] text-white rounded font-bold text-[10px]">WhatsApp</button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="py-24 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-[#fefce8] rounded-full flex items-center justify-center mb-4">
-                      <span className="text-3xl opacity-60">📋</span>
-                    </div>
-                    <h3 className="text-base font-serif font-bold text-black">No listings found in this group</h3>
-                    <p className="text-slate-400 text-xs mt-2">Try changing your search term.</p>
-                  </div>
-                )}
-              </div>
+                          );
+                        })}
+                      </div>
 
-              {/* Listings Tabular Inventory - Desktop */}
-              <div className="hidden md:block overflow-x-auto flex-1">
-                {listingsLoading ? (
-                  <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
-                    <Loader2 size={40} className="animate-spin text-[#c8962a]" />
-                    <p className="text-sm font-bold uppercase tracking-widest">Fetching inventory...</p>
-                  </div>
-                ) : filteredListings.length > 0 ? (
-                  <table className="w-full text-left border-collapse min-w-[1000px]">
-                    <thead>
-                      <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-black uppercase text-slate-500 tracking-wider">
-                        <th className="py-2.5 px-6 text-center w-12">#</th>
-                        <th className="py-2.5 px-4 w-36">Sub-Type ↕</th>
-                        <th className="py-2.5 px-4">Section ↕</th>
-                        <th className="py-2.5 px-4">Location ↕</th>
-                        <th className="py-2.5 px-4">Project</th>
-                        <th className="py-2.5 px-4">Area</th>
-                        <th className="py-2.5 px-4">Total Price ↕</th>
-                        <th className="py-2.5 px-4">Broker</th>
-                        <th className="py-2.5 px-4">Date ↕</th>
-                        <th className="py-2.5 px-6 text-center w-40">Connect</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredListings.map((listing, idx) => {
-                        const broker = listing.postedBy || {};
-                        const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
-                        const brokerPhone = broker.phoneNumber || '';
-                        
-                        return (
-                          <tr key={listing._id} className="border-b border-[#ddd6c8] hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
-                            {/* Index */}
-                            <td className="py-2 px-6 text-center font-bold text-slate-400">{idx + 1}</td>
-                            
-                            {/* Sub-type Badge */}
-                            <td className="py-2 px-4">{renderSubTypeBadge(listing.subType)}</td>
-                            
-                            {/* Section */}
-                            <td className="py-2 px-4 text-slate-500 font-medium">{formatSection(listing)}</td>
-
-                            {/* Location */}
-                            <td className="py-2 px-4">
-                              <div>
-                                <div className="font-bold text-slate-900">{listing.location || 'N/A'}</div>
-                                <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{listing.city || 'Gurugram'}</div>
+                      {/* Desktop Cards */}
+                      <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {filteredListings.map((post) => {
+                          const broker = post.postedBy || {};
+                          const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
+                          
+                          return (
+                            <div key={post._id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                              <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                                {renderSubTypeBadge(post.subType)}
+                                <span className="text-[10px] font-bold uppercase text-slate-500">{formatSection(post)}</span>
                               </div>
-                            </td>
-                            
-                            {/* Project */}
-                            <td className="py-2 px-4 font-semibold text-slate-800">{listing.project || '—'}</td>
-
-                            {/* Area */}
-                            <td className="py-2 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
-
-                            {/* Price */}
-                            <td className="py-2 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
-
-                            {/* Broker Profile */}
-                            <td className="py-2 px-4">
-                              <div>
-                                <div className="font-bold text-slate-900">{brokerName}</div>
-                                <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{broker.companyName || 'Private Broker'}</div>
+                              <div className="p-4 flex-1 flex flex-col gap-2">
+                                <div>
+                                  <h3 className="font-bold text-slate-900 line-clamp-1">{post.location || 'N/A'}</h3>
+                                  <p className="text-xs text-slate-500">{post.project || '—'}</p>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2 mt-2">
+                                  <div className="bg-slate-50 p-2 rounded-lg">
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase">Area</p>
+                                    <p className="text-xs font-bold text-slate-800">{formatArea(post)}</p>
+                                  </div>
+                                  <div className="bg-slate-50 p-2 rounded-lg">
+                                    <p className="text-[10px] text-slate-400 font-bold uppercase">Price</p>
+                                    <p className="text-xs font-bold text-slate-800">{formatTotalPrice(post)}</p>
+                                  </div>
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                  <div className="w-8 h-8 rounded-full bg-[#1e3a8a] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                    {getInitials(brokerName)}
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-xs font-bold text-slate-900 truncate">{brokerName}</p>
+                                    <p className="text-[10px] text-slate-500 truncate">{broker.companyName || 'Private Broker'}</p>
+                                  </div>
+                                </div>
                               </div>
-                            </td>
-
-                            {/* Date */}
-                            <td className="py-2 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
-
-                            {/* Connect Actions */}
-                            <td className="py-2 px-6 text-center">
-                              <div className="flex flex-col gap-1.5 w-28 mx-auto">
-                                {/* WhatsApp Button */}
+                              <div className="p-3 bg-slate-50 border-t border-slate-100 flex items-center gap-2">
                                 <button 
-                                  onClick={() => {
-                                    if (brokerPhone) {
-                                      window.open(`https://wa.me/91${brokerPhone.replace(/\D/g, '')}`, '_blank');
-                                    } else {
-                                      alert('Phone number missing');
-                                    }
-                                  }}
-                                  className="w-full py-1.5 bg-[#25D366] hover:bg-[#20ba56] text-white flex items-center justify-center gap-1.5 rounded-full font-bold text-[10.5px] shadow-sm transition-all"
-                                >
-                                  WhatsApp
-                                </button>
-
-                                {/* Call Button */}
-                                <button 
-                                  onClick={() => {
-                                    if (brokerPhone) {
-                                      window.open(`tel:${brokerPhone}`, '_self');
-                                    } else {
-                                      alert('Phone number missing');
-                                    }
-                                  }}
-                                  className="w-full py-1.5 bg-[#e6f4fe] hover:bg-[#d0ebfe] text-[#0066cc] border border-[#b3dbfc] flex items-center justify-center gap-1.5 rounded-full font-bold text-[10.5px] transition-all"
+                                  onClick={() => broker.phoneNumber && window.open(`tel:${broker.phoneNumber}`, '_self')}
+                                  className="flex-1 py-2 bg-white border border-slate-200 text-[#0066cc] rounded-lg font-bold text-[11px] shadow-sm hover:bg-slate-50 transition-colors"
                                 >
                                   Call
                                 </button>
+                                <button 
+                                  onClick={() => broker.phoneNumber && window.open(`https://wa.me/91${broker.phoneNumber.replace(/\D/g, '')}`, '_blank')}
+                                  className="flex-1 py-2 bg-[#25D366] text-white rounded-lg font-bold text-[11px] shadow-sm hover:bg-[#20ba56] transition-colors"
+                                >
+                                  WhatsApp
+                                </button>
                               </div>
-                            </td>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="bg-white sm:rounded-xl border-y sm:border-x border-slate-200 shadow-sm overflow-x-auto">
+                      <table className="w-full text-left border-collapse min-w-[1000px]">
+                        <thead>
+                          <tr className="bg-[#FAF9F6] border-b border-[#ddd6c8] text-[10px] font-black uppercase text-slate-500 tracking-wider">
+                            <th className="py-2.5 px-6 text-center w-12">#</th>
+                            <th className="py-2.5 px-4 w-36">Sub-Type ↕</th>
+                            <th className="py-2.5 px-4">Section ↕</th>
+                            <th className="py-2.5 px-4">Location ↕</th>
+                            <th className="py-2.5 px-4">Project</th>
+                            <th className="py-2.5 px-4">Area</th>
+                            <th className="py-2.5 px-4">Total Price ↕</th>
+                            <th className="py-2.5 px-4">Broker</th>
+                            <th className="py-2.5 px-4">Date ↕</th>
+                            <th className="py-2.5 px-6 text-center w-40">Connect</th>
                           </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody>
+                          {filteredListings.map((listing, idx) => {
+                            const broker = listing.postedBy || {};
+                            const brokerName = `${broker.firstName || ''} ${broker.lastName || ''}`.trim() || 'Anonymous';
+                            const brokerPhone = broker.phoneNumber || '';
+                            
+                            return (
+                              <tr key={listing._id} className="border-b border-[#ddd6c8] hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
+                                {/* Index */}
+                                <td className="py-2 px-6 text-center font-bold text-slate-400">{idx + 1}</td>
+                                
+                                {/* Sub-type Badge */}
+                                <td className="py-2 px-4">{renderSubTypeBadge(listing.subType)}</td>
+                                
+                                {/* Section */}
+                                <td className="py-2 px-4 text-slate-500 font-medium">{formatSection(listing)}</td>
+
+                                {/* Location */}
+                                <td className="py-2 px-4">
+                                  <div>
+                                    <div className="font-bold text-slate-900">{listing.location || 'N/A'}</div>
+                                    <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{listing.city || 'Gurugram'}</div>
+                                  </div>
+                                </td>
+                                
+                                {/* Project */}
+                                <td className="py-2 px-4 font-semibold text-slate-800">{listing.project || '—'}</td>
+
+                                {/* Area */}
+                                <td className="py-2 px-4 font-semibold text-slate-800">{formatArea(listing)}</td>
+
+                                {/* Price */}
+                                <td className="py-2 px-4 font-bold text-slate-900">{formatTotalPrice(listing)}</td>
+
+                                {/* Broker Profile */}
+                                <td className="py-2 px-4">
+                                  <div>
+                                    <div className="font-bold text-slate-900">{brokerName}</div>
+                                    <div className="text-[10.5px] text-slate-400 mt-0.5 font-medium">{broker.companyName || 'Private Broker'}</div>
+                                  </div>
+                                </td>
+
+                                {/* Date */}
+                                <td className="py-2 px-4 font-medium text-slate-500">{formatDate(listing.createdAt)}</td>
+
+                                {/* Connect Actions */}
+                                <td className="py-2 px-6 text-center">
+                                  <div className="flex flex-col gap-1.5 w-28 mx-auto">
+                                    {/* WhatsApp Button */}
+                                    <button 
+                                      onClick={() => {
+                                        if (brokerPhone) {
+                                          window.open(`https://wa.me/91${brokerPhone.replace(/\D/g, '')}`, '_blank');
+                                        } else {
+                                          alert('Phone number missing');
+                                        }
+                                      }}
+                                      className="w-full py-1.5 bg-[#25D366] hover:bg-[#20ba56] text-white flex items-center justify-center gap-1.5 rounded-full font-bold text-[10.5px] shadow-sm transition-all"
+                                    >
+                                      WhatsApp
+                                    </button>
+
+                                    {/* Call Button */}
+                                    <button 
+                                      onClick={() => {
+                                        if (brokerPhone) {
+                                          window.open(`tel:${brokerPhone}`, '_self');
+                                        } else {
+                                          alert('Phone number missing');
+                                        }
+                                      }}
+                                      className="w-full py-1.5 bg-[#e6f4fe] hover:bg-[#d0ebfe] text-[#0066cc] border border-[#b3dbfc] flex items-center justify-center gap-1.5 rounded-full font-bold text-[10.5px] transition-all"
+                                    >
+                                      Call
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )
                 ) : (
                   <div className="py-24 flex flex-col items-center justify-center text-center">
                     <div className="w-20 h-20 bg-[#fefce8] rounded-full flex items-center justify-center mb-6">

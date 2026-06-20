@@ -16,13 +16,23 @@ const CategoriesManagement = () => {
   const [editingCategory, setEditingCategory] = useState(null);
   
   const [formData, setFormData] = useState({
-    vertical: 'RESIDENTIAL',
-    intent: 'SALE',
     name: '',
+    intent: 'PURCHASE',
+    vertical: 'RESIDENTIAL',
     subCategories: []
   });
-
   const [newSubCategory, setNewSubCategory] = useState('');
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isModalOpen]);
 
   const fetchCategories = async () => {
     try {

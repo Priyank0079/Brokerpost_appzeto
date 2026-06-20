@@ -18,11 +18,21 @@ const ResidentialInventory = () => {
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSubTypes, setShowSubTypes] = useState(false);
-  const [selectedSubType, setSelectedSubType] = useState('All Sub-types');
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+  const [selectedSubType, setSelectedSubType] = useState(() => sessionStorage.getItem(`residential_${intent}_subtype`) || 'All Sub-types');
+  const [isPostModalOpen, setIsPostModalOpen] = useState(() => sessionStorage.getItem('residential_post_modal_open') === 'true');
   const [viewMode, setViewMode] = useState(() => {
+    const saved = sessionStorage.getItem('inventory_viewmode');
+    if (saved) return saved;
     return window.innerWidth < 768 ? 'grid' : 'table';
   });
+
+  useEffect(() => {
+    sessionStorage.setItem('inventory_viewmode', viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    sessionStorage.setItem('residential_post_modal_open', isPostModalOpen);
+  }, [isPostModalOpen]);
   
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -30,8 +40,27 @@ const ResidentialInventory = () => {
   const limit = 8;
   
   // Edit State
-  const [selectedPosting, setSelectedPosting] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedPosting, setSelectedPosting] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('residential_edit_posting');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(() => sessionStorage.getItem('residential_edit_modal_open') === 'true');
+
+  useEffect(() => {
+    sessionStorage.setItem('residential_edit_modal_open', isEditModalOpen);
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
+    if (selectedPosting) {
+      sessionStorage.setItem('residential_edit_posting', JSON.stringify(selectedPosting));
+    } else {
+      sessionStorage.removeItem('residential_edit_posting');
+    }
+  }, [selectedPosting]);
 
   const dropdownRef = useRef(null);
 
@@ -53,11 +82,32 @@ const ResidentialInventory = () => {
   const [refreshMessage, setRefreshMessage] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState(urlSearch);
-  const [debouncedSearch, setDebouncedSearch] = useState(urlSearch);
+  useEffect(() => {
+    if (isPostModalOpen || isEditModalOpen || isDeleteModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isPostModalOpen, isEditModalOpen, isDeleteModalOpen]);
+
+  const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem(`residential_${intent}_search`) || urlSearch);
+  const [debouncedSearch, setDebouncedSearch] = useState(() => sessionStorage.getItem(`residential_${intent}_search`) || urlSearch);
 
   useEffect(() => {
-    setSearchTerm(urlSearch);
+    sessionStorage.setItem(`residential_${intent}_search`, searchTerm);
+  }, [searchTerm, intent]);
+
+  useEffect(() => {
+    sessionStorage.setItem(`residential_${intent}_subtype`, selectedSubType);
+  }, [selectedSubType, intent]);
+
+  useEffect(() => {
+    if (urlSearch) {
+      setSearchTerm(urlSearch);
+    }
   }, [urlSearch]);
 
   const isRequirement = ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(intent);
@@ -98,7 +148,7 @@ const ResidentialInventory = () => {
         params.subType = selectedSubType;
       }
       if (debouncedSearch.trim() !== '') {
-        params.location = debouncedSearch.trim();
+        params.search = debouncedSearch.trim();
       }
       
       const result = await getMyPostings(params);
@@ -211,7 +261,7 @@ const ResidentialInventory = () => {
     const label = isReady ? 'Ready to Move' : 'Under Construction';
     const bg = isReady ? 'bg-[#ecfdf5] text-[#047857] border border-[#d1fae5]' : 'bg-[#fffbeb] text-[#b45309] border border-[#fef3c7]';
     return (
-      <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${bg}`}>
+      <span className={`inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-bold tracking-tight border ${bg}`}>
         {label}
       </span>
     );
@@ -221,13 +271,13 @@ const ResidentialInventory = () => {
     const count = (listing.images?.length || 0) + (listing.videos?.length || 0);
     if (count === 0) {
       return (
-        <span className="px-2.5 py-1 rounded-md text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-100">
+        <span className="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-bold text-slate-400 bg-slate-50 border border-slate-100">
           None
         </span>
       );
     }
     return (
-      <span className="px-2.5 py-1 rounded-md text-[10px] font-bold text-blue-700 bg-blue-50 border border-[#dbeafe]">
+      <span className="inline-block whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-bold text-blue-700 bg-blue-50 border border-[#dbeafe]">
         {count} {count === 1 ? 'file' : 'files'}
       </span>
     );
@@ -320,38 +370,55 @@ const ResidentialInventory = () => {
                 />
               </div>
               
-              <div className="relative" ref={dropdownRef}>
-                <button 
-                  onClick={() => setShowSubTypes(!showSubTypes)}
-                  className="px-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium text-[#26296c] flex items-center justify-between gap-4 hover:bg-[#faf7f2]/80 transition-all min-w-[120px] tracking-tighter"
-                >
-                  {selectedSubType} <ChevronDown size={14} className="text-slate-400" />
-                </button>
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-none" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setShowSubTypes(!showSubTypes)}
+                    className="w-full px-4 py-3 bg-[#faf7f2] border border-slate-200 rounded-lg text-[11px] font-medium text-[#26296c] flex items-center justify-between gap-4 hover:bg-[#faf7f2]/80 transition-all min-w-[120px] tracking-tighter"
+                  >
+                    {selectedSubType} <ChevronDown size={14} className="text-slate-400" />
+                  </button>
 
-                {showSubTypes && (
-                  <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 shadow-xl rounded-lg z-50 py-1 overflow-hidden">
-                    {subTypes.map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          setSelectedSubType(type);
-                          setShowSubTypes(false);
-                        }}
-                        className={`w-full text-left px-4 py-1.5 text-[12px] transition-colors ${selectedSubType === type ? 'bg-[#c8962a] text-white' : 'text-slate-700 hover:bg-slate-50'}`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                  {showSubTypes && (
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 shadow-xl rounded-lg z-50 py-1 overflow-hidden">
+                      {subTypes.map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => {
+                            setSelectedSubType(type);
+                            setShowSubTypes(false);
+                          }}
+                          className={`w-full text-left px-4 py-1.5 text-[12px] transition-colors ${selectedSubType === type ? 'bg-[#c8962a] text-white' : 'text-slate-700 hover:bg-slate-50'}`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex sm:hidden items-center gap-1 bg-[#faf7f2] border border-slate-200 rounded-lg p-1 shrink-0">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('table')}
+                    className={`p-1.5 rounded transition-all ${viewMode === 'table' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+                  </button>
+                </div>
               </div>
 
-              <span className="text-[11px] text-slate-500 font-bold">{listings.length} listings</span>
+              <span className="text-[11px] text-slate-500 font-bold hidden sm:inline-block">{listings.length} listings</span>
               
               {(searchTerm || selectedSubType !== 'All Sub-types') && (
                 <button 
                   onClick={() => { setSearchTerm(''); setSelectedSubType('All Sub-types'); }}
-                  className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap ml-2"
+                  className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap ml-0 sm:ml-2 mt-2 sm:mt-0"
                 >
                   Reset Filters
                 </button>
@@ -359,7 +426,7 @@ const ResidentialInventory = () => {
             </div>
             
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <div className="flex items-center gap-1 bg-[#faf7f2] border border-slate-200 rounded-lg p-1 shrink-0">
+              <div className="hidden sm:flex items-center gap-1 bg-[#faf7f2] border border-slate-200 rounded-lg p-1 shrink-0">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#c8962a] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-100'}`}
@@ -392,7 +459,7 @@ const ResidentialInventory = () => {
               </div>
             ) : listings.length > 0 ? (
               listings.map((listing, idx) => (
-                <div key={listing._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 h-full cursor-pointer hover:shadow-md transition-all" onClick={() => { setSelectedPosting(listing); setIsEditModalOpen(true); }}>
+                <div key={listing._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 h-full transition-all">
                   <div className="flex justify-between items-start">
                     <div>
                       {renderSubTypeBadge(listing.subType)}
@@ -490,7 +557,7 @@ const ResidentialInventory = () => {
                     <tr key={listing._id} className="border-b border-[#ddd6c8] hover:bg-slate-50/40 transition-colors text-[12px] text-slate-700">
                       {/* Index & ID */}
                       <td className="py-2 px-6 text-center">
-                        <div className="font-bold text-slate-400 text-[13px]">{idx + 1}</div>
+                        <div className="font-bold text-slate-400 text-[13px]">{idx + 1 + (currentPage - 1) * limit}</div>
                         <div className="text-[9px] font-mono font-bold text-slate-300 mt-1 uppercase tracking-wider group-hover:text-slate-400 transition-colors">
                           {listing._id?.toString().slice(-6)}
                         </div>
@@ -605,7 +672,7 @@ const ResidentialInventory = () => {
 
         {/* Custom Delete Confirmation Modal */}
         {isDeleteModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
               <div className="p-6">
                 <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-50 border border-red-100 mb-4 mx-auto">
@@ -641,7 +708,7 @@ const ResidentialInventory = () => {
 
         {/* Custom Refresh Alert Modal */}
         {refreshMessage && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in-95 duration-200">
               <div className="p-6">
                 <div className={`flex items-center justify-center w-12 h-12 rounded-full mb-4 mx-auto border ${refreshMessage.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-500' : 'bg-red-50 border-red-100 text-red-500'}`}>

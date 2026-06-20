@@ -59,21 +59,65 @@ const Dashboard = () => {
   const routerNavigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [selectedPosting, setSelectedPosting] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedPosting, setSelectedPosting] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('dashboard_edit_posting');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isEditModalOpen, setIsEditModalOpen] = useState(() => sessionStorage.getItem('dashboard_edit_modal_open') === 'true');
+
+  useEffect(() => {
+    sessionStorage.setItem('dashboard_edit_modal_open', isEditModalOpen);
+  }, [isEditModalOpen]);
+
+  useEffect(() => {
+    if (selectedPosting) {
+      sessionStorage.setItem('dashboard_edit_posting', JSON.stringify(selectedPosting));
+    } else {
+      sessionStorage.removeItem('dashboard_edit_posting');
+    }
+  }, [selectedPosting]);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState(null);
+
+  useEffect(() => {
+    if (isEditModalOpen || deleteConfirmId) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isEditModalOpen, deleteConfirmId]);
 
   // Pagination & Filters State
   const [myListings, setMyListings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [subTypeFilter, setSubTypeFilter] = useState('');
-  const [viewMode, setViewMode] = useState('table');
+  const [searchQuery, setSearchQuery] = useState(() => sessionStorage.getItem('dashboard_search') || '');
+  const [subTypeFilter, setSubTypeFilter] = useState(() => sessionStorage.getItem('dashboard_subtype') || '');
+  const [viewMode, setViewMode] = useState(() => {
+    return sessionStorage.getItem('inventory_viewmode') || 'table';
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem('inventory_viewmode', viewMode);
+  }, [viewMode]);
   const [isFetchingListings, setIsFetchingListings] = useState(false);
   const limit = 20;
+
+  useEffect(() => {
+    sessionStorage.setItem('dashboard_search', searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    sessionStorage.setItem('dashboard_subtype', subTypeFilter);
+  }, [subTypeFilter]);
 
   const fetchMyListings = async () => {
     setIsFetchingListings(true);
@@ -237,37 +281,56 @@ const Dashboard = () => {
           />
           <Search size={14} className="absolute left-3 top-2.5 text-slate-400" />
         </div>
-        <select
-          value={subTypeFilter}
-          onChange={(e) => setSubTypeFilter(e.target.value)}
-          className="w-full md:w-48 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#c8962a] transition-all text-slate-600"
-        >
-          <option value="">All Sub-types</option>
-          <optgroup label="Residential">
-            <option value="Apartment">Apartment</option>
-            <option value="Floor">Independent Floor</option>
-            <option value="Villa">Independent House/Villa</option>
-            <option value="Plot">Plot</option>
-          </optgroup>
-          <optgroup label="Commercial">
-            <option value="Office">Office</option>
-            <option value="Shop">Retail Shop</option>
-            <option value="Showroom">Showroom</option>
-            <option value="Warehouse">Warehouse</option>
-            <option value="Commercial Plot">Commercial Plot</option>
-            <option value="Building">Standalone Building</option>
-          </optgroup>
-        </select>
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <select
+            value={subTypeFilter}
+            onChange={(e) => setSubTypeFilter(e.target.value)}
+            className="flex-1 md:w-48 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs outline-none focus:border-[#c8962a] transition-all text-slate-600"
+          >
+            <option value="">All Sub-types</option>
+            <optgroup label="Residential">
+              <option value="Apartment">Apartment</option>
+              <option value="Floor">Independent Floor</option>
+              <option value="Villa">Independent House/Villa</option>
+              <option value="Plot">Plot</option>
+            </optgroup>
+            <optgroup label="Commercial">
+              <option value="Office">Office</option>
+              <option value="Shop">Retail Shop</option>
+              <option value="Showroom">Showroom</option>
+              <option value="Warehouse">Warehouse</option>
+              <option value="Commercial Plot">Commercial Plot</option>
+              <option value="Building">Standalone Building</option>
+            </optgroup>
+          </select>
+          
+          <div className="flex items-center gap-2 md:hidden bg-white border border-slate-200 rounded-lg p-1 shrink-0">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#1a365d] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={`p-1.5 rounded transition-all ${viewMode === 'table' ? 'bg-[#1a365d] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+            </button>
+          </div>
+        </div>
+
         {(searchQuery || subTypeFilter) && (
           <button 
             onClick={() => { setSearchQuery(''); setSubTypeFilter(''); }}
-            className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap"
+            className="text-xs font-bold text-[#991b1b] hover:underline whitespace-nowrap mt-2 md:mt-0"
           >
             Reset Filters
           </button>
         )}
       </div>
-      <div className="flex items-center gap-2 self-end md:self-auto bg-white border border-slate-200 rounded-lg p-1">
+      
+      <div className="hidden md:flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1">
         <button
           onClick={() => setViewMode('grid')}
           className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-[#1a365d] text-white shadow-sm' : 'text-slate-500 hover:bg-slate-50'}`}
@@ -331,8 +394,7 @@ const Dashboard = () => {
         const dateString = post.createdAt ? new Date(post.createdAt).toLocaleDateString('en-GB') : 'N/A';
 
         return (
-          <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 cursor-pointer hover:shadow-md transition-all"
-            onClick={() => { setSelectedPosting(post); setIsEditModalOpen(true); }}
+          <div key={post._id} className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex flex-col gap-3 transition-all"
           >
             <div className="flex justify-between items-start">
               <div>
@@ -477,9 +539,15 @@ const Dashboard = () => {
                 </td>
                 
                 <td className="px-2 py-2">
-                  <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
-                    {mediaCount} files
-                  </span>
+                  {post.postType === 'REQUIREMENT' || ['PURCHASE', 'WANTED_RENT', 'WANTED_LEASE'].includes(post.intent) ? (
+                    <span className="px-2 py-1 bg-slate-50 text-slate-500 rounded text-[10px] font-bold whitespace-nowrap border border-slate-200">
+                      None
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 bg-blue-50 text-blue-500 rounded text-[10px] font-bold whitespace-nowrap">
+                      {mediaCount} files
+                    </span>
+                  )}
                 </td>
                 
                 <td className="px-2 py-2 text-[10px] font-bold text-slate-400 whitespace-nowrap">
@@ -527,7 +595,7 @@ const Dashboard = () => {
   return (
     <>
       {/* ── MOBILE DASHBOARD ── */}
-      <div className="md:hidden" style={{ background: '#f5f0e8', minHeight: '100vh', paddingBottom: 72 }}>
+      <div className="md:hidden" style={{ background: '#f5f0e8' }}>
         {/* Stat Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, padding: '10px 12px 6px' }}>
           <div className="mob-sc-mini">

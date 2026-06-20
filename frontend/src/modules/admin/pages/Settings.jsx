@@ -316,7 +316,7 @@ const Settings = () => {
                   <input 
                     type="email"
                     value={config?.legalPages?.support?.email || ''}
-                    onChange={(e) => updateLegalPages('support', 'email', e.target.value)}
+                    onChange={(e) => updateLegalPages('support', 'email', e.target.value.toLowerCase())}
                     placeholder="support@brokerspost.com"
                     className="w-full px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
                   />
@@ -326,8 +326,11 @@ const Settings = () => {
                   <input 
                     type="text"
                     value={config?.legalPages?.support?.mobile || ''}
-                    onChange={(e) => updateLegalPages('support', 'mobile', e.target.value)}
-                    placeholder="+91 9876543210"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      updateLegalPages('support', 'mobile', val);
+                    }}
+                    placeholder="9876543210"
                     className="w-full px-4 py-3 bg-[#fdf8f3] border border-slate-100 rounded-xl text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all outline-none"
                   />
                 </div>

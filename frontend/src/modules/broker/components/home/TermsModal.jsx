@@ -7,6 +7,7 @@ const TermsModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = 'hidden';
       const fetchTerms = async () => {
         setLoading(true);
         try {

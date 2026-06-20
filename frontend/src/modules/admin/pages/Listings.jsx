@@ -29,6 +29,17 @@ const Listings = () => {
   const [listingToDelete, setListingToDelete] = useState(null);
   const [editingListing, setEditingListing] = useState(null);
 
+  useEffect(() => {
+    if (isEditModalOpen || listingToDelete) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isEditModalOpen, listingToDelete]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -164,8 +175,7 @@ const Listings = () => {
                 ) : filteredListings.map((listing) => (
                   <tr 
                     key={listing._id} 
-                    onClick={() => navigate(`/admin/listings/${listing._id}`)}
-                    className="hover:bg-slate-50/50 transition-colors cursor-pointer group"
+                    className="hover:bg-slate-50/50 transition-colors group"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
@@ -205,7 +215,7 @@ const Listings = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-[9px] font-bold text-slate-400">{new Date(listing.createdAt).toLocaleDateString()}</td>
-                    <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-1.5">
                         <button 
                           onClick={() => handleEditClick(listing)}

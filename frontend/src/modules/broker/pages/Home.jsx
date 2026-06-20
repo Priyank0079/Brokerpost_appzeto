@@ -28,8 +28,14 @@ const Home = () => {
   const { config, loading, error } = useLandingConfig();
   const { user } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = React.useState(false);
-  const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = React.useState(() => {
+    return sessionStorage.getItem('registerModalOpen') === 'true';
+  });
   const [isTermsModalOpen, setIsTermsModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    sessionStorage.setItem('registerModalOpen', isRegisterModalOpen);
+  }, [isRegisterModalOpen]);
   
   const [filters, setFilters] = React.useState({
     vertical: '',

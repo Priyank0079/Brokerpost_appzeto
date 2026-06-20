@@ -20,7 +20,8 @@ const {
   getNotifications,
   getUnreadNotificationCount,
   markNotificationRead,
-  updateBroker
+  updateBroker,
+  createBrokerAdmin
 } = require('../controllers/authController');
 
 const { protect, authorize } = require('../middlewares/authMiddleware');
@@ -39,6 +40,7 @@ router.put('/updateme', protect, updateMe);
 router.put('/updatepassword', protect, updatePassword);
 router.get('/stats', protect, authorize('Admin'), getStats);
 router.get('/brokers', protect, authorize('Admin'), getBrokers);
+router.post('/brokers', protect, authorize('Admin'), createBrokerAdmin);
 router.get('/brokers/:id', protect, authorize('Admin'), getBrokerById);
 router.patch('/brokers/:id/status', protect, authorize('Admin'), updateBrokerStatus);
 router.put('/brokers/:id', protect, authorize('Admin'), updateBroker);

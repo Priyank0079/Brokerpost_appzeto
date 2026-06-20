@@ -16,6 +16,17 @@ const ManageGroups = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState(null);
+
+  useEffect(() => {
+    if (isCreateModalOpen || isEditModalOpen || isMemberModalOpen || groupToDelete) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isCreateModalOpen, isEditModalOpen, isMemberModalOpen, groupToDelete]);
   
   // Selection
   const [selectedGroup, setSelectedGroup] = useState(null);

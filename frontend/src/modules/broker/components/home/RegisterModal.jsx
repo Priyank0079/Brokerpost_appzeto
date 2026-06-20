@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { X, User, Camera, Loader2, AlertCircle, ChevronRight } from 'lucide-react';
+import { X, User, Camera, Loader2, AlertCircle, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { uploadProfileImage } from '../../services/postingService';
@@ -8,11 +8,30 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const { register, verifyOTP } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(() => {
+    const savedStep = sessionStorage.getItem('registration_step');
+    return savedStep ? parseInt(savedStep, 10) : 1;
+  });
+
+  React.useEffect(() => {
+    sessionStorage.setItem('registration_step', step);
+  }, [step]);
   const [uploading, setUploading] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState('');
   const [authError, setAuthError] = useState('');
+  const [timer, setTimer] = useState(60);
+
+  React.useEffect(() => {
+    let interval;
+    if (step === 3 && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [step, timer]);
   const [formData, setFormData] = useState(() => {
     const saved = localStorage.getItem('registration_draft');
     return saved ? JSON.parse(saved) : {
@@ -60,6 +79,18 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     localStorage.setItem('registration_draft', JSON.stringify(formData));
   }, [formData]);
 
+  // Prevent background scroll
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const validateStep1 = () => {
@@ -91,6 +122,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleFocus = (e) => {
+    setTimeout(() => {
+      if (e.target && typeof e.target.scrollIntoView === 'function') {
+        e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     
@@ -104,6 +143,14 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       const cleanValue = value.replace(/\D/g, '');
       if (name === 'phoneNumber' && cleanValue.length > 10) return;
       if (name === 'pinCode' && cleanValue.length > 6) return;
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    } 
+    else if (name === 'address') {
+      const cleanValue = value.replace(/[^A-Za-z0-9\s,.\-]/g, '');
+      setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    } 
+    else if (name === 'email') {
+      const cleanValue = value.toLowerCase();
       setFormData(prev => ({ ...prev, [name]: cleanValue }));
     } else {
       setFormData(prev => ({ ...prev, [name]: value }));
@@ -143,6 +190,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
   const handleBack = () => {
     setStep(1);
+    setOtp('');
   };
 
   const handleSubmit = async (e) => {
@@ -160,6 +208,24 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     }
   };
 
+  const handleResendCode = async () => {
+    setUploading(true);
+    setAuthError('');
+    const result = await register({ ...formData, agreeWithTerms: true });
+    if (result.success) {
+      setTimer(60);
+      setAuthError(''); 
+    } else {
+      setAuthError(result.message || 'Failed to resend OTP');
+    }
+    setUploading(false);
+  };
+
+  const handleClose = () => {
+    sessionStorage.removeItem('registration_step');
+    onClose();
+  };
+
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     if (!otp || otp.length < 4) {
@@ -172,6 +238,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     const result = await verifyOTP(formData.email, otp, formData.password);
     if (result.success) {
       localStorage.removeItem('registration_draft');
+      sessionStorage.removeItem('registration_step');
       onSwitchToLogin();
     } else {
       setAuthError(result.message);
@@ -193,13 +260,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           <div className="sticky top-0 bg-white z-10 -mx-8 px-8 pt-6 mb-4">
             {/* Close Button */}
             <button 
-              onClick={onClose}
+              onClick={handleClose}
               className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[#fdf8f3] text-slate-400 hover:bg-[#f5ebd8] hover:text-slate-600 transition-all z-20"
             >
               <X size={20} />
             </button>
             <h2 className="text-xl font-serif font-normal text-[#1a365d] mb-1">
-              {step === 3 ? 'Verify Your Email' : 'Register as a Broker'}
+              {step === 3 ? 'Verify Your Number' : 'Register as a Broker'}
             </h2>
             <p className="text-slate-500 text-[11px] font-normal">
               {step === 3 ? `Enter the OTP sent to ${formData.phoneNumber}` : 'Join the verified broker network — no brokerage charged'}
@@ -215,7 +282,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
           )}
 
           {step === 1 ? (
-            <form onSubmit={handleNext} className="space-y-2">
+            <form onSubmit={handleNext} className="space-y-2" onFocusCapture={handleFocus}>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {/* First Name */}
@@ -362,14 +429,23 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
                     PASSWORD *
                   </label>
-                  <input 
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Min 6 characters"
-                    className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.password ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal`}
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Min 6 characters"
+                      className={`w-full px-4 py-2.5 bg-[#faf7f2] border ${errors.password ? 'border-red-200' : 'border-[#ddd6c8]'} rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/10 focus:border-[#c8962a]/30 transition-all text-sm font-medium text-slate-900 placeholder:text-[#9f8b91] placeholder:text-xs placeholder:font-normal pr-10`}
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                   {errors.password && <p className="text-[9px] font-bold text-red-500 ml-1 italic tracking-tight">{errors.password}</p>}
                 </div>
               </div>
@@ -380,7 +456,7 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <div className="flex items-center justify-end gap-2 pt-10 pb-0">
                 <button 
                   type="button"
-                  onClick={onClose}
+                  onClick={handleClose}
                   className="px-3 py-2.5 rounded-lg border border-[#1a365d] text-xs font-black text-[#1a365d] hover:bg-[#1e3a5f] hover:text-white transition-all"
                 >
                   ← Back
@@ -513,11 +589,27 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 </p>
               </div>
 
-              <form onSubmit={handleVerifyOTP} className="space-y-4">
+              <form onSubmit={handleVerifyOTP} className="space-y-4" onFocusCapture={handleFocus}>
                 <div className="space-y-1.5">
-                  <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest ml-1">
-                    ENTER OTP CODE
-                  </label>
+                  <div className="flex items-center justify-between ml-1 pr-1">
+                    <label className="text-[11px] font-black text-[#7d7b94] uppercase tracking-widest">
+                      ENTER OTP CODE
+                    </label>
+                    {timer > 0 ? (
+                      <span className="text-[11px] font-bold text-[#c8962a]">
+                        Resend in 00:{timer < 10 ? `0${timer}` : timer}
+                      </span>
+                    ) : (
+                      <button 
+                        type="button" 
+                        onClick={handleResendCode}
+                        disabled={uploading}
+                        className="text-[11px] font-bold text-[#c8962a] hover:underline focus:outline-none"
+                      >
+                        {uploading ? 'Sending...' : 'Resend Code'}
+                      </button>
+                    )}
+                  </div>
                   <input 
                     type="text"
                     maxLength={4}
@@ -531,10 +623,13 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                 <div className="flex items-center justify-between gap-3 pt-4">
                    <button 
                     type="button"
-                    onClick={() => setStep(2)}
-                    className="px-5 py-3 rounded-lg border border-slate-200 text-sm font-black text-slate-400 hover:bg-slate-50 transition-all"
+                    onClick={() => {
+                      setStep(1);
+                      setOtp('');
+                    }}
+                    className="px-4 py-3 rounded-lg border border-slate-200 text-sm font-black text-slate-400 hover:bg-slate-50 transition-all"
                   >
-                    Back
+                    Edit Phone Number
                   </button>
                   <button 
                     type="submit"

@@ -45,9 +45,9 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
       title: 'SYSTEM',
       items: [
         { icon: <Layout size={16} />, label: 'Landing Page', path: '/admin/landing' },
-        { icon: <Zap size={16} />, label: 'Subscriptions', path: '/admin/subscriptions' },
-        { icon: <CreditCard size={16} />, label: 'Payments', path: '/admin/payments' },
-        { icon: <PieChart size={16} />, label: 'Reports', path: '/admin/reports' },
+        // { icon: <Zap size={16} />, label: 'Subscriptions', path: '/admin/subscriptions' },
+        // { icon: <CreditCard size={16} />, label: 'Payments', path: '/admin/payments' },
+        // { icon: <PieChart size={16} />, label: 'Reports', path: '/admin/reports' },
         { icon: <Settings size={16} />, label: 'Categories', path: '/admin/categories' },
         { icon: <Settings size={16} />, label: 'Settings', path: '/admin/settings' },
       ]
@@ -102,7 +102,10 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
 
       {/* User Footer */}
       <div className="p-4 border-t border-slate-800/50">
-        <div className="flex items-center justify-between bg-slate-900/50 rounded-xl p-3 border border-slate-800/50">
+        <div 
+          onClick={() => navigate('/admin/profile')}
+          className="flex items-center justify-between bg-slate-900/50 hover:bg-slate-800/80 cursor-pointer rounded-xl p-3 border border-slate-800/50 transition-all group"
+        >
           <div className="flex items-center gap-3">
             <div className="w-8.5 h-8.5 rounded-full bg-[#c8962a] flex items-center justify-center text-[#0F172A] font-bold text-[11px] overflow-hidden">
               {user?.profileImage ? (
@@ -112,13 +115,16 @@ const AdminSidebar = ({ isOpen, toggleSidebar }) => {
               )}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-[11px] font-bold text-white truncate">{user?.name || 'Administrator'}</span>
+              <span className="text-[11px] font-bold text-white truncate group-hover:text-[#c8962a] transition-colors">{user?.name || 'Administrator'}</span>
               <span className="text-[9.5px] text-slate-200 font-medium tracking-tight uppercase">{user?.role || 'Admin'}</span>
             </div>
           </div>
           <button 
-            onClick={handleLogout}
-            className="p-2 text-slate-200 hover:text-white hover:bg-slate-800 rounded-lg transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleLogout();
+            }}
+            className="p-2 text-slate-200 hover:text-red-400 hover:bg-slate-800/50 rounded-lg transition-all"
           >
             <LogOut size={16} />
           </button>

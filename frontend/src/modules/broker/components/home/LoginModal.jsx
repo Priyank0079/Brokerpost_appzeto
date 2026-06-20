@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -10,6 +10,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   
   const [isOtpLogin, setIsOtpLogin] = useState(false);
   const [otpStep, setOtpStep] = useState(1); // 1: Email, 2: OTP
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   
   const [isForgotPassword, setIsForgotPassword] = useState(false);
 
@@ -19,6 +21,17 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [maskedPhone, setMaskedPhone] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -209,14 +222,23 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                     <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
                       NEW PASSWORD *
                     </label>
-                    <input 
-                      type="password"
-                      required
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Min 6 characters"
-                      className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
-                    />
+                    <div className="relative">
+                      <input 
+                        type={showNewPassword ? "text" : "password"}
+                        required
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Min 6 characters"
+                        className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190] pr-10"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
                   <div className="flex flex-col gap-3 pt-2">
                     <button 
@@ -257,14 +279,23 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
                   <label className="text-[10.5px] font-black text-[#6e7d90] uppercase tracking-wider ml-1">
                     PASSWORD *
                   </label>
-                  <input 
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Your password"
-                    className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190]"
-                  />
+                  <div className="relative">
+                    <input 
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Your password"
+                      className="w-full px-4 py-3 bg-[#fdf8f3] border border-[#ddd6c8] rounded-lg outline-none focus:bg-white focus:ring-4 focus:ring-[#c8962a]/5 focus:border-[#c8962a]/20 transition-all text-xs font-medium text-slate-900 placeholder:text-[#919190] pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                   <div className="flex justify-end pt-1">
                     <button 
                       type="button" 

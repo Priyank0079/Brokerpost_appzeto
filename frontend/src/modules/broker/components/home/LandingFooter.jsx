@@ -7,7 +7,7 @@ const LandingFooter = ({ config, onTermsClick }) => {
       {/* Disclaimer Bar */}
       <div className="disclaimer-bar">
         <span className="font-bold uppercase tracking-wider mr-2">Disclaimer:</span>
-        {config?.disclaimer || "BrokersPost is a networking platform only. We do not participate in, mediate, or take responsibility for any transaction, dispute, or loss arising between brokers. All listings must be genuine. By using this platform, you agree to our"} <button onClick={onTermsClick} className="font-bold underline hover:text-[#c8962a]">Terms & Disclaimer Policy</button>.
+        {config?.disclaimer || "BrokersPost is a networking platform only. We do not participate in, mediate, or take responsibility for any transaction, dispute, or loss arising between brokers. All listings must be genuine. By using this platform, you agree to our"} <button onClick={onTermsClick} className="font-bold underline hover:text-[#c8962a]">{config?.sections?.registrationTerms?.title || 'Registration Terms & Conditions'}</button> and <Link to="/privacy-policy" className="font-bold underline hover:text-[#c8962a]">Privacy Policy</Link>.
       </div>
 
       {/* Main Footer */}
@@ -25,7 +25,7 @@ const LandingFooter = ({ config, onTermsClick }) => {
               <p className="mb-1 text-sm flex flex-wrap gap-2 md:gap-4 items-center justify-center md:justify-start text-slate-300">
                 <span>{config?.copyright || '© 2026 Brokerspost Network Platform.'}</span>
                 <span className="hidden md:inline text-slate-600">|</span>
-                <button onClick={onTermsClick} className="hover:text-white transition-colors underline decoration-white/30">Terms</button>
+                <button onClick={onTermsClick} className="hover:text-white transition-colors underline decoration-white/30">{config?.sections?.registrationTerms?.title || 'Registration Terms & Conditions'}</button>
                 <span className="hidden md:inline text-slate-600">|</span>
                 <Link to="/privacy-policy" className="hover:text-white transition-colors underline decoration-white/30">Privacy Policy</Link>
                 <span className="hidden md:inline text-slate-600">|</span>

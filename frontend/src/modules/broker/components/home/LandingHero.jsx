@@ -84,7 +84,8 @@ const LandingHero = ({ onRegisterClick, config }) => {
           </h1>
           
           <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', lineHeight: 1.6, marginBottom: 20 }}>
-            A private, verified community where professional real estate brokers share live inventory and requirements.
+            A private, verified community where professional real estate brokers share live inventory and requirements — deal directly with each other. <br />
+            No commission. No middlemen. No charges.
           </p>
           
           <div style={{ display: 'flex', gap: 10 }}>

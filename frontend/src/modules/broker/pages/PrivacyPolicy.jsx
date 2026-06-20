@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import LandingNavbar from '../components/home/LandingNavbar';
 import LandingFooter from '../components/home/LandingFooter';
+import TermsModal from '../components/home/TermsModal';
 import { Loader2 } from 'lucide-react';
 
 const PrivacyPolicy = () => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -32,7 +34,7 @@ const PrivacyPolicy = () => {
     <div className="min-h-screen bg-[#faf9f6] font-sans">
       <LandingNavbar />
       
-      <main className="max-w-4xl mx-auto px-6 py-20 mt-16">
+      <main className="max-w-4xl mx-auto px-6 py-8 mt-6">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 md:p-12">
           <h1 className="text-2xl md:text-3xl font-serif text-[#1a365d] mb-8 pb-6 border-b border-slate-100">
             Privacy Policy
@@ -51,7 +53,8 @@ const PrivacyPolicy = () => {
         </div>
       </main>
 
-      <LandingFooter />
+      <LandingFooter onTermsClick={() => setIsTermsModalOpen(true)} />
+      <TermsModal isOpen={isTermsModalOpen} onClose={() => setIsTermsModalOpen(false)} />
     </div>
   );
 };

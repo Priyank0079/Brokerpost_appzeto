@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { Trophy } from 'lucide-react';
 import RegisterModal from './RegisterModal';
 import LoginModal from './LoginModal';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const CTASection = ({ onRegisterClick, config }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -34,7 +38,15 @@ const CTASection = ({ onRegisterClick, config }) => {
             </button>
             
             <p className="text-slate-400 text-xs">
-              Already registered? <button onClick={() => setIsLoginModalOpen(true)} className="text-[#1a365d] font-bold hover:underline">Login here</button>
+              {user ? (
+                <button onClick={() => navigate(user.role === 'admin' ? '/admin/dashboard' : '/dashboard')} className="text-[#1a365d] font-bold hover:underline">
+                  Go to Dashboard →
+                </button>
+              ) : (
+                <>
+                  Already registered? <button onClick={() => setIsLoginModalOpen(true)} className="text-[#1a365d] font-bold hover:underline">Login here</button>
+                </>
+              )}
             </p>
           </div>
         </div>
