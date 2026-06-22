@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Camera, Video, ChevronDown, Lock, Loader2, AlertCircle, Play } from 'lucide-react';
+import { X, Camera, Video, ChevronDown, Lock, Loader2, AlertCircle, Play, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { createPosting, updatePosting, uploadPropertyImages, uploadPropertyVideo } from '../../services/postingService';
 
@@ -826,7 +826,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                 className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 rounded-xl transition-colors text-left"
               >
                 <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                  <Image size={20} />
+                  <ImageIcon size={20} />
                 </div>
                 <div>
                   <p className="font-bold text-slate-800 text-sm">Choose from Gallery</p>
