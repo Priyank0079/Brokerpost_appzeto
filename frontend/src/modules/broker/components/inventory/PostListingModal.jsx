@@ -160,9 +160,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   }, [formData.vertical, formData.intent, intent]);
 
 
-
-
-
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
 
   if (!isOpen) return null;
 
@@ -185,8 +183,9 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     setError('');
     try {
       // Compress files before upload to speed up camera uploads
-      const compressImage = async (file) => {
+      const compressImage = (file) => {
         return new Promise((resolve) => {
+          if (!file.type.startsWith('image/')) return resolve(file);
           const reader = new FileReader();
           reader.onload = (event) => {
             const img = new Image();
@@ -664,16 +663,23 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (JPG/PNG)</p>
                 <div className="space-y-3">
-                  <label className="w-full h-32 relative group cursor-pointer block">
-                    <input type="file" multiple accept="image/*, image/jpeg, image/png, image/jpg, image/webp" capture="environment" onChange={handleMediaUpload} className="hidden" />
-                    <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
+                  <div className="w-full h-32 relative group cursor-pointer block">
+                    <input id="gallery-upload-input" type="file" multiple accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleMediaUpload} className="hidden" />
+                    <input id="camera-upload-input" type="file" accept="image/*" capture="environment" onChange={handleMediaUpload} className="hidden" />
+                    <div 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowUploadOptions(true);
+                      }}
+                      className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]"
+                    >
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 transition-transform">
                         <Camera size={20} className="text-slate-400" />
                       </div>
                       <p className="text-[13px] font-bold text-[#1a365d]">Click to upload photos</p>
                       <p className="text-[11px] text-slate-400">JPG, PNG — max 5 images allowed</p>
                     </div>
-                  </label>
+                  </div>
 
                   {formData.images.length > 0 && (
                     <div className="flex flex-wrap gap-3">
@@ -780,9 +786,94 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
       </div>
       </div>
 
-
-
-
+      {/* Upload Options Action Sheet (Native Clone) */}
+      {showUploadOptions && (
+        <div className="fixed inset-0 z-[400] flex items-end justify-center bg-black/40" onClick={() => setShowUploadOptions(false)}>
+          <div className="bg-white rounded-t-[24px] w-full max-w-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-200 pb-6 pt-2" onClick={e => e.stopPropagation()}>
+            <div className="pt-4 pb-2 flex justify-center">
+              <h3 className="font-medium text-black text-[18px]">Choose an action</h3>
+            </div>
+            <div className="flex justify-around items-center px-10 py-6">
+              <div 
+                onClick={() => {
+                  setShowUploadOptions(false);
+                  if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                    const base64ToFile = (base64, filename, mimeType) => {
+                      const byteCharacters = atob(base64);
+                      const byteNumbers = new Array(byteCharacters.length);
+                      for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                      }
+                      const byteArray = new Uint8Array(byteNumbers);
+                      const blob = new Blob([byteArray], { type: mimeType });
+                      return new File([blob], filename, { type: mimeType });
+                    };
+                    window.flutter_inappwebview.callHandler('openCamera').then(response => {
+                      if (response && response.success) {
+                        const file = base64ToFile(response.base64, response.fileName, response.mimeType);
+                        handleMediaUpload({ target: { files: [file] } });
+                      }
+                    }).catch(err => console.error("Flutter camera error", err));
+                  } else {
+                    document.getElementById('camera-upload-input').click();
+                  }
+                }}
+                className="flex flex-col items-center gap-3 cursor-pointer"
+              >
+                <div className="w-[56px] h-[56px] rounded-[16px] bg-gradient-to-b from-[#e8e8e8] to-[#d4d4d4] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),0_2px_5px_rgba(0,0,0,0.1)] border border-[#c4c4c4]">
+                  <div className="w-8 h-8 rounded-full bg-[#1a1a1a] flex items-center justify-center shadow-inner border border-[#444]">
+                    <div className="w-3 h-3 rounded-full bg-[#4a90e2] shadow-[0_0_8px_#4a90e2]"></div>
+                  </div>
+                </div>
+                <span className="text-[13px] text-slate-800 font-medium tracking-wide">Camcorder</span>
+              </div>
+              
+              <div 
+                onClick={() => {
+                  setShowUploadOptions(false);
+                  if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                    const base64ToFile = (base64, filename, mimeType) => {
+                      const byteCharacters = atob(base64);
+                      const byteNumbers = new Array(byteCharacters.length);
+                      for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                      }
+                      const byteArray = new Uint8Array(byteNumbers);
+                      const blob = new Blob([byteArray], { type: mimeType });
+                      return new File([blob], filename, { type: mimeType });
+                    };
+                    window.flutter_inappwebview.callHandler('openGallery').then(response => {
+                      if (response && response.success) {
+                        const file = base64ToFile(response.base64, response.fileName, response.mimeType);
+                        handleMediaUpload({ target: { files: [file] } });
+                      }
+                    }).catch(err => console.error("Flutter gallery error", err));
+                  } else {
+                    document.getElementById('gallery-upload-input').click();
+                  }
+                }}
+                className="flex flex-col items-center gap-3 cursor-pointer"
+              >
+                <div className="w-[56px] h-[56px] rounded-[16px] bg-[#4285f4] flex items-center justify-center shadow-[inset_0_2px_4px_rgba(255,255,255,0.3),0_2px_5px_rgba(0,0,0,0.2)]">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V8C22 6.9 21.1 6 20 6H12L10 4Z" fill="white"/>
+                  </svg>
+                </div>
+                <span className="text-[13px] text-slate-800 font-medium tracking-wide">Files</span>
+              </div>
+            </div>
+            
+            <div className="px-5 mt-2">
+              <button 
+                onClick={() => setShowUploadOptions(false)}
+                className="w-full py-3.5 bg-[#f0f0f0] active:bg-[#e0e0e0] text-[#333] rounded-full font-medium text-[15px] transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
