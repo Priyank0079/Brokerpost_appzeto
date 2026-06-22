@@ -261,22 +261,24 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Profile Photo</label>
-                <div 
-                  className={`relative border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:bg-slate-50 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!loading) setShowUploadOptions(true);
-                  }}
-                >
-                  <div className="w-14 h-14 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-200 shrink-0 relative">
-                    {user?.profileImage ? <img src={user.profileImage} alt="" className="w-full h-full object-cover" /> : (
-                      <div className="w-full h-full bg-[#FAF9F6] flex items-center justify-center"><span className="text-[20px] font-bold text-[#c8962a]">{user?.firstName?.charAt(0) || 'U'}</span></div>
-                    )}
-                    {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="text-[#c8962a] animate-spin" size={16} /></div>}
-                  </div>
-                  <div><p className="text-xs font-bold text-slate-800">Click to change</p><p className="text-[10px] text-slate-400 font-medium">JPG or PNG</p></div>
+                <div>
                   <input id="profile-gallery-input" type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleProfileImageUpload} disabled={loading} />
                   <input id="profile-camera-input" type="file" className="hidden" accept="image/*" capture="environment" onChange={handleProfileImageUpload} disabled={loading} />
+                  <div 
+                    className={`relative border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:bg-slate-50 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!loading) setShowUploadOptions(true);
+                    }}
+                  >
+                    <div className="w-14 h-14 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-200 shrink-0 relative">
+                      {user?.profileImage ? <img src={user.profileImage} alt="" className="w-full h-full object-cover" /> : (
+                        <div className="w-full h-full bg-[#FAF9F6] flex items-center justify-center"><span className="text-[20px] font-bold text-[#c8962a]">{user?.firstName?.charAt(0) || 'U'}</span></div>
+                      )}
+                      {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="text-[#c8962a] animate-spin" size={16} /></div>}
+                    </div>
+                    <div><p className="text-xs font-bold text-slate-800">Click to change</p><p className="text-[10px] text-slate-400 font-medium">JPG or PNG</p></div>
+                  </div>
                 </div>
               </div>
               <div className="space-y-1">
