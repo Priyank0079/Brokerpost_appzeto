@@ -159,7 +159,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
     });
   }, [formData.vertical, formData.intent, intent]);
 
-  const [showUploadOptions, setShowUploadOptions] = useState(false);
+
 
   if (!isOpen) return null;
 
@@ -661,23 +661,16 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (JPG/PNG)</p>
                 <div className="space-y-3">
-                  <div className="w-full h-32 relative group cursor-pointer block">
-                    <input id="gallery-upload-input" type="file" multiple accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleMediaUpload} className="hidden" />
-                    <input id="camera-upload-input" type="file" accept="image/*" capture="environment" onChange={handleMediaUpload} className="hidden" />
-                    <div 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setShowUploadOptions(true);
-                      }}
-                      className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]"
-                    >
+                  <label className="w-full h-32 relative group cursor-pointer block">
+                    <input type="file" multiple accept="image/jpeg, image/png, image/jpg, image/webp, image/*" onChange={handleMediaUpload} className="hidden" />
+                    <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 transition-transform">
                         <Camera size={20} className="text-slate-400" />
                       </div>
                       <p className="text-[13px] font-bold text-[#1a365d]">Click to upload photos</p>
                       <p className="text-[11px] text-slate-400">JPG, PNG — max 5 images allowed</p>
                     </div>
-                  </div>
+                  </label>
 
                   {formData.images.length > 0 && (
                     <div className="flex flex-wrap gap-3">
@@ -783,60 +776,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
         </form>
       </div>
 
-      {/* Upload Options Action Sheet */}
-      {showUploadOptions && (
-        <div className="fixed inset-0 z-[400] flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setShowUploadOptions(false)}>
-          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <h3 className="font-bold text-slate-800 text-sm">Select Upload Method</h3>
-              <button onClick={() => setShowUploadOptions(false)} className="text-slate-400 hover:text-slate-600 p-1">
-                <X size={18} />
-              </button>
-            </div>
-            <div className="p-2">
-              <button 
-                onClick={() => {
-                  setShowUploadOptions(false);
-                  if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
-                    window.flutter_inappwebview.callHandler('openCameraPicker');
-                  } else {
-                    document.getElementById('camera-upload-input').click();
-                  }
-                }}
-                className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 rounded-xl transition-colors text-left"
-              >
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
-                  <Camera size={20} />
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800 text-sm">Take Photo</p>
-                  <p className="text-xs text-slate-500">Use your device camera</p>
-                </div>
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setShowUploadOptions(false);
-                  if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
-                    window.flutter_inappwebview.callHandler('openGalleryPicker');
-                  } else {
-                    document.getElementById('gallery-upload-input').click();
-                  }
-                }}
-                className="w-full flex items-center gap-3 p-4 hover:bg-slate-50 rounded-xl transition-colors text-left"
-              >
-                <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                  <ImageIcon size={20} />
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800 text-sm">Choose from Gallery</p>
-                  <p className="text-xs text-slate-500">Select multiple existing photos</p>
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

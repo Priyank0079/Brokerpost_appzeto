@@ -120,7 +120,7 @@ const Layout = ({ children }) => {
               </div>
             </div>
             {/* Spacer for fixed topbar */}
-            <div className="md:hidden" style={{ height: '45px' }} />
+            <div className="md:hidden" style={{ height: 'calc(55px + env(safe-area-inset-top, 0px))' }} />
           </>
         )}
 

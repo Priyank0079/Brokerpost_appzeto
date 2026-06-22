@@ -260,33 +260,8 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Profile Photo</label>
-                <div 
-                  className="relative border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:bg-slate-50 transition-all cursor-pointer"
-                  onClick={(e) => {
-                    if (loading) return;
-                    if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
-                      e.preventDefault();
-                      const base64ToFile = (base64, filename, mimeType) => {
-                        const byteCharacters = atob(base64);
-                        const byteNumbers = new Array(byteCharacters.length);
-                        for (let i = 0; i < byteCharacters.length; i++) {
-                          byteNumbers[i] = byteCharacters.charCodeAt(i);
-                        }
-                        const byteArray = new Uint8Array(byteNumbers);
-                        const blob = new Blob([byteArray], { type: mimeType });
-                        return new File([blob], filename, { type: mimeType });
-                      };
-                      
-                      window.flutter_inappwebview.callHandler('openCamera').then(response => {
-                        if (response && response.success) {
-                          const file = base64ToFile(response.base64, response.fileName, response.mimeType);
-                          handleProfileImageUpload({ target: { files: [file] } });
-                        }
-                      }).catch(err => console.error("Flutter camera error", err));
-                    } else {
-                      document.getElementById('profile-upload-input').click();
-                    }
-                  }}
+                <label 
+                  className={`relative border-2 border-dashed border-slate-200 rounded-lg p-4 flex items-center gap-4 hover:bg-slate-50 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                 >
                   <div className="w-14 h-14 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center border border-slate-200 shrink-0 relative">
                     {user?.profileImage ? <img src={user.profileImage} alt="" className="w-full h-full object-cover" /> : (
@@ -295,8 +270,8 @@ const Profile = () => {
                     {loading && <div className="absolute inset-0 bg-white/60 flex items-center justify-center"><Loader2 className="text-[#c8962a] animate-spin" size={16} /></div>}
                   </div>
                   <div><p className="text-xs font-bold text-slate-800">Click to change</p><p className="text-[10px] text-slate-400 font-medium">JPG or PNG</p></div>
-                  <input id="profile-upload-input" type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleProfileImageUpload} disabled={loading} />
-                </div>
+                  <input type="file" className="hidden" accept="image/jpeg, image/png, image/jpg, image/webp, image/*" onChange={handleProfileImageUpload} disabled={loading} />
+                </label>
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Full Name *</label>
