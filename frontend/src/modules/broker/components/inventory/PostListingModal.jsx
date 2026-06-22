@@ -160,6 +160,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
   }, [formData.vertical, formData.intent, intent]);
 
 
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
 
   if (!isOpen) return null;
 
@@ -661,16 +662,23 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
               <div className="space-y-2">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider ml-1">Photos (JPG/PNG)</p>
                 <div className="space-y-3">
-                  <label className="w-full h-32 relative group cursor-pointer block">
-                    <input type="file" multiple accept="image/jpeg, image/png, image/jpg, image/webp, image/*" onChange={handleMediaUpload} className="hidden" />
-                    <div className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]">
+                  <div className="w-full h-32 relative group cursor-pointer block">
+                    <input id="gallery-upload-input" type="file" multiple accept="image/jpeg, image/png, image/jpg, image/webp" onChange={handleMediaUpload} className="hidden" />
+                    <input id="camera-upload-input" type="file" accept="image/*" capture="environment" onChange={handleMediaUpload} className="hidden" />
+                    <div 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setShowUploadOptions(true);
+                      }}
+                      className="absolute inset-0 border-2 border-dashed border-[#ddd6c8] rounded-lg transition-all flex flex-col items-center justify-center bg-transparent group-hover:bg-[#faf7f2]"
+                    >
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm mb-2 transition-transform">
                         <Camera size={20} className="text-slate-400" />
                       </div>
                       <p className="text-[13px] font-bold text-[#1a365d]">Click to upload photos</p>
                       <p className="text-[11px] text-slate-400">JPG, PNG — max 5 images allowed</p>
                     </div>
-                  </label>
+                  </div>
 
                   {formData.images.length > 0 && (
                     <div className="flex flex-wrap gap-3">
