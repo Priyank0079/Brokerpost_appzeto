@@ -454,7 +454,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
                   className="w-full px-4 py-2.5 bg-[#faf7f2] border border-slate-200 focus:border-[#c8962a]/40 transition-all text-[12px] font-medium text-[#2d3748] rounded-lg outline-none placeholder:font-normal placeholder:text-[#7f7f7f] placeholder:text-[12px]" 
                 />
               </div>
-              {formData.vertical === 'RESIDENTIAL' && formData.subType?.toUpperCase() !== 'PLOTS' && (
+              {formData.vertical === 'RESIDENTIAL' && formData.subType?.toUpperCase() !== 'PLOTS' && formData.subType?.toUpperCase() !== 'PLOT' && (
                 <div className="space-y-1">
                   <label className="text-[10px] font-medium text-slate-500 uppercase tracking-wider ml-1">Bedrooms</label>
                   <div className="relative">
@@ -655,7 +655,7 @@ const PostListingModal = ({ isOpen, onClose, intent = 'SALE', vertical = 'RESIDE
 
 
           {/* Media Section */}
-          {!isRequirement && (
+          {!isRequirement && formData.subType?.toUpperCase() !== 'PLOTS' && formData.subType?.toUpperCase() !== 'PLOT' && (
             <section className="space-y-4">
               <h3 className="text-[12px] font-black text-[#284366] uppercase tracking-normal border-b border-slate-200 pb-1">Media</h3>
               
