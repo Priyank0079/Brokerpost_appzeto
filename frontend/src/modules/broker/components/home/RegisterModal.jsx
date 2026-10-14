@@ -239,7 +239,8 @@ const RegisterModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     if (result.success) {
       localStorage.removeItem('registration_draft');
       sessionStorage.removeItem('registration_step');
-      onSwitchToLogin();
+      handleClose();
+      navigate('/dashboard');
     } else {
       setAuthError(result.message);
     }
