@@ -34,27 +34,22 @@ const AdminLogin = lazy(() => import('../modules/admin/pages/Login'));
 
 const AppRoutes = () => {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'Admin' || user?.role === 'Super Admin';
-
+  const isAdmin = user?.role === 'Admin' || user?.role === 'Super Admin' || user?.role === 'Administrator';
 
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Public Landing Page */}
-        <Route path="/" element={
-          user ? (
-            <BrokerLayout><Home /></BrokerLayout>
-          ) : (
-            <Home />
-          )
-        } />
+        <Route path="/" element={<Home />} />
 
         {/* Public Legal Pages */}
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/support" element={<Support />} />
 
-        {/* Removed dedicated login/register routes to favor home modal */}
-        <Route path="/admin/login" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin" />} />
+        {/* Auth routes */}
+        <Route path="/login" element={user ? <Navigate to={isAdmin ? "/admin" : "/dashboard"} replace /> : <Login />} />
+        <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <BrokerRegistration />} />
+        <Route path="/admin/login" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin" replace />} />
 
         {/* Admin Module */}
         <Route path="/admin/*" element={isAdmin ? <AdminRoutes /> : <Navigate to="/admin/login" />} />

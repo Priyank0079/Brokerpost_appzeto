@@ -44,6 +44,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       const result = await login(email, password);
       if (result.success) {
         onClose();
+        const isAdmin = result.user?.role === 'Administrator' || result.user?.role === 'Admin' || result.user?.role === 'Super Admin';
+        navigate(isAdmin ? '/admin' : '/dashboard');
       } else {
         setError(result.message);
       }
@@ -86,6 +88,8 @@ const LoginModal = ({ isOpen, onClose, onSwitchToRegister }) => {
       const result = await loginWithOTP(email, otp);
       if (result.success) {
         onClose();
+        const isAdmin = result.user?.role === 'Administrator' || result.user?.role === 'Admin' || result.user?.role === 'Super Admin';
+        navigate(isAdmin ? '/admin' : '/dashboard');
       } else {
         setError(result.message);
       }

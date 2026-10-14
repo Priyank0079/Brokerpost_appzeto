@@ -19,9 +19,11 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const BrokerRegistration = () => {
   const navigate = useNavigate();
+  const { verifyOTP } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showOTP, setShowOTP] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -149,16 +151,16 @@ const BrokerRegistration = () => {
     if (validateOTP()) {
       setLoading(true);
       try {
-        const response = await api.post('/auth/verify-otp', {
-          email: formData.email,
-          otp: otpData.otp,
-          password: otpData.password
-        });
-        if (response.success) {
+        const result = await verifyOTP(
+          formData.email,
+          otpData.otp,
+          otpData.password
+        );
+        if (result.success) {
           localStorage.removeItem('brokerRegistrationData');
-          navigate('/login');
+          navigate('/dashboard');
         } else {
-          setErrors({ otp: response.message });
+          setErrors({ otp: result.message || 'OTP verification failed' });
         }
       } catch (err) {
         setErrors({ server: 'Verification failed' });

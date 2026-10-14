@@ -120,8 +120,20 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/verify-otp', { email, otp, password });
       if (response.success) {
-        // Do not auto-login here; user will login manually
-        return { success: true };
+        if (response.token) {
+          localStorage.setItem('token', response.token);
+          if (response.data) {
+            localStorage.setItem('user', JSON.stringify(response.data));
+            setUser(response.data);
+          } else {
+            const meRes = await api.get('/auth/me');
+            if (meRes.success && meRes.data) {
+              localStorage.setItem('user', JSON.stringify(meRes.data));
+              setUser(meRes.data);
+            }
+          }
+        }
+        return { success: true, user: response.data, token: response.token };
       }
       return { success: false, message: response.message || 'OTP verification failed' };
     } catch (err) {
