@@ -156,8 +156,23 @@ exports.verifyOTP = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Email verified and password set successfully',
-      token: generateToken(user._id, 'User')
-
+      token: generateToken(user._id, 'User'),
+      data: {
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        companyName: user.companyName,
+        operatingCity: user.operatingCity,
+        phoneNumber: user.phoneNumber,
+        officeAddress: user.officeAddress,
+        officeCity: user.officeCity,
+        pinCode: user.pinCode,
+        reraNumber: user.reraNumber,
+        profileImage: user.profileImage
+      }
     });
   } catch (error) {
     next(error);

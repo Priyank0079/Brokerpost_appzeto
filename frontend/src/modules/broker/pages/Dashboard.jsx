@@ -55,8 +55,7 @@ const BreakdownRow = ({ label, value, colorClass, onClick }) => {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const navigate = navigateFn => navigateFn && navigate(navigateFn);
-  const routerNavigate = useNavigate();
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPosting, setSelectedPosting] = useState(() => {
